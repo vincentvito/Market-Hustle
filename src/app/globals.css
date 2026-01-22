@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Market Hustle color palette */
+  --mh-bg: #0d1117;
+  --mh-text-dim: #5a6a7a;
+  --mh-text-main: #a0b3c6;
+  --mh-text-bright: #c8d8e8;
+  --mh-accent-blue: #7eb8da;
+  --mh-profit-green: #00ff88;
+  --mh-loss-red: #ff5252;
+  --mh-border: #2a3a4a;
+  --mh-news: #ffaa00;
+
+  /* Glow effects */
+  --glow-text: 0 0 8px rgba(160, 179, 198, 0.6),
+               0 0 16px rgba(160, 179, 198, 0.3);
+  --glow-green: 0 0 8px rgba(0, 255, 136, 0.8),
+                0 0 16px rgba(0, 255, 136, 0.4);
+  --glow-red: 0 0 8px rgba(255, 82, 82, 0.8),
+              0 0 16px rgba(255, 82, 82, 0.4);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--mh-bg);
+  color: var(--mh-text-main);
+  font-family: "Courier New", "Lucida Console", monospace;
+  /* Prevent horizontal swipe gestures on iOS Safari */
+  touch-action: pan-y;
+  overscroll-behavior-x: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@layer utilities {
+  .glow-text {
+    text-shadow: var(--glow-text);
+  }
+  .glow-green {
+    text-shadow: var(--glow-green);
+  }
+  .glow-red {
+    text-shadow: var(--glow-red);
+  }
+  .scanlines {
+    background:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.15) 0px,
+        rgba(0,0,0,0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+  }
+  .animate-slide-up {
+    animation: slideUp 0.2s ease-out;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
