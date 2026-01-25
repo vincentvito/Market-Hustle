@@ -102,7 +102,19 @@ export function TitleScreen() {
         {isPro && <div className="mb-8" />}
 
         {/* Free vs Pro Comparison */}
-        <div className="w-full max-w-[320px] mb-10">
+        <div className="w-full max-w-[320px] mb-10 relative">
+          {/* COMING SOON Sticker */}
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+            <div
+              className="px-4 py-1.5 text-xs font-bold tracking-wider text-mh-bg bg-mh-profit-green rounded-sm"
+              style={{
+                boxShadow: '0 0 12px rgba(0, 255, 136, 0.6), 0 0 24px rgba(0, 255, 136, 0.3), 0 2px 8px rgba(0, 0, 0, 0.4)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              PRO COMING SOON
+            </div>
+          </div>
           <div className="border border-mh-border rounded-lg overflow-hidden">
             {/* Header row */}
             <div className="flex items-center py-2.5 px-3 text-sm font-bold bg-mh-border/20 border-b border-mh-border">
