@@ -1645,8 +1645,7 @@ export const useGame = create<GameStore>((set, get) => ({
     }
 
     set({
-      // DEV MODE: Force Pro tier for testing margin trading
-      userTier: 'pro', // userState.tier,
+      userTier: userState.tier,
       selectedDuration: userState.selectedDuration ?? 30,
       selectedTheme: validTheme,
       gamesRemaining: getRemainingGames(userState),
