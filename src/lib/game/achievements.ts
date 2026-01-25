@@ -146,7 +146,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'finisher',
     name: 'FINISHER',
-    description: 'Completed a 30-day game',
+    description: 'Completed a full trading career',
     emoji: '🏁',
     category: 'game_end',
   },
@@ -202,7 +202,7 @@ export const DEFAULT_PROFILE: PlayerProfile = {
 }
 
 // Mock profile for frontend testing
-export const MOCK_PROFILE: PlayerProfile = {
+export const MOCK_PROFILE: PlayerProfile & { winStreak: number } = {
   gamesPlayed: 12,
   bestNetWorth: 4200000,
   winRate: 75,
@@ -211,4 +211,5 @@ export const MOCK_PROFILE: PlayerProfile = {
   biggestLoss: { amount: 45000, asset: 'GME' },
   favoriteAsset: 'BIOTECH',
   unlockedAchievements: ['first_blood', 'diamond_hands', 'whale', 'sniper', 'millionaire', 'ten_x', 'oracle', 'lightning_rod'],
+  winStreak: 3, // Mock win streak for UI testing
 }

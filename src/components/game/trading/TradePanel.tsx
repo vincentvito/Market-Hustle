@@ -116,11 +116,11 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
   return (
     <div className="border-b border-mh-border bg-[#111920] px-4 py-3" style={{ touchAction: 'none' }}>
       {/* Slider */}
-      <div className="mb-3">
-        {/* Slider Track */}
+      <div className="mb-3 px-10">
+        {/* Slider Track - padded to keep fingers away from screen edges on iOS */}
         <div
           ref={sliderRef}
-          className="relative h-8 cursor-pointer touch-none"
+          className="relative h-7 cursor-pointer touch-none"
           style={{ touchAction: 'none' }}
           onMouseDown={onMouseDown}
           onTouchStart={onTouchStart}
@@ -145,10 +145,10 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
             />
           ))}
 
-          {/* Thumb */}
+          {/* Thumb - 20px (reduced from 24px) */}
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-mh-accent-blue rounded-full shadow-lg border-2 border-mh-bg transition-[left] duration-75"
-            style={{ left: `calc(${sliderPercent}% - 12px)` }}
+            className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-mh-accent-blue rounded-full shadow-lg border-2 border-mh-bg transition-[left] duration-75"
+            style={{ left: `calc(${sliderPercent}% - 10px)` }}
           />
         </div>
 

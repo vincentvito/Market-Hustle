@@ -40,6 +40,20 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "RUSSIA INVADES NEIGHBORING STATE": "War in Europe rewrites the global order. Oil and gas spike on Russian supply fears. Wheat surges - Russia and Ukraine are breadbaskets of the world. Safe havens rally. Emerging markets crash on capital flight.",
 
+  "NORTH KOREA FIRES MISSILE OVER JAPAN": "Missiles flying over Japan sends shockwaves through Asian markets. Defense contractors see immediate upside on regional rearmament. Gold catches a bid as uncertainty premium returns. Tech dips on supply chain concerns - a lot of semiconductors ship through the Sea of Japan.",
+
+  "EMBASSY BOMBING IN MIDDLE EAST": "Embassy attacks signal escalation in regional tensions. Oil spikes on refinery proximity fears. Defense stocks rally on security spending. Gold moves higher as investors seek safety. Markets brace for potential retaliation.",
+
+  "COUP ATTEMPT IN NATO MEMBER STATE": "Political instability in NATO rattles the alliance. Defense stocks rally on security concerns. Gold catches a bid on geopolitical uncertainty. The broader market dips slightly on European risk - but NATO countries have recovered from coups before.",
+
+  "KIM JONG UN, NORTH KOREA LEADER - ASSASSINATED": "Nuclear-armed state without clear succession is a nightmare scenario. Defense stocks explode on Korean Peninsula risk. Gold surges as safe haven. Emerging markets, especially those near the DMZ, crash on potential chaos. The world holds its breath for Pyongyang's next move.",
+
+  "SUBMARINE COLLISION IN SOUTH CHINA SEA": "Naval incidents in disputed waters can escalate fast. Defense rallies on potential conflict. Oil moves on shipping route concerns. Gold rises on geopolitical risk. Markets remember - World War I started with less.",
+
+  "SWISS NEUTRALITY OFFICIALLY ENDED": "Switzerland abandoning centuries of neutrality signals the old world order is dead. Gold rises - ironically Swiss vaults become less safe as geopolitical shelter. Defense budgets across Europe will increase.",
+
+  "SAUDI ARABIA OPENS EMBASSY IN ISRAEL": "Historic normalization removes a major Middle East risk factor. Oil drops as regional stability improves. Emerging markets rally on reduced conflict premium. Defense fades without the sword of Damocles hanging over the region.",
+
   // ===========================================
   // ECONOMIC & MARKETS
   // ===========================================
@@ -54,6 +68,18 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   "CHINA DEFAULTS ON SOVEREIGN DEBT": "A sovereign default from the world's second-largest economy sends shockwaves globally. Emerging markets collapse on contagion fears. Gold and crypto rally as trust in governments evaporates. The dollar strengthens as the least dirty shirt.",
 
   "UNEMPLOYMENT HITS 15%": "Mass unemployment means crushed consumer spending. Stocks fall. Real estate drops as people can't pay rent. Gold rises - economic distress drives safe haven demand. The Fed will have to respond, but first comes the pain.",
+
+  "JOBS REPORT SHOCKS - 500K ADDED": "Blowout jobs number means the economy is running hot. Stocks rally on growth. Tech and Tesla love strong consumer spending. Emerging markets benefit from global demand. But watch the Fed - hot jobs might mean higher rates coming.",
+
+  "CPI COMES IN HOT - 9.1% ANNUAL": "Inflation near double digits is a five-alarm fire. Gold and Bitcoin rally as inflation hedges. Tech crashes because the Fed will have to raise rates aggressively. Your dollars are melting - hard assets are the shelter.",
+
+  "FLASH CRASH - DOW DROPS 1000 POINTS": "When markets crash 1000 points in minutes, it's usually algorithms gone haywire. Gold spikes on panic. Stocks crater. Tesla falls harder than most - it's the most volatile large-cap name. The crash creates buying opportunities for those with nerve.",
+
+  "HEDGE FUND BLOWS UP - MARGIN CALLS SPREAD": "One fund's margin call becomes another's forced selling. Contagion spreads through prime brokers. Stocks sell off on credit concerns. Gold rises as paper assets burn. Even crypto can dip if the fund was long Bitcoin.",
+
+  "CURRENCY CRISIS HITS MAJOR EMERGING MARKET": "Currency collapse means capital flight. Emerging markets sell off on contagion fears. Gold and Bitcoin rally as alternatives to failing fiat. The dollar strengthens as the world runs to safety.",
+
+  "BILLIONAIRES EXODUS - 50 RENOUNCE US CITIZENSHIP": "When the ultra-wealthy flee, they're seeing something coming. Bitcoin and gold rise as they move assets offshore. Emerging markets benefit from capital inflows. It's a vote of no-confidence in US fiscal policy.",
 
   "HOUSING MARKET CRASHES 30%": "Housing crashes ripple through the entire economy. REITs get destroyed. Banks holding mortgages suffer. Stocks fall on wealth destruction and credit fears. Gold rises as investors seek safety outside the financial system.",
 
@@ -72,11 +98,17 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "SILICON VALLEY LAYOFFS HIT 100,000": "Mass layoffs signal tech companies are cutting costs, not investing. NASDAQ falls on growth concerns. Real estate softens as tech workers stop bidding up Bay Area homes.",
 
-  "GLOBAL INTERNET BLACKOUT - DAY 1": "Without internet, crypto becomes inaccessible and tech stocks are worthless. The digital economy freezes. Gold rallies - the one asset that works without electricity. Physical cash suddenly matters again.",
-
   "ELON HYPES TESLA HUMANOID BOTS": "Elon's tweets move markets. Retail investors pile into anything he touches. Tesla means lithium demand. Meme energy spreads to altcoins and speculative names.",
 
   "NVIDIA UNVEILS 100X AI CHIP": "Nvidia's chips power AI. A 100x improvement accelerates the entire AI revolution. Tech stocks rally on productivity gains. Lithium rises on data center power demand.",
+
+  "MAJOR AI MODEL UNEXPECTEDLY RELEASED": "Surprise AI drops move markets because they change competitive dynamics overnight. Tech rallies on productivity gains. Tesla benefits because Elon knows AI moves markets. The race to AGI just accelerated.",
+
+  "ANTITRUST SETTLEMENT - BIG TECH PAYS $50B FINE": "Fifty billion is a big number, but certainty is worth more than money. Tech dips on the headline but the worst is over. Markets prefer known penalties to open-ended litigation. Big Tech survives to fight another day.",
+
+  "APPLE EXITS CHINA MANUFACTURING": "Apple leaving China is a tectonic shift in global supply chains. Tech dips on transition costs. Emerging markets (ex-China) benefit from relocated factories. Lithium rises on new battery supply chains. This is deglobalization in action.",
+
+  "AMAZON INTRODUCES 5 MINUTE DELIVERIES": "Five-minute delivery sounds impossible until Amazon does it. Tech rallies on the innovation premium. Emerging markets suffer as local retailers can't compete. This is the future of commerce - instant gratification scaled.",
 
   // ===========================================
   // CRYPTO
@@ -115,6 +147,31 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   "SEC HALTS MEME STOCK TRADING": "Trading halts protect institutions from retail coordination. GameStop crashes when retail can't buy. Faith in free markets erodes. Altcoins sympathetically fall on regulatory overhang.",
 
   // ===========================================
+  // TESLA & EV
+  // ===========================================
+  "TESLA REPORTS RECORD DELIVERIES": "Record deliveries silence the haters - at least until next quarter. Tesla rockets. Lithium benefits from battery demand. NASDAQ gets a lift from its most volatile constituent. Remember when Elon predicted 20 million cars by 2030? This is progress toward that bold vision.",
+
+  "TESLA MISSES DELIVERY GUIDANCE BY 20%": "Missing by 20% is catastrophic for a growth stock priced for perfection. Tesla crashes. Lithium falls on reduced battery demand. Elon will tweet something provocative to distract from the numbers - he always does.",
+
+  "TESLA CYBERTRUCK RECALL - BRAKE FAILURE": "Brake failures are the worst possible safety issue for any car company. Tesla plunges on recall costs and reputation damage. Elon promised the Cybertruck would be 'literally bulletproof' - turns out stopping is harder than deflecting bullets.",
+
+  "OPTIMUS ROBOT ENTERS MASS PRODUCTION": "Elon's robot dreams become reality. Tesla soars on the new revenue stream. Lithium rises on robot battery demand. Elon once said Optimus would be worth more than the entire car business - the market is starting to believe him.",
+
+  "TESLA FSD CAUSES FATAL ACCIDENT": "Deaths from Full Self-Driving destroy the autonomy narrative. Tesla crashes hard. Regulatory scrutiny intensifies. Elon will blame the driver, the road, or the other car - but the headlines won't care.",
+
+  "ELON SELLS $5B IN TSLA SHARES": "When the CEO sells, you sell. Tesla drops on the vote of no-confidence from its biggest believer. Elon always has a reason - taxes, Twitter, or just 'funding secured' - but the market sees red regardless.",
+
+  "TESLA STOCK ADDED TO DOW JONES": "Dow inclusion means index funds must buy Tesla. Massive forced buying creates a pop. NASDAQ benefits from its biggest company getting even more love. The Dow just got a lot more volatile - exactly how Elon likes it.",
+
+  "BYD OVERTAKES TESLA IN GLOBAL SALES": "The Chinese EV giant finally takes the crown. Tesla falls on lost market share. Emerging markets rally - China's industrial rise continues. Lithium rises because BYD needs batteries too. Elon will remind everyone Tesla makes more profit per car. He's right, but it still stings.",
+
+  "TESLA UNVEILS $25K MODEL FOR MASSES": "The affordable Tesla changes everything. Stock rockets on addressable market expansion. Lithium explodes on battery demand. Oil drops as EVs become mainstream. Elon promised a cheap Tesla for years - this is the 'iPhone moment' for EVs.",
+
+  "HERTZ CANCELS MASSIVE TESLA ORDER": "Fleet cancellations signal demand problems. Tesla drops on reduced volumes. Elon will say Hertz's loss is direct buyers' gain. The market disagrees.",
+
+  "TESLA ENERGY WINS $10B GRID CONTRACT": "Tesla's energy business is the forgotten gem. A $10B contract proves utility-scale storage is real. Tesla rallies. Lithium rises on Megapack battery demand. Elon always said energy would be bigger than cars - here's proof he might be right.",
+
+  // ===========================================
   // BIOTECH & HEALTH
   // ===========================================
   "WHO DECLARES NEW PANDEMIC": "Pandemics mean lockdowns, travel bans, and economic shutdown. Airlines and real estate crash. Oil collapses - nobody's driving. Biotech soars on vaccine and treatment demand. Gold rises on fear.",
@@ -126,6 +183,10 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   "MRNA VACCINE FOR HIV SHOWS PROMISE": "mRNA technology proving broadly effective validates the entire platform. Biotech rallies. HIV treatment would be a massive market - billions of patients globally.",
 
   "AGING REVERSED IN HUMAN TRIALS": "Anti-aging success would be the biggest medical breakthrough in history. Biotech explodes. Healthcare spending would transform. Tech rallies on the productivity of eternal life.",
+
+  "OZEMPIC CAUSES HEART ATTACKS - MASS RECALL": "When a blockbuster drug gets recalled, the entire biotech sector shudders. Regulatory scrutiny intensifies across the board. Weight loss miracle turns into class action nightmare. Healthcare investing just got riskier.",
+
+  "MALARIA VACCINE 95% EFFECTIVE - WHO APPROVES": "A malaria vaccine would save millions of lives annually. Biotech rallies on the validation of vaccine platforms. Emerging markets benefit most - malaria kills mostly in Africa and Asia. This is medicine at its finest.",
 
   // ===========================================
   // ENERGY
@@ -145,6 +206,12 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   "NUCLEAR RENAISSANCE: 50 PLANTS APPROVED": "Massive nuclear buildout means uranium demand for decades. Oil weakens as nuclear displaces fossil fuel demand. This is a structural shift in energy markets.",
 
   "OIL TANKER EXPLODES IN STRAIT OF HORMUZ": "20% of world oil passes through Hormuz. An attack there threatens global supply. Oil spikes. Defense rallies on military response potential. Gold rises on conflict fear.",
+
+  "REFINERY EXPLOSION CUTS US CAPACITY 5%": "Refineries turn crude into gasoline. Losing 5% capacity spikes fuel prices even if crude is plentiful. Oil rallies. The economy suffers from higher gas prices. The bottleneck isn't crude - it's refining.",
+
+  "PIPELINE LEAK FORCES EMERGENCY SHUTDOWN": "Pipelines down means oil doesn't move where it's needed. Prices spike on regional supply disruptions. Gold gets a small bid on energy uncertainty. Infrastructure vulnerability creates trading opportunities.",
+
+  "SURPRISE OPEC MEMBER EXITS AGREEMENT": "OPEC members defecting means supply discipline is breaking down. Oil crashes on expected oversupply. The cartel's unity is its power - without it, producers flood the market.",
 
   // ===========================================
   // EV & LITHIUM
@@ -177,6 +244,8 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   "GLOBAL SUPPLY CHAIN MELTDOWN": "Supply chains breaking means goods stuck in wrong places. Coffee and wheat spike on delivery issues. The economy slows as companies can't get inputs.",
 
   "SYNTHETIC GOLD CREATED IN LAB": "If you can manufacture gold, it loses its scarcity value. Gold crashes. Bitcoin and crypto rally as the new scarce assets. Tech benefits from the alchemy breakthrough.",
+
+  "FERTILIZER SHORTAGE HITS GLOBAL FARMS": "No fertilizer means smaller harvests. Coffee and agricultural commodities spike on reduced yields. Emerging markets suffer from food inflation. Russia controls much of global fertilizer supply - geopolitics meets your breakfast table.",
 
   // ===========================================
   // REAL ESTATE
@@ -611,4 +680,101 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   "INSTANT MORTGAGE DOMINATES MARKET": "AI mortgages become standard. Traditional lenders lose share. Real estate benefits from efficiency.",
 
   "INSTANT MORTGAGE ACQUIRED FOR $200B": "Massive acquisition by financial giant. Mortgage technology transformation creates huge value.",
+
+  // ===========================================
+  // DIVORCE AI (Angel)
+  // ===========================================
+  "DIVORCE AI CAUSES CUSTODY DISASTER - SUED BY 500 COUPLES": "AI made catastrophic custody decisions. Lawsuits pile up. The company implodes under legal liability.",
+
+  "DIVORCE AI ACQUIRED BY LEGALZOOM": "Modest acqui-hire. Technology absorbed into existing legal services platform.",
+
+  "DIVORCE AI SERIES A - 'CONSCIOUS UNCOUPLING 2.0'": "VCs bet on disrupting the $50B divorce industry. Gwyneth Paltrow comparisons abound.",
+
+  "DIVORCE AI IPO - 100K DIVORCES PROCESSED": "Scale proves the model works. Divorce-as-a-service goes mainstream.",
+
+  "DIVORCE AI BECOMES DEFAULT IN FAMILY COURTS": "Courts adopt AI mediation to reduce backlog. Company becomes legal infrastructure. NASDAQ benefits from legaltech validation.",
+
+  // ===========================================
+  // INFLUENCER FUNERAL (Angel)
+  // ===========================================
+  "INFLUENCER FUNERAL STREAMS WRONG BODY - FAMILY SUES": "Catastrophic mixup destroys brand. Company can't recover from the PR nightmare.",
+
+  "INFLUENCER FUNERAL MERGES WITH DIGITAL CEMETERY STARTUP": "Death tech consolidation. Combined entity finds modest niche.",
+
+  "INFLUENCER FUNERAL SERIES A - DEATH TECH BOOMING": "VCs discover the 'death economy.' Monetizing mortality becomes a trend.",
+
+  "INFLUENCER FUNERAL PARTNERS WITH INSTAGRAM": "Social media giant wants end-of-life content. Morbid but profitable partnership.",
+
+  "INFLUENCER FUNERAL IPO - DEATH GOES VIRAL": "Death content becomes normalized. Company goes public on massive engagement metrics. NASDAQ gets a small boost.",
+
+  // ===========================================
+  // DIGITAL TWIN CORP (Angel)
+  // ===========================================
+  "DIGITAL TWIN CORP SHUT DOWN - TWIN IMPERSONATION FRAUD": "AI clones used for fraud and impersonation. Regulators shut it down.",
+
+  "DIGITAL TWIN CORP PIVOTS TO CUSTOMER SERVICE BOTS": "Original vision too ambitious. Settles for enterprise chatbots.",
+
+  "DIGITAL TWIN CORP SERIES A - REMOTE WORK REVOLUTION": "VCs bet workers will pay to clone themselves. Productivity gains pitch wins.",
+
+  "DIGITAL TWIN CORP ACQUIRED BY ZOOM FOR $500M": "Video conferencing giant adds AI avatars. Natural fit for remote work.",
+
+  "DIGITAL TWIN CORP IPO - 'EVERYONE HAS TWO JOBS NOW'": "Workers use twins to work multiple jobs. Productivity revolution or dystopia? Markets say revolution. NASDAQ rallies.",
+
+  // ===========================================
+  // SHROOM BOOM (Angel)
+  // ===========================================
+  "SHROOM BOOM RAIDED BY DEA - FOUNDERS ARRESTED": "Federal law enforcement doesn't care about state legalization. Founders face federal charges.",
+
+  "SHROOM BOOM LICENSED TO MEDICAL CLINIC": "Modest exit into regulated medical use. Research applications only.",
+
+  "SHROOM BOOM SERIES A - OREGON EXPANSION": "Legal psychedelics expand. Biotech sector sees opportunity in mental health.",
+
+  "SHROOM BOOM IPO - PSYCHEDELICS GO MAINSTREAM": "Mental health crisis drives adoption. Biotech rallies on new treatment paradigm.",
+
+  "SHROOM BOOM ACQUIRED BY BIG PHARMA FOR $600M": "Pharma giant buys into psychedelic medicine. Biotech sector validates the bet.",
+
+  // ===========================================
+  // OCEAN MINING (VC)
+  // ===========================================
+  "OCEAN MINING ENVIRONMENTAL DISASTER - OPERATIONS HALTED": "Deep sea ecosystem destruction triggers global outrage. Operations suspended indefinitely. Lithium rises as alternative supply vanishes.",
+
+  "OCEAN MINING UN MORATORIUM - YEARS OF DELAYS": "International treaty halts deep sea mining. Regulatory uncertainty kills momentum.",
+
+  "OCEAN MINING LIMITED PERMITS APPROVED": "Some mining allowed in international waters. Cautious progress.",
+
+  "OCEAN MINING IPO - RARE EARTH INDEPENDENCE": "Strategic minerals from the ocean floor. Reduces dependency on land-based mining. Lithium falls on competition.",
+
+  "OCEAN MINING EXTRACTS $50B IN MINERALS": "Commercial success at scale. Rare earths flood market, disrupting traditional miners. NASDAQ benefits from tech supply security.",
+
+  "OCEAN MINING ENDS CHINA'S RARE EARTH MONOPOLY": "Geopolitical shift in mineral supply. Western tech supply chains secured. China's emerging market influence weakens.",
+
+  // ===========================================
+  // SHADOW BANK AI (VC)
+  // ===========================================
+  "SHADOW BANK AI MONEY LAUNDERING SCANDAL - EXECS INDICTED": "AI helped hide dirty money. Federal prosecution. Crypto rallies as decentralized alternatives look better.",
+
+  "SHADOW BANK AI REGULATORY CRACKDOWN - DOWN ROUND": "Treasury Department tightens rules. Business model under threat.",
+
+  "SHADOW BANK AI PIVOTS TO COMPLIANCE SOFTWARE": "If you can't beat regulators, help clients comply. Safer but smaller business.",
+
+  "SHADOW BANK AI IPO - WEALTH MANAGEMENT DISRUPTION": "Ultra-wealthy need AI-powered asset protection. Regulatory arbitrage goes public.",
+
+  "SHADOW BANK AI MANAGES $500B FOR ULTRA-WEALTHY": "The rich get richer with AI tax optimization. Crypto drops as traditional finance proves sufficient.",
+
+  "SHADOW BANK AI BECOMES OFFSHORE STANDARD": "Every billionaire uses it. Traditional safe havens (crypto, gold) lose appeal. NASDAQ benefits from fintech validation.",
+
+  // ===========================================
+  // MARS COLONY CORP (VC)
+  // ===========================================
+  "MARS COLONY CORP ROCKET EXPLODES - PROGRAM CANCELLED": "Catastrophic launch failure. Dreams of Mars colonization delayed a generation. Tech and lithium (rocket batteries) fall.",
+
+  "MARS COLONY CORP DECADE OF DELAYS ANNOUNCED": "Mars is hard. Timeline slips indefinitely. Investors lose patience.",
+
+  "MARS COLONY CORP UNMANNED MISSION SUCCESS": "Cargo lands safely on Mars. Proof of concept, but humans are years away.",
+
+  "MARS COLONY CORP FIRST HUMANS LAND ON MARS": "Historic achievement. Space economy validated. NASDAQ and lithium rally on future demand.",
+
+  "MARS COLONY CORP ESTABLISHES PERMANENT BASE": "Humanity becomes multi-planetary. Space economy boom. Tech, lithium, and broader markets celebrate.",
+
+  "MARS COLONY CORP FINDS WATER ICE - COLONIZATION VIABLE": "Water means sustainable colonies. Mars becomes economically viable. Massive boost to space sector and related industries.",
 }

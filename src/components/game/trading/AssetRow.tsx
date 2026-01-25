@@ -9,6 +9,8 @@ interface AssetRowProps {
 }
 
 function formatPrice(p: number): string {
+  if (p >= 1_000_000) return `${(p / 1_000_000).toFixed(1)}M`
+  if (p >= 1000) return `${(p / 1000).toFixed(1)}K`
   if (p >= 100) return p.toFixed(0)
   if (p >= 10) return p.toFixed(1)
   return p.toFixed(2)

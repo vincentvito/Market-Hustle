@@ -3,7 +3,7 @@
 import { useGame } from '@/hooks/useGame'
 
 export function WinScreen() {
-  const { startGame, getNetWorth } = useGame()
+  const { startGame, getNetWorth, gameDuration } = useGame()
   const netWorth = getNetWorth()
   const INITIAL_CASH = 100000
   const profit = netWorth - INITIAL_CASH
@@ -15,7 +15,7 @@ export function WinScreen() {
         MARKET CLOSED
       </div>
       <div className="text-mh-text-dim text-base mb-8">
-        YOU SURVIVED 30 DAYS
+        YOU SURVIVED {gameDuration} DAYS
       </div>
 
       <div className="border border-mh-border p-6 mb-8 min-w-[240px]">
@@ -34,7 +34,7 @@ export function WinScreen() {
       </div>
 
       <button
-        onClick={startGame}
+        onClick={() => startGame()}
         className="bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
           px-10 py-4 text-base font-mono cursor-pointer glow-text
           hover:bg-mh-accent-blue/10 transition-colors"

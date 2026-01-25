@@ -1,5 +1,16 @@
 import type { Metadata, Viewport } from 'next'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+})
 
 export const metadata: Metadata = {
   title: 'Market Hustle',
@@ -19,17 +30,24 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        {/* Desktop: centered 9:16 frame, Mobile: full screen */}
-        <div className="min-h-screen bg-black flex items-center justify-center">
-          <div className="
-            w-full h-screen
-            md:w-[400px] md:h-[711px] md:max-h-[90vh]
-            md:rounded-lg md:overflow-hidden md:shadow-2xl
-            md:border md:border-mh-border
-            relative overflow-hidden
-          ">
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        {/* Clash Display font from Fontshare */}
+        <link
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body style={{
+        margin: 0,
+        padding: 0,
+        backgroundColor: '#080a0d',
+        color: '#a0b3c6',
+        minHeight: '100dvh',
+      }}>
+        {/* Desktop: centered phone container. Mobile: full width */}
+        <div className="desktop-wrapper">
+          <div className="phone-container">
             {children}
           </div>
         </div>

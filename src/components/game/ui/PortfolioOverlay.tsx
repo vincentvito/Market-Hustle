@@ -5,6 +5,8 @@ import { ASSETS } from '@/lib/game/assets'
 import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
 
 function formatPrice(p: number): string {
+  if (p >= 1_000_000) return `${(p / 1_000_000).toFixed(1)}M`
+  if (p >= 1000) return `${(p / 1000).toFixed(1)}K`
   if (p >= 100) return p.toFixed(0)
   if (p >= 10) return p.toFixed(1)
   return p.toFixed(2)
@@ -23,7 +25,11 @@ function formatLargePrice(value: number): string {
   return `$${value.toFixed(0)}`
 }
 
-export function PortfolioOverlay() {
+interface PortfolioOverlayProps {
+  onSelectAsset?: (assetId: string) => void
+}
+
+export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
   const {
     showPortfolio,
     setShowPortfolio,
@@ -34,6 +40,8 @@ export function PortfolioOverlay() {
     activeInvestments,
     ownedLifestyle,
     lifestylePrices,
+    leveragedPositions,
+    shortPositions,
     getNetWorth,
     getPortfolioValue,
     getPortfolioChange,
@@ -101,7 +109,10 @@ export function PortfolioOverlay() {
               return (
                 <div
                   key={asset.id}
-                  className="py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center"
+                  onClick={() => onSelectAsset?.(asset.id)}
+                  className={`py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center ${
+                    onSelectAsset ? 'cursor-pointer hover:bg-[#1a2a3a]/50 active:bg-[#1a2a3a]' : ''
+                  }`}
                 >
                   <div className="flex-1">
                     <div className="text-mh-text-bright font-bold text-sm mb-1">
@@ -136,6 +147,137 @@ export function PortfolioOverlay() {
                     </div>
                     <div className="text-mh-text-dim text-[10px] mt-0.5">
                       {pctOfPortfolio.toFixed(1)}% of portfolio
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Leveraged Positions Section - Pro tier */}
+        {leveragedPositions.length > 0 && (
+          <div className="border-t border-mh-border">
+            <div className="px-4 py-2 bg-[#0a1520]">
+              <div className="text-mh-accent-blue text-[10px] font-bold tracking-wider">
+                📈 LEVERAGED POSITIONS
+              </div>
+            </div>
+            {leveragedPositions.map(pos => {
+              const asset = ASSETS.find(a => a.id === pos.assetId)
+              if (!asset) return null
+              const currentPrice = prices[pos.assetId] || 0
+              const currentValue = pos.qty * currentPrice
+              const equity = currentValue - pos.debtAmount
+              const originalEquity = pos.qty * pos.entryPrice / pos.leverage
+              const pl = equity - originalEquity
+              const plPct = originalEquity > 0 ? (pl / originalEquity) * 100 : 0
+              const isUnderwater = equity < 0
+
+              return (
+                <div
+                  key={pos.id}
+                  onClick={() => onSelectAsset?.(pos.assetId)}
+                  className={`py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center ${
+                    onSelectAsset ? 'cursor-pointer hover:bg-[#1a2a3a]/50 active:bg-[#1a2a3a]' : ''
+                  } ${isUnderwater ? 'bg-mh-loss-red/10' : ''}`}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-mh-accent-blue text-[10px] font-bold px-1.5 py-0.5 bg-mh-accent-blue/20 rounded">
+                        {pos.leverage}x
+                      </span>
+                      <span className="text-mh-text-bright font-bold text-sm">
+                        {asset.name}
+                      </span>
+                    </div>
+                    <div className="text-mh-text-dim text-[11px]">
+                      {pos.qty} shares @ ${formatPrice(pos.entryPrice)}
+                    </div>
+                    <div className="text-mh-text-dim text-[10px] mt-0.5">
+                      Debt: ${pos.debtAmount.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="text-right ml-4">
+                    <div className={`font-bold text-sm mb-1 ${isUnderwater ? 'text-mh-loss-red' : 'text-mh-accent-blue'}`}>
+                      ${equity.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </div>
+                    <div
+                      className={`text-xs font-bold ${
+                        isUnderwater ? 'text-mh-loss-red animate-pulse' : plPct >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
+                      }`}
+                    >
+                      {plPct >= 0 ? '▲' : '▼'}
+                      {plPct >= 0 ? '+' : ''}
+                      {plPct.toFixed(1)}%
+                    </div>
+                    {isUnderwater && (
+                      <div className="text-mh-loss-red text-[10px] mt-0.5 font-bold">
+                        UNDERWATER
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Short Positions Section - Pro tier */}
+        {shortPositions.length > 0 && (
+          <div className="border-t border-mh-border">
+            <div className="px-4 py-2 bg-[#151008]">
+              <div className="text-yellow-500 text-[10px] font-bold tracking-wider">
+                🩳 SHORT POSITIONS
+              </div>
+            </div>
+            {shortPositions.map(pos => {
+              const asset = ASSETS.find(a => a.id === pos.assetId)
+              if (!asset) return null
+              const currentPrice = prices[pos.assetId] || 0
+              const currentLiability = pos.qty * currentPrice
+              const pl = pos.cashReceived - currentLiability
+              const plPct = pos.cashReceived > 0 ? (pl / pos.cashReceived) * 100 : 0
+
+              return (
+                <div
+                  key={pos.id}
+                  onClick={() => onSelectAsset?.(pos.assetId)}
+                  className={`py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center ${
+                    onSelectAsset ? 'cursor-pointer hover:bg-[#1a2a3a]/50 active:bg-[#1a2a3a]' : ''
+                  }`}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-yellow-500 text-[10px] font-bold px-1.5 py-0.5 bg-yellow-500/20 rounded">
+                        SHORT
+                      </span>
+                      <span className="text-mh-text-bright font-bold text-sm">
+                        {asset.name}
+                      </span>
+                    </div>
+                    <div className="text-mh-text-dim text-[11px]">
+                      {pos.qty} shares @ ${formatPrice(pos.entryPrice)}
+                    </div>
+                    <div className="text-mh-text-dim text-[10px] mt-0.5">
+                      Received: ${pos.cashReceived.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="text-right ml-4">
+                    <div className="text-yellow-500 font-bold text-sm mb-1">
+                      -${currentLiability.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </div>
+                    <div
+                      className={`text-xs font-bold ${
+                        plPct >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
+                      }`}
+                    >
+                      {plPct >= 0 ? '▲' : '▼'}
+                      {plPct >= 0 ? '+' : ''}
+                      {plPct.toFixed(1)}%
+                    </div>
+                    <div className="text-mh-text-dim text-[10px] mt-0.5">
+                      Liability
                     </div>
                   </div>
                 </div>
@@ -260,6 +402,21 @@ export function PortfolioOverlay() {
               )}
               {ownedLifestyle.length > 0 && (
                 <span className="text-mh-accent-blue"> + {formatLargePrice(ownedLifestyle.reduce((sum, owned) => sum + (lifestylePrices[owned.assetId] || 0), 0))} lifestyle</span>
+              )}
+              {leveragedPositions.length > 0 && (
+                <span className="text-mh-accent-blue">
+                  {' '}+ ${leveragedPositions.reduce((sum, pos) => {
+                    const currentValue = pos.qty * (prices[pos.assetId] || 0)
+                    return sum + (currentValue - pos.debtAmount)
+                  }, 0).toLocaleString()} leveraged
+                </span>
+              )}
+              {shortPositions.length > 0 && (
+                <span className="text-yellow-500">
+                  {' '}- ${shortPositions.reduce((sum, pos) => {
+                    return sum + pos.qty * (prices[pos.assetId] || 0)
+                  }, 0).toLocaleString()} short
+                </span>
               )}
             </div>
           </div>

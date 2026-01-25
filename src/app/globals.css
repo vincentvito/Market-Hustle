@@ -8,11 +8,14 @@
   --mh-text-dim: #5a6a7a;
   --mh-text-main: #a0b3c6;
   --mh-text-bright: #c8d8e8;
-  --mh-accent-blue: #7eb8da;
+  --mh-accent-blue: #c8d8e8;
   --mh-profit-green: #00ff88;
   --mh-loss-red: #ff5252;
   --mh-border: #2a3a4a;
   --mh-news: #ffaa00;
+
+  /* Theme: Font family (Retro default) */
+  --mh-font-family: "Courier New", "Lucida Console", monospace;
 
   /* Glow effects */
   --glow-text: 0 0 8px rgba(160, 179, 198, 0.6),
@@ -23,16 +26,135 @@
               0 0 16px rgba(255, 82, 82, 0.4);
 }
 
+/* Retro 2 theme: Green-dominant retro with glowing cards */
+[data-theme="retro2"] {
+  /* Override accent color to green */
+  --mh-accent-blue: #00ff88;
+
+  /* News text also green */
+  --mh-news: #00ff88;
+
+  /* RETRO 2 specific glows for overlays and buttons */
+  --retro2-glow: 0 0 12px rgba(0, 255, 136, 0.4);
+  --retro2-glow-strong: 0 0 15px rgba(0, 255, 136, 0.5);
+
+  /* Keep all other Retro defaults (inherited from :root) */
+}
+
+/* Modern 3 theme: Cyan-dominant, grid texture, performance-based glow */
+[data-theme="modern3"] {
+  /* Colors - cyan dominant */
+  --mh-bg: #0a0e14;
+  --mh-text-dim: #4a5568;
+  --mh-text-main: #8892a0;
+  --mh-text-bright: #ffffff;
+  --mh-accent-blue: #00d4aa;
+  --mh-profit-green: #00d4aa;
+  --mh-loss-red: #ff4757;
+  --mh-border: #1a2230;
+  --mh-news: #00d4aa;
+
+  /* Card/panel backgrounds */
+  --mh-card-bg: #0f1419;
+
+  /* Typography - monospace */
+  --mh-font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+
+  /* Glow effects - cyan */
+  --glow-text: 0 0 20px rgba(0, 212, 170, 0.4);
+  --glow-green: 0 0 8px rgba(0, 212, 170, 0.8), 0 0 16px rgba(0, 212, 170, 0.4);
+  --glow-red: 0 0 8px rgba(255, 71, 87, 0.8), 0 0 16px rgba(255, 71, 87, 0.4);
+
+  /* Card shadows for floating effect */
+  --modern3-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+  --modern3-section-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --modern3-glow-positive: 0 0 25px rgba(0, 212, 170, 0.5), 0 0 40px rgba(0, 212, 170, 0.25);
+  --modern3-glow-negative: 0 0 25px rgba(255, 71, 87, 0.5), 0 0 40px rgba(255, 71, 87, 0.25);
+}
+
+/* Hide scanlines in modern3 */
+[data-theme="modern3"] .scanlines {
+  opacity: 0;
+}
+
+/* Modern 3 grid texture overlay */
+[data-theme="modern3"] .phone-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(0, 212, 170, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 170, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Modern 3 phone container */
+[data-theme="modern3"] .phone-container {
+  background: #0a0e14;
+  border-color: #1a2230;
+}
+
+/* Ensure content is above grid without trapping z-index */
+[data-theme="modern3"] .phone-container > * {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Bloomberg Terminal theme: Authentic terminal aesthetic */
+[data-theme="bloomberg"] {
+  /* Color palette - Authentic Bloomberg Terminal */
+  --mh-bg: #000000;                  /* Pure black background */
+  --mh-text-dim: #8b6914;            /* Dark amber for labels */
+  --mh-text-main: #ff8c00;           /* Muted orange - primary text */
+  --mh-text-bright: #ffffff;         /* WHITE for headers (key distinction!) */
+  --mh-accent-blue: #ff9900;         /* Orange accent */
+  --mh-profit-green: #00cc00;        /* Terminal green */
+  --mh-loss-red: #ff3333;            /* Bright terminal red */
+  --mh-border: #333333;              /* Subtle dark gray borders */
+  --mh-news: #ffcc00;                /* Bright amber for news */
+
+  /* Card background */
+  --mh-card-bg: #000000;
+
+  /* Typography - dense monospace terminal font */
+  --mh-font-family: "Consolas", "SF Mono", "Courier New", monospace;
+
+  /* NO glow effects for Bloomberg (terminals don't glow) */
+  --glow-text: none;
+  --glow-green: none;
+  --glow-red: none;
+}
+
+/* Bloomberg: Hide scanlines for clean terminal look */
+[data-theme="bloomberg"] .scanlines {
+  display: none;
+}
+
+/* Bloomberg phone container */
+[data-theme="bloomberg"] .phone-container {
+  background: #000000;
+  border-color: #333333;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   background: var(--mh-bg);
   color: var(--mh-text-main);
-  font-family: "Courier New", "Lucida Console", monospace;
+  font-family: var(--mh-font-family);
   /* Prevent horizontal swipe gestures on iOS Safari */
   touch-action: pan-y;
   overscroll-behavior-x: none;
+  /* Better mobile height handling */
+  height: 100%;
+  min-height: 100dvh;
+  -webkit-overflow-scrolling: touch;
 }
 
 * {
@@ -50,6 +172,7 @@ body {
     text-shadow: var(--glow-red);
   }
   .scanlines {
+    opacity: 1;
     background:
       repeating-linear-gradient(
         0deg,
@@ -77,5 +200,152 @@ body {
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/* Milestone celebration animations */
+.milestone-pulse-bg {
+  animation: milestonePulseBg 0.5s ease-out forwards;
+}
+
+.milestone-glow-pulse {
+  animation: milestoneGlowPulse 1s ease-in-out infinite;
+}
+
+.milestone-rainbow {
+  animation: milestoneRainbow 2s linear infinite;
+}
+
+.milestone-glitch {
+  animation: milestoneGlitch 0.3s ease-in-out 2;
+}
+
+.milestone-glitch-text {
+  animation: milestoneGlitchText 0.2s ease-in-out infinite alternate;
+}
+
+.milestone-flash {
+  animation: milestoneFlash 0.15s ease-in-out 3;
+}
+
+@keyframes milestonePulseBg {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.1; }
+}
+
+@keyframes milestoneGlowPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes milestoneRainbow {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes milestoneGlitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-1px, -1px); }
+  80% { transform: translate(1px, 1px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes milestoneGlitchText {
+  0% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff, 0 0 20px currentColor; }
+  100% { text-shadow: -2px 0 #ff0000, 2px 0 #00ffff, 0 0 20px currentColor; }
+}
+
+@keyframes milestoneFlash {
+  0%, 100% { background-color: #0a0d10; }
+  50% { background-color: #22c55e; }
+}
+
+/* Roulette spin animation */
+.animate-roulette-spin {
+  animation: rouletteSpin 1.5s ease-out forwards;
+}
+
+@keyframes rouletteSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(1080deg); }
+}
+
+/* Near-miss and trade toast slide-down animation */
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+  0% { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Scroll indicator bounce animation */
+.animate-bounce-slow {
+  animation: bounceSlow 1.5s ease-in-out infinite;
+}
+
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+/* Modal fade-in animation */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Desktop wrapper - dark background for desktop */
+.desktop-wrapper {
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #080a0d;
+}
+
+/* Phone container - the "device" on desktop */
+.phone-container {
+  width: 100%;
+  height: 100dvh;
+  max-width: 420px;
+  background-color: var(--mh-bg);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Creates a new containing block for fixed positioned descendants */
+  transform: translateZ(0);
+}
+
+/* Desktop: constrained height with rounded corners */
+@media (min-width: 500px) {
+  .desktop-wrapper {
+    padding: 20px;
+  }
+
+  .phone-container {
+    height: 90vh;
+    max-height: 900px;
+    border-radius: 24px;
+    border: 2px solid var(--mh-border);
+    box-shadow:
+      0 0 60px rgba(0, 0, 0, 0.5),
+      0 0 30px rgba(126, 184, 218, 0.1);
+  }
+}
+
+/* True mobile: full screen */
+@media (max-width: 499px) {
+  .desktop-wrapper {
+    padding: 0;
+  }
+
+  .phone-container {
+    max-width: 100%;
+    border-radius: 0;
   }
 }

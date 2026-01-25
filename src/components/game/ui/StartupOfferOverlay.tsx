@@ -14,7 +14,8 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 export function StartupOfferOverlay() {
-  const { pendingStartupOffer, cash, investInStartup, dismissStartupOffer } = useGame()
+  const { pendingStartupOffer, cash, investInStartup, dismissStartupOffer, selectedTheme } = useGame()
+  const isRetro2 = selectedTheme === 'retro2'
 
   if (!pendingStartupOffer) return null
 
@@ -32,9 +33,12 @@ export function StartupOfferOverlay() {
 
   return (
     <div className="fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-5">
-      <div className="bg-mh-bg border-2 border-mh-accent-blue rounded-lg w-full max-w-[340px] overflow-hidden">
+      <div
+        className="bg-mh-bg border-2 border-mh-accent-blue rounded-lg w-full max-w-[340px] overflow-hidden"
+        style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
+      >
         {/* Header */}
-        <div className="p-4 bg-gradient-to-r from-[#0a1520] to-[#0d1a28] border-b border-mh-border">
+        <div className={`p-4 ${isRetro2 ? 'bg-gradient-to-r from-[#0a150d] to-[#0d1a10]' : 'bg-gradient-to-r from-[#0a1520] to-[#0d1a28]'} border-b border-mh-border`}>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-2xl">{icon}</span>
             <div className="flex-1">
@@ -45,12 +49,12 @@ export function StartupOfferOverlay() {
           </div>
           <div
             className="text-mh-news font-bold text-xl leading-tight"
-            style={{ textShadow: '0 0 10px rgba(255,170,0,0.5)' }}
+            style={{ textShadow: isRetro2 ? '0 0 10px rgba(0,255,136,0.5)' : '0 0 10px rgba(255,170,0,0.5)' }}
           >
             {name}
           </div>
           <div className="text-mh-text-dim text-sm mt-1 italic">
-            "{tagline}"
+            &ldquo;{tagline}&rdquo;
           </div>
         </div>
 

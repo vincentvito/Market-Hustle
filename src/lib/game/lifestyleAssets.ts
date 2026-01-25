@@ -69,8 +69,8 @@ export const JETS: LifestyleAsset[] = [
     basePrice: 3_000_000,
     volatility: 0.01,
     dailyReturn: -15_000, // Fixed $15K/day maintenance
-    vcDealBoost: 0.10, // +10% VC deal chance
-    description: 'Entry-level private. 6 seats. +10% VC deal chance.',
+    vcDealBoost: 0.05, // +5% VC deal chance
+    description: 'Entry-level private. 6 seats. +5% VC deal chance.',
   },
   {
     id: 'jet_challenger',
@@ -80,8 +80,8 @@ export const JETS: LifestyleAsset[] = [
     basePrice: 15_000_000,
     volatility: 0.015,
     dailyReturn: -50_000, // Fixed $50K/day maintenance
-    vcDealBoost: 0.20, // +20% VC deal chance
-    description: 'Mid-size luxury. 10 seats. +20% VC deal chance.',
+    vcDealBoost: 0.10, // +10% VC deal chance
+    description: 'Mid-size luxury. 10 seats. +10% VC deal chance.',
   },
   {
     id: 'jet_gulfstream',
@@ -91,8 +91,8 @@ export const JETS: LifestyleAsset[] = [
     basePrice: 65_000_000,
     volatility: 0.02,
     dailyReturn: -150_000, // Fixed $150K/day maintenance
-    vcDealBoost: 0.30, // +30% VC deal chance
-    description: 'Ultra-long range. NYC to Tokyo nonstop. +30% VC deal chance.',
+    vcDealBoost: 0.15, // +15% VC deal chance
+    description: 'Ultra-long range. NYC to Tokyo nonstop. +15% VC deal chance.',
   },
   {
     id: 'jet_global',
@@ -102,8 +102,8 @@ export const JETS: LifestyleAsset[] = [
     basePrice: 75_000_000,
     volatility: 0.02,
     dailyReturn: -200_000, // Fixed $200K/day maintenance
-    vcDealBoost: 0.40, // +40% VC deal chance
-    description: 'Flying penthouse. 4 living spaces. +40% VC deal chance.',
+    vcDealBoost: 0.20, // +20% VC deal chance
+    description: 'Flying penthouse. 4 living spaces. +20% VC deal chance.',
   },
   {
     id: 'jet_bbj',
@@ -113,8 +113,8 @@ export const JETS: LifestyleAsset[] = [
     basePrice: 250_000_000,
     volatility: 0.025,
     dailyReturn: -500_000, // Fixed $500K/day maintenance
-    vcDealBoost: 0.50, // +50% VC deal chance
-    description: 'Flying mansion. Master suite, office. +50% VC deal chance.',
+    vcDealBoost: 0.25, // +25% VC deal chance
+    description: 'Flying mansion. Master suite, office. +25% VC deal chance.',
   },
 ]
 

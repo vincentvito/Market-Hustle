@@ -81,8 +81,8 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: "WALMART ACQUIRES GRANNY'S GUNS", marketEffects: { defense: 0.05, sp500: 0.02 } },
     ],
     hints: {
-      positive: ["GRANNY'S GUNS VIRAL VIDEO - 87YO HITS BULLSEYE", 'NRA PARTNERSHIP ANNOUNCED'],
-      negative: ["GRANNY'S GUNS INSURANCE CANCELLED", 'INSTRUCTOR ACCIDENTALLY SHOOTS DRONE'],
+      positive: ["GRANNY'S GUNS VIRAL VIDEO - 87YO HITS BULLSEYE", "GRANNY'S GUNS NRA PARTNERSHIP ANNOUNCED"],
+      negative: ["GRANNY'S GUNS INSURANCE CANCELLED", "GRANNY'S GUNS INSTRUCTOR ACCIDENTALLY SHOOTS DRONE"],
     },
   },
   // 5. MOON CHEESE
@@ -123,8 +123,8 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: 'PFIZER ACQUIRES CRISPR CATS TECH', marketEffects: { biotech: 0.08, nasdaq: 0.03 } },
     ],
     hints: {
-      positive: ['CRISPR CATS PASSES SAFETY TRIALS', 'CELEBRITY ENDORSEMENT - TAYLOR SWIFT BUYS ONE'],
-      negative: ['CRISPR CATS - UNEXPECTED MUTATIONS REPORTED', 'ANIMAL RIGHTS PROTEST AT HQ'],
+      positive: ['CRISPR CATS PASSES SAFETY TRIALS', 'CRISPR CATS CELEBRITY ENDORSEMENT - TAYLOR SWIFT BUYS ONE'],
+      negative: ['CRISPR CATS UNEXPECTED MUTATIONS REPORTED', 'CRISPR CATS ANIMAL RIGHTS PROTEST AT HQ'],
     },
   },
   // 7. HANGOVER PILL
@@ -186,8 +186,8 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: 'ASTEROID MINER VALUED AT $10B - SPACE RUSH', marketEffects: { lithium: 0.08, nasdaq: 0.04 } },
     ],
     hints: {
-      positive: ['ASTEROID MINER PROBE REACHES TARGET ASTEROID', 'NASA PARTNERSHIP ANNOUNCED'],
-      negative: ['ASTEROID MINER LOSES CONTACT WITH PROBE', 'COMPETITOR LAUNCHES SIMILAR MISSION'],
+      positive: ['ASTEROID MINER PROBE REACHES TARGET ASTEROID', 'ASTEROID MINER NASA PARTNERSHIP ANNOUNCED'],
+      negative: ['ASTEROID MINER LOSES CONTACT WITH PROBE', 'ASTEROID MINER COMPETITOR LAUNCHES SIMILAR MISSION'],
     },
   },
   // 10. JETPACK JERRY
@@ -228,8 +228,8 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: 'DRAFTKINGS ACQUIRES DEFI CASINO', marketEffects: { altcoins: 0.08, btc: 0.03 } },
     ],
     hints: {
-      positive: ['DEFI CASINO TVL HITS $100M', 'PARTNERSHIP WITH MAJOR SPORTS LEAGUE'],
-      negative: ['DEFI CASINO SMART CONTRACT EXPLOIT', 'REGULATORS ISSUE WARNING'],
+      positive: ['DEFI CASINO TVL HITS $100M', 'DEFI CASINO PARTNERSHIP WITH MAJOR SPORTS LEAGUE'],
+      negative: ['DEFI CASINO SMART CONTRACT EXPLOIT', 'DEFI CASINO REGULATORS ISSUE WARNING'],
     },
   },
   // 12. NFT CEMETERY
@@ -249,8 +249,8 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: 'ANCESTRY.COM ACQUIRES NFT CEMETERY', marketEffects: { altcoins: 0.04 } },
     ],
     hints: {
-      positive: ['NFT CEMETERY CELEBRITY MEMORIAL GOES VIRAL', 'PARTNERSHIP WITH FUNERAL HOME CHAIN'],
-      negative: ['NFT CEMETERY ACCUSED OF EXPLOITING GRIEF', "FOUNDER'S PAST SCAM EXPOSED"],
+      positive: ['NFT CEMETERY CELEBRITY MEMORIAL GOES VIRAL', 'NFT CEMETERY PARTNERSHIP WITH FUNERAL HOME CHAIN'],
+      negative: ['NFT CEMETERY ACCUSED OF EXPLOITING GRIEF', "NFT CEMETERY FOUNDER'S PAST SCAM EXPOSED"],
     },
   },
   // 13. DEEPFAKE DATING
@@ -270,8 +270,8 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: 'DEEPFAKE DATING IPO - GEN Z LOVE', marketEffects: { nasdaq: 0.03 } },
     ],
     hints: {
-      positive: ['DEEPFAKE DATING 10K MATCHES MADE', 'FEATURED IN WIRED MAGAZINE'],
-      negative: ['DEEPFAKE DATING CATFISH SCANDAL', 'AI GENERATES SAME FACE FOR EVERYONE'],
+      positive: ['DEEPFAKE DATING 10K MATCHES MADE', 'DEEPFAKE DATING FEATURED IN WIRED MAGAZINE'],
+      negative: ['DEEPFAKE DATING CATFISH SCANDAL', 'DEEPFAKE DATING AI GENERATES SAME FACE FOR EVERYONE'],
     },
   },
   // 14. ROBO LAWYER
@@ -291,8 +291,8 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: 'THOMSON REUTERS ACQUIRES ROBO LAWYER', marketEffects: { nasdaq: 0.02 } },
     ],
     hints: {
-      positive: ['ROBO LAWYER WINS 10,000TH CASE', 'EXPANDS TO SMALL CLAIMS COURT'],
-      negative: ['ROBO LAWYER GIVES ILLEGAL ADVICE', 'BAR ASSOCIATION THREATENS LAWSUIT'],
+      positive: ['ROBO LAWYER WINS 10,000TH CASE', 'ROBO LAWYER EXPANDS TO SMALL CLAIMS COURT'],
+      negative: ['ROBO LAWYER GIVES ILLEGAL ADVICE', 'ROBO LAWYER BAR ASSOCIATION THREATENS LAWSUIT'],
     },
   },
   // 15. BRAIN UPLOAD
@@ -312,8 +312,92 @@ export const ANGEL_STARTUPS: Startup[] = [
       { multiplier: 100, probability: 0.05, headline: 'BRAIN UPLOAD VALUED AT $50B - IMMORTALITY', marketEffects: { nasdaq: 0.06, biotech: 0.08 } },
     ],
     hints: {
-      positive: ['BRAIN UPLOAD SUCCESSFULLY STORES RAT MEMORY', 'DARPA GRANT AWARDED'],
-      negative: ['BRAIN UPLOAD VOLUNTEER REPORTS MEMORY LOSS', 'COMPETITOR CLAIMS BREAKTHROUGH FIRST'],
+      positive: ['BRAIN UPLOAD SUCCESSFULLY STORES RAT MEMORY', 'BRAIN UPLOAD DARPA GRANT AWARDED'],
+      negative: ['BRAIN UPLOAD VOLUNTEER REPORTS MEMORY LOSS', 'BRAIN UPLOAD COMPETITOR CLAIMS BREAKTHROUGH FIRST'],
+    },
+  },
+  // 16. DIVORCE AI
+  {
+    id: 'angel_divorce_ai',
+    name: 'DIVORCE AI',
+    tagline: 'AI mediates your divorce',
+    category: 'ai',
+    tier: 'angel',
+    raising: '$350K at $3.5M valuation',
+    duration: [4, 5],
+    outcomes: [
+      { multiplier: 0, probability: 0.55, headline: 'DIVORCE AI CAUSES CUSTODY DISASTER - SUED BY 500 COUPLES' },
+      { multiplier: 1, probability: 0.15, headline: 'DIVORCE AI ACQUIRED BY LEGALZOOM' },
+      { multiplier: 10, probability: 0.15, headline: "DIVORCE AI SERIES A - 'CONSCIOUS UNCOUPLING 2.0'" },
+      { multiplier: 50, probability: 0.10, headline: 'DIVORCE AI IPO - 100K DIVORCES PROCESSED' },
+      { multiplier: 100, probability: 0.05, headline: 'DIVORCE AI BECOMES DEFAULT IN FAMILY COURTS', marketEffects: { nasdaq: 0.02 } },
+    ],
+    hints: {
+      positive: ['DIVORCE AI FEATURED ON OPRAH', 'DIVORCE AI 90% SATISFACTION RATE'],
+      negative: ['DIVORCE AI GIVES HUSBAND THE DOG AND WIFE THE HOUSE... WRONG WAY', "DIVORCE AI RECOMMENDS 'STAY TOGETHER' TO ABUSIVE COUPLE"],
+    },
+  },
+  // 17. INFLUENCER FUNERAL
+  {
+    id: 'angel_influencer_funeral',
+    name: 'INFLUENCER FUNERAL',
+    tagline: 'Livestreamed celebrity memorial services',
+    category: 'consumer',
+    tier: 'angel',
+    raising: '$200K at $2M valuation',
+    duration: [3, 5],
+    outcomes: [
+      { multiplier: 0, probability: 0.55, headline: 'INFLUENCER FUNERAL STREAMS WRONG BODY - FAMILY SUES' },
+      { multiplier: 1, probability: 0.15, headline: 'INFLUENCER FUNERAL MERGES WITH DIGITAL CEMETERY STARTUP' },
+      { multiplier: 10, probability: 0.15, headline: 'INFLUENCER FUNERAL SERIES A - DEATH TECH BOOMING' },
+      { multiplier: 50, probability: 0.10, headline: 'INFLUENCER FUNERAL PARTNERS WITH INSTAGRAM' },
+      { multiplier: 100, probability: 0.05, headline: 'INFLUENCER FUNERAL IPO - DEATH GOES VIRAL', marketEffects: { nasdaq: 0.02 } },
+    ],
+    hints: {
+      positive: ["INFLUENCER FUNERAL VIRAL: TIKTOK STAR'S SEND-OFF HITS 100M VIEWS", 'INFLUENCER FUNERAL CELEBRITY ENDORSEMENT'],
+      negative: ['INFLUENCER FUNERAL AD PLAYS DURING EULOGY', 'INFLUENCER FUNERAL SPONSORS CASKET WITH RAID SHADOW LEGENDS LOGO'],
+    },
+  },
+  // 18. DIGITAL TWIN CORP
+  {
+    id: 'angel_digital_twin',
+    name: 'DIGITAL TWIN CORP',
+    tagline: 'AI clones of yourself for meetings',
+    category: 'ai',
+    tier: 'angel',
+    raising: '$450K at $4.5M valuation',
+    duration: [4, 6],
+    outcomes: [
+      { multiplier: 0, probability: 0.55, headline: 'DIGITAL TWIN CORP SHUT DOWN - TWIN IMPERSONATION FRAUD' },
+      { multiplier: 1, probability: 0.15, headline: 'DIGITAL TWIN CORP PIVOTS TO CUSTOMER SERVICE BOTS' },
+      { multiplier: 10, probability: 0.15, headline: 'DIGITAL TWIN CORP SERIES A - REMOTE WORK REVOLUTION' },
+      { multiplier: 50, probability: 0.10, headline: 'DIGITAL TWIN CORP ACQUIRED BY ZOOM FOR $500M' },
+      { multiplier: 100, probability: 0.05, headline: "DIGITAL TWIN CORP IPO - 'EVERYONE HAS TWO JOBS NOW'", marketEffects: { nasdaq: 0.03 } },
+    ],
+    hints: {
+      positive: ['DIGITAL TWIN CORP CEO CLONE GIVES KEYNOTE - NO ONE NOTICES', 'DIGITAL TWIN CORP 1000 CORPORATIONS SIGN UP'],
+      negative: ['DIGITAL TWIN CORP CLONE FIRES ITS OWNER', "DIGITAL TWIN CORP TWIN STARTS DATING USER'S SPOUSE"],
+    },
+  },
+  // 19. SHROOM BOOM
+  {
+    id: 'angel_shroom_boom',
+    name: 'SHROOM BOOM',
+    tagline: 'Psilocybin microdosing delivery',
+    category: 'biotech',
+    tier: 'angel',
+    raising: '$600K at $6M valuation',
+    duration: [4, 6],
+    outcomes: [
+      { multiplier: 0, probability: 0.55, headline: 'SHROOM BOOM RAIDED BY DEA - FOUNDERS ARRESTED' },
+      { multiplier: 1, probability: 0.15, headline: 'SHROOM BOOM LICENSED TO MEDICAL CLINIC' },
+      { multiplier: 10, probability: 0.15, headline: 'SHROOM BOOM SERIES A - OREGON EXPANSION', marketEffects: { biotech: 0.02 } },
+      { multiplier: 50, probability: 0.10, headline: 'SHROOM BOOM IPO - PSYCHEDELICS GO MAINSTREAM', marketEffects: { biotech: 0.05 } },
+      { multiplier: 100, probability: 0.05, headline: 'SHROOM BOOM ACQUIRED BY BIG PHARMA FOR $600M', marketEffects: { biotech: 0.08 } },
+    ],
+    hints: {
+      positive: ['SHROOM BOOM FDA BREAKTHROUGH THERAPY DESIGNATION', "SHROOM BOOM SILICON VALLEY'S FAVORITE PRODUCTIVITY HACK"],
+      negative: ["SHROOM BOOM CUSTOMER 'MEETS GOD' AT BOARD MEETING", 'SHROOM BOOM DELIVERY DRIVER SAMPLES PRODUCT'],
     },
   },
 ]
@@ -337,8 +421,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'SPACE Z BECOMES MOST VALUABLE COMPANY', marketEffects: { nasdaq: 0.05, sp500: 0.03, lithium: 0.08 } },
     ],
     hints: {
-      positive: ['SPACE Z SUCCESSFUL MARS ORBIT TEST', 'STARZLINK DIRECT-TO-MOBILE HITS 10M SUBSCRIBERS'],
-      negative: ['SPACE Z ROCKET EXPLODES ON PAD', 'FAA GROUNDS FLEET FOR INVESTIGATION'],
+      positive: ['SPACE Z SUCCESSFUL MARS ORBIT TEST', 'SPACE Z STARZLINK DIRECT-TO-MOBILE HITS 10M SUBSCRIBERS'],
+      negative: ['SPACE Z ROCKET EXPLODES ON PAD', 'SPACE Z FAA GROUNDS FLEET FOR INVESTIGATION'],
     },
   },
   // 2. NEURALINK 2.0
@@ -359,8 +443,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'NEURALINK 2.0 CURES BLINDNESS - MIRACLE', marketEffects: { biotech: 0.10, nasdaq: 0.05, sp500: 0.02 } },
     ],
     hints: {
-      positive: ['NEURALINK 2.0 FDA BREAKTHROUGH DESIGNATION', 'PARALYZED PATIENT WALKS'],
-      negative: ['NEURALINK 2.0 PATIENT INFECTION REPORTED', 'ELON DISTRACTED BY TWITTER DRAMA'],
+      positive: ['NEURALINK 2.0 FDA BREAKTHROUGH DESIGNATION', 'NEURALINK 2.0 PARALYZED PATIENT WALKS'],
+      negative: ['NEURALINK 2.0 PATIENT INFECTION REPORTED', 'NEURALINK 2.0 ELON DISTRACTED BY TWITTER DRAMA'],
     },
   },
   // 3. SOLIDSTATE AI
@@ -381,8 +465,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'SOLIDSTATE AI ACHIEVES AGI MILESTONE', marketEffects: { nasdaq: 0.08, sp500: 0.03, btc: 0.05 } },
     ],
     hints: {
-      positive: ['SOLIDSTATE AI WINS $500M GOVERNMENT CONTRACT', 'MICROSOFT PARTNERSHIP'],
-      negative: ['SOLIDSTATE AI MODEL LEAKED TO CHINA', 'KEY ENGINEERS DEFECT TO OPENAI'],
+      positive: ['SOLIDSTATE AI WINS $500M GOVERNMENT CONTRACT', 'SOLIDSTATE AI MICROSOFT PARTNERSHIP'],
+      negative: ['SOLIDSTATE AI MODEL LEAKED TO CHINA', 'SOLIDSTATE AI KEY ENGINEERS DEFECT TO OPENAI'],
     },
   },
   // 4. AUTONOMOUS TRUCKS
@@ -403,8 +487,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'AUTONOMOUS TRUCKS REPLACES 500K DRIVERS', marketEffects: { nasdaq: 0.05, oil: -0.03 } },
     ],
     hints: {
-      positive: ['AUTONOMOUS TRUCKS 1M MILES WITHOUT INCIDENT', 'WALMART PILOT PROGRAM'],
-      negative: ['AUTONOMOUS TRUCKS FATAL ACCIDENT', 'UNION THREATENS NATIONWIDE STRIKE'],
+      positive: ['AUTONOMOUS TRUCKS 1M MILES WITHOUT INCIDENT', 'AUTONOMOUS TRUCKS WALMART PILOT PROGRAM'],
+      negative: ['AUTONOMOUS TRUCKS FATAL ACCIDENT', 'AUTONOMOUS TRUCKS UNION THREATENS NATIONWIDE STRIKE'],
     },
   },
   // 5. CANCER CURE INC
@@ -425,8 +509,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'CANCER CURE ERADICATES LUNG CANCER', marketEffects: { biotech: 0.15, nasdaq: 0.05, sp500: 0.03 } },
     ],
     hints: {
-      positive: ['CANCER CURE PHASE 3 SHOWS 90% EFFICACY', 'FDA FAST-TRACK GRANTED'],
-      negative: ['CANCER CURE SIDE EFFECTS IN TRIAL', 'COMPETITOR PUBLISHES SIMILAR RESULTS'],
+      positive: ['CANCER CURE PHASE 3 SHOWS 90% EFFICACY', 'CANCER CURE FDA FAST-TRACK GRANTED'],
+      negative: ['CANCER CURE SIDE EFFECTS IN TRIAL', 'CANCER CURE COMPETITOR PUBLISHES SIMILAR RESULTS'],
     },
   },
   // 6. SYNTHETIC ORGANS
@@ -447,8 +531,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'SYNTHETIC ORGANS ENDS TRANSPLANT WAITING', marketEffects: { biotech: 0.12, nasdaq: 0.04 } },
     ],
     hints: {
-      positive: ['SYNTHETIC ORGANS FIRST SUCCESSFUL HEART TRANSPLANT', '100 PATIENTS ON WAITING LIST CURED'],
-      negative: ['SYNTHETIC ORGANS REJECTION RATE HIGHER THAN EXPECTED', 'MANUFACTURING DEFECTS FOUND'],
+      positive: ['SYNTHETIC ORGANS FIRST SUCCESSFUL HEART TRANSPLANT', 'SYNTHETIC ORGANS 100 PATIENTS ON WAITING LIST CURED'],
+      negative: ['SYNTHETIC ORGANS REJECTION RATE HIGHER THAN EXPECTED', 'SYNTHETIC ORGANS MANUFACTURING DEFECTS FOUND'],
     },
   },
   // 7. FUSION POWER
@@ -469,8 +553,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'FUSION POWER UNLIMITED CLEAN ENERGY', marketEffects: { oil: -0.15, uranium: -0.20, nasdaq: 0.08, sp500: 0.05 } },
     ],
     hints: {
-      positive: ['FUSION POWER ACHIEVES NET ENERGY GAIN', 'DOE BACKS WITH $2B GRANT'],
-      negative: ['FUSION POWER CONTAINMENT FAILURE', 'KEY PHYSICIST QUITS CITING FRAUD'],
+      positive: ['FUSION POWER ACHIEVES NET ENERGY GAIN', 'FUSION POWER DOE BACKS WITH $2B GRANT'],
+      negative: ['FUSION POWER CONTAINMENT FAILURE', 'FUSION POWER KEY PHYSICIST QUITS CITING FRAUD'],
     },
   },
   // 8. SOLID STATE BATTERY
@@ -491,8 +575,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'SOLID STATE BATTERY KILLS LITHIUM MINING', marketEffects: { lithium: -0.15, nasdaq: 0.05 } },
     ],
     hints: {
-      positive: ['SOLID STATE BATTERY 1000-MILE RANGE ACHIEVED', 'TESLA IN ACQUISITION TALKS'],
-      negative: ['SOLID STATE BATTERY MANUFACTURING ISSUES', 'CHINA COPIES TECHNOLOGY'],
+      positive: ['SOLID STATE BATTERY 1000-MILE RANGE ACHIEVED', 'SOLID STATE BATTERY TESLA IN ACQUISITION TALKS'],
+      negative: ['SOLID STATE BATTERY MANUFACTURING ISSUES', 'SOLID STATE BATTERY CHINA COPIES TECHNOLOGY'],
     },
   },
   // 9. CENTRAL BANK COIN
@@ -513,8 +597,8 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'CENTRAL BANK COIN BECOMES GLOBAL STANDARD', marketEffects: { btc: -0.08, altcoins: -0.10, dollar: 0.03 } },
     ],
     hints: {
-      positive: ['CENTRAL BANK COIN SELECTED BY EU', '10 COUNTRIES IN PILOT'],
-      negative: ['CENTRAL BANK COIN SECURITY FLAW FOUND', 'CHINA BANS PARTNERSHIP'],
+      positive: ['CENTRAL BANK COIN SELECTED BY EU', 'CENTRAL BANK COIN 10 COUNTRIES IN PILOT'],
+      negative: ['CENTRAL BANK COIN SECURITY FLAW FOUND', 'CENTRAL BANK COIN CHINA BANS PARTNERSHIP'],
     },
   },
   // 10. INSTANT MORTGAGE
@@ -535,8 +619,74 @@ export const VC_STARTUPS: Startup[] = [
       { multiplier: 10, probability: 0.05, headline: 'INSTANT MORTGAGE ACQUIRED FOR $200B', marketEffects: { reits: 0.05, nasdaq: 0.02 } },
     ],
     hints: {
-      positive: ['INSTANT MORTGAGE PROCESSES $10B IN LOANS', 'JPMORGAN PARTNERSHIP'],
-      negative: ['INSTANT MORTGAGE AI APPROVES FRAUDULENT LOANS', 'HOUSING MARKET COOLING'],
+      positive: ['INSTANT MORTGAGE PROCESSES $10B IN LOANS', 'INSTANT MORTGAGE JPMORGAN PARTNERSHIP'],
+      negative: ['INSTANT MORTGAGE AI APPROVES FRAUDULENT LOANS', 'INSTANT MORTGAGE HOUSING MARKET COOLING'],
+    },
+  },
+  // 11. OCEAN MINING
+  {
+    id: 'vc_ocean_mining',
+    name: 'OCEAN MINING',
+    tagline: 'Deep sea mineral extraction',
+    category: 'energy',
+    tier: 'vc',
+    raising: '$2B at $70B valuation',
+    duration: [4, 6],
+    outcomes: [
+      { multiplier: 0, probability: 0.20, headline: 'OCEAN MINING ENVIRONMENTAL DISASTER - OPERATIONS HALTED', marketEffects: { lithium: 0.08, emerging: 0.05 } },
+      { multiplier: 0.5, probability: 0.20, headline: 'OCEAN MINING UN MORATORIUM - YEARS OF DELAYS' },
+      { multiplier: 1, probability: 0.20, headline: 'OCEAN MINING LIMITED PERMITS APPROVED' },
+      { multiplier: 3, probability: 0.25, headline: 'OCEAN MINING IPO - RARE EARTH INDEPENDENCE', marketEffects: { lithium: -0.05 } },
+      { multiplier: 5, probability: 0.10, headline: 'OCEAN MINING EXTRACTS $50B IN MINERALS', marketEffects: { lithium: -0.10, nasdaq: 0.02 } },
+      { multiplier: 10, probability: 0.05, headline: "OCEAN MINING ENDS CHINA'S RARE EARTH MONOPOLY", marketEffects: { lithium: -0.15, nasdaq: 0.05, emerging: -0.08 } },
+    ],
+    hints: {
+      positive: ['OCEAN MINING NODULE FIELD LARGER THAN EXPECTED', 'OCEAN MINING US NAVY CONTRACT FOR STRATEGIC MINERALS'],
+      negative: ['OCEAN MINING GREENPEACE BLOCKADE', 'OCEAN MINING EQUIPMENT LOST AT 4000M DEPTH'],
+    },
+  },
+  // 12. SHADOW BANK AI
+  {
+    id: 'vc_shadow_bank_ai',
+    name: 'SHADOW BANK AI',
+    tagline: 'AI-powered offshore finance',
+    category: 'fintech',
+    tier: 'vc',
+    raising: '$1.5B at $50B valuation',
+    duration: [4, 6],
+    outcomes: [
+      { multiplier: 0, probability: 0.20, headline: 'SHADOW BANK AI MONEY LAUNDERING SCANDAL - EXECS INDICTED', marketEffects: { btc: 0.05, altcoins: 0.08 } },
+      { multiplier: 0.5, probability: 0.20, headline: 'SHADOW BANK AI REGULATORY CRACKDOWN - DOWN ROUND' },
+      { multiplier: 1, probability: 0.20, headline: 'SHADOW BANK AI PIVOTS TO COMPLIANCE SOFTWARE' },
+      { multiplier: 3, probability: 0.25, headline: 'SHADOW BANK AI IPO - WEALTH MANAGEMENT DISRUPTION' },
+      { multiplier: 5, probability: 0.10, headline: 'SHADOW BANK AI MANAGES $500B FOR ULTRA-WEALTHY', marketEffects: { btc: -0.03 } },
+      { multiplier: 10, probability: 0.05, headline: 'SHADOW BANK AI BECOMES OFFSHORE STANDARD', marketEffects: { btc: -0.05, gold: -0.03, nasdaq: 0.03 } },
+    ],
+    hints: {
+      positive: ['SHADOW BANK AI SIGNS 50 BILLIONAIRE CLIENTS', 'SHADOW BANK AI WINS TAX COURT CASE - AI ADVICE VALID'],
+      negative: ['SHADOW BANK AI LEAKED CLIENT LIST INCLUDES POLITICIANS', 'SHADOW BANK AI FLAGGED BY TREASURY DEPARTMENT'],
+    },
+  },
+  // 13. MARS COLONY CORP
+  {
+    id: 'vc_mars_colony',
+    name: 'MARS COLONY CORP',
+    tagline: 'First permanent Mars settlement',
+    category: 'space',
+    tier: 'vc',
+    raising: '$8B at $300B valuation',
+    duration: [5, 6],
+    outcomes: [
+      { multiplier: 0, probability: 0.20, headline: 'MARS COLONY CORP ROCKET EXPLODES - PROGRAM CANCELLED', marketEffects: { nasdaq: -0.03, lithium: -0.05 } },
+      { multiplier: 0.5, probability: 0.20, headline: 'MARS COLONY CORP DECADE OF DELAYS ANNOUNCED' },
+      { multiplier: 1, probability: 0.20, headline: 'MARS COLONY CORP UNMANNED MISSION SUCCESS' },
+      { multiplier: 3, probability: 0.25, headline: 'MARS COLONY CORP FIRST HUMANS LAND ON MARS', marketEffects: { nasdaq: 0.03, lithium: 0.05 } },
+      { multiplier: 5, probability: 0.10, headline: 'MARS COLONY CORP ESTABLISHES PERMANENT BASE', marketEffects: { nasdaq: 0.05, lithium: 0.08, sp500: 0.02 } },
+      { multiplier: 10, probability: 0.05, headline: 'MARS COLONY CORP FINDS WATER ICE - COLONIZATION VIABLE', marketEffects: { nasdaq: 0.08, lithium: 0.12, sp500: 0.03 } },
+    ],
+    hints: {
+      positive: ['MARS COLONY CORP SUCCESSFUL CARGO LANDING', 'MARS COLONY CORP ELON, BEZOS BOTH INVEST'],
+      negative: ['MARS COLONY CORP LIFE SUPPORT SYSTEM FAILS IN TESTING', 'MARS COLONY CORP KEY ENGINEER DEFECTS TO CHINA PROGRAM'],
     },
   },
 ]
