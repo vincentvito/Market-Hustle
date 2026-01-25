@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
-import { ACHIEVEMENTS, MOCK_PROFILE } from '@/lib/game/achievements'
+import { ACHIEVEMENTS } from '@/lib/game/achievements'
+import { loadUserState } from '@/lib/game/persistence'
+import type { UserState } from '@/lib/game/userState'
 
 function formatCurrency(value: number): string {
   if (value >= 1_000_000_000) {
@@ -28,10 +30,26 @@ export function SettingsPanel() {
   const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme } = useGame()
   const [achievementsExpanded, setAchievementsExpanded] = useState(false)
   const [optionsExpanded, setOptionsExpanded] = useState(false)
+  const [userStats, setUserStats] = useState<UserState | null>(null)
 
-  // Use mock profile for now (will be replaced with real data later)
-  const profile = MOCK_PROFILE
-  const unlockedCount = profile.unlockedAchievements.length
+  // Load user stats from localStorage on mount
+  useEffect(() => {
+    if (showSettings) {
+      setUserStats(loadUserState())
+    }
+  }, [showSettings])
+
+  // Calculate derived stats from user state
+  const gamesPlayed = userStats?.totalGamesPlayed ?? 0
+  const bestNetWorth = userStats?.bestNetWorth ?? 0
+  const totalProfit = userStats?.totalEarnings ?? 0
+  const winCount = userStats?.winCount ?? 0
+  const winRate = gamesPlayed > 0 ? Math.round((winCount / gamesPlayed) * 100) : 0
+  const winStreak = userStats?.winStreak ?? 0
+
+  // Achievements not tracked yet - show empty for now
+  const unlockedAchievements: string[] = []
+  const unlockedCount = unlockedAchievements.length
   const totalCount = ACHIEVEMENTS.length
   const isPro = userTier === 'pro'
 
@@ -71,10 +89,10 @@ export function SettingsPanel() {
             LIFETIME EARNINGS
           </div>
           <div className="text-3xl font-bold text-mh-profit-green">
-            {formatCurrency(profile.totalProfit)}
+            {formatCurrency(totalProfit)}
           </div>
           <div className="text-mh-text-dim text-xs mt-1">
-            across {profile.gamesPlayed} careers
+            across {gamesPlayed} careers
           </div>
         </div>
 
@@ -84,8 +102,8 @@ export function SettingsPanel() {
             {/* Win Rate */}
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">WIN RATE</div>
-              <div className={`text-xl font-bold ${profile.winRate >= 50 ? 'text-mh-profit-green' : 'text-mh-loss-red'}`}>
-                {profile.winRate}%
+              <div className={`text-xl font-bold ${winRate >= 50 ? 'text-mh-profit-green' : 'text-mh-loss-red'}`}>
+                {winRate}%
               </div>
             </div>
 
@@ -93,7 +111,7 @@ export function SettingsPanel() {
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">🏆 BEST RUN</div>
               <div className="text-xl font-bold text-mh-accent-blue">
-                {formatCurrency(profile.bestNetWorth)}
+                {formatCurrency(bestNetWorth)}
               </div>
             </div>
 
@@ -101,7 +119,7 @@ export function SettingsPanel() {
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">CAREERS</div>
               <div className="text-xl font-bold text-mh-text-bright">
-                {profile.gamesPlayed}
+                {gamesPlayed}
               </div>
             </div>
 
@@ -109,7 +127,7 @@ export function SettingsPanel() {
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">WIN STREAK</div>
               <div className="text-xl font-bold text-mh-text-bright">
-                {profile.winStreak} {getStreakEmoji(profile.winStreak)}
+                {winStreak} {getStreakEmoji(winStreak)}
               </div>
             </div>
           </div>
@@ -168,7 +186,7 @@ export function SettingsPanel() {
                   </div>
                 </div>
                 {!isPro ? (
-                  <div className="text-yellow-500 text-xs font-bold">⭐ PREMIUM</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
                 ) : selectedDuration === 45 ? (
                   <div className="text-mh-accent-blue text-lg">●</div>
                 ) : null}
@@ -198,7 +216,7 @@ export function SettingsPanel() {
                   </div>
                 </div>
                 {!isPro ? (
-                  <div className="text-yellow-500 text-xs font-bold">⭐ PREMIUM</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
                 ) : selectedDuration === 60 ? (
                   <div className="text-mh-accent-blue text-lg">●</div>
                 ) : null}
@@ -207,7 +225,45 @@ export function SettingsPanel() {
           </div>
         </div>
 
-        {/* 4. ACHIEVEMENTS (Collapsible) */}
+        {/* 4. MARGIN TRADING (PRO Features) */}
+        <div className="p-4 border-b border-mh-border">
+          <div className="text-mh-text-dim text-xs font-bold mb-3 tracking-wider">
+            📊 MARGIN TRADING
+          </div>
+          <div className="space-y-2">
+            {/* Short Stocks - PRO */}
+            <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-mh-text-bright">
+                    SHORT STOCKS
+                  </div>
+                  <div className="text-mh-text-dim text-xs mt-0.5">
+                    Profit when prices fall
+                  </div>
+                </div>
+                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
+              </div>
+            </div>
+
+            {/* Leverage Trading - PRO */}
+            <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-mh-text-bright">
+                    2X, 5X, 10X LEVERAGE
+                  </div>
+                  <div className="text-mh-text-dim text-xs mt-0.5">
+                    Amplify your gains (and losses)
+                  </div>
+                </div>
+                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 5. ACHIEVEMENTS (Collapsible) */}
         <div className="border-b border-mh-border">
           <button
             onClick={() => setAchievementsExpanded(!achievementsExpanded)}
@@ -225,7 +281,7 @@ export function SettingsPanel() {
               {/* Achievement Grid */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {ACHIEVEMENTS.map(achievement => {
-                  const isUnlocked = profile.unlockedAchievements.includes(achievement.id)
+                  const isUnlocked = unlockedAchievements.includes(achievement.id)
                   return (
                     <div
                       key={achievement.id}
@@ -254,98 +310,67 @@ export function SettingsPanel() {
             className="w-full p-4 flex items-center justify-between cursor-pointer bg-transparent border-none text-left"
           >
             <div className="text-mh-text-dim text-xs font-bold tracking-wider">
-              ⚙️ OPTIONS
+              🎨 CHANGE THEME
             </div>
             <div className="text-mh-text-dim text-sm">
               {optionsExpanded ? '▲' : '▼'}
             </div>
           </button>
           {optionsExpanded && (
-            <div className="px-4 pb-4 space-y-3">
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-sm text-mh-text-dim">Sound Effects</span>
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    disabled
-                  />
-                  <div className="w-10 h-5 bg-[#1a2a3a] rounded-full peer-checked:bg-mh-accent-blue opacity-50" />
-                  <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-mh-text-dim rounded-full peer-checked:translate-x-5" />
-                </div>
-              </label>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-sm text-mh-text-dim">Haptic Feedback</span>
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    disabled
-                  />
-                  <div className="w-10 h-5 bg-[#1a2a3a] rounded-full peer-checked:bg-mh-accent-blue opacity-50" />
-                  <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-mh-text-dim rounded-full peer-checked:translate-x-5" />
-                </div>
-              </label>
-
-              {/* Visual Style Toggle */}
-              <div className="mt-3 pt-3 border-t border-mh-border">
-                <div className="text-mh-text-dim text-xs font-bold mb-2 tracking-wider">
-                  VISUAL STYLE
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setSelectedTheme('retro')}
-                    className={`p-2 rounded border text-center cursor-pointer ${
-                      selectedTheme === 'retro'
-                        ? 'border-mh-accent-blue bg-mh-accent-blue/10'
-                        : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
-                    }`}
-                  >
-                    <div className={`font-bold text-[11px] ${selectedTheme === 'retro' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
-                      RETRO
-                    </div>
-                    <div className="text-mh-text-dim text-[9px] mt-0.5">CRT look</div>
-                  </button>
-                  <button
-                    onClick={() => setSelectedTheme('modern3')}
-                    className={`p-2 rounded border text-center cursor-pointer ${
-                      selectedTheme === 'modern3'
-                        ? 'border-mh-accent-blue bg-mh-accent-blue/10'
-                        : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
-                    }`}
-                  >
-                    <div className={`font-bold text-[11px] ${selectedTheme === 'modern3' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
-                      MODERN
-                    </div>
-                    <div className="text-mh-text-dim text-[9px] mt-0.5">Cyan glow</div>
-                  </button>
-                  <button
-                    onClick={() => setSelectedTheme('retro2')}
-                    className={`p-2 rounded border text-center cursor-pointer ${
-                      selectedTheme === 'retro2'
-                        ? 'border-mh-accent-blue bg-mh-accent-blue/10'
-                        : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
-                    }`}
-                  >
-                    <div className={`font-bold text-[11px] ${selectedTheme === 'retro2' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
-                      CRT
-                    </div>
-                    <div className="text-mh-text-dim text-[9px] mt-0.5">Green glow</div>
-                  </button>
-                  <button
-                    onClick={() => setSelectedTheme('bloomberg')}
-                    className={`p-2 rounded border text-center cursor-pointer ${
-                      selectedTheme === 'bloomberg'
-                        ? 'border-[#ff8c00] bg-[#ff8c00]/10'
-                        : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
-                    }`}
-                  >
-                    <div className={`font-bold text-[11px] ${selectedTheme === 'bloomberg' ? 'text-[#ff8c00]' : 'text-mh-text-bright'}`}>
-                      BLOOMBERG
-                    </div>
-                    <div className="text-mh-text-dim text-[9px] mt-0.5">Terminal</div>
-                  </button>
-                </div>
+            <div className="px-4 pb-4">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setSelectedTheme('retro')}
+                  className={`p-2 rounded border text-center cursor-pointer ${
+                    selectedTheme === 'retro'
+                      ? 'border-mh-accent-blue bg-mh-accent-blue/10'
+                      : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
+                  }`}
+                >
+                  <div className={`font-bold text-[11px] ${selectedTheme === 'retro' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
+                    RETRO
+                  </div>
+                  <div className="text-mh-text-dim text-[9px] mt-0.5">CRT look</div>
+                </button>
+                <button
+                  onClick={() => setSelectedTheme('modern3')}
+                  className={`p-2 rounded border text-center cursor-pointer ${
+                    selectedTheme === 'modern3'
+                      ? 'border-mh-accent-blue bg-mh-accent-blue/10'
+                      : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
+                  }`}
+                >
+                  <div className={`font-bold text-[11px] ${selectedTheme === 'modern3' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
+                    MODERN
+                  </div>
+                  <div className="text-mh-text-dim text-[9px] mt-0.5">Cyan glow</div>
+                </button>
+                <button
+                  onClick={() => setSelectedTheme('retro2')}
+                  className={`p-2 rounded border text-center cursor-pointer ${
+                    selectedTheme === 'retro2'
+                      ? 'border-mh-accent-blue bg-mh-accent-blue/10'
+                      : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
+                  }`}
+                >
+                  <div className={`font-bold text-[11px] ${selectedTheme === 'retro2' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
+                    CRT
+                  </div>
+                  <div className="text-mh-text-dim text-[9px] mt-0.5">Green glow</div>
+                </button>
+                <button
+                  onClick={() => setSelectedTheme('bloomberg')}
+                  className={`p-2 rounded border text-center cursor-pointer ${
+                    selectedTheme === 'bloomberg'
+                      ? 'border-[#ff8c00] bg-[#ff8c00]/10'
+                      : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
+                  }`}
+                >
+                  <div className={`font-bold text-[11px] ${selectedTheme === 'bloomberg' ? 'text-[#ff8c00]' : 'text-mh-text-bright'}`}>
+                    BLOOMBERG
+                  </div>
+                  <div className="text-mh-text-dim text-[9px] mt-0.5">Terminal</div>
+                </button>
               </div>
             </div>
           )}

@@ -32,7 +32,7 @@ export function DailyLimitModal() {
 
           {/* Message */}
           <div className="text-mh-text-main text-sm mb-6 leading-relaxed">
-            You&apos;ve used all 3 free games for today.
+            You&apos;ve used all 10 free games for today.
             <br />
             <span className="text-mh-text-dim">Come back tomorrow or upgrade to Pro for unlimited games.</span>
           </div>

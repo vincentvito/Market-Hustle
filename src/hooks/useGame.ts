@@ -327,7 +327,7 @@ export const useGame = create<GameStore>((set, get) => ({
   selectedTheme: 'modern3',
   // Daily limit modal state
   showDailyLimitModal: false,
-  gamesRemaining: 3,
+  gamesRemaining: 10,
   holdings: {},
   // Margin trading positions (Pro tier)
   leveragedPositions: [],

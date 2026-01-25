@@ -90,26 +90,12 @@ export function TitleScreen() {
           [ START FREE ]
         </button>
 
-        {/* DEV MODE Button - for testing Pro features */}
-        <button
-          onClick={() => {
-            const userState = loadUserState()
-            saveUserState({ ...userState, tier: 'pro' })
-            startGame()
-          }}
-          className="bg-transparent border-2 border-yellow-500 text-yellow-500
-            px-8 py-3 text-base font-mono cursor-pointer
-            hover:bg-yellow-500/10 active:bg-yellow-500/20 transition-colors mb-2"
-        >
-          [ DEV MODE ]
-        </button>
-
         {/* Games Remaining (Free tier only) */}
         {!isPro && (
           <div className={`text-xs mb-8 ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-dim'}`}>
             {gamesRemaining === 0
               ? 'Daily limit reached — upgrade for unlimited games'
-              : `${gamesRemaining}/3 games remaining today`
+              : `${gamesRemaining}/10 free games per day`
             }
           </div>
         )}

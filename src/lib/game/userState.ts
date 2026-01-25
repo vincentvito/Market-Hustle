@@ -86,7 +86,7 @@ export function canStartGame(state: UserState): boolean {
     return true
   }
 
-  return state.gamesPlayedToday < 200
+  return state.gamesPlayedToday < 10
 }
 
 // Get remaining games for today (free tier)
@@ -96,8 +96,8 @@ export function getRemainingGames(state: UserState): number {
   const today = getTodayDateString()
 
   if (state.lastPlayedDate !== today) {
-    return 200
+    return 10
   }
 
-  return Math.max(0, 200 - state.gamesPlayedToday)
+  return Math.max(0, 10 - state.gamesPlayedToday)
 }
