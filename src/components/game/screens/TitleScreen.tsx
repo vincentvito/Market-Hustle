@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
 
@@ -29,6 +30,7 @@ export function TitleScreen() {
   const gamesRemaining = useGame(state => state.gamesRemaining)
   const userTier = useGame(state => state.userTier)
   const isPro = userTier === 'pro'
+  const { checkout, loading: checkoutLoading } = useStripeCheckout()
 
   // Initialize store from localStorage on mount
   useEffect(() => {
@@ -144,14 +146,18 @@ export function TitleScreen() {
           {/* Pricing buttons */}
           <div className="flex flex-col gap-2 mt-4">
             <button
-              className="w-full py-2.5 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors"
+              onClick={() => checkout('monthly')}
+              disabled={checkoutLoading}
+              className="w-full py-2.5 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              $4.99/MONTH
+              {checkoutLoading ? 'LOADING...' : '$4.99/MONTH'}
             </button>
             <button
-              className="w-full py-2.5 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors"
+              onClick={() => checkout('yearly')}
+              disabled={checkoutLoading}
+              className="w-full py-2.5 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              $29.99/YEAR — SAVE 50%
+              {checkoutLoading ? 'LOADING...' : '$29.99/YEAR — SAVE 50%'}
             </button>
           </div>
         </div>

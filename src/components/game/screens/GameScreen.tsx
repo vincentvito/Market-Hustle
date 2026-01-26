@@ -124,10 +124,11 @@ export function GameScreen() {
               boxShadow: '0 0 15px rgba(0, 255, 136, 0.6), 0 0 30px rgba(0, 255, 136, 0.3)',
               fontWeight: 700,
             } : !isBloomberg ? {
-              // RETRO (default): White glowing background, black text
-              background: '#c8d8e8',
-              color: '#000000',
-              boxShadow: '0 0 15px rgba(200, 216, 232, 0.6), 0 0 30px rgba(200, 216, 232, 0.3)',
+              // RETRO (default): White border and text, transparent background
+              background: 'transparent',
+              color: '#c8d8e8',
+              border: '2px solid #c8d8e8',
+              boxShadow: '0 0 10px rgba(200, 216, 232, 0.4), 0 0 20px rgba(200, 216, 232, 0.2)',
               fontWeight: 700,
             } : undefined
           }

@@ -1,9 +1,11 @@
 'use client'
 
 import { useGame } from '@/hooks/useGame'
+import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 
 export function DailyLimitModal() {
   const { showDailyLimitModal, setShowDailyLimitModal } = useGame()
+  const { checkout, loading: checkoutLoading } = useStripeCheckout()
 
   if (!showDailyLimitModal) return null
 
@@ -46,9 +48,11 @@ export function DailyLimitModal() {
               [ BACK TO MENU ]
             </button>
             <button
-              className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors"
+              onClick={() => checkout('monthly')}
+              disabled={checkoutLoading}
+              className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              UPGRADE TO PRO — $4.99/mo
+              {checkoutLoading ? 'LOADING...' : 'UPGRADE TO PRO — $4.99/mo'}
             </button>
           </div>
 

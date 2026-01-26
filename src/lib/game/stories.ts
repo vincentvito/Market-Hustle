@@ -1952,6 +1952,62 @@ export const STORIES: Story[] = [
       }
     ]
   },
+
+  // Three Gorges Dam Collapse - Infrastructure Disaster
+  // Massive cascading effects: 15% of world manufacturing, China supply chains, tech
+  {
+    id: 'story_three_gorges_collapse',
+    category: 'economic',
+    subcategory: 'infrastructure',
+    teaser: 'YANGTZE FLOOD CRISIS',
+    stages: [
+      {
+        headline: "UNPRECEDENTED '1,000-YEAR FLOOD' RAINFALL HITTING UPPER YANGTZE BASIN",
+        effects: { tesla: -0.08, nasdaq: -0.05, btc: -0.03, emerging: -0.05, gold: 0.05 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'THREE GORGES DAM WATER LEVELS CRITICAL - SPILLWAYS AT MAXIMUM CAPACITY',
+            effects: { tesla: -0.15, nasdaq: -0.12, emerging: -0.15, lithium: -0.10, gold: 0.18, oil: 0.10, btc: -0.08 },
+            probability: 0.60,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging']
+          },
+          negative: {
+            headline: 'FLOODWATERS DIVERTED - THREE GORGES DAM HOLDS, ENGINEERS CELEBRATE',
+            effects: { tesla: 0.12, nasdaq: 0.10, emerging: 0.12, gold: -0.08, btc: 0.05 },
+            probability: 0.40,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging']
+          }
+        }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'THREE GORGES DAM COLLAPSES - YANGTZE VALLEY INUNDATED, GLOBAL MANUFACTURING HALTED',
+            effects: { nasdaq: -0.50, tesla: -0.60, emerging: -0.70, lithium: -0.40, btc: -0.30, gold: 1.20, oil: 0.40, defense: 0.30 },
+            probability: 0.45,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging', 'btc', 'lithium']
+          },
+          negative: {
+            headline: 'CONTROLLED BREACH SAVES DAM - FLOODING CONTAINED TO RURAL AREAS',
+            effects: { nasdaq: 0.15, tesla: 0.18, emerging: 0.20, gold: -0.15, lithium: 0.10, btc: 0.08 },
+            probability: 0.55,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging']
+          }
+        }
+      }
+    ]
+  },
 ]
 
 // Helper to get a story by ID

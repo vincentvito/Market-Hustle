@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useAuth } from '@/contexts/AuthContext'
 import { ACHIEVEMENTS } from '@/lib/game/achievements'
 import { loadUserState } from '@/lib/game/persistence'
 import type { UserState } from '@/lib/game/userState'
+import { AuthModal } from '@/components/auth/AuthModal'
 
 function formatCurrency(value: number): string {
   if (value >= 1_000_000_000) {
@@ -28,9 +30,27 @@ function getStreakEmoji(streak: number): string {
 
 export function SettingsPanel() {
   const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme } = useGame()
+  const { user, profile, signOut, loading: authLoading, updateSettings } = useAuth()
+
+  // Wrapper to sync settings to Supabase when changed
+  const handleDurationChange = (duration: 30 | 45 | 60) => {
+    setSelectedDuration(duration)
+    if (user) {
+      updateSettings({ duration })
+    }
+  }
+
+  const handleThemeChange = (theme: 'retro' | 'modern3' | 'retro2' | 'bloomberg') => {
+    setSelectedTheme(theme)
+    if (user) {
+      updateSettings({ theme })
+    }
+  }
   const [achievementsExpanded, setAchievementsExpanded] = useState(false)
   const [optionsExpanded, setOptionsExpanded] = useState(false)
+  const [historicalExpanded, setHistoricalExpanded] = useState(false)
   const [userStats, setUserStats] = useState<UserState | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   // Load user stats from localStorage on mount
   useEffect(() => {
@@ -141,7 +161,7 @@ export function SettingsPanel() {
           <div className="space-y-2">
             {/* 30 Days - Free */}
             <button
-              onClick={() => setSelectedDuration(30)}
+              onClick={() => handleDurationChange(30)}
               className={`w-full p-3 rounded border text-left cursor-pointer ${
                 selectedDuration === 30
                   ? 'border-mh-accent-blue bg-mh-accent-blue/10'
@@ -166,7 +186,7 @@ export function SettingsPanel() {
             {/* 45 Days - Premium */}
             <button
               onClick={() => {
-                if (isPro) setSelectedDuration(45)
+                if (isPro) handleDurationChange(45)
               }}
               className={`w-full p-3 rounded border text-left ${
                 isPro
@@ -196,7 +216,7 @@ export function SettingsPanel() {
             {/* 60 Days - Premium */}
             <button
               onClick={() => {
-                if (isPro) setSelectedDuration(60)
+                if (isPro) handleDurationChange(60)
               }}
               className={`w-full p-3 rounded border text-left ${
                 isPro
@@ -263,7 +283,110 @@ export function SettingsPanel() {
           </div>
         </div>
 
-        {/* 5. ACHIEVEMENTS (Collapsible) */}
+        {/* 5. HISTORICAL GAMES (PRO - Collapsible) */}
+        <div className="border-b border-mh-border">
+          <button
+            onClick={() => setHistoricalExpanded(!historicalExpanded)}
+            className="w-full p-4 flex items-center justify-between cursor-pointer bg-transparent border-none text-left"
+          >
+            <div className="flex items-center gap-2">
+              <div className="text-mh-text-dim text-xs font-bold tracking-wider">
+                📜 HISTORICAL GAMES
+              </div>
+              <div
+                className="px-2 py-0.5 text-[10px] font-bold tracking-wider text-mh-bg bg-mh-profit-green rounded-sm"
+                style={{
+                  boxShadow: '0 0 8px rgba(0, 255, 136, 0.5)',
+                }}
+              >
+                COMING SOON
+              </div>
+            </div>
+            <div className="text-mh-text-dim text-sm">
+              {historicalExpanded ? '▲' : '▼'}
+            </div>
+          </button>
+          {historicalExpanded && (
+            <div className="px-4 pb-4 space-y-2">
+              {/* The Roaring 20s */}
+              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-mh-text-bright text-sm">
+                      THE ROARING 20s & &apos;29 CRASH
+                    </div>
+                    <div className="text-mh-text-dim text-xs mt-1">
+                      Ride the first retail stock boom (RCA, Steel, Rails) and exit before Black Tuesday
+                    </div>
+                  </div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                </div>
+              </div>
+
+              {/* WWII */}
+              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-mh-text-bright text-sm">
+                      ARSENAL OF DEMOCRACY (WWII)
+                    </div>
+                    <div className="text-mh-text-dim text-xs mt-1">
+                      Command economy trading with price caps and rationing
+                    </div>
+                  </div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                </div>
+              </div>
+
+              {/* 80s */}
+              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-mh-text-bright text-sm">
+                      &quot;GREED IS GOOD&quot; 80s
+                    </div>
+                    <div className="text-mh-text-dim text-xs mt-1">
+                      Hostile takeovers and junk bonds before Black Monday
+                    </div>
+                  </div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                </div>
+              </div>
+
+              {/* Dot-Com */}
+              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-mh-text-bright text-sm">
+                      DOT-COM INSANITY (1995–2000)
+                    </div>
+                    <div className="text-mh-text-dim text-xs mt-1">
+                      Speculate on zero-revenue tech before the NASDAQ collapse
+                    </div>
+                  </div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                </div>
+              </div>
+
+              {/* 2008 */}
+              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-mh-text-bright text-sm">
+                      GREAT FINANCIAL CRISIS (2007–2009)
+                    </div>
+                    <div className="text-mh-text-dim text-xs mt-1">
+                      Short seller&apos;s dream — bet against Lehman, Bear Stearns
+                    </div>
+                  </div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 6. ACHIEVEMENTS (Collapsible) */}
         <div className="border-b border-mh-border">
           <button
             onClick={() => setAchievementsExpanded(!achievementsExpanded)}
@@ -320,7 +443,7 @@ export function SettingsPanel() {
             <div className="px-4 pb-4">
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={() => setSelectedTheme('retro')}
+                  onClick={() => handleThemeChange('retro')}
                   className={`p-2 rounded border text-center cursor-pointer ${
                     selectedTheme === 'retro'
                       ? 'border-mh-accent-blue bg-mh-accent-blue/10'
@@ -333,7 +456,7 @@ export function SettingsPanel() {
                   <div className="text-mh-text-dim text-[9px] mt-0.5">CRT look</div>
                 </button>
                 <button
-                  onClick={() => setSelectedTheme('modern3')}
+                  onClick={() => handleThemeChange('modern3')}
                   className={`p-2 rounded border text-center cursor-pointer ${
                     selectedTheme === 'modern3'
                       ? 'border-mh-accent-blue bg-mh-accent-blue/10'
@@ -346,7 +469,7 @@ export function SettingsPanel() {
                   <div className="text-mh-text-dim text-[9px] mt-0.5">Cyan glow</div>
                 </button>
                 <button
-                  onClick={() => setSelectedTheme('retro2')}
+                  onClick={() => handleThemeChange('retro2')}
                   className={`p-2 rounded border text-center cursor-pointer ${
                     selectedTheme === 'retro2'
                       ? 'border-mh-accent-blue bg-mh-accent-blue/10'
@@ -359,7 +482,7 @@ export function SettingsPanel() {
                   <div className="text-mh-text-dim text-[9px] mt-0.5">Green glow</div>
                 </button>
                 <button
-                  onClick={() => setSelectedTheme('bloomberg')}
+                  onClick={() => handleThemeChange('bloomberg')}
                   className={`p-2 rounded border text-center cursor-pointer ${
                     selectedTheme === 'bloomberg'
                       ? 'border-[#ff8c00] bg-[#ff8c00]/10'
@@ -376,7 +499,52 @@ export function SettingsPanel() {
           )}
         </div>
 
+        {/* 7. ACCOUNT */}
+        <div className="p-4 border-b border-mh-border">
+          <div className="text-mh-text-dim text-xs font-bold mb-3 tracking-wider">
+            👤 ACCOUNT
+          </div>
+          {authLoading ? (
+            <div className="text-mh-text-dim text-sm">Loading...</div>
+          ) : user ? (
+            <div className="space-y-3">
+              <div className="bg-[#0a1015] border border-mh-border rounded p-3">
+                <div className="text-mh-text-dim text-xs mb-1">SIGNED IN AS</div>
+                <div className="text-mh-text-bright text-sm truncate">
+                  {user.email}
+                </div>
+                {profile && (
+                  <div className="text-mh-text-dim text-xs mt-2">
+                    Tier: <span className={profile.tier === 'pro' ? 'text-yellow-500 font-bold' : 'text-mh-text-bright'}>{profile.tier.toUpperCase()}</span>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => signOut()}
+                className="w-full py-2 px-3 bg-transparent border border-mh-border rounded text-mh-text-dim hover:text-mh-text-bright hover:border-mh-text-dim cursor-pointer text-sm"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="text-mh-text-dim text-xs">
+                Sign in to sync your stats across devices and unlock Pro features.
+              </div>
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="w-full py-2 px-3 bg-mh-accent-blue hover:bg-mh-accent-blue/80 rounded text-white font-semibold cursor-pointer text-sm"
+              >
+                Sign In / Sign Up
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* Slide-in animation */}
       <style jsx global>{`

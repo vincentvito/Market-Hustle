@@ -22,8 +22,8 @@ import {
   resolveChainWithMood,
   MAX_CONFLICT_RETRIES,
 } from '@/lib/game/sentimentHelpers'
-import { loadUserState, saveUserState, incrementGamesPlayed, setSelectedDuration as persistSelectedDuration } from '@/lib/game/persistence'
-import { canStartGame, getRemainingGames, type UserTier, type GameDuration as UserGameDuration } from '@/lib/game/userState'
+import { loadUserState, saveUserState, incrementGamesPlayed, setSelectedDuration as persistSelectedDuration, recordGameEnd } from '@/lib/game/persistence'
+import { canStartGame, getRemainingGames, generateGameId, type UserTier, type GameDuration as UserGameDuration, type GameOutcome, type GameHistoryEntry } from '@/lib/game/userState'
 
 interface GameStore extends GameState {
   // User tier state (loaded from persistence)
@@ -38,6 +38,9 @@ interface GameStore extends GameState {
 
   // Duration selection (persisted)
   setSelectedDuration: (duration: GameDuration) => void
+
+  // User tier (synced from Supabase profile)
+  setUserTier: (tier: 'free' | 'pro') => void
 
   // Theme selection (persisted)
   setSelectedTheme: (theme: 'retro' | 'modern3' | 'retro2' | 'bloomberg') => void
@@ -128,6 +131,43 @@ function initLifestylePrices(): Record<string, number> {
 // Helper to generate unique position IDs for margin trading
 function generatePositionId(): string {
   return `pos_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+// Helper to map gameOverReason string to GameOutcome type
+function mapGameOverReasonToOutcome(reason: string): GameOutcome {
+  switch (reason) {
+    case 'BANKRUPT':
+      return 'bankrupt'
+    case 'IMPRISONED':
+      return 'imprisoned'
+    case 'DECEASED':
+      return 'deceased'
+    case 'SHORT_SQUEEZED':
+      return 'short_squeezed'
+    case 'MARGIN_CALLED':
+    case 'ECONOMIC_CATASTROPHE':
+      return 'margin_called'
+    default:
+      return 'bankrupt'
+  }
+}
+
+// Helper to record game completion to localStorage
+function saveGameResult(isWin: boolean, finalNetWorth: number, daysSurvived: number, gameDuration: GameDuration, gameOverReason?: string): void {
+  const userState = loadUserState()
+
+  const entry: GameHistoryEntry = {
+    gameId: generateGameId(),
+    date: new Date().toISOString(),
+    duration: gameDuration as 30 | 45 | 60,
+    finalNetWorth,
+    profitPercent: ((finalNetWorth - 100000) / 100000) * 100,
+    daysSurvived,
+    outcome: isWin ? 'win' : mapGameOverReasonToOutcome(gameOverReason || 'BANKRUPT'),
+  }
+
+  const updatedState = recordGameEnd(userState, entry, isWin)
+  saveUserState(updatedState)
 }
 
 // Helper to get categories that are currently "in use" by active stories or chains
@@ -320,9 +360,8 @@ export const useGame = create<GameStore>((set, get) => ({
   day: 1,
   gameDuration: 30,
   cash: 100000,
-  // User tier (loaded from persistence on first use)
-  // DEV MODE: Set to 'pro' for testing margin trading features
-  userTier: 'pro',
+  // User tier (loaded from Supabase profile or localStorage)
+  userTier: 'free',
   selectedDuration: 30,
   selectedTheme: 'modern3',
   // Daily limit modal state
@@ -390,23 +429,29 @@ export const useGame = create<GameStore>((set, get) => ({
 
   // Actions
   startGame: (duration?: GameDuration) => {
-    // Load user state and check tier for duration restrictions
+    // Load user state for daily limits and settings
     const userState = loadUserState()
-    const userTier = userState.tier
+
+    // Use store's userTier (synced from Supabase) as authoritative source
+    // This ensures Pro status from payment is respected
+    const storeUserTier = get().userTier
 
     // Check daily game limit for free tier users
-    if (!canStartGame(userState)) {
+    // Use store tier for the check, but pass localStorage state for games count
+    const effectiveTier = storeUserTier === 'pro' ? 'pro' : userState.tier
+    if (effectiveTier === 'free' && !canStartGame(userState)) {
       set({
         showDailyLimitModal: true,
         gamesRemaining: 0,
-        userTier,
       })
       return
     }
 
     // Free users can only play 30-day mode
-    let gameDuration: GameDuration = duration ?? userState.selectedDuration ?? 30
-    if (userTier === 'free' && gameDuration !== 30) {
+    // Use store's selectedDuration if available, otherwise localStorage
+    const storeSelectedDuration = get().selectedDuration
+    let gameDuration: GameDuration = duration ?? storeSelectedDuration ?? userState.selectedDuration ?? 30
+    if (effectiveTier === 'free' && gameDuration !== 30) {
       gameDuration = 30
     }
 
@@ -514,7 +559,7 @@ export const useGame = create<GameStore>((set, get) => ({
       lastNearMissDay: 0,
       assetMoods: [],
       usedFlavorHeadlines: [],
-      userTier,
+      userTier: effectiveTier,
       gamesRemaining: remainingAfterStart,
       showDailyLimitModal: false,
     })
@@ -1321,6 +1366,8 @@ export const useGame = create<GameStore>((set, get) => ({
     const finalNetWorth = get().getNetWorth()
     const { shortPositions, leveragedPositions } = get()
 
+    const { gameDuration } = get()
+
     if (finalNetWorth < 0) {
       // Margin trading bankruptcy - determine specific reason
       let gameOverReason = 'MARGIN_CALLED'
@@ -1333,11 +1380,16 @@ export const useGame = create<GameStore>((set, get) => ({
         gameOverReason = 'SHORT_SQUEEZED'
       }
 
+      // Record game result before showing game over screen
+      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason)
       set({ screen: 'gameover', gameOverReason })
     } else if (finalNetWorth <= 0) {
       // Regular bankruptcy (net worth exactly 0)
+      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, 'BANKRUPT')
       set({ screen: 'gameover', gameOverReason: 'BANKRUPT' })
-    } else if (newDay > get().gameDuration) {
+    } else if (newDay > gameDuration) {
+      // Player survived the full duration - WIN!
+      saveGameResult(true, finalNetWorth, gameDuration, gameDuration)
       set({ screen: 'win' })
     }
   },
@@ -1611,6 +1663,11 @@ export const useGame = create<GameStore>((set, get) => ({
     set({ selectedDuration: validDuration })
   },
 
+  // User tier - synced from Supabase profile
+  setUserTier: (tier: 'free' | 'pro') => {
+    set({ userTier: tier })
+  },
+
   // Theme selection - persists to localStorage
   setSelectedTheme: (theme) => {
     // Persist to localStorage
@@ -1730,6 +1787,8 @@ export const useGame = create<GameStore>((set, get) => ({
 
         if (portfolioValue < shortfall) {
           // Can't cover the penalty even with all assets → Bankruptcy
+          const { day, gameDuration } = get()
+          saveGameResult(false, 0, day, gameDuration, 'BANKRUPT')
           set({
             cash: 0,
             holdings: {},
@@ -1774,6 +1833,9 @@ export const useGame = create<GameStore>((set, get) => ({
 
     // Check for game over conditions
     if (result.gameOver) {
+      const { day, gameDuration } = get()
+      const finalNetWorth = get().getNetWorth()
+      saveGameResult(false, finalNetWorth, day, gameDuration, result.gameOverReason || 'BANKRUPT')
       set({
         cash: Math.round(newCash * 100) / 100,
         holdings: newHoldings,

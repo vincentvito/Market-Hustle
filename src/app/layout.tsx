@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Providers } from '@/components/Providers'
 import './globals.css'
 
 const inter = Inter({
@@ -45,12 +46,14 @@ export default function RootLayout({
         color: '#a0b3c6',
         minHeight: '100dvh',
       }}>
-        {/* Desktop: centered phone container. Mobile: full width */}
-        <div className="desktop-wrapper">
-          <div className="phone-container">
-            {children}
+        <Providers>
+          {/* Desktop: centered phone container. Mobile: full width */}
+          <div className="desktop-wrapper">
+            <div className="phone-container">
+              {children}
+            </div>
           </div>
-        </div>
+        </Providers>
       </body>
     </html>
   )
