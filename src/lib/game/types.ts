@@ -27,6 +27,8 @@ export interface MarketEvent {
   // Sentiment tracking for conflict prevention
   sentiment?: EventSentiment         // Overall sentiment (auto-derived if not specified)
   sentimentAssets?: string[]         // Which assets this sentiment applies to (auto-derived from effects if not specified)
+  primaryAsset?: string              // Primary asset for mood recording (only this asset's mood is tracked)
+  allowsReversal?: boolean           // If true, can fire even if it conflicts with current mood (for natural progressions like profit-taking)
   // Escalation: increases probability of certain categories for N days
   escalates?: {
     categories: string[]  // which categories become more likely
@@ -49,17 +51,21 @@ export interface EventChainOutcome {
   effects: Record<string, number>
   sentiment?: EventSentiment         // Sentiment of this specific outcome
   sentimentAssets?: string[]         // Which assets this outcome affects sentiment-wise
+  allowsReversal?: boolean           // If true, this outcome can fire even if it conflicts with current mood
 }
 
 export interface EventChain {
   id: string
   category: string
+  subcategory?: string               // For regional blocking (e.g., 'asia', 'middle-east')
   rumor: string
   duration: number // days until resolution
   outcomes: EventChainOutcome[] // 2-4 possible outcomes
   // Sentiment for conflict prevention (rumor phase creates anticipation mood)
   rumorSentiment?: EventSentiment    // Sentiment during the rumor/anticipation phase
   sentimentAssets?: string[]         // Which assets are affected by this chain
+  primaryAsset?: string              // Primary asset for mood recording
+  allowsReversal?: boolean           // If true, chain can start even if it conflicts with current mood
 }
 
 export interface ActiveChain {
@@ -68,6 +74,7 @@ export interface ActiveChain {
   daysRemaining: number
   rumor: string
   category: string
+  subcategory?: string  // For regional blocking (e.g., 'asia', 'middle-east')
 }
 
 export interface ResolvedChain {
@@ -268,9 +275,10 @@ export interface OwnedLifestyleItem {
 export interface StoryStage {
   headline: string
   effects: Record<string, number>
+  allowsReversal?: boolean           // If true, this stage can fire even if it conflicts with current mood
   branches?: {
-    positive: { headline: string; effects: Record<string, number>; probability: number }
-    negative: { headline: string; effects: Record<string, number>; probability: number }
+    positive: { headline: string; effects: Record<string, number>; probability: number; allowsReversal?: boolean }
+    negative: { headline: string; effects: Record<string, number>; probability: number; allowsReversal?: boolean }
   }
 }
 

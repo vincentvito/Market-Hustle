@@ -4,6 +4,8 @@ import {
   UserState,
   DEFAULT_USER_STATE,
   getTodayDateString,
+  ANONYMOUS_GAME_LIMIT,
+  REGISTERED_FREE_DAILY_LIMIT,
   type GameHistoryEntry,
 } from './userState'
 
@@ -81,8 +83,45 @@ export function resetDailyGamesIfNewDay(state: UserState): UserState {
 }
 
 /**
- * Increment games played today
- * Call this when a new game starts
+ * Increment games played for anonymous users (10 lifetime limit)
+ * Call this when an anonymous user starts a game
+ */
+export function incrementAnonymousGames(state: UserState): UserState {
+  return {
+    ...state,
+    anonymousGamesPlayed: state.anonymousGamesPlayed + 1,
+    totalGamesPlayed: state.totalGamesPlayed + 1,
+  }
+}
+
+/**
+ * Check if anonymous user can still play
+ */
+export function canPlayAnonymous(state: UserState): boolean {
+  return state.anonymousGamesPlayed < ANONYMOUS_GAME_LIMIT
+}
+
+/**
+ * Get remaining anonymous games
+ */
+export function getAnonymousGamesRemaining(state: UserState): number {
+  return Math.max(0, ANONYMOUS_GAME_LIMIT - state.anonymousGamesPlayed)
+}
+
+/**
+ * Mark user as registered (no longer anonymous)
+ * Call this after successful signup/login
+ */
+export function markAsRegistered(state: UserState): UserState {
+  return {
+    ...state,
+    isAnonymous: false,
+  }
+}
+
+/**
+ * Increment games played today for registered users
+ * Call this when a registered user starts a game
  */
 export function incrementGamesPlayed(state: UserState): UserState {
   const today = getTodayDateString()
@@ -102,6 +141,28 @@ export function incrementGamesPlayed(state: UserState): UserState {
     gamesPlayedToday: state.gamesPlayedToday + 1,
     totalGamesPlayed: state.totalGamesPlayed + 1,
   }
+}
+
+/**
+ * Check if registered free user can play today
+ */
+export function canPlayRegisteredFree(state: UserState): boolean {
+  const today = getTodayDateString()
+  if (state.lastPlayedDate !== today) {
+    return true
+  }
+  return state.gamesPlayedToday < REGISTERED_FREE_DAILY_LIMIT
+}
+
+/**
+ * Get remaining daily games for registered free users
+ */
+export function getRegisteredFreeGamesRemaining(state: UserState): number {
+  const today = getTodayDateString()
+  if (state.lastPlayedDate !== today) {
+    return REGISTERED_FREE_DAILY_LIMIT
+  }
+  return Math.max(0, REGISTERED_FREE_DAILY_LIMIT - state.gamesPlayedToday)
 }
 
 /**

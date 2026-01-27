@@ -2,7 +2,12 @@
 
 import { useGame } from '@/hooks/useGame'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
+import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 
+/**
+ * Modal shown when registered free users have hit their daily game limit (3/day).
+ * Prompts them to come back tomorrow or upgrade to Pro.
+ */
 export function DailyLimitModal() {
   const { showDailyLimitModal, setShowDailyLimitModal } = useGame()
   const { checkout, loading: checkoutLoading } = useStripeCheckout()
@@ -34,7 +39,7 @@ export function DailyLimitModal() {
 
           {/* Message */}
           <div className="text-mh-text-main text-sm mb-6 leading-relaxed">
-            You&apos;ve used all 10 free games for today.
+            You&apos;ve used all {REGISTERED_FREE_DAILY_LIMIT} free games for today.
             <br />
             <span className="text-mh-text-dim">Come back tomorrow or upgrade to Pro for unlimited games.</span>
           </div>

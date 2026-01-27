@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { getSupabaseClient } from '@/lib/supabase/client'
 import { loadUserState, saveUserState } from '@/lib/game/persistence'
+import type { GameResultData } from '@/lib/game/authBridge'
+import type { GameHistoryEntry } from '@/lib/game/userState'
 
 interface Profile {
   id: string
@@ -28,10 +30,14 @@ interface AuthContextType {
   session: Session | null
   profile: Profile | null
   loading: boolean
+  needsOnboarding: boolean  // True if user is logged in but hasn't set username
   signInWithMagicLink: (email: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
   updateSettings: (settings: { theme?: string; duration?: number }) => Promise<void>
+  migrateLocalStats: (userId: string) => Promise<void>  // Exposed for onboarding
+  incrementGamesPlayed: () => Promise<void>  // Increment daily counter on game START
+  recordGameEnd: (finalNetWorth: number, isWin: boolean, gameData?: GameResultData) => Promise<void>  // Sync stats on game END
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -60,43 +66,93 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data as Profile
   }, [supabase])
 
+  // Migrate game history from localStorage to Supabase
+  const migrateGameHistory = useCallback(async (userId: string, gameHistory: GameHistoryEntry[]) => {
+    if (!gameHistory || gameHistory.length === 0) return
+
+    // Batch insert all game results (upsert to handle duplicates)
+    const gameResults = gameHistory.map(entry => ({
+      user_id: userId,
+      game_id: entry.gameId,
+      duration: entry.duration,
+      final_net_worth: entry.finalNetWorth,
+      profit_percent: entry.profitPercent,
+      days_survived: entry.daysSurvived,
+      outcome: entry.outcome,
+      created_at: entry.date, // Use original game date
+    }))
+
+    const { error } = await supabase
+      .from('game_results')
+      .upsert(gameResults, {
+        onConflict: 'user_id,game_id',
+        ignoreDuplicates: true
+      })
+
+    if (error) {
+      console.error('Error migrating game history:', error)
+    } else {
+      console.log(`Migrated ${gameHistory.length} game results to Supabase`)
+    }
+  }, [supabase])
+
   // Migrate localStorage stats to database on first login
   const migrateLocalStats = useCallback(async (userId: string) => {
-    const localState = loadUserState()
-
-    // Only migrate if user has played games locally
-    if (localState.totalGamesPlayed === 0) {
+    // Prevent double migration
+    if (typeof window !== 'undefined' && localStorage.getItem('mh_migration_completed')) {
+      console.log('Migration already completed, skipping')
       return
     }
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        total_games_played: localState.totalGamesPlayed,
-        total_earnings: localState.totalEarnings,
-        best_net_worth: localState.bestNetWorth,
-        win_count: localState.winCount,
-        win_streak: localState.winStreak || 0,
-        current_streak: localState.currentStreak || 0,
-      })
-      .eq('id', userId)
+    const localState = loadUserState()
 
-    if (error) {
-      console.error('Error migrating stats:', error)
-    } else {
-      // Clear local stats after successful migration (keep settings)
-      saveUserState({
-        ...localState,
-        totalGamesPlayed: 0,
-        totalEarnings: 0,
-        bestNetWorth: 0,
-        winCount: 0,
-        winStreak: 0,
-        currentStreak: 0,
-        gameHistory: [],
-      })
+    // Only migrate if user has played games locally
+    if (localState.totalGamesPlayed === 0 && (!localState.gameHistory || localState.gameHistory.length === 0)) {
+      return
     }
-  }, [supabase])
+
+    // Migrate game history first
+    if (localState.gameHistory && localState.gameHistory.length > 0) {
+      await migrateGameHistory(userId, localState.gameHistory)
+    }
+
+    // Then migrate aggregate stats (only if there are stats to migrate)
+    if (localState.totalGamesPlayed > 0) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          total_games_played: localState.totalGamesPlayed,
+          total_earnings: localState.totalEarnings,
+          best_net_worth: localState.bestNetWorth,
+          win_count: localState.winCount,
+          win_streak: localState.winStreak || 0,
+          current_streak: localState.currentStreak || 0,
+        })
+        .eq('id', userId)
+
+      if (error) {
+        console.error('Error migrating stats:', error)
+        return // Don't clear local state if migration failed
+      }
+    }
+
+    // Clear local stats after successful migration (keep settings)
+    saveUserState({
+      ...localState,
+      totalGamesPlayed: 0,
+      totalEarnings: 0,
+      bestNetWorth: 0,
+      winCount: 0,
+      winStreak: 0,
+      currentStreak: 0,
+      gameHistory: [],
+    })
+
+    // Mark migration as completed
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mh_migration_completed', 'true')
+    }
+  }, [supabase, migrateGameHistory])
 
   // Refresh profile data
   const refreshProfile = useCallback(async () => {
@@ -110,17 +166,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize auth state
   useEffect(() => {
     const initAuth = async () => {
-      const { data: { session: initialSession } } = await supabase.auth.getSession()
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession()
 
-      setSession(initialSession)
-      setUser(initialSession?.user ?? null)
+        setSession(initialSession)
+        setUser(initialSession?.user ?? null)
 
-      if (initialSession?.user) {
-        const profileData = await fetchProfile(initialSession.user.id)
-        setProfile(profileData)
+        if (initialSession?.user) {
+          const profileData = await fetchProfile(initialSession.user.id)
+          setProfile(profileData)
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
 
     initAuth()
@@ -157,7 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       options: {
         emailRedirectTo: typeof window !== 'undefined'
-          ? `${window.location.origin}/`
+          ? `${window.location.origin}/auth/callback`
           : undefined,
       },
     })
@@ -192,6 +252,78 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Increment games_played_today counter (called on game START)
+  const incrementGamesPlayed = useCallback(async () => {
+    if (!user) return
+
+    const today = new Date().toISOString().split('T')[0]
+    const isNewDay = profile?.last_played_date !== today
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        games_played_today: isNewDay ? 1 : (profile?.games_played_today || 0) + 1,
+        last_played_date: today,
+      })
+      .eq('id', user.id)
+
+    if (error) {
+      console.error('Error incrementing games played:', error)
+    } else {
+      await refreshProfile()
+    }
+  }, [user, profile?.last_played_date, profile?.games_played_today, supabase, refreshProfile])
+
+  // Sync game stats to Supabase (called on game END)
+  const recordGameEnd = useCallback(async (
+    finalNetWorth: number,
+    isWin: boolean,
+    gameData?: GameResultData
+  ) => {
+    if (!user || !profile) return
+
+    const profit = Math.max(0, finalNetWorth - 100000)
+
+    // Update aggregate stats in profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        total_games_played: profile.total_games_played + 1,
+        total_earnings: profile.total_earnings + profit,
+        best_net_worth: Math.max(profile.best_net_worth, finalNetWorth),
+        win_count: isWin ? profile.win_count + 1 : profile.win_count,
+      })
+      .eq('id', user.id)
+
+    if (profileError) {
+      console.error('Error updating profile stats:', profileError)
+    }
+
+    // Insert individual game result if game data provided
+    if (gameData) {
+      const { error: gameError } = await supabase
+        .from('game_results')
+        .insert({
+          user_id: user.id,
+          game_id: gameData.gameId,
+          duration: gameData.duration,
+          final_net_worth: finalNetWorth,
+          profit_percent: gameData.profitPercent,
+          days_survived: gameData.daysSurvived,
+          outcome: gameData.outcome,
+        })
+
+      if (gameError) {
+        console.error('Error recording game result:', gameError)
+      }
+    }
+
+    await refreshProfile()
+  }, [user, profile, supabase, refreshProfile])
+
+  // User needs onboarding if logged in but hasn't set username
+  const needsOnboarding = !!user && !profile?.username
+
   return (
     <AuthContext.Provider
       value={{
@@ -199,10 +331,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         session,
         profile,
         loading,
+        needsOnboarding,
         signInWithMagicLink,
         signOut,
         refreshProfile,
         updateSettings,
+        migrateLocalStats,
+        incrementGamesPlayed,
+        recordGameEnd,
       }}
     >
       {children}

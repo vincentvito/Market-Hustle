@@ -6,7 +6,8 @@
 import type { AssetMood, EventSentiment, MarketEvent, EventChain, EventChainOutcome } from './types'
 
 // Mood decay window in days - moods older than this are ignored
-const MOOD_DECAY_DAYS = 3
+// Reduced from 3 to 2 to allow more realistic market reversals (profit-taking, crisis resolution)
+const MOOD_DECAY_DAYS = 2
 
 // =============================================================================
 // SENTIMENT DERIVATION
@@ -42,15 +43,23 @@ export function getEventSentiment(event: MarketEvent): EventSentiment {
 
 /**
  * Get affected assets for an event (use explicit or derive from effects)
+ * Priority: primaryAsset > sentimentAssets > largest effect asset
  */
 export function getEventAffectedAssets(event: MarketEvent): string[] {
+  // If explicit primaryAsset, use only that (prevents cascading mood blocks)
+  if (event.primaryAsset) {
+    return [event.primaryAsset]
+  }
+  // If explicit sentimentAssets, use those
   if (event.sentimentAssets && event.sentimentAssets.length > 0) {
     return event.sentimentAssets
   }
-  // Derive from effects - only include assets with significant movement (>5%)
-  return Object.entries(event.effects)
+  // Fallback: use only the largest effect asset (not all >5%)
+  // This prevents multi-asset events from blocking too many future events
+  const sorted = Object.entries(event.effects)
     .filter(([_, effect]) => Math.abs(effect) >= 0.05)
-    .map(([assetId]) => assetId)
+    .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+  return sorted.length > 0 ? [sorted[0][0]] : []
 }
 
 /**
@@ -62,19 +71,28 @@ export function getOutcomeSentiment(outcome: EventChainOutcome): EventSentiment 
 
 /**
  * Get affected assets for an event chain (use explicit or derive from outcomes)
+ * Priority: primaryAsset > sentimentAssets > largest effect asset from outcomes
  */
 export function getChainAffectedAssets(chain: EventChain): string[] {
+  // If explicit primaryAsset, use only that
+  if (chain.primaryAsset) {
+    return [chain.primaryAsset]
+  }
+  // If explicit sentimentAssets, use those
   if (chain.sentimentAssets && chain.sentimentAssets.length > 0) {
     return chain.sentimentAssets
   }
-  // Derive from both outcomes' effects
-  const assets = new Set<string>()
+  // Fallback: find the asset with largest effect across all outcomes
+  const assetEffects: Record<string, number> = {}
   chain.outcomes.forEach(outcome => {
     Object.entries(outcome.effects)
       .filter(([_, effect]) => Math.abs(effect) >= 0.05)
-      .forEach(([assetId]) => assets.add(assetId))
+      .forEach(([assetId, effect]) => {
+        assetEffects[assetId] = Math.max(assetEffects[assetId] ?? 0, Math.abs(effect))
+      })
   })
-  return Array.from(assets)
+  const sorted = Object.entries(assetEffects).sort((a, b) => b[1] - a[1])
+  return sorted.length > 0 ? [sorted[0][0]] : []
 }
 
 // =============================================================================
@@ -108,6 +126,12 @@ export function hasEventConflict(
   assetMoods: AssetMood[],
   currentDay: number
 ): boolean {
+  // Events marked as allowsReversal can fire even if they conflict
+  // This is for natural progressions like profit-taking, crisis resolution, etc.
+  if (event.allowsReversal) {
+    return false
+  }
+
   const sentiment = getEventSentiment(event)
 
   // Neutral and mixed events never conflict
@@ -141,6 +165,11 @@ export function hasChainConflict(
   assetMoods: AssetMood[],
   currentDay: number
 ): boolean {
+  // Chains marked as allowsReversal can start even if they conflict
+  if (chain.allowsReversal) {
+    return false
+  }
+
   // Use explicit rumor sentiment or derive from the more likely outcome
   const rumorSentiment = chain.rumorSentiment ?? deriveSentimentFromChain(chain)
 
@@ -174,6 +203,12 @@ function hasOutcomeConflict(
   assetMoods: AssetMood[],
   currentDay: number
 ): boolean {
+  // Outcomes marked as allowsReversal can fire even if they conflict
+  // This is for natural progressions like crisis resolution
+  if (outcome.allowsReversal) {
+    return false
+  }
+
   const sentiment = getOutcomeSentiment(outcome)
 
   // Neutral and mixed outcomes never conflict

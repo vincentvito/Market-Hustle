@@ -32,7 +32,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.35,
         effects: { oil: -0.15, gold: -0.10, defense: -0.18, nasdaq: 0.15, emerging: 0.18, lithium: 0.12, tesla: 0.15 },
         sentiment: 'bullish',
-        sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla']
+        sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla'],
+        allowsReversal: true
       }
     ]
   },
@@ -56,7 +57,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.40,
         effects: { oil: -0.12, gold: -0.08, nasdaq: 0.20, lithium: 0.18, emerging: 0.22, tesla: 0.18 },
         sentiment: 'bullish',
-        sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla']
+        sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla'],
+        allowsReversal: true
       }
     ]
   },
@@ -73,7 +75,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.55,
         effects: { oil: -0.20, gold: -0.15, defense: -0.22, nasdaq: 0.22, emerging: 0.25, lithium: 0.15, tesla: 0.20 },
         sentiment: 'bullish',
-        sentimentAssets: ['nasdaq', 'emerging', 'tesla']
+        sentimentAssets: ['nasdaq', 'emerging', 'tesla'],
+        allowsReversal: true
       },
       {
         headline: 'SUMMIT COLLAPSES - TENSIONS ESCALATE',
@@ -160,7 +163,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.40,
         effects: { btc: 0.15, altcoins: 0.22, nasdaq: 0.05 },
         sentiment: 'bullish',
-        sentimentAssets: ['btc', 'altcoins']
+        sentimentAssets: ['btc', 'altcoins'],
+        allowsReversal: true
       }
     ]
   },
@@ -208,7 +212,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.45,
         effects: { btc: 0.20, altcoins: 0.30, nasdaq: 0.05 },
         sentiment: 'bullish',
-        sentimentAssets: ['btc', 'altcoins']
+        sentimentAssets: ['btc', 'altcoins'],
+        allowsReversal: true
       }
     ]
   },
@@ -260,7 +265,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.35,
         effects: { oil: -0.08 },
         sentiment: 'bearish',
-        sentimentAssets: ['oil']
+        sentimentAssets: ['oil'],
+        allowsReversal: true
       }
     ]
   },
@@ -564,7 +570,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.35,
         effects: { biotech: -0.15, oil: 0.08, emerging: 0.12, tesla: 0.10 },
         sentiment: 'bullish',
-        sentimentAssets: ['nasdaq', 'emerging', 'tesla']
+        sentimentAssets: ['nasdaq', 'emerging', 'tesla'],
+        allowsReversal: true
       }
     ]
   },
@@ -738,7 +745,8 @@ export const EVENT_CHAINS: EventChain[] = [
         probability: 0.50,
         effects: { oil: -0.15, defense: 0.08, nasdaq: 0.08 },
         sentiment: 'bearish',
-        sentimentAssets: ['oil']
+        sentimentAssets: ['oil'],
+        allowsReversal: true
       }
     ]
   },

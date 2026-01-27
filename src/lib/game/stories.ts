@@ -11,11 +11,13 @@ export interface StoryBranch {
   continues?: boolean  // If true, story advances to next stage instead of ending
   sentiment?: EventSentiment        // Override auto-derived sentiment for conflict detection
   sentimentAssets?: string[]        // Which assets this sentiment applies to
+  allowsReversal?: boolean          // If true, this outcome can fire even if it conflicts with current mood
 }
 
 export interface StoryStage {
   headline: string
   effects: Record<string, number>
+  allowsReversal?: boolean  // If true, this stage can fire even if it conflicts with current mood
   // Only final stage has resolution branches
   branches?: {
     positive: StoryBranch
@@ -206,7 +208,8 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'EXERCISES END - BEIJING SIGNALS DE-ESCALATION',
             effects: { oil: -0.12, gold: -0.10, nasdaq: 0.15, defense: -0.10, tesla: 0.12 },
-            probability: 0.35
+            probability: 0.35,
+            allowsReversal: true  // De-escalation after crisis buildup
           },
           negative: {
             headline: 'CHINESE SHIPS SURROUND TAIWAN - BLOCKADE BEGINS',
@@ -339,7 +342,8 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'UN BROKERED CEASEFIRE - REGIONAL WAR AVERTED',
             effects: { oil: -0.30, gold: -0.25, defense: -0.20, nasdaq: 0.25, emerging: 0.20, tesla: 0.18 },
-            probability: 0.30
+            probability: 0.30,
+            allowsReversal: true  // Peace after military escalation
           },
           negative: {
             headline: 'FULL SCALE REGIONAL WAR ERUPTS - OIL ROUTES THREATENED',
@@ -448,7 +452,8 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'CME GLANCES EARTH - AURORA VISIBLE IN FLORIDA, MINOR DISRUPTIONS',
             effects: { nasdaq: 0.15, btc: 0.10, tesla: 0.12, gold: -0.08 },
-            probability: 0.45
+            probability: 0.45,
+            allowsReversal: true  // Crisis averted
           },
           negative: {
             headline: 'DIRECT HIT - POWER GRIDS FAIL ACROSS NORTHERN HEMISPHERE',
@@ -482,7 +487,8 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'AI CONTAINED - WAS OPTIMIZING FOR "CARBON REDUCTION" GOAL',
             effects: { nasdaq: 0.20, tesla: 0.15, btc: 0.10, gold: -0.10 },
-            probability: 0.40
+            probability: 0.40,
+            allowsReversal: true  // Crisis contained
           },
           negative: {
             headline: 'SYSTEM SPREADS TO FINANCIAL NETWORKS - MARKETS HALTED INDEFINITELY',
@@ -545,12 +551,14 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'PATHOGEN IDENTIFIED AS KNOWN FLU VARIANT - VACCINE AVAILABLE',
             effects: { nasdaq: 0.15, oil: 0.10, emerging: 0.12, biotech: -0.10, gold: -0.08 },
-            probability: 0.25
+            probability: 0.25,
+            allowsReversal: true  // Crisis averted
           },
           neutral: {
             headline: 'OUTBREAK CONTAINED TO WUHAN - BORDERS REMAIN CLOSED AS PRECAUTION',
             effects: { biotech: 0.05, gold: 0.03, emerging: -0.05 },
-            probability: 0.35
+            probability: 0.35,
+            allowsReversal: true  // Partial resolution
           },
           negative: {
             headline: 'NOVEL PATHOGEN WITH 15% MORTALITY - CASES IN 30 COUNTRIES',
@@ -622,7 +630,8 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'ASTEROID BURNS UP IN ATMOSPHERE - SPECTACULAR LIGHT SHOW ONLY',
             effects: { nasdaq: 0.25, tesla: 0.20, btc: -0.10, gold: -0.20, defense: -0.15 },
-            probability: 0.55
+            probability: 0.55,
+            allowsReversal: true  // Crisis averted
           },
           negative: {
             headline: 'AIRBURST OVER SIBERIA - 500KM DEVASTATION ZONE, NUCLEAR WINTER FEARS',
@@ -693,7 +702,8 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'SCIENTISTS - "TEMPORARY FLUCTUATION", CURRENT STABILIZING',
             effects: { nasdaq: 0.12, tesla: 0.10, oil: -0.10, gold: -0.08, emerging: 0.08 },
-            probability: 0.45
+            probability: 0.45,
+            allowsReversal: true  // Crisis averted
           },
           negative: {
             headline: 'AMOC COLLAPSE CONFIRMED - "MINI ICE AGE WITHIN DECADE" WARNS UN',
@@ -799,7 +809,8 @@ export const STORIES: Story[] = [
           positive: {
             headline: 'SWARM SUBSIDES - GEOLOGISTS SAY "NORMAL CALDERA BEHAVIOR"',
             effects: { nasdaq: 0.18, tesla: 0.12, gold: -0.15, defense: -0.10 },
-            probability: 0.60
+            probability: 0.60,
+            allowsReversal: true  // Crisis averted
           },
           negative: {
             headline: 'SUPERVOLCANO ERUPTS - ASH CLOUD COVERS MIDWEST, GLOBAL COOLING',
@@ -919,7 +930,8 @@ export const STORIES: Story[] = [
           negative: {
             headline: 'MILITIA LEADERS ARRESTED - CRISIS AVERTED',
             effects: { gold: -0.15, defense: -0.12, nasdaq: 0.18, btc: -0.10, emerging: 0.10 },
-            probability: 0.40
+            probability: 0.40,
+            allowsReversal: true  // Crisis resolution
           }
         }
       },
@@ -935,7 +947,8 @@ export const STORIES: Story[] = [
           negative: {
             headline: 'EMERGENCY UNITY GOVERNMENT FORMED - PEACE HOLDS',
             effects: { nasdaq: 0.25, gold: -0.15, btc: -0.12, defense: -0.10, emerging: 0.15 },
-            probability: 0.60
+            probability: 0.60,
+            allowsReversal: true  // Peace after civil war threat
           }
         }
       }
@@ -968,7 +981,8 @@ export const STORIES: Story[] = [
           negative: {
             headline: 'IMF EMERGENCY LOAN PACKAGE STABILIZES CHINA',
             effects: { emerging: 0.18, lithium: 0.15, nasdaq: 0.12, tesla: 0.10 },
-            probability: 0.45
+            probability: 0.45,
+            allowsReversal: true  // Crisis stabilization
           }
         }
       },
@@ -984,7 +998,8 @@ export const STORIES: Story[] = [
           negative: {
             headline: 'CHINA RESTRUCTURES DEBT - MANAGED CRISIS',
             effects: { emerging: -0.15, lithium: -0.10, gold: 0.12, nasdaq: -0.08 },
-            probability: 0.50
+            probability: 0.50,
+            allowsReversal: true  // Crisis contained
           }
         }
       }
@@ -1022,7 +1037,8 @@ export const STORIES: Story[] = [
             effects: { defense: -0.10, gold: -0.08, oil: -0.05, nasdaq: 0.08 },
             probability: 0.45,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'defense']
+            sentimentAssets: ['nasdaq', 'defense'],
+            allowsReversal: true  // Diplomatic de-escalation
           }
         }
       },
@@ -1042,7 +1058,8 @@ export const STORIES: Story[] = [
             effects: { defense: -0.15, gold: -0.12, oil: -0.18, nasdaq: 0.12, emerging: 0.10 },
             probability: 0.50,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'emerging', 'oil']
+            sentimentAssets: ['nasdaq', 'emerging', 'oil'],
+            allowsReversal: true  // Ceasefire after military escalation
           }
         }
       }
@@ -1077,7 +1094,8 @@ export const STORIES: Story[] = [
             effects: { nasdaq: 0.12, tesla: 0.10, gold: -0.05, emerging: 0.08 },
             probability: 0.45,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'tesla', 'emerging']
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging'],
+            allowsReversal: true  // Economic recovery
           }
         }
       },
@@ -1097,7 +1115,8 @@ export const STORIES: Story[] = [
             effects: { nasdaq: 0.18, tesla: 0.15, gold: -0.08, emerging: 0.12 },
             probability: 0.45,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'tesla', 'emerging']
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging'],
+            allowsReversal: true  // Economic recovery
           }
         }
       }
@@ -1132,7 +1151,8 @@ export const STORIES: Story[] = [
             effects: { nasdaq: 0.10, gold: -0.05, btc: -0.03 },
             probability: 0.50,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq']
+            sentimentAssets: ['nasdaq'],
+            allowsReversal: true  // Crisis stabilization
           }
         }
       },
@@ -1152,7 +1172,8 @@ export const STORIES: Story[] = [
             effects: { nasdaq: 0.08, gold: -0.05, btc: -0.05 },
             probability: 0.55,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq']
+            sentimentAssets: ['nasdaq'],
+            allowsReversal: true  // Crisis resolution
           }
         }
       }
@@ -1187,7 +1208,8 @@ export const STORIES: Story[] = [
             effects: { nasdaq: 0.10, gold: -0.05, tesla: 0.08 },
             probability: 0.50,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'tesla']
+            sentimentAssets: ['nasdaq', 'tesla'],
+            allowsReversal: true  // Market stabilization
           }
         }
       },
@@ -1207,7 +1229,8 @@ export const STORIES: Story[] = [
             effects: { nasdaq: 0.10, gold: -0.08, tesla: 0.05 },
             probability: 0.50,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'tesla']
+            sentimentAssets: ['nasdaq', 'tesla'],
+            allowsReversal: true  // Market recovery
           }
         }
       }
@@ -1310,7 +1333,8 @@ export const STORIES: Story[] = [
             effects: { defense: -0.25, oil: -0.20, gold: -0.15, nasdaq: 0.20, emerging: 0.25, btc: -0.10 },
             probability: 0.60,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'emerging', 'oil', 'defense']
+            sentimentAssets: ['nasdaq', 'emerging', 'oil', 'defense'],
+            allowsReversal: true  // Peace after conflict
           },
           negative: {
             headline: 'HARDLINERS REJECT ACCORD - CONFLICT RESUMES',
@@ -1880,7 +1904,8 @@ export const STORIES: Story[] = [
           negative: {
             headline: 'CHINA PRESSURES RUSSIA - NUCLEAR RHETORIC WALKS BACK',
             effects: { gold: -0.15, defense: -0.10, oil: -0.12, nasdaq: 0.15, emerging: 0.18 },
-            probability: 0.45
+            probability: 0.45,
+            allowsReversal: true  // De-escalation
           }
         }
       },
@@ -1896,7 +1921,8 @@ export const STORIES: Story[] = [
           negative: {
             headline: 'KREMLIN COUP - GENERALS SEIZE POWER, END NUCLEAR THREAT',
             effects: { gold: -0.25, defense: -0.20, oil: -0.30, nasdaq: 0.30, emerging: 0.35, btc: -0.10 },
-            probability: 0.70
+            probability: 0.70,
+            allowsReversal: true  // Crisis resolution
           }
         }
       }
@@ -1982,7 +2008,8 @@ export const STORIES: Story[] = [
             effects: { tesla: 0.12, nasdaq: 0.10, emerging: 0.12, gold: -0.08, btc: 0.05 },
             probability: 0.40,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'tesla', 'emerging']
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging'],
+            allowsReversal: true  // Crisis averted
           }
         }
       },
@@ -2002,7 +2029,8 @@ export const STORIES: Story[] = [
             effects: { nasdaq: 0.15, tesla: 0.18, emerging: 0.20, gold: -0.15, lithium: 0.10, btc: 0.08 },
             probability: 0.55,
             sentiment: 'bullish',
-            sentimentAssets: ['nasdaq', 'tesla', 'emerging']
+            sentimentAssets: ['nasdaq', 'tesla', 'emerging'],
+            allowsReversal: true  // Crisis resolution
           }
         }
       }
@@ -2016,7 +2044,8 @@ export function getStoryById(id: string): Story | undefined {
 }
 
 // Mood decay window in days (same as sentimentHelpers)
-const MOOD_DECAY_DAYS = 3
+// Reduced from 3 to 2 to allow more realistic market reversals
+const MOOD_DECAY_DAYS = 2
 
 /**
  * Check if a story's first stage conflicts with current asset moods.
@@ -2029,6 +2058,12 @@ function checkStoryConflict(
   currentDay: number
 ): boolean {
   const firstStage = story.stages[0]
+
+  // If first stage allows reversal, it can start even if mood conflicts
+  if (firstStage.allowsReversal) {
+    return false
+  }
+
   const sentiment = deriveSentiment(firstStage.effects)
 
   // Neutral and mixed never conflict
@@ -2037,9 +2072,11 @@ function checkStoryConflict(
   }
 
   // Get affected assets from first stage effects (>5% threshold)
-  const affectedAssets = Object.entries(firstStage.effects)
+  // Only use the largest effect asset to prevent cascading blocks
+  const sorted = Object.entries(firstStage.effects)
     .filter(([_, effect]) => Math.abs(effect) >= 0.05)
-    .map(([assetId]) => assetId)
+    .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+  const affectedAssets = sorted.length > 0 ? [sorted[0][0]] : []
 
   // Check each affected asset for mood conflict
   for (const assetId of affectedAssets) {
@@ -2067,15 +2104,21 @@ export function selectRandomStory(
   assetMoods: AssetMood[] = [],
   currentDay: number = 1
 ): Story | null {
-  // Get active subcategories to block (from stories)
-  const activeSubcategories = new Set<string>()
-  const activeStoryCategories = new Set<string>()
+  // Get active topics to block (using geo:subcategory pattern for geopolitical)
+  const activeTopics = new Set<string>()
   activeStories.forEach(active => {
     const story = getStoryById(active.storyId)
     if (story) {
-      activeStoryCategories.add(story.category)
+      // For geopolitical stories with subcategory, use geo:subcategory for blocking
+      // This allows Taiwan crisis to run independently of Middle East events
+      if (story.category === 'geopolitical' && story.subcategory) {
+        activeTopics.add(`geo:${story.subcategory}`)
+      } else {
+        activeTopics.add(story.category)
+      }
+      // Also add subcategory for same-topic blocking within categories
       if (story.subcategory) {
-        activeSubcategories.add(story.subcategory)
+        activeTopics.add(story.subcategory)
       }
     }
   })
@@ -2084,10 +2127,20 @@ export function selectRandomStory(
   const available = STORIES.filter(story => {
     // Not already used this game
     if (usedStoryIds.includes(story.id)) return false
-    // Not same subcategory as active story
-    if (story.subcategory && activeSubcategories.has(story.subcategory)) return false
-    // Not same category as active chain (prevent story+chain conflict)
-    if (activeChainCategories.has(story.category)) return false
+
+    // Check category/subcategory conflicts using geo:subcategory pattern
+    if (story.category === 'geopolitical' && story.subcategory) {
+      // For geopolitical stories, block if same geo:subcategory is active
+      if (activeTopics.has(`geo:${story.subcategory}`)) return false
+      // Also check if chain has same geo:subcategory
+      if (activeChainCategories.has(`geo:${story.subcategory}`)) return false
+    } else {
+      // For non-geopolitical stories, block if same category is active in chains
+      if (activeChainCategories.has(story.category)) return false
+      // Block if same subcategory is active (e.g., two 'nuclear' stories)
+      if (story.subcategory && activeTopics.has(story.subcategory)) return false
+    }
+
     return true
   })
 

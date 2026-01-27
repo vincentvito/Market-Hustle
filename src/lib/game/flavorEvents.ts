@@ -17,7 +17,7 @@ export const FLAVOR_EVENTS: FlavorEvent[] = [
   { headline: "GENZ REPORT - DRINKING IS BACK", effects: { coffee: -0.05, emerging: 0.03 } },
   { headline: "REPORT - FENTANYL MIGHT CURE DEPRESSION", effects: { biotech: 0.12 } },
   { headline: "TAYLOR SWIFT PROMOTES COFFEE DIET ON INSTAGRAM", effects: { coffee: 0.25 } },
-  { headline: "JIM CRAMER SAYS TO SELL - MARKETS RALLY", effects: { nasdaq: 0.10 } },
+  { headline: "JIM CRAMER SAYS TO SELL", effects: { nasdaq: 0.10 } },
   { headline: "WARREN BUFFETT CLAIMS ASSETS ARE OVERVALUED", effects: { nasdaq: -0.08, gold: 0.05 } },
   { headline: "CONGRESS GRILLS AI CEOS - REGULATION FEARS SPIKE", effects: { nasdaq: -0.10, tesla: -0.08 } },
   { headline: "ROGAN BRINGS VACCINE SKEPTIC ON - 6 HOUR EPISODE", effects: { biotech: -0.11 } },
@@ -26,6 +26,13 @@ export const FLAVOR_EVENTS: FlavorEvent[] = [
   { headline: "MILLENNIAL HOMEBUYERS GIVE UP, BUY CRYPTO INSTEAD", effects: { btc: 0.08, altcoins: 0.10 } },
   { headline: "POLYMARKET WHALES BETTING ON ASTEROID IMPACT", effects: { gold: 0.05 } },
   { headline: "POLAR BEARS EXTINCT - BULLISH FOR OIL", effects: { oil: -0.05 } },
+  { headline: "JIM CRAMER SAYS TO BUY", effects: { nasdaq: -0.08 } },
+  { headline: "ELON MUSK CLAIMS GDP WILL GROW 100X THANKS TO HUMANOID ROBOTS", effects: { tesla: 0.12 } },
+  { headline: "JEFF BEZOS SPOTTED PARTYING IN SAINT-TROPEZ", effects: {} },
+  { headline: "META HIRES 17-YEAR-OLD TO LEAD AI EFFORTS", effects: { nasdaq: 0.05 } },
+  { headline: "AMAZON LAUNCHES DRONE DELIVERY IN EUROPE", effects: { nasdaq: 0.06 } },
+  { headline: "EU MANDATES 67.3°C ESPRESSO TEMPERATURE", effects: { coffee: -0.05 } },
+  { headline: "EU PROPOSES MANDATORY 47-CHARACTER PASSWORDS", effects: { nasdaq: -0.03 } },
 ]
 
 /**

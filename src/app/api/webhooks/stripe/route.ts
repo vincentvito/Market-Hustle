@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe/server'
+import { stripe, STRIPE_PRICES, type StripePlan } from '@/lib/stripe/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import Stripe from 'stripe'
 import { randomUUID } from 'crypto'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+
+// Map Price IDs to plan types for robust plan detection
+const PRICE_TO_PLAN: Record<string, StripePlan> = {
+  [STRIPE_PRICES.monthly]: 'monthly',
+  [STRIPE_PRICES.yearly]: 'yearly',
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
@@ -85,7 +91,11 @@ async function handleCheckoutCompleted(
   const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId, {
     expand: ['items.data'],
   })
-  const plan = subscriptionData.metadata?.plan || 'monthly'
+  // Detect plan from price.id first, fall back to metadata
+  const priceId = subscriptionData.items.data[0]?.price?.id
+  const plan: StripePlan = (priceId && PRICE_TO_PLAN[priceId])
+    || (subscriptionData.metadata?.plan as StripePlan)
+    || 'monthly'
   // Get current_period_end from the first subscription item
   const currentPeriodEnd = subscriptionData.items.data[0]?.current_period_end || Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
 
@@ -106,11 +116,13 @@ async function handleCheckoutCompleted(
       console.log(`Found existing user for ${customerEmail}`)
     } else {
       // Invite new user - this creates account AND sends magic link email
+      // New users will be redirected to onboarding first, then auto-start Pro game
       isNewUser = true
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
         customerEmail,
         {
+          // Auth callback will detect no username and redirect to onboarding
           redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent('/?autostart=pro')}`,
         }
       )
@@ -155,25 +167,48 @@ async function handleCheckoutCompleted(
     console.log(`Magic link email sent to existing user: ${customerEmail}`)
   }
 
-  // Upsert subscription record
-  const { error: subError } = await supabase
+  // Check if subscription already exists by stripe_subscription_id
+  const { data: existingSub } = await supabase
     .from('subscriptions')
-    .upsert({
-      id: randomUUID(),
-      user_id: finalUserId,
-      stripe_customer_id: customerId,
-      stripe_subscription_id: subscriptionId,
-      status: 'active',
-      plan: plan as 'monthly' | 'yearly',
-      current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
-    }, {
-      onConflict: 'user_id',
-      ignoreDuplicates: false,
-    })
+    .select('id')
+    .eq('stripe_subscription_id', subscriptionId)
+    .single()
 
-  if (subError) {
-    console.error('Error upserting subscription:', subError)
-    return
+  if (existingSub) {
+    // UPDATE existing subscription
+    const { error: subError } = await supabase
+      .from('subscriptions')
+      .update({
+        user_id: finalUserId,
+        stripe_customer_id: customerId,
+        status: 'active',
+        plan: plan as 'monthly' | 'yearly',
+        current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
+      })
+      .eq('id', existingSub.id)
+
+    if (subError) {
+      console.error('Error updating subscription:', subError)
+      throw new Error(`Failed to update subscription: ${subError.message}`)
+    }
+  } else {
+    // INSERT new subscription
+    const { error: subError } = await supabase
+      .from('subscriptions')
+      .insert({
+        id: randomUUID(),
+        user_id: finalUserId,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscriptionId,
+        status: 'active',
+        plan: plan as 'monthly' | 'yearly',
+        current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
+      })
+
+    if (subError) {
+      console.error('Error inserting subscription:', subError)
+      throw new Error(`Failed to insert subscription: ${subError.message}`)
+    }
   }
 
   // Upsert user's profile with pro tier (handles case where profile doesn't exist yet)
@@ -183,6 +218,7 @@ async function handleCheckoutCompleted(
 
   if (profileError) {
     console.error('Error upserting profile tier:', profileError)
+    throw new Error(`Failed to update profile tier: ${profileError.message}`)
   }
 
   console.log(`Checkout completed for user ${finalUserId}, plan: ${plan}`)
@@ -197,6 +233,10 @@ async function handleSubscriptionUpdated(
   // Get current_period_end from the first subscription item
   const currentPeriodEnd = subscription.items?.data[0]?.current_period_end || Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
 
+  // Detect plan from price.id for plan change handling
+  const priceId = subscription.items?.data[0]?.price?.id
+  const plan: StripePlan = (priceId && PRICE_TO_PLAN[priceId]) || 'monthly'
+
   // Find user by customer ID
   const { data: sub } = await supabase
     .from('subscriptions')
@@ -209,11 +249,12 @@ async function handleSubscriptionUpdated(
     return
   }
 
-  // Update subscription status
+  // Update subscription status and plan
   await supabase
     .from('subscriptions')
     .update({
       status,
+      plan,
       current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
     })
     .eq('stripe_customer_id', customerId)

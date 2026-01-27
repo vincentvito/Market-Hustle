@@ -9,6 +9,7 @@ import { WinScreen } from './screens/WinScreen'
 import { SettingsPanel } from './ui/SettingsPanel'
 import { AchievementToast } from './ui/AchievementToast'
 import { DailyLimitModal } from './ui/DailyLimitModal'
+import { AnonymousLimitModal } from './ui/AnonymousLimitModal'
 
 export function MarketHustle() {
   const screen = useGame(state => state.screen)
@@ -25,6 +26,7 @@ export function MarketHustle() {
       <SettingsPanel />
       <AchievementToast />
       <DailyLimitModal />
+      <AnonymousLimitModal />
     </div>
   )
 }
