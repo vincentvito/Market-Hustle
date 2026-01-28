@@ -95,56 +95,89 @@ export function GuestGameOverView() {
         )}
       </div>
 
-      {/* Upsell Section */}
-      <div className="mb-6 max-w-[280px]">
-        <div className="text-mh-text-bright text-sm font-bold mb-3">
-          That was easy mode.
+      {/* Two-Column CTA Section */}
+      <div className="flex gap-3 w-full max-w-[340px] mb-6">
+        {/* Sign Up Box */}
+        <div className="flex-1 border border-mh-border p-4 bg-mh-border/5">
+          <div className="text-mh-accent-blue text-xs font-bold mb-3 text-center">
+            SAVE YOUR PROGRESS
+          </div>
+          <div className="text-mh-text-dim text-xs space-y-1.5 mb-4">
+            <div className="flex items-start gap-1.5">
+              <span className="text-mh-accent-blue">✓</span>
+              <span>Keep your stats forever</span>
+            </div>
+            <div className="flex items-start gap-1.5">
+              <span className="text-mh-accent-blue">✓</span>
+              <span>3 free games every day</span>
+            </div>
+            <div className="flex items-start gap-1.5">
+              <span className="text-mh-accent-blue">✓</span>
+              <span>Compete on leaderboards</span>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="w-full py-2 border-2 border-mh-accent-blue bg-mh-accent-blue/10 text-mh-accent-blue text-xs font-bold font-mono cursor-pointer hover:bg-mh-accent-blue/20 transition-colors"
+          >
+            CREATE ACCOUNT
+          </button>
         </div>
-        <div className="text-mh-text-dim text-sm space-y-1">
-          <div>• Short selling</div>
-          <div>• 10X leverage</div>
-          <div>• More strategy</div>
+
+        {/* Go Pro Box */}
+        <div className="flex-1 border-2 border-mh-profit-green p-4 bg-mh-profit-green/5">
+          <div className="text-mh-profit-green text-xs font-bold mb-3 text-center">
+            GO UNLIMITED
+          </div>
+          <div className="text-mh-text-dim text-xs space-y-1.5 mb-4">
+            <div className="flex items-start gap-1.5">
+              <span className="text-mh-profit-green">✓</span>
+              <span>Unlimited games</span>
+            </div>
+            <div className="flex items-start gap-1.5">
+              <span className="text-mh-profit-green">✓</span>
+              <span>Short selling & margin</span>
+            </div>
+            <div className="flex items-start gap-1.5">
+              <span className="text-mh-profit-green">✓</span>
+              <span>45 & 60-day challenges</span>
+            </div>
+            <div className="flex items-start gap-1.5">
+              <span className="text-mh-profit-green">✓</span>
+              <span>Historical scenarios</span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <button
+              onClick={() => checkout('yearly')}
+              disabled={checkoutLoading}
+              className="w-full py-2 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-xs font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {checkoutLoading ? '...' : '$29.99/yr — 50% OFF'}
+            </button>
+            <button
+              onClick={() => checkout('monthly')}
+              disabled={checkoutLoading}
+              className="w-full py-1.5 border border-mh-profit-green/50 bg-transparent text-mh-profit-green text-[10px] font-mono cursor-pointer hover:bg-mh-profit-green/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {checkoutLoading ? '...' : '$4.99/month'}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Pricing Buttons */}
-      <div className="flex flex-col gap-2 w-full max-w-[280px] mb-4">
-        <button
-          onClick={() => checkout('yearly')}
-          disabled={checkoutLoading}
-          className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {checkoutLoading ? 'LOADING...' : 'GO PRO — $29.99/yr (50% off)'}
-        </button>
-        <button
-          onClick={() => checkout('monthly')}
-          disabled={checkoutLoading}
-          className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {checkoutLoading ? 'LOADING...' : '$4.99/month'}
-        </button>
-      </div>
-
-      {/* Save Progress Button */}
-      <button
-        onClick={() => setShowAuthModal(true)}
-        className="text-mh-text-dim text-sm mb-6 hover:text-mh-accent-blue transition-colors cursor-pointer bg-transparent border-none"
-      >
-        Save progress — free
-      </button>
-
-      {/* Play Again Button */}
+      {/* Play Again Button - Secondary */}
       <button
         onClick={() => startGame()}
         disabled={!canPlayAgain}
-        className={`bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
-          px-10 py-4 text-base font-mono transition-colors
+        className={`bg-transparent border border-mh-border text-mh-text-dim
+          px-6 py-2 text-sm font-mono transition-colors
           ${canPlayAgain
-            ? 'cursor-pointer hover:bg-mh-accent-blue/10'
-            : 'opacity-50 cursor-not-allowed'
+            ? 'cursor-pointer hover:border-mh-text-dim hover:text-mh-text-main'
+            : 'opacity-40 cursor-not-allowed'
           }`}
       >
-        [ PLAY AGAIN ]
+        Play Again
       </button>
 
       {/* Auth Modal */}

@@ -66,8 +66,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true })
   } catch (error) {
     console.error('Error processing webhook:', error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: 'Webhook handler failed' },
+      { error: `Webhook handler failed: ${message}` },
       { status: 500 }
     )
   }
@@ -77,20 +78,30 @@ async function handleCheckoutCompleted(
   supabase: ReturnType<typeof createAdminClient>,
   session: Stripe.Checkout.Session
 ) {
+  console.log('handleCheckoutCompleted started')
+
   const userId = session.client_reference_id || session.metadata?.user_id
   const customerId = session.customer as string
   const subscriptionId = session.subscription as string
   const customerEmail = session.customer_email || session.customer_details?.email
 
+  console.log('Session data:', { userId, customerId, subscriptionId, customerEmail })
+
   if (!customerEmail) {
-    console.error('No customer email in checkout session')
-    return
+    throw new Error('No customer email in checkout session')
   }
 
   // Get subscription details (with items expanded for current_period_end)
-  const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId, {
-    expand: ['items.data'],
-  })
+  console.log('Fetching subscription data...')
+  let subscriptionData
+  try {
+    subscriptionData = await stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['items.data'],
+    })
+    console.log('Subscription data fetched successfully')
+  } catch (stripeError) {
+    throw new Error(`Failed to fetch subscription: ${stripeError instanceof Error ? stripeError.message : 'Unknown'}`)
+  }
   // Detect plan from price.id first, fall back to metadata
   const priceId = subscriptionData.items.data[0]?.price?.id
   const plan: StripePlan = (priceId && PRICE_TO_PLAN[priceId])
@@ -105,11 +116,21 @@ async function handleCheckoutCompleted(
   // If no user ID, we need to find or create user account
   if (!finalUserId) {
     // Check if user with this email already exists (with pagination to handle >50 users)
-    const { data: existingUser } = await supabase.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000
-    })
-    const existingAccount = existingUser?.users.find(u => u.email === customerEmail)
+    console.log('Listing users to find existing account...')
+    let existingAccount
+    try {
+      const { data: existingUser, error: listError } = await supabase.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000
+      })
+      if (listError) {
+        throw new Error(`listUsers error: ${listError.message}`)
+      }
+      existingAccount = existingUser?.users.find(u => u.email === customerEmail)
+      console.log('User search complete, found:', !!existingAccount)
+    } catch (listUsersError) {
+      throw new Error(`Failed to list users: ${listUsersError instanceof Error ? listUsersError.message : 'Unknown'}`)
+    }
 
     if (existingAccount) {
       finalUserId = existingAccount.id

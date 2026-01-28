@@ -37,7 +37,7 @@ export function TitleScreen() {
   const isLoggedIn = useGame(state => state.isLoggedIn)
 
   const { user, loading: authLoading } = useAuth()
-  const { checkout, loading: checkoutLoading } = useStripeCheckout()
+  const { checkout, loading: checkoutLoading, error: checkoutError } = useStripeCheckout()
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -149,12 +149,12 @@ export function TitleScreen() {
             <div className="flex gap-3 mb-1 w-full max-w-[280px]">
               <div className="flex-1 text-center">
                 <div className="text-xs text-mh-text-dim">
-                  3 Games / Day
+                  Get 5 Free Games
                 </div>
               </div>
               <div className="flex-1 text-center">
                 <div className="text-xs text-mh-profit-green">
-                  Unlimited Games
+                  3 Games Every Day
                 </div>
               </div>
             </div>
@@ -226,6 +226,11 @@ export function TitleScreen() {
               >
                 {checkoutLoading ? 'LOADING...' : '$29.99/YEAR — SAVE 50%'}
               </button>
+              {checkoutError && (
+                <div className="mt-2 text-xs text-mh-loss-red text-center">
+                  {checkoutError}
+                </div>
+              )}
             </div>
           </div>
         )}
