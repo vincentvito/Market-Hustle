@@ -3,7 +3,7 @@
 import { useGame } from '@/hooks/useGame'
 
 export function Header() {
-  const { day, gameDuration, getNetWorth, selectedTheme } = useGame()
+  const { day, gameDuration, getNetWorth, selectedTheme, setShowPortfolio } = useGame()
   const netWorth = getNetWorth()
   const isModern3 = selectedTheme === 'modern3'
   const isBloomberg = selectedTheme === 'bloomberg'
@@ -39,7 +39,10 @@ export function Header() {
           {day}<span className={`text-base ${isBloomberg ? 'text-[#8b6914]' : 'text-mh-text-dim'}`}>/{gameDuration}</span>
         </div>
       </div>
-      <div className="text-right">
+      <div
+        className="text-right cursor-pointer"
+        onClick={() => setShowPortfolio(true)}
+      >
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>NET WORTH</div>
         <div
           className={`text-3xl font-bold ${
