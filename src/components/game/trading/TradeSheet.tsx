@@ -33,7 +33,7 @@ function formatCost(value: number): string {
 }
 
 // Reusable slider hook for direct DOM manipulation
-function useSlider(maxValue: number, initialValue: number = 1) {
+function useSlider(maxValue: number, initialValue: number = 1, minValue: number = 1, step: number = 1) {
   const sliderRef = useRef<HTMLDivElement>(null)
   const thumbRef = useRef<HTMLDivElement>(null)
   const fillRef = useRef<HTMLDivElement>(null)
@@ -43,24 +43,42 @@ function useSlider(maxValue: number, initialValue: number = 1) {
   const isDragging = useRef(false)
   const currentQty = useRef(initialValue)
   const maxRef = useRef(maxValue)
+  const minRef = useRef(minValue)
+  const stepRef = useRef(step)
   maxRef.current = maxValue
+  minRef.current = minValue
+  stepRef.current = step
 
   const updateVisuals = useCallback((qty: number) => {
     const max = maxRef.current
-    const percent = max > 1 ? ((qty - 1) / (max - 1)) * 100 : 0
+    const min = minRef.current
+    const range = max - min
+    const percent = range > 0 ? ((qty - min) / range) * 100 : 0
 
     if (thumbRef.current) thumbRef.current.style.left = `calc(${percent}% - 10px)`
     if (fillRef.current) fillRef.current.style.width = `${percent}%`
-    if (qtyRef.current) qtyRef.current.textContent = String(qty)
+    if (qtyRef.current) {
+      // Format fractional values nicely
+      const displayQty = stepRef.current < 1 ? qty.toFixed(3).replace(/\.?0+$/, '') : String(qty)
+      qtyRef.current.textContent = displayQty
+    }
   }, [])
 
   const getQtyFromPosition = useCallback((clientX: number) => {
-    if (!sliderRef.current) return 1
+    if (!sliderRef.current) return minRef.current
     const rect = sliderRef.current.getBoundingClientRect()
     const x = clientX - rect.left
     const percent = Math.max(0, Math.min(1, x / rect.width))
-    const qty = Math.round(1 + percent * (maxRef.current - 1))
-    return Math.max(1, Math.min(maxRef.current, qty))
+    const min = minRef.current
+    const max = maxRef.current
+    const step = stepRef.current
+
+    // Calculate raw value
+    const rawQty = min + percent * (max - min)
+    // Round to step
+    const qty = Math.round(rawQty / step) * step
+    // Clamp to range
+    return Math.max(min, Math.min(max, Math.round(qty * 1000) / 1000))
   }, [])
 
   const handleStart = useCallback((clientX: number) => {
@@ -94,10 +112,18 @@ function useSlider(maxValue: number, initialValue: number = 1) {
     maxRef.current = newMax
   }, [])
 
+  const setMin = useCallback((newMin: number) => {
+    minRef.current = newMin
+  }, [])
+
+  const setStep = useCallback((newStep: number) => {
+    stepRef.current = newStep
+  }, [])
+
   return {
     sliderRef, thumbRef, fillRef, qtyRef, valueRef,
     handleStart, handleMove, handleEnd,
-    setQty, getQty, updateVisuals, currentQty, setMax
+    setQty, getQty, updateVisuals, currentQty, setMax, setMin, setStep
   }
 }
 
@@ -121,17 +147,32 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const price = asset ? prices[asset.id] || 0 : 0
   const owned = asset ? holdings[asset.id] || 0 : 0
   const change = asset ? getPriceChange(asset.id) : 0
+
+  // Fractional asset configuration (only BTC for now)
+  const FRACTIONAL_ASSETS: Record<string, { minQuantity: number; step: number; maxSlider: number }> = {
+    btc: { minQuantity: 0, step: 0.001, maxSlider: 2 },
+  }
+  const isFractional = asset ? asset.id in FRACTIONAL_ASSETS : false
+  const fractionalConfig = asset ? FRACTIONAL_ASSETS[asset.id] : null
+
   // With leverage, you can buy more (but need downPayment = totalCost / leverage)
   const effectiveLeverage = isPro && leverage > 1 ? leverage : 1
-  const maxBuy = Math.max(1, Math.floor((cash * effectiveLeverage) / price))
+  const maxBuyRaw = isFractional && fractionalConfig
+    ? Math.min(fractionalConfig.maxSlider, Math.round((cash * effectiveLeverage / price) * 1000) / 1000)
+    : Math.max(1, Math.floor((cash * effectiveLeverage) / price))
+  const maxBuy = isFractional ? maxBuyRaw : Math.max(1, maxBuyRaw)
   // Short mode: cash-based limit (what you could cover at current price)
   // Regular mode: what you own
   const maxShort = Math.max(1, Math.floor(cash / price))
   const maxSell = isShortMode && isPro ? maxShort : Math.max(1, owned)
 
+  // Slider config based on asset type
+  const sliderMin = isFractional ? 0 : 1
+  const sliderStep = fractionalConfig?.step || 1
+
   // Separate sliders for buy and sell
-  const buySlider = useSlider(maxBuy, 1)
-  const sellSlider = useSlider(maxSell, 1)
+  const buySlider = useSlider(maxBuy, sliderMin, sliderMin, sliderStep)
+  const sellSlider = useSlider(maxSell, sliderMin, sliderMin, sliderStep)
 
   // Cost display refs
   const buyCostRef = useRef<HTMLSpanElement>(null)
@@ -160,6 +201,8 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const buySliderRef = useRef(buySlider)
   const sellSliderRef = useRef(sellSlider)
   const updateBuyCostRef = useRef(updateBuyCost)
+  const sliderMinRef = useRef(sliderMin)
+  sliderMinRef.current = sliderMin
   const updateSellCostRef = useRef(updateSellCost)
   buySliderRef.current = buySlider
   sellSliderRef.current = sellSlider
@@ -199,10 +242,11 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   // Reset when opening
   useEffect(() => {
     if (isOpen) {
-      buySliderRef.current.setQty(1)
-      sellSliderRef.current.setQty(1)
-      updateBuyCostRef.current(1)
-      updateSellCostRef.current(1)
+      const min = sliderMinRef.current
+      buySliderRef.current.setQty(min)
+      sellSliderRef.current.setQty(min)
+      updateBuyCostRef.current(min)
+      updateSellCostRef.current(min)
       // Reset Pro tier options
       setLeverage(1)
       setIsShortMode(false)
@@ -211,28 +255,31 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
 
   // Reset sell slider when switching short mode
   useEffect(() => {
-    sellSliderRef.current.setQty(1)
-    updateSellCostRef.current(1)
+    const min = sliderMinRef.current
+    sellSliderRef.current.setQty(min)
+    updateSellCostRef.current(min)
   }, [isShortMode])
 
   // Reset buy slider when leverage changes (max buying power changed)
   useEffect(() => {
+    const min = sliderMinRef.current
     // IMPORTANT: Update max FIRST, before resetting qty/visuals
     buySliderRef.current.setMax(maxBuy)
-    buySliderRef.current.setQty(1)
-    buySliderRef.current.updateVisuals(1)
+    buySliderRef.current.setQty(min)
+    buySliderRef.current.updateVisuals(min)
     // Update cost displays: total position value + down payment
     if (buyCostRef.current) {
-      buyCostRef.current.textContent = formatCost(price)  // Total: 1 × price
+      buyCostRef.current.textContent = formatCost(min * price)
     }
     if (buyDownPaymentRef.current) {
-      buyDownPaymentRef.current.textContent = formatCost(price / effectiveLeverage)
+      buyDownPaymentRef.current.textContent = formatCost((min * price) / effectiveLeverage)
     }
   }, [leverage, maxBuy, price, effectiveLeverage])
 
   const handleBuy = () => {
     if (!asset) return
     const qty = buySlider.currentQty.current
+    if (qty <= 0) return // Don't allow buying 0 units
     const totalCost = qty * price
     const downPayment = totalCost / effectiveLeverage
 
@@ -248,12 +295,14 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
 
   const handleSell = () => {
     if (!asset) return
+    const qty = sellSlider.currentQty.current
+    if (qty <= 0) return // Don't allow selling 0 units
     if (isShortMode && isPro) {
       // Short sell - no ownership required
-      shortSell(asset.id, sellSlider.currentQty.current)
+      shortSell(asset.id, qty)
       onClose()
-    } else if (owned >= 1) {
-      sell(asset.id, sellSlider.currentQty.current)
+    } else if (owned > 0) {
+      sell(asset.id, qty)
       onClose()
     }
   }
@@ -261,8 +310,8 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   // canBuy: need enough for down payment (leverage considered)
   const downPaymentNeeded = price / effectiveLeverage
   const canBuy = cash >= downPaymentNeeded
-  // canSell: short mode = always can (Pro), regular = need holdings
-  const canSell = isShortMode && isPro ? true : owned >= 1
+  // canSell: short mode = always can (Pro), regular = need holdings (any amount for fractional)
+  const canSell = isShortMode && isPro ? true : owned > 0
 
   if (!isOpen || !asset) return null
 
@@ -434,15 +483,15 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           {/* Buy Labels + Button */}
           <div className="flex items-center justify-between mt-2">
             <button
-              onClick={() => { buySlider.setQty(1); updateBuyCost(1) }}
+              onClick={() => { buySlider.setQty(sliderMin); updateBuyCost(sliderMin) }}
               disabled={!canBuy}
               className="text-xs text-mh-text-dim hover:text-mh-profit-green cursor-pointer bg-transparent border-none p-1"
             >
-              1
+              {sliderMin}
             </button>
             <div className="flex items-center gap-1">
               <span className="text-mh-text-bright font-bold">
-                <span ref={buySlider.qtyRef}>1</span> × ${formatPrice(price)} = <span ref={buyCostRef} className="text-mh-profit-green">{formatCost(price)}</span>
+                <span ref={buySlider.qtyRef}>{sliderMin}</span> × ${formatPrice(price)} = <span ref={buyCostRef} className="text-mh-profit-green">{formatCost(sliderMin * price)}</span>
               </span>
               {leverage > 1 && (
                 <span className="text-xs text-mh-text-dim">(↓<span ref={buyDownPaymentRef}>{formatCost(price / leverage)}</span>)</span>
@@ -556,15 +605,15 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           {/* Sell Labels + Button */}
           <div className="flex items-center justify-between mt-2">
             <button
-              onClick={() => { sellSlider.setQty(1); updateSellCost(1) }}
+              onClick={() => { sellSlider.setQty(sliderMin); updateSellCost(sliderMin) }}
               disabled={!canSell}
               className="text-xs text-mh-text-dim hover:text-mh-loss-red cursor-pointer bg-transparent border-none p-1"
             >
-              1
+              {sliderMin}
             </button>
             <div className="flex items-center gap-3">
               <span className="text-mh-text-bright font-bold">
-                <span ref={sellSlider.qtyRef}>1</span> × ${formatPrice(price)} = <span ref={sellCostRef} className="text-mh-loss-red">{formatCost(price)}</span>
+                <span ref={sellSlider.qtyRef}>{sliderMin}</span> × ${formatPrice(price)} = <span ref={sellCostRef} className="text-mh-loss-red">{formatCost(sliderMin * price)}</span>
               </span>
             </div>
             <button
