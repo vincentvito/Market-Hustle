@@ -362,7 +362,8 @@ export function EncounterPopup() {
   }
 
   // Determine if result is a win
-  const isWin = encounterResult ? (encounterResult.cashChange ?? 0) >= 0 && !encounterResult.gameOver : false
+  // Note: liquidationRequired means money was lost (SEC fine, divorce settlement, etc.)
+  const isWin = encounterResult ? (encounterResult.cashChange ?? 0) >= 0 && !encounterResult.gameOver && !encounterResult.liquidationRequired : false
 
   // Show result screen if we have a result
   if (encounterResult) {
