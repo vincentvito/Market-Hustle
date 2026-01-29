@@ -19,6 +19,8 @@ interface Profile {
   current_streak: number
   games_played_today: number
   last_played_date: string | null
+  // Pro trial (5 free games for signed-in users)
+  pro_trial_games_used: number
   // Synced settings
   selected_theme?: string
   selected_duration?: number
@@ -38,6 +40,7 @@ interface AuthContextType {
   migrateLocalStats: (userId: string) => Promise<void>  // Exposed for onboarding
   incrementGamesPlayed: () => Promise<void>  // Increment daily counter on game START
   recordGameEnd: (finalNetWorth: number, isWin: boolean, gameData?: GameResultData) => Promise<void>  // Sync stats on game END
+  useProTrialGame: () => Promise<void>  // Increment pro trial counter on game END (when using trial)
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -63,7 +66,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return null
     }
 
-    return data as Profile
+    // Fetch pro trial data from separate table
+    const { data: trialData } = await supabase
+      .from('pro_trials')
+      .select('games_used')
+      .eq('user_id', userId)
+      .single()
+
+    return {
+      ...data,
+      pro_trial_games_used: trialData?.games_used ?? 0,
+    } as Profile
   }, [supabase])
 
   // Migrate game history from localStorage to Supabase
@@ -213,12 +226,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Passwordless magic link authentication
   const signInWithMagicLink = async (email: string) => {
+    // Always use the current origin for redirects (supports localhost and production)
+    const redirectTo = typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/callback`
+      : `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: typeof window !== 'undefined'
-          ? `${window.location.origin}/auth/callback`
-          : undefined,
+        emailRedirectTo: redirectTo,
       },
     })
     return { error: error as Error | null }
@@ -321,6 +337,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshProfile()
   }, [user, profile, supabase, refreshProfile])
 
+  // Increment pro trial games used counter (called on game END when using trial)
+  const useProTrialGame = useCallback(async () => {
+    if (!user || !profile) return
+
+    const { error } = await supabase
+      .from('pro_trials')
+      .upsert({
+        user_id: user.id,
+        games_used: (profile.pro_trial_games_used || 0) + 1,
+        updated_at: new Date().toISOString(),
+      })
+
+    if (error) {
+      console.error('Error incrementing pro trial games:', error)
+    } else {
+      await refreshProfile()
+    }
+  }, [user, profile, supabase, refreshProfile])
+
   // User needs onboarding if logged in but hasn't set username
   const needsOnboarding = !!user && !profile?.username
 
@@ -339,6 +374,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         migrateLocalStats,
         incrementGamesPlayed,
         recordGameEnd,
+        useProTrialGame,
       }}
     >
       {children}

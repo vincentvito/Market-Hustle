@@ -49,7 +49,7 @@ import {
   incrementGamesPlayed,
   incrementAnonymousGames,
 } from '@/lib/game/persistence'
-import { callIncrementGamesPlayed, callRecordGameEnd } from '@/lib/game/authBridge'
+import { callIncrementGamesPlayed, callRecordGameEnd, callUseProTrialGame } from '@/lib/game/authBridge'
 import {
   canStartGame,
   getRemainingGames,
@@ -81,7 +81,8 @@ function saveGameResult(
   daysSurvived: number,
   gameDuration: GameDuration,
   gameOverReason?: string,
-  isLoggedIn?: boolean
+  isLoggedIn?: boolean,
+  isUsingProTrial?: boolean
 ): void {
   const userState = loadUserState()
 
@@ -107,6 +108,11 @@ function saveGameResult(
       daysSurvived: entry.daysSurvived,
       outcome: entry.outcome,
     })
+
+    // If this was a Pro trial game, consume one trial
+    if (isUsingProTrial) {
+      callUseProTrialGame()
+    }
   }
 }
 
@@ -203,12 +209,14 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const storeUserTier = get().userTier
     const storeIsLoggedIn = get().isLoggedIn
 
-    // Determine effective tier for limit checks
-    const effectiveTier = storeUserTier === 'pro' ? 'pro' : 'free'
+    // Determine effective tier: Pro users, OR free users with trial games remaining
+    // This gives trial users full Pro experience
+    const effectiveTier = get().getEffectiveTier()
+    const willUseProTrial = storeUserTier === 'free' && storeIsLoggedIn && get().hasProTrialRemaining()
 
     // Check game limits based on user state:
-    // - Pro users: unlimited
-    // - Registered free users (logged in): 3 games/day
+    // - Pro users (paid or trial): unlimited
+    // - Registered free users (logged in, no trial): 3 games/day
     // - Anonymous users (not logged in): 10 games lifetime
     if (effectiveTier !== 'pro' && !canStartGame(userState, storeIsLoggedIn)) {
       const limitType = getLimitType(userState, storeIsLoggedIn)
@@ -232,8 +240,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return
     }
 
+    // Pro users (paid or trial) can play any duration mode
     // Free users can only play 30-day mode
-    // Use store's selectedDuration if available, otherwise localStorage
     const storeSelectedDuration = get().selectedDuration
     let gameDuration: GameDuration = duration ?? storeSelectedDuration ?? userState.selectedDuration ?? 30
     if (effectiveTier === 'free' && gameDuration !== 30) {
@@ -361,6 +369,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       limitType,
       showDailyLimitModal: false,
       showAnonymousLimitModal: false,
+      isUsingProTrial: willUseProTrial,
     })
   },
 
@@ -1069,16 +1078,16 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       }
 
       // Record game result before showing game over screen
-      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn)
-      set({ screen: 'gameover', gameOverReason })
+      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn, get().isUsingProTrial)
+      set({ screen: 'gameover', gameOverReason, isUsingProTrial: false })
     } else if (finalNetWorth <= 0) {
       // Regular bankruptcy (net worth exactly 0)
-      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, 'BANKRUPT', get().isLoggedIn)
-      set({ screen: 'gameover', gameOverReason: 'BANKRUPT' })
+      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial)
+      set({ screen: 'gameover', gameOverReason: 'BANKRUPT', isUsingProTrial: false })
     } else if (newDay > gameDuration) {
       // Player survived the full duration - WIN!
-      saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn)
-      set({ screen: 'win' })
+      saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial)
+      set({ screen: 'win', isUsingProTrial: false })
     }
   },
 
@@ -1556,7 +1565,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         if (portfolioValue < shortfall) {
           // Can't cover the penalty even with all assets → Bankruptcy
           const { day, gameDuration } = get()
-          saveGameResult(false, 0, day, gameDuration, 'BANKRUPT', get().isLoggedIn)
+          saveGameResult(false, 0, day, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial)
           set({
             cash: 0,
             holdings: {},
@@ -1565,6 +1574,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
             queuedStartupOffer: null,
             screen: 'gameover',
             gameOverReason: 'BANKRUPT',
+            isUsingProTrial: false,
             message: `${result.headline} — Assets seized, still couldn't cover the debt.`,
           })
           return
@@ -1603,13 +1613,14 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (result.gameOver) {
       const { day, gameDuration } = get()
       const finalNetWorth = get().getNetWorth()
-      saveGameResult(false, finalNetWorth, day, gameDuration, result.gameOverReason || 'BANKRUPT', get().isLoggedIn)
+      saveGameResult(false, finalNetWorth, day, gameDuration, result.gameOverReason || 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial)
       set({
         cash: Math.round(newCash * 100) / 100,
         holdings: newHoldings,
         encounterState: newEncounterState,
         pendingEncounter: null,
         queuedStartupOffer: null,
+        isUsingProTrial: false,
         screen: 'gameover',
         gameOverReason: result.gameOverReason || 'UNKNOWN',
         message: finalHeadline,

@@ -74,6 +74,7 @@ export const DEFAULT_USER_STATE: UserState = {
 // Game limits by user type
 export const ANONYMOUS_GAME_LIMIT = 5        // Lifetime total for anonymous users
 export const REGISTERED_FREE_DAILY_LIMIT = 3 // Daily limit for registered free users
+export const PRO_TRIAL_GAME_LIMIT = 5        // Free Pro trial games for signed-in users
 
 // Helper to generate unique game ID
 export function generateGameId(): string {

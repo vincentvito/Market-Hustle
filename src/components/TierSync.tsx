@@ -20,16 +20,17 @@ import { setAuthBridge, clearAuthBridge } from '@/lib/game/authBridge'
  * - Pro: Unlimited
  */
 export function TierSync() {
-  const { profile, loading, user, incrementGamesPlayed, recordGameEnd } = useAuth()
+  const { profile, loading, user, incrementGamesPlayed, recordGameEnd, useProTrialGame } = useAuth()
   const setUserTier = useGame(state => state.setUserTier)
   const setIsLoggedIn = useGame(state => state.setIsLoggedIn)
   const syncFromSupabase = useGame(state => state.syncFromSupabase)
+  const setProTrialGamesUsed = useGame(state => state.setProTrialGamesUsed)
 
   // Register auth methods with the bridge so Zustand can call them
   useEffect(() => {
-    setAuthBridge({ incrementGamesPlayed, recordGameEnd })
+    setAuthBridge({ incrementGamesPlayed, recordGameEnd, useProTrialGame })
     return () => clearAuthBridge()
-  }, [incrementGamesPlayed, recordGameEnd])
+  }, [incrementGamesPlayed, recordGameEnd, useProTrialGame])
 
   useEffect(() => {
     // Wait for auth to finish loading
@@ -39,6 +40,9 @@ export function TierSync() {
       // User is logged in - use Supabase as authoritative source
       setIsLoggedIn(true)
       setUserTier(profile.tier)
+
+      // Sync Pro trial games used from Supabase
+      setProTrialGamesUsed(profile.pro_trial_games_used || 0)
 
       // Sync game limit data from Supabase
       syncFromSupabase({
@@ -56,6 +60,7 @@ export function TierSync() {
       // This prevents localStorage spoofing
       setIsLoggedIn(false)
       setUserTier('free')
+      setProTrialGamesUsed(0)  // Reset trial state for guests
       syncFromSupabase(null)  // Clear Supabase state for guests
 
       // Also reset localStorage tier to free
@@ -64,7 +69,7 @@ export function TierSync() {
         saveUserState({ ...userState, tier: 'free' })
       }
     }
-  }, [loading, user, profile, setUserTier, setIsLoggedIn, syncFromSupabase])
+  }, [loading, user, profile, setUserTier, setIsLoggedIn, syncFromSupabase, setProTrialGamesUsed])
 
   return null
 }

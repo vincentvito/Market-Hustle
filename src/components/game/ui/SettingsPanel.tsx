@@ -29,7 +29,7 @@ function getStreakEmoji(streak: number): string {
 }
 
 export function SettingsPanel() {
-  const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme } = useGame()
+  const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme, getEffectiveTier } = useGame()
   const { user, profile, signOut, loading: authLoading, updateSettings } = useAuth()
 
   // Wrapper to sync settings to Supabase when changed
@@ -71,7 +71,7 @@ export function SettingsPanel() {
   const unlockedAchievements: string[] = []
   const unlockedCount = unlockedAchievements.length
   const totalCount = ACHIEVEMENTS.length
-  const isPro = userTier === 'pro'
+  const isPro = getEffectiveTier() === 'pro'
 
   if (!showSettings) return null
 
@@ -252,7 +252,7 @@ export function SettingsPanel() {
           </div>
           <div className="space-y-2">
             {/* Short Stocks - PRO */}
-            <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+            <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-bold text-mh-text-bright">
@@ -262,12 +262,12 @@ export function SettingsPanel() {
                     Profit when prices fall
                   </div>
                 </div>
-                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
+                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">{isPro ? 'PRO' : '🔒 PRO'}</div>
               </div>
             </div>
 
             {/* Leverage Trading - PRO */}
-            <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+            <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-bold text-mh-text-bright">
@@ -277,7 +277,7 @@ export function SettingsPanel() {
                     Amplify your gains (and losses)
                   </div>
                 </div>
-                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
+                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">{isPro ? 'PRO' : '🔒 PRO'}</div>
               </div>
             </div>
           </div>
@@ -309,7 +309,7 @@ export function SettingsPanel() {
           {historicalExpanded && (
             <div className="px-4 pb-4 space-y-2">
               {/* The Roaring 20s */}
-              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -319,12 +319,12 @@ export function SettingsPanel() {
                       Ride the first retail stock boom (RCA, Steel, Rails) and exit before Black Tuesday
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
                 </div>
               </div>
 
               {/* WWII */}
-              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -334,12 +334,12 @@ export function SettingsPanel() {
                       Command economy trading with price caps and rationing
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
                 </div>
               </div>
 
               {/* 80s */}
-              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -349,12 +349,12 @@ export function SettingsPanel() {
                       Hostile takeovers and junk bonds before Black Monday
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
                 </div>
               </div>
 
               {/* Dot-Com */}
-              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -364,12 +364,12 @@ export function SettingsPanel() {
                       Speculate on zero-revenue tech before the NASDAQ collapse
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
                 </div>
               </div>
 
               {/* 2008 */}
-              <div className="w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60">
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -379,7 +379,7 @@ export function SettingsPanel() {
                       Short seller&apos;s dream — bet against Lehman, Bear Stearns
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">🔒 PRO</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
                 </div>
               </div>
             </div>

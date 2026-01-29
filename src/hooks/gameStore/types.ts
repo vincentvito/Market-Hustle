@@ -49,6 +49,10 @@ export interface AuthTierSlice {
   limitType: 'anonymous' | 'daily' | 'unlimited'
   supabaseProfile: SupabaseProfileData | null  // Supabase-synced state for logged-in users
 
+  // Pro trial state (5 free games with full Pro features)
+  proTrialGamesUsed: number
+  isUsingProTrial: boolean  // True when current game is a trial game
+
   // Actions
   setIsLoggedIn: (isLoggedIn: boolean) => void
   setUserTier: (tier: 'free' | 'pro') => void
@@ -58,6 +62,13 @@ export interface AuthTierSlice {
   setShowAnonymousLimitModal: (show: boolean) => void
   initializeFromStorage: () => void
   syncFromSupabase: (profile: SupabaseProfileData | null) => void  // Sync profile data from Supabase
+  setProTrialGamesUsed: (count: number) => void
+  setIsUsingProTrial: (isUsing: boolean) => void
+
+  // Computed
+  getEffectiveTier: () => UserTier  // Returns 'pro' if Pro or has trial games remaining
+  hasProTrialRemaining: () => boolean
+  getProTrialGamesRemaining: () => number
 }
 
 // ============================================================================

@@ -35,6 +35,7 @@ export function EndGameCoordinator() {
   // Auth state
   const userTier = useGame((state) => state.userTier)
   const isLoggedIn = useGame((state) => state.isLoggedIn)
+  const getProTrialGamesRemaining = useGame((state) => state.getProTrialGamesRemaining)
 
   // Pro-specific data for loss breakdown
   const leveragedPositions = useGame((state) => state.leveragedPositions)
@@ -138,6 +139,7 @@ export function EndGameCoordinator() {
     onCheckout: handleCheckout,
     onOpenAuth: handleOpenAuth,
     lossBreakdown,
+    proTrialGamesRemaining: getProTrialGamesRemaining(),
   }
 
   // Determine user type and render appropriate view

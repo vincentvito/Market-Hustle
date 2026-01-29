@@ -42,6 +42,7 @@ export interface EndGameProps {
   // User context
   gamesRemaining: number
   canPlayAgain: boolean
+  proTrialGamesRemaining?: number  // For free users with Pro trial (0-5)
 
   // Actions
   onPlayAgain: () => void

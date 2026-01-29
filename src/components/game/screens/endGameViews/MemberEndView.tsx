@@ -1,6 +1,6 @@
 'use client'
 
-import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
+import { REGISTERED_FREE_DAILY_LIMIT, PRO_TRIAL_GAME_LIMIT } from '@/lib/game/userState'
 import type { EndGameProps } from './types'
 
 /**
@@ -10,6 +10,7 @@ import type { EndGameProps } from './types'
  * - Unified layout for both wins and losses
  * - Conditional styling (green for win, red for loss)
  * - Daily games counter (resets at midnight)
+ * - Pro trial status (when user has trial games remaining)
  * - Pro upsell (less aggressive than Guest)
  * - Primary "Play Again" button when games available
  */
@@ -24,8 +25,10 @@ export function MemberEndView({
   canPlayAgain,
   onPlayAgain,
   onCheckout,
+  proTrialGamesRemaining = 0,
 }: EndGameProps) {
   const isWin = outcome === 'win'
+  const hasProTrial = proTrialGamesRemaining > 0
 
   // Color scheme based on outcome
   const titleColor = isWin ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
@@ -60,31 +63,53 @@ export function MemberEndView({
         </div>
       )}
 
-      {/* Daily Games Remaining Counter */}
-      <div className="border border-mh-border p-3 mb-6 min-w-[200px] bg-mh-border/10">
-        <div className="flex justify-between items-center">
-          <span className="text-mh-text-dim text-xs">DAILY GAMES</span>
-          <span
-            className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}
-          >
-            {gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
-          </span>
+      {/* Pro Trial Banner - When user has trial games remaining */}
+      {hasProTrial && (
+        <div className="border-2 border-mh-accent-blue p-4 mb-6 min-w-[200px] bg-mh-accent-blue/10">
+          <div className="text-mh-accent-blue text-xs font-bold mb-1">PRO TRIAL ACTIVE</div>
+          <div className="text-mh-text-bright text-lg font-bold mb-2">
+            {proTrialGamesRemaining}/{PRO_TRIAL_GAME_LIMIT} games left
+          </div>
+          <div className="text-mh-text-dim text-xs space-y-0.5">
+            <div>Next game includes:</div>
+            <div className="text-mh-accent-blue">• Short selling • 10X leverage • All modes</div>
+          </div>
         </div>
-        {gamesRemaining === 0 && (
-          <div className="text-mh-loss-red text-xs mt-1">Resets at midnight</div>
-        )}
-      </div>
+      )}
 
-      {/* Upsell Section - Less aggressive than Guest */}
+      {/* Daily Games Remaining Counter - Only show if no trial remaining */}
+      {!hasProTrial && (
+        <div className="border border-mh-border p-3 mb-6 min-w-[200px] bg-mh-border/10">
+          <div className="flex justify-between items-center">
+            <span className="text-mh-text-dim text-xs">DAILY GAMES</span>
+            <span
+              className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}
+            >
+              {gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
+            </span>
+          </div>
+          {gamesRemaining === 0 && (
+            <div className="text-mh-loss-red text-xs mt-1">Resets at midnight</div>
+          )}
+        </div>
+      )}
+
+      {/* Upsell Section - Different messaging based on trial status */}
       <div className="mb-6 max-w-[280px]">
         <div className="text-mh-text-bright text-sm font-bold mb-3">
-          {isWin ? 'Ready for the real challenge?' : 'That was easy mode.'}
+          {hasProTrial
+            ? 'Love Pro features? Keep them forever:'
+            : isWin
+              ? 'Ready for the real challenge?'
+              : 'That was easy mode.'}
         </div>
-        <div className="text-mh-text-dim text-sm space-y-1 mb-4">
-          <div>• Short selling</div>
-          <div>• 10X leverage</div>
-          <div>• 45 & 60-day challenges</div>
-        </div>
+        {!hasProTrial && (
+          <div className="text-mh-text-dim text-sm space-y-1 mb-4">
+            <div>• Short selling</div>
+            <div>• 10X leverage</div>
+            <div>• 45 & 60-day challenges</div>
+          </div>
+        )}
       </div>
 
       {/* Pricing Buttons */}

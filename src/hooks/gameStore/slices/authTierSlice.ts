@@ -17,6 +17,7 @@ import {
   getLimitType,
   ANONYMOUS_GAME_LIMIT,
   REGISTERED_FREE_DAILY_LIMIT,
+  PRO_TRIAL_GAME_LIMIT,
 } from '@/lib/game/userState'
 import type { GameDuration } from '@/lib/game/types'
 
@@ -45,6 +46,10 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
 
   // Supabase-synced profile data (null for guests)
   supabaseProfile: null,
+
+  // Pro trial state (5 free games with full Pro features for signed-in users)
+  proTrialGamesUsed: 0,
+  isUsingProTrial: false,
 
   // ============================================================================
   // ACTIONS
@@ -167,5 +172,31 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
       gamesRemaining: userTier === 'pro' ? Infinity : Math.max(0, REGISTERED_FREE_DAILY_LIMIT - gamesPlayedToday),
       limitType: userTier === 'pro' ? 'unlimited' : 'daily',
     })
+  },
+
+  // Pro trial actions
+  setProTrialGamesUsed: (count: number) => set({ proTrialGamesUsed: count }),
+  setIsUsingProTrial: (isUsing: boolean) => set({ isUsingProTrial: isUsing }),
+
+  // Computed: effective tier considering Pro trial
+  getEffectiveTier: () => {
+    const { userTier, isLoggedIn, proTrialGamesUsed } = get()
+    // Paid Pro users always get Pro
+    if (userTier === 'pro') return 'pro'
+    // Signed-in free users with trial games remaining get Pro
+    if (isLoggedIn && proTrialGamesUsed < PRO_TRIAL_GAME_LIMIT) return 'pro'
+    // Otherwise free
+    return 'free'
+  },
+
+  hasProTrialRemaining: () => {
+    const { userTier, isLoggedIn, proTrialGamesUsed } = get()
+    // Only free users who are logged in can use trial
+    return userTier === 'free' && isLoggedIn && proTrialGamesUsed < PRO_TRIAL_GAME_LIMIT
+  },
+
+  getProTrialGamesRemaining: () => {
+    const { proTrialGamesUsed } = get()
+    return Math.max(0, PRO_TRIAL_GAME_LIMIT - proTrialGamesUsed)
   },
 })

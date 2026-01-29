@@ -2,15 +2,21 @@
 
 import { useGame } from '@/hooks/useGame'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
-import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
+import { REGISTERED_FREE_DAILY_LIMIT, PRO_TRIAL_GAME_LIMIT } from '@/lib/game/userState'
 
 /**
  * Modal shown when registered free users have hit their daily game limit (3/day).
+ * Only shows when user has no Pro trial games remaining.
  * Prompts them to come back tomorrow or upgrade to Pro.
  */
 export function DailyLimitModal() {
-  const { showDailyLimitModal, setShowDailyLimitModal } = useGame()
+  const showDailyLimitModal = useGame((state) => state.showDailyLimitModal)
+  const setShowDailyLimitModal = useGame((state) => state.setShowDailyLimitModal)
+  const proTrialGamesUsed = useGame((state) => state.proTrialGamesUsed)
   const { checkout, loading: checkoutLoading } = useStripeCheckout()
+
+  // User has used all their Pro trial games
+  const trialExhausted = proTrialGamesUsed >= PRO_TRIAL_GAME_LIMIT
 
   if (!showDailyLimitModal) return null
 
@@ -40,6 +46,12 @@ export function DailyLimitModal() {
           {/* Message */}
           <div className="text-mh-text-main text-sm mb-6 leading-relaxed">
             You&apos;ve used all {REGISTERED_FREE_DAILY_LIMIT} free games for today.
+            {trialExhausted && (
+              <>
+                <br />
+                <span className="text-mh-text-dim">(Pro trial also used: {PRO_TRIAL_GAME_LIMIT}/{PRO_TRIAL_GAME_LIMIT})</span>
+              </>
+            )}
             <br />
             <span className="text-mh-text-dim">Come back tomorrow or upgrade to Pro for unlimited games.</span>
           </div>
