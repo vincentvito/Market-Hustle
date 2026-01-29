@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useUserDetails } from '@/hooks/useUserDetails'
 import { CandlestickChart } from '@/components/game/charts/CandlestickChart'
 import type { Asset, LeverageLevel } from '@/lib/game/types'
 
@@ -131,16 +132,14 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const {
     prices, holdings, cash, buy, sell, getPriceChange, priceHistory,
     shortPositions, leveragedPositions, shortSell, coverShort, buyWithLeverage, closeLeveragedPosition,
-    userTier, selectedTheme,
+    selectedTheme,
   } = useGame()
+  const { isPro } = useUserDetails()
 
   // Theme detection
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
-
-  // Pro tier state
-  const isPro = userTier === 'pro'
   const [leverage, setLeverage] = useState<LeverageLevel>(1)
   const [isShortMode, setIsShortMode] = useState(false)
 

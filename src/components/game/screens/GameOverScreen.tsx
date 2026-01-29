@@ -1,6 +1,7 @@
 'use client'
 
 import { useGame } from '@/hooks/useGame'
+import { useUserDetails } from '@/hooks/useUserDetails'
 import { GuestGameOverView } from './gameOverViews/GuestGameOverView'
 import { FreeUserGameOverView } from './gameOverViews/FreeUserGameOverView'
 import { ProUserGameOverView } from './gameOverViews/ProUserGameOverView'
@@ -13,14 +14,13 @@ import { ProUserGameOverView } from './gameOverViews/ProUserGameOverView'
  * - Pro: Minimal view with loss breakdown
  */
 export function GameOverScreen() {
-  const userTier = useGame(state => state.userTier)
   const isLoggedIn = useGame(state => state.isLoggedIn)
+  const { isPro } = useUserDetails()
 
   // Determine which view to render
   const isGuest = !isLoggedIn
-  const isProUser = userTier === 'pro'
 
   if (isGuest) return <GuestGameOverView />
-  if (isProUser) return <ProUserGameOverView />
+  if (isPro) return <ProUserGameOverView />
   return <FreeUserGameOverView />
 }

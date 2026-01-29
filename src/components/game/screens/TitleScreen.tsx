@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useUserDetails } from '@/hooks/useUserDetails'
 import { useAuth } from '@/contexts/AuthContext'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
@@ -33,16 +34,14 @@ export function TitleScreen() {
   const initializeFromStorage = useGame(state => state.initializeFromStorage)
   const gamesRemaining = useGame(state => state.gamesRemaining)
   const limitType = useGame(state => state.limitType)
-  const userTier = useGame(state => state.userTier)
   const isLoggedIn = useGame(state => state.isLoggedIn)
+  const { isPro } = useUserDetails()
 
   const { user, loading: authLoading } = useAuth()
   const { checkout, loading: checkoutLoading, error: checkoutError } = useStripeCheckout()
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [showAuthModal, setShowAuthModal] = useState(false)
-
-  const isPro = userTier === 'pro'
   // Determine user state: anonymous vs logged-in
   const isAnonymous = !isLoggedIn && !user
 

@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useUserDetails } from '@/hooks/useUserDetails'
 import { useAuth } from '@/contexts/AuthContext'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
@@ -19,7 +20,7 @@ import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
  */
 export function UserDashboard() {
   const { profile, user, refreshProfile } = useAuth()
-  const userTier = useGame(state => state.userTier)
+  const { isPro } = useUserDetails()
   const gamesRemaining = useGame(state => state.gamesRemaining)
   const selectedDuration = useGame(state => state.selectedDuration)
   const setSelectedDuration = useGame(state => state.setSelectedDuration)
@@ -34,7 +35,6 @@ export function UserDashboard() {
   const [checking, setChecking] = useState(false)
   const checkTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const isPro = userTier === 'pro'
 
   // Format large numbers
   const formatNumber = (num: number) => {

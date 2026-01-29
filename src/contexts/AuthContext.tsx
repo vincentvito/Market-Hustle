@@ -177,70 +177,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, fetchProfile])
 
   // Initialize auth state
-  // Track if we need to migrate on first sign-in
-  const [pendingMigrationUserId, setPendingMigrationUserId] = useState<string | null>(null)
-
-  // Step 1: Set up auth listener and initial session check.
-  // IMPORTANT: onAuthStateChange must not make async Supabase calls
-  // to avoid lock contention with the auth client.
+  // Initialize auth state and listen for changes.
   useEffect(() => {
+    let cancelled = false
+
+    // Helper: load profile and optionally migrate stats
+    const loadProfile = async (userId: string, shouldMigrate: boolean) => {
+      const profileData = await fetchProfile(userId)
+      if (cancelled) return
+      setProfile(profileData)
+
+      if (shouldMigrate) {
+        try {
+          await migrateLocalStats(userId)
+          if (cancelled) return
+          const updated = await fetchProfile(userId)
+          if (!cancelled) setProfile(updated)
+        } catch (error) {
+          if (!cancelled) console.error('Error migrating local stats:', error)
+        }
+      }
+    }
+
+    // Listen for future auth changes (sign-in, sign-out, token refresh).
+    // Only update user/session synchronously here — profile fetch happens
+    // separately to avoid Supabase client lock contention.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event: AuthChangeEvent, newSession: Session | null) => {
+      (event: AuthChangeEvent, newSession: Session | null) => {
+        if (cancelled) return
+        const prevUserId = user?.id
         setSession(newSession)
         setUser(newSession?.user ?? null)
-        if (!newSession?.user) {
-          setProfile(null)
-        }
-        if (_event === 'SIGNED_IN' && newSession?.user) {
-          setPendingMigrationUserId(newSession.user.id)
-        }
         setLoading(false)
+
+        // Only fetch profile on actual auth changes (not INITIAL_SESSION)
+        if (event === 'SIGNED_IN' && newSession?.user) {
+          loadProfile(newSession.user.id, true)
+        } else if (event === 'SIGNED_OUT' || !newSession?.user) {
+          setProfile(null)
+        } else if (event === 'TOKEN_REFRESHED' && newSession?.user && newSession.user.id !== prevUserId) {
+          loadProfile(newSession.user.id, false)
+        }
       }
     )
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+    // Load initial session and profile on mount
+    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
+      if (cancelled) return
       setSession(initialSession)
       setUser(initialSession?.user ?? null)
       setLoading(false)
+
+      if (initialSession?.user) {
+        await loadProfile(initialSession.user.id, false)
+      }
     })
 
     return () => {
+      cancelled = true
       subscription.unsubscribe()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase])
-
-  // Step 2: Fetch profile whenever user changes (separate from auth listener)
-  useEffect(() => {
-    if (!user) {
-      setProfile(null)
-      return
-    }
-    let cancelled = false
-    fetchProfile(user.id).then(profileData => {
-      if (!cancelled) setProfile(profileData)
-    })
-    return () => { cancelled = true }
-  }, [user, fetchProfile])
-
-  // Step 3: Migrate local stats on first sign-in (separate, non-blocking)
-  useEffect(() => {
-    if (!pendingMigrationUserId) return
-    let cancelled = false
-    const userId = pendingMigrationUserId
-    setPendingMigrationUserId(null)
-
-    migrateLocalStats(userId).then(() => {
-      if (cancelled) return
-      // Refresh profile after migration
-      return fetchProfile(userId)
-    }).then(updatedProfile => {
-      if (!cancelled && updatedProfile) setProfile(updatedProfile)
-    }).catch(error => {
-      if (!cancelled) console.error('Error migrating local stats:', error)
-    })
-    return () => { cancelled = true }
-  }, [pendingMigrationUserId, fetchProfile, migrateLocalStats])
 
   // Passwordless magic link authentication
   const signInWithMagicLink = async (email: string) => {
@@ -323,8 +321,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .from('profiles')
       .update({
         total_games_played: profile.total_games_played + 1,
-        total_earnings: profile.total_earnings + profit,
-        best_net_worth: Math.max(profile.best_net_worth, finalNetWorth),
+        total_earnings: Math.round(profile.total_earnings + profit),
+        best_net_worth: Math.round(Math.max(profile.best_net_worth, finalNetWorth)),
         win_count: isWin ? profile.win_count + 1 : profile.win_count,
       })
       .eq('id', user.id)
@@ -341,7 +339,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           user_id: user.id,
           game_id: gameData.gameId,
           duration: gameData.duration,
-          final_net_worth: finalNetWorth,
+          final_net_worth: Math.round(finalNetWorth),
           profit_percent: gameData.profitPercent,
           days_survived: gameData.daysSurvived,
           outcome: gameData.outcome,
@@ -357,20 +355,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Increment pro trial games used counter (called on game END when using trial)
   const useProTrialGame = useCallback(async () => {
-    if (!user || !profile) return
+    console.log('[useProTrialGame] called', { hasUser: !!user, userId: user?.id, hasProfile: !!profile, profileTier: profile?.tier, proTrialGamesUsed: profile?.pro_trial_games_used })
+    if (!user || !profile) {
+      console.warn('[useProTrialGame] BAIL — user or profile is null', { user: !!user, profile: !!profile })
+      return
+    }
+
+    const newCount = (profile.pro_trial_games_used || 0) + 1
+    console.log('[useProTrialGame] upserting pro_trials', { userId: user.id, newGamesUsed: newCount })
 
     const { error } = await supabase
       .from('pro_trials')
       .upsert({
         user_id: user.id,
-        games_used: (profile.pro_trial_games_used || 0) + 1,
+        games_used: newCount,
         updated_at: new Date().toISOString(),
       })
 
     if (error) {
-      console.error('Error incrementing pro trial games:', error)
+      console.error('[useProTrialGame] DB error:', error)
     } else {
+      console.log('[useProTrialGame] upsert success, refreshing profile...')
       await refreshProfile()
+      console.log('[useProTrialGame] profile refreshed')
     }
   }, [user, profile, supabase, refreshProfile])
 

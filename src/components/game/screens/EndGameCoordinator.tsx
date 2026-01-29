@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useUserDetails } from '@/hooks/useUserDetails'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { getEndGameMessage } from '@/lib/game/endGameMessages'
 import { ASSETS } from '@/lib/game/assets'
@@ -33,9 +34,9 @@ export function EndGameCoordinator() {
   const gamesRemaining = useGame((state) => state.gamesRemaining)
 
   // Auth state
-  const userTier = useGame((state) => state.userTier)
   const isLoggedIn = useGame((state) => state.isLoggedIn)
   const getProTrialGamesRemaining = useGame((state) => state.getProTrialGamesRemaining)
+  const { isPro } = useUserDetails()
 
   // Pro-specific data for loss breakdown
   const leveragedPositions = useGame((state) => state.leveragedPositions)
@@ -61,7 +62,7 @@ export function EndGameCoordinator() {
 
   // Compute loss breakdown for Pro users
   const lossBreakdown = useMemo((): LossBreakdown | undefined => {
-    if (userTier !== 'pro' || outcome !== 'loss') return undefined
+    if (!isPro || outcome !== 'loss') return undefined
 
     // Only show breakdown for relevant game-over reasons
     const showBreakdown =
@@ -104,7 +105,7 @@ export function EndGameCoordinator() {
       shortLosses,
       cashRemaining: cash,
     }
-  }, [userTier, outcome, gameOverReason, leveragedPositions, shortPositions, prices, cash])
+  }, [isPro, outcome, gameOverReason, leveragedPositions, shortPositions, prices, cash])
 
   // Action handlers
   const handlePlayAgain = () => {
@@ -144,7 +145,6 @@ export function EndGameCoordinator() {
 
   // Determine user type and render appropriate view
   const isGuest = !isLoggedIn
-  const isPro = userTier === 'pro'
 
   return (
     <>

@@ -89,9 +89,12 @@ export function callRecordGameEnd(
  * Fire-and-forget - does not block game end.
  */
 export function callUseProTrialGame(): void {
+  console.log('[authBridge] callUseProTrialGame called, bridge registered:', !!consumeProTrialFn)
   if (consumeProTrialFn) {
     consumeProTrialFn().catch(err => {
-      console.error('Error incrementing pro trial games:', err)
+      console.error('[authBridge] Error incrementing pro trial games:', err)
     })
+  } else {
+    console.warn('[authBridge] consumeProTrialFn is null — bridge not registered')
   }
 }

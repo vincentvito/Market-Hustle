@@ -29,12 +29,7 @@ export async function GET(request: NextRequest) {
       }
     )
 
-    const supabaseCookiesBefore = request.cookies.getAll().filter(c => c.name.includes('sb-'))
-    console.log('[auth/callback] cookies before exchange:', supabaseCookiesBefore.map(c => c.name))
-
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-
-    console.log('[auth/callback] cookies on response after exchange:', response.cookies.getAll().map(c => ({ name: c.name, httpOnly: c.httpOnly, secure: c.secure, sameSite: c.sameSite })))
 
     if (error) {
       console.error('Auth callback error:', error)

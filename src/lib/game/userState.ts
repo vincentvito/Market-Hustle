@@ -92,8 +92,9 @@ export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
   // Pro users have no limits
   if (state.tier === 'pro') return true
 
-  // Anonymous users (not logged in): 10 lifetime games
-  if (!isLoggedIn || state.isAnonymous) {
+  // Anonymous users (not logged in): lifetime games limit
+  // Trust isLoggedIn from auth context over localStorage's isAnonymous flag
+  if (!isLoggedIn) {
     return state.anonymousGamesPlayed < ANONYMOUS_GAME_LIMIT
   }
 
@@ -112,7 +113,7 @@ export function getRemainingGames(state: UserState, isLoggedIn: boolean): number
   if (state.tier === 'pro') return Infinity
 
   // Anonymous users: remaining out of 10 lifetime
-  if (!isLoggedIn || state.isAnonymous) {
+  if (!isLoggedIn) {
     return Math.max(0, ANONYMOUS_GAME_LIMIT - state.anonymousGamesPlayed)
   }
 
@@ -127,6 +128,6 @@ export function getRemainingGames(state: UserState, isLoggedIn: boolean): number
 // Get the limit type for display purposes
 export function getLimitType(state: UserState, isLoggedIn: boolean): 'anonymous' | 'daily' | 'unlimited' {
   if (state.tier === 'pro') return 'unlimited'
-  if (!isLoggedIn || state.isAnonymous) return 'anonymous'
+  if (!isLoggedIn) return 'anonymous'
   return 'daily'
 }

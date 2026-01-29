@@ -88,9 +88,9 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
 
   // Duration selection - persists to localStorage
   setSelectedDuration: (duration: GameDuration) => {
-    const { userTier } = get()
-    // Free users can only select 30 days
-    const validDuration = userTier === 'free' ? 30 : duration
+    const { getEffectiveTier } = get()
+    // Free users (without pro trial) can only select 30 days
+    const validDuration = getEffectiveTier() === 'free' ? 30 : duration
 
     // Persist to localStorage
     const userState = loadUserState()
