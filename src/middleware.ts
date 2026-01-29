@@ -29,8 +29,10 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session on each request
-  await supabase.auth.getSession()
+  // Validate and refresh session on each request
+  // getUser() contacts the Supabase Auth server to revalidate the token,
+  // unlike getSession() which only reads from cookies without validation
+  await supabase.auth.getUser()
 
   return response
 }

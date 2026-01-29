@@ -178,21 +178,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize auth state
   useEffect(() => {
+    let cancelled = false
+
     const initAuth = async () => {
       try {
-        const { data: { session: initialSession } } = await supabase.auth.getSession()
+        // Use getUser() which validates the token with the Supabase Auth server,
+        // unlike getSession() which only reads from cookies without validation
+        const { data: { user: initialUser } } = await supabase.auth.getUser()
 
-        setSession(initialSession)
-        setUser(initialSession?.user ?? null)
+        if (cancelled) return
 
-        if (initialSession?.user) {
-          const profileData = await fetchProfile(initialSession.user.id)
+        if (initialUser) {
+          // Get session for components that need it
+          const { data: { session: initialSession } } = await supabase.auth.getSession()
+          if (cancelled) return
+          setSession(initialSession)
+          setUser(initialUser)
+          const profileData = await fetchProfile(initialUser.id)
+          if (cancelled) return
           setProfile(profileData)
+        } else {
+          setSession(null)
+          setUser(null)
         }
       } catch (error) {
+        if (cancelled) return
+        // Ignore AbortErrors from Supabase client request cancellation
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.debug('Auth init aborted (likely superseded by onAuthStateChange)')
+          return
+        }
         console.error('Error initializing auth:', error)
       } finally {
-        setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+        }
       }
     }
 
@@ -201,27 +221,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, newSession: Session | null) => {
+        if (cancelled) return
+
         setSession(newSession)
         setUser(newSession?.user ?? null)
 
         if (newSession?.user) {
-          const profileData = await fetchProfile(newSession.user.id)
-          setProfile(profileData)
+          try {
+            const profileData = await fetchProfile(newSession.user.id)
+            if (cancelled) return
+            setProfile(profileData)
 
-          // Migrate local stats on first sign in
-          if (event === 'SIGNED_IN') {
-            await migrateLocalStats(newSession.user.id)
-            // Refresh profile after migration
-            const updatedProfile = await fetchProfile(newSession.user.id)
-            setProfile(updatedProfile)
+            // Migrate local stats on first sign in
+            if (event === 'SIGNED_IN') {
+              await migrateLocalStats(newSession.user.id)
+              if (cancelled) return
+              // Refresh profile after migration
+              const updatedProfile = await fetchProfile(newSession.user.id)
+              if (cancelled) return
+              setProfile(updatedProfile)
+            }
+          } catch (error) {
+            if (cancelled) return
+            if (error instanceof Error && error.name === 'AbortError') {
+              console.debug('Auth state change fetch aborted')
+              return
+            }
+            console.error('Error in auth state change handler:', error)
           }
         } else {
           setProfile(null)
         }
+
+        // Ensure loading is cleared after auth state change resolves
+        setLoading(false)
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      cancelled = true
+      subscription.unsubscribe()
+    }
   }, [supabase, fetchProfile, migrateLocalStats])
 
   // Passwordless magic link authentication
