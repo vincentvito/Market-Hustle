@@ -36,9 +36,12 @@ export function TierSync() {
     // Wait for auth to finish loading
     if (loading) return
 
-    if (user && profile) {
-      // User is logged in - use Supabase as authoritative source
+    if (user) {
+      // User is logged in
       setIsLoggedIn(true)
+
+      // If profile is loaded, sync tier and game data from Supabase
+      if (!profile) return
       setUserTier(profile.tier)
 
       // Sync Pro trial games used from Supabase

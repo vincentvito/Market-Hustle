@@ -177,92 +177,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, fetchProfile])
 
   // Initialize auth state
+  // Track if we need to migrate on first sign-in
+  const [pendingMigrationUserId, setPendingMigrationUserId] = useState<string | null>(null)
+
+  // Step 1: Set up auth listener and initial session check.
+  // IMPORTANT: onAuthStateChange must not make async Supabase calls
+  // to avoid lock contention with the auth client.
   useEffect(() => {
-    let cancelled = false
-
-    const initAuth = async () => {
-      try {
-        // Use getUser() which validates the token with the Supabase Auth server,
-        // unlike getSession() which only reads from cookies without validation
-        const { data: { user: initialUser } } = await supabase.auth.getUser()
-
-        if (cancelled) return
-
-        if (initialUser) {
-          // Get session for components that need it
-          const { data: { session: initialSession } } = await supabase.auth.getSession()
-          if (cancelled) return
-          setSession(initialSession)
-          setUser(initialUser)
-          const profileData = await fetchProfile(initialUser.id)
-          if (cancelled) return
-          setProfile(profileData)
-        } else {
-          setSession(null)
-          setUser(null)
-        }
-      } catch (error) {
-        if (cancelled) return
-        // Ignore AbortErrors from Supabase client request cancellation
-        if (error instanceof Error && error.name === 'AbortError') {
-          console.debug('Auth init aborted (likely superseded by onAuthStateChange)')
-          return
-        }
-        console.error('Error initializing auth:', error)
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    initAuth()
-
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, newSession: Session | null) => {
-        if (cancelled) return
-
+      (_event: AuthChangeEvent, newSession: Session | null) => {
         setSession(newSession)
         setUser(newSession?.user ?? null)
-
-        if (newSession?.user) {
-          try {
-            const profileData = await fetchProfile(newSession.user.id)
-            if (cancelled) return
-            setProfile(profileData)
-
-            // Migrate local stats on first sign in
-            if (event === 'SIGNED_IN') {
-              await migrateLocalStats(newSession.user.id)
-              if (cancelled) return
-              // Refresh profile after migration
-              const updatedProfile = await fetchProfile(newSession.user.id)
-              if (cancelled) return
-              setProfile(updatedProfile)
-            }
-          } catch (error) {
-            if (cancelled) return
-            if (error instanceof Error && error.name === 'AbortError') {
-              console.debug('Auth state change fetch aborted')
-              return
-            }
-            console.error('Error in auth state change handler:', error)
-          }
-        } else {
+        if (!newSession?.user) {
           setProfile(null)
         }
-
-        // Ensure loading is cleared after auth state change resolves
+        if (_event === 'SIGNED_IN' && newSession?.user) {
+          setPendingMigrationUserId(newSession.user.id)
+        }
         setLoading(false)
       }
     )
 
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      setSession(initialSession)
+      setUser(initialSession?.user ?? null)
+      setLoading(false)
+    })
+
     return () => {
-      cancelled = true
       subscription.unsubscribe()
     }
-  }, [supabase, fetchProfile, migrateLocalStats])
+  }, [supabase])
+
+  // Step 2: Fetch profile whenever user changes (separate from auth listener)
+  useEffect(() => {
+    if (!user) {
+      setProfile(null)
+      return
+    }
+    let cancelled = false
+    fetchProfile(user.id).then(profileData => {
+      if (!cancelled) setProfile(profileData)
+    })
+    return () => { cancelled = true }
+  }, [user, fetchProfile])
+
+  // Step 3: Migrate local stats on first sign-in (separate, non-blocking)
+  useEffect(() => {
+    if (!pendingMigrationUserId) return
+    let cancelled = false
+    const userId = pendingMigrationUserId
+    setPendingMigrationUserId(null)
+
+    migrateLocalStats(userId).then(() => {
+      if (cancelled) return
+      // Refresh profile after migration
+      return fetchProfile(userId)
+    }).then(updatedProfile => {
+      if (!cancelled && updatedProfile) setProfile(updatedProfile)
+    }).catch(error => {
+      if (!cancelled) console.error('Error migrating local stats:', error)
+    })
+    return () => { cancelled = true }
+  }, [pendingMigrationUserId, fetchProfile, migrateLocalStats])
 
   // Passwordless magic link authentication
   const signInWithMagicLink = async (email: string) => {
