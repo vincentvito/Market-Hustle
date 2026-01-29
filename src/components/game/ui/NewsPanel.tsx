@@ -69,8 +69,6 @@ export function NewsPanel() {
     activeMilestone,
     milestonePhase,
     selectedTheme,
-    activeNearMiss,
-    clearNearMiss,
     activeBuyMessage,
     clearBuyMessage,
     activeSellToast,
@@ -78,7 +76,9 @@ export function NewsPanel() {
     activeInvestmentBuyMessage,
     clearInvestmentBuyMessage,
     activeInvestmentResultToast,
-    clearInvestmentResultToast
+    clearInvestmentResultToast,
+    activeErrorMessage,
+    clearErrorMessage,
   } = useGame()
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
@@ -117,14 +117,6 @@ export function NewsPanel() {
       return () => clearTimeout(timer)
     }
   }, [milestonePhase])
-
-  // Auto-dismiss near miss after 5 seconds
-  useEffect(() => {
-    if (activeNearMiss) {
-      const timer = setTimeout(() => clearNearMiss(), 5000)
-      return () => clearTimeout(timer)
-    }
-  }, [activeNearMiss, clearNearMiss])
 
   // Watch for day changes to trigger typewriter (RETRO 2 only)
   useEffect(() => {
@@ -286,6 +278,26 @@ export function NewsPanel() {
           </div>
         )}
 
+        {/* Error/Warning Messages */}
+        {activeErrorMessage && (
+          <div
+            onClick={clearErrorMessage}
+            className={`cursor-pointer hover:brightness-110 transition-all
+              ${isModern3 ? 'py-1.5 px-2 rounded-lg mb-2 -mx-2' : 'py-2 px-3'}
+              ${!isModern3 && (isRetro2 ? 'rounded mb-1.5 -mx-3' : 'mb-1.5 -mx-3')}
+              ${!isModern3 && 'border-l-4 border-l-mh-loss-red'}`}
+            style={{
+              background: isModern3 ? 'rgba(255,71,87,0.15)' : isRetro2 ? 'rgba(255,82,82,0.15)' : 'rgba(255,82,82,0.12)',
+              textShadow: isModern3 ? '0 0 10px rgba(255,71,87,0.6)' : '0 0 8px rgba(255,82,82,0.5)',
+            }}
+          >
+            <span className={`text-sm font-bold ${!isModern3 && 'font-mono'} text-mh-loss-red`}>
+              {activeErrorMessage.startsWith('🗑️') ? activeErrorMessage : `⚠️ ${activeErrorMessage}`}
+            </span>
+            <span className="text-mh-text-dim text-xs opacity-80 ml-2">✕</span>
+          </div>
+        )}
+
         {/* Trade SELL confirmation with background */}
         {activeSellToast && (
           <div
@@ -373,25 +385,6 @@ export function NewsPanel() {
               TRADE: {activeBuyMessage}
             </span>
             <span className="text-mh-text-dim text-xs opacity-80 ml-2">✕</span>
-          </div>
-        )}
-
-        {/* Near Miss notification displayed as news item */}
-        {activeNearMiss && (
-          <div
-            onClick={clearNearMiss}
-            className="text-sm leading-snug cursor-pointer hover:brightness-125 transition-all"
-          >
-            <span
-              className="text-mh-news font-bold"
-              style={{ textShadow: '0 0 8px rgba(255,170,0,0.4)' }}
-            >
-              {activeNearMiss.type === 'missed_moon' || activeNearMiss.type === 'missed_gain'
-                ? 'FOMO: '
-                : 'NEAR MISS: '}
-              {activeNearMiss.message}
-            </span>
-            <span className="text-mh-rumor text-xs opacity-80 ml-1">✕</span>
           </div>
         )}
 

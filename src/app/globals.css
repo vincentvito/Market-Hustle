@@ -14,6 +14,13 @@
   --mh-border: #2a3a4a;
   --mh-news: #ffaa00;
 
+  /* Strategy colors (purple default) */
+  --mh-strategy-primary: #a855f7;
+  --mh-strategy-bg: rgba(168, 85, 247, 0.1);
+  --mh-strategy-border: rgba(168, 85, 247, 0.3);
+  --mh-strategy-elite: #f59e0b;
+  --mh-strategy-glow: 0 0 15px rgba(168, 85, 247, 0.4);
+
   /* Theme: Font family (Retro default) */
   --mh-font-family: "Courier New", "Lucida Console", monospace;
 
@@ -33,6 +40,13 @@
 
   /* News text also green */
   --mh-news: #00ff88;
+
+  /* Strategy colors - green to match theme */
+  --mh-strategy-primary: #00ff88;
+  --mh-strategy-bg: rgba(0, 255, 136, 0.1);
+  --mh-strategy-border: rgba(0, 255, 136, 0.3);
+  --mh-strategy-elite: #ffcc00;
+  --mh-strategy-glow: 0 0 15px rgba(0, 255, 136, 0.4);
 
   /* RETRO 2 specific glows for overlays and buttons */
   --retro2-glow: 0 0 12px rgba(0, 255, 136, 0.4);
@@ -56,6 +70,13 @@
 
   /* Card/panel backgrounds */
   --mh-card-bg: #0f1419;
+
+  /* Strategy colors - cyan to match theme */
+  --mh-strategy-primary: #00d4aa;
+  --mh-strategy-bg: rgba(0, 212, 170, 0.1);
+  --mh-strategy-border: rgba(0, 212, 170, 0.3);
+  --mh-strategy-elite: #fbbf24;
+  --mh-strategy-glow: 0 0 15px rgba(0, 212, 170, 0.4);
 
   /* Typography - monospace */
   --mh-font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
@@ -120,6 +141,13 @@
 
   /* Card background */
   --mh-card-bg: #000000;
+
+  /* Strategy colors - orange to match Bloomberg theme */
+  --mh-strategy-primary: #ff9900;
+  --mh-strategy-bg: rgba(255, 153, 0, 0.1);
+  --mh-strategy-border: rgba(255, 153, 0, 0.3);
+  --mh-strategy-elite: #ffcc00;
+  --mh-strategy-glow: none;          /* No glow for Bloomberg */
 
   /* Typography - dense monospace terminal font */
   --mh-font-family: "Consolas", "SF Mono", "Courier New", monospace;
@@ -296,6 +324,71 @@ body {
 @keyframes fadeIn {
   0% { opacity: 0; transform: scale(0.95); }
   100% { opacity: 1; transform: scale(1); }
+}
+
+/* Strategies panel slide-in animation */
+@keyframes slideInRight {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+/* Strategy theming classes */
+.strategy-active-btn {
+  background: var(--mh-strategy-bg);
+  color: var(--mh-strategy-primary);
+  border: 1px solid var(--mh-strategy-border);
+}
+
+.strategy-elite-btn {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--mh-strategy-elite);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.strategy-ability-btn {
+  background: var(--mh-strategy-bg);
+  border: 1px solid var(--mh-strategy-border);
+  color: var(--mh-strategy-primary);
+}
+
+.strategy-ability-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.strategy-ability-btn:disabled {
+  background: rgba(107, 114, 128, 0.2);
+  border-color: rgba(107, 114, 128, 0.3);
+  color: rgb(107, 114, 128);
+  cursor: not-allowed;
+}
+
+.strategy-preview-box {
+  background: var(--mh-strategy-bg);
+  border: 1px solid var(--mh-strategy-border);
+}
+
+.strategy-preview-title {
+  color: var(--mh-strategy-primary);
+}
+
+.strategy-favor-btn {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--mh-strategy-elite);
+}
+
+.strategy-favor-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.strategy-modal-option:hover {
+  border-color: var(--mh-strategy-border);
+  background: var(--mh-strategy-bg);
+}
+
+.strategy-favor-modal-option:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.1);
 }
 
 /* Desktop wrapper - dark background for desktop */

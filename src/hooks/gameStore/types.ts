@@ -16,12 +16,16 @@ import type {
   EncounterState,
   EncounterType,
   PendingEncounter,
-  SoldPosition,
-  NearMissNotification,
+  PendingLiquidation,
   AssetMood,
   LeverageLevel,
   LeveragedPosition,
   ShortPosition,
+  StrategyId,
+  StrategyTier,
+  PolicyId,
+  DestabilizationTargetId,
+  CelebrationEvent,
 } from '@/lib/game/types'
 import type { EncounterResult } from '@/lib/game/encounters'
 import type { UserTier } from '@/lib/game/userState'
@@ -79,6 +83,7 @@ export interface MechanicsSlice extends GameState {
     profitLossPct: number
     isProfit: boolean
   } | null
+  activeErrorMessage: string | null
 
   // Settings state
   showSettings: boolean
@@ -109,6 +114,8 @@ export interface MechanicsSlice extends GameState {
   // Lifestyle actions
   buyLifestyle: (assetId: string) => void
   sellLifestyle: (assetId: string) => void
+  acceptPEExitOffer: () => void
+  declinePEExitOffer: () => void
 
   // UI actions
   setShowPortfolio: (show: boolean) => void
@@ -120,17 +127,53 @@ export interface MechanicsSlice extends GameState {
   clearBuyMessage: () => void
   clearInvestmentBuyMessage: () => void
   clearInvestmentResultToast: () => void
+  clearErrorMessage: () => void
   clearPendingAchievement: () => void
   triggerAchievement: (id: string) => void
 
   // Milestone actions
   clearMilestone: () => void
 
-  // Near-miss actions
-  clearNearMiss: () => void
+  // Celebration actions
+  dismissCelebration: () => void
 
   // Encounter actions
   confirmEncounterResult: (result: EncounterResult, encounterType: EncounterType) => void
+
+  // Liquidation actions
+  pendingLiquidation: PendingLiquidation | null
+  confirmLiquidationSelection: (selectedAssets: Array<{ type: 'lifestyle' | 'trading'; id: string; currentValue: number; quantity: number }>) => void
+
+  // Strategy actions
+  activateStrategy: (strategyId: StrategyId, tier: 'active' | 'elite') => void
+  deactivateStrategy: (strategyId: StrategyId) => void
+  upgradeStrategy: (strategyId: StrategyId) => void
+  useSpin: () => void                          // Media Control Elite
+  usePlant: (assetId: string) => void          // Media Control Elite
+  pushPolicy: (policyId: PolicyId) => void     // Lobbying Elite
+  selectDestabilizationTarget: (targetId: DestabilizationTargetId) => void  // Destabilization
+  executeCoup: () => void                      // Destabilization Elite
+  executeTargetedElimination: (sectorId: string) => void  // Destabilization Elite
+  setShowStrategiesPanel: (show: boolean) => void
+  clearStrategyCostMessage: () => void
+
+  // Strategy computed
+  getStrategyTier: (strategyId: StrategyId) => StrategyTier
+  canAffordStrategy: (strategyId: StrategyId, tier: 'active' | 'elite') => boolean
+  meetsStrategyGate: (strategyId: StrategyId, tier: 'active' | 'elite') => boolean
+  getTotalDailyStrategyCost: () => number
+  canUseSpin: () => boolean
+  canUsePlant: () => boolean
+  canPushPolicy: () => boolean
+  getPolicyPushInfo: () => {
+    pushNumber: number
+    cost: number
+    successRate: number
+    cooldownRemaining: number
+    canAfford: boolean
+  }
+  canExecuteCoup: () => boolean
+  canExecuteElimination: () => boolean
 
   // Computed
   getNetWorth: () => number

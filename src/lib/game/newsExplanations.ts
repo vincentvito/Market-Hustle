@@ -360,9 +360,9 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "FDA REQUESTS ADDITIONAL TRIALS": "More trials mean years of delay. Biotech crashes on pushed-out revenue. Regulatory uncertainty weighs on the sector.",
 
-  "WHO DECLARES DISEASE X PANDEMIC": "New pandemic triggers 2020 playbook. Biotech surges. Everything else crashes. Oil collapses on lockdowns. Gold rises on fear.",
+  "WHO DECLARES PUBLIC HEALTH EMERGENCY OF INTERNATIONAL CONCERN": "PHEIC declaration triggers global response protocols. Biotech surges on vaccine and treatment demand. Broad markets sell off on lockdown fears. Oil collapses as travel halts. Gold rises as safe haven.",
 
-  "OUTBREAK CONTAINED - FALSE ALARM": "No pandemic. Markets recover. Oil and travel rally. Biotech gives back gains.",
+  "CDC: OUTBREAK CONTAINED, NO SUSTAINED TRANSMISSION": "Epidemiological data confirms no community spread. Markets recover as pandemic risk fades. Oil and travel rally. Biotech gives back speculative gains.",
 
   "TRIAL RESULTS: 90% EFFICACY - CURE IN SIGHT": "Alzheimer's cure would be one of history's biggest breakthroughs. Biotech explodes. Healthcare transforms. Millions of families get hope.",
 

@@ -29,5 +29,6 @@ export {
   selectRandomChain,
   selectRandomStartup,
   selectOutcome,
+  selectOutcomeWithBonus,
   getRandomDuration,
 } from './helpers'

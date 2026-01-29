@@ -1,3 +1,59 @@
+// =============================================================================
+// STRATEGY TYPES (defined here to avoid circular imports)
+// =============================================================================
+
+export type StrategyTier = 'off' | 'active' | 'elite'
+
+export type StrategyId =
+  | 'privateJet'
+  | 'lobbying'
+  | 'mediaControl'
+  | 'destabilization'
+
+export interface ActiveStrategy {
+  strategyId: StrategyId
+  tier: 'active' | 'elite'
+  activatedDay: number
+  abilitiesUsed: {
+    spin?: number
+    plant?: number
+    policyPushed?: string
+    coupUsed?: boolean        // Destabilization Elite: 1x/game coup ability
+    eliminationUsed?: boolean // Destabilization Elite: 1x/game targeted elimination
+  }
+}
+
+// Destabilization target regions
+export type DestabilizationTargetId = 'middle_east' | 'asia' | 'south_america' | 'africa'
+
+export interface ActiveDestabilization {
+  targetId: DestabilizationTargetId
+  activatedDay: number
+}
+
+// IntelligencePreview removed - Intelligence Network strategy removed
+
+export interface PlantedBoost {
+  assetId: string
+  appliedDay: number
+  didBackfire: boolean
+  boostAmount: number
+}
+
+export type PolicyId =
+  | 'tech_tax'
+  | 'energy_subsidy'
+  | 'crypto_dereg'
+  | 'defense_spending'
+  | 'market_manipulation'
+
+// FavorType removed - Black Book strategy removed
+// InsiderIntelTip removed - Black Book strategy removed
+
+// =============================================================================
+// CORE TYPES
+// =============================================================================
+
 export interface Asset {
   id: string
   name: string
@@ -138,9 +194,16 @@ export interface GameState {
   activeInvestments: ActiveInvestment[]
   usedStartupIds: string[]
   pendingStartupOffer: Startup | null
+  // Startup offer tracking (for caps and cooldowns)
+  startupOfferCounts: {
+    angel: number      // Offers shown (includes dismissed)
+    vc: number         // Offers shown (includes dismissed)
+  }
+  lastStartupOfferDay: number | null  // Day of last offer (for cooldown)
   // Lifestyle assets state
   ownedLifestyle: OwnedLifestyleItem[]
   lifestylePrices: Record<string, number>
+  activePEExitOffer: PEExitOffer | null  // Acquisition/IPO offer awaiting player decision
   // Event escalation state
   activeEscalations: ActiveEscalation[]
   // Milestone tracking
@@ -148,6 +211,10 @@ export interface GameState {
   reachedMilestones: string[] // IDs of milestones reached this game
   activeMilestone: { id: string; title: string; tier: string; scarcityMessage: string } | null // Currently displaying
   milestonePhase: 'idle' | 'takeover' | 'persist' // Animation phase
+  // Celebration queue system (investment results + milestones)
+  celebrationQueue: CelebrationEvent[]         // Queued celebrations waiting to display
+  activeCelebration: CelebrationEvent | null   // Currently showing celebration overlay
+  isCelebrationDay: boolean                    // Suppresses new offers/encounters when true
   // Multi-stage story state (Phase 1: runs alongside existing system)
   activeStories: ActiveStory[]
   usedStoryIds: string[] // Stories already used this game
@@ -157,14 +224,22 @@ export interface GameState {
   encounterState: EncounterState
   pendingEncounter: PendingEncounter | null  // Encounter awaiting player decision
   queuedStartupOffer: Startup | null  // Startup offer delayed by encounter
-  // Near-miss notification state (FOMO triggers)
-  soldPositions: SoldPosition[]              // Track recent sales for near-miss detection
-  activeNearMiss: NearMissNotification | null // Currently displayed near-miss
-  lastNearMissDay: number                    // For cooldown between notifications
+  pendingLiquidation: PendingLiquidation | null  // Asset seizure awaiting player selection
   // Market mood tracking (for conflict prevention)
   assetMoods: AssetMood[]                    // Current mood per asset (decays after 3 days)
   // Flavor events (meme/celebrity news in secondary slot)
   usedFlavorHeadlines: string[]              // Headlines already shown this game
+  // Strategies state
+  activeStrategies: ActiveStrategy[]         // Currently active strategies
+  scheduledNextEvent: MarketEvent | null     // Pre-determined event (kept for lobbying policy effects)
+  plantedBoostActive: PlantedBoost | null    // Media Control Plant effect tracking
+  queuedPolicyPush: PolicyId | null          // Lobbying "Push policy"
+  activePolicies: PolicyId[]                 // Active policies (last rest of game)
+  policyPushAttempts: number                 // Total policy push attempts this game (for escalating costs)
+  lastPolicyPushDay: number | null           // Day of last push attempt (for cooldown)
+  activeDestabilization: ActiveDestabilization | null  // Destabilization target region
+  showStrategiesPanel: boolean               // UI state for strategies panel
+  strategyCostMessage: string | null         // Message about strategy costs
 }
 
 // Wall St Gossip tracking
@@ -190,6 +265,15 @@ export interface PendingEncounter {
   // For roulette, need to track selected color and bet amount
   rouletteColor?: RouletteColor
   rouletteBet?: number
+}
+
+// Pending liquidation (forced asset sale for SEC/Divorce)
+export interface PendingLiquidation {
+  amountNeeded: number
+  reason: 'sec' | 'divorce'
+  headline: string  // Result headline to show after liquidation
+  encounterType: EncounterType
+  encounterState: EncounterState  // Pre-computed updated state
 }
 
 // Encounter resolution result
@@ -251,7 +335,20 @@ export interface ActiveInvestment {
 }
 
 // Lifestyle Asset Types
-export type LifestyleCategory = 'property' | 'jet' | 'team'
+export type LifestyleCategory = 'property' | 'private_equity'
+
+// PE Risk Tiers - simplified to two categories
+// BLUE_CHIP: Established businesses, proven models, stable income (~5% return, ~3% monthly failure)
+// GROWTH: High risk/reward, volatile industries (~6-10% return, ~6-18% monthly failure)
+export type PERiskTier = 'blue_chip' | 'growth'
+
+// Strategic Unlock: Unlocks or enhances strategies from owning certain PE assets
+export interface StrategicUnlock {
+  strategyId?: StrategyId              // Which strategy this asset unlocks/enhances
+  bonusType: 'unlock' | 'effectiveness' | 'cost_reduction' | 'exposure_reduction' | 'placeholder'
+  bonusValue?: number                  // e.g., 0.15 for +15% bonus (not used for 'unlock')
+  description: string                  // Human-readable description shown in UI
+}
 
 export interface LifestyleAsset {
   id: string
@@ -260,15 +357,27 @@ export interface LifestyleAsset {
   category: LifestyleCategory
   basePrice: number
   volatility: number // price fluctuation (like trading assets)
-  dailyReturn: number // % of purchase price per day (positive = income, negative = cost), OR fixed amount for jets
+  dailyReturn: number // % of purchase price per day (positive = income, negative = cost)
   description: string
-  vcDealBoost?: number // for jets: bonus to VC deal probability (e.g., 0.10 = +10%)
+  strategicUnlock?: StrategicUnlock    // Optional: unlocks/enhances strategies
+  // PE Risk System (private_equity only)
+  riskTier?: PERiskTier               // Risk tier determines failure chance and UI coloring
+  failureChancePerDay?: number        // Daily probability of total loss (0-1), e.g., 0.0093 = ~25%/month
 }
 
 export interface OwnedLifestyleItem {
   assetId: string
   purchasePrice: number
   purchaseDay: number
+}
+
+// PE Exit Offer (Acquisition or IPO opportunity)
+export interface PEExitOffer {
+  assetId: string
+  type: 'acquisition' | 'ipo'
+  multiplier: number              // Return multiplier (e.g., 3.5x)
+  offerAmount: number             // purchasePrice × multiplier
+  expiresDay: number              // Player has 2 days to decide
 }
 
 // Multi-stage Story Types
@@ -298,25 +407,33 @@ export interface ActiveStory {
   resolvedPositive?: boolean  // Set when final stage resolves
 }
 
-// Near-Miss Notification Types (FOMO triggers)
-export interface SoldPosition {
-  assetId: string
-  assetName: string
-  soldDay: number           // Day the sale occurred
-  soldPrice: number         // Price at time of sale
-  soldQty: number           // Quantity sold
-  notificationShown: boolean // Prevent duplicate notifications
+// =============================================================================
+// CELEBRATION EVENT TYPES
+// Priority queue for investment results and milestone celebrations
+// =============================================================================
+
+export interface InvestmentResultEvent {
+  type: 'investment_result'
+  startupName: string
+  investedAmount: number
+  returnAmount: number
+  multiplier: number
+  profitLoss: number
+  profitLossPct: number
+  isProfit: boolean
+  headline: string
 }
 
-export type NearMissType = 'missed_moon' | 'missed_gain' | 'bullet_dodged' | 'lucky_exit'
-
-export interface NearMissNotification {
-  type: NearMissType
-  assetName: string
-  message: string
-  cashDiff: number           // What they would have gained/lost
-  percentChange: number      // % change since sale
+export interface MilestoneCelebrationEvent {
+  type: 'milestone'
+  id: string
+  title: string
+  tier: string
+  scarcityMessage: string
+  netWorth: number
 }
+
+export type CelebrationEvent = InvestmentResultEvent | MilestoneCelebrationEvent
 
 // =============================================================================
 // MARGIN TRADING TYPES (Pro Tier)

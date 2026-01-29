@@ -215,34 +215,7 @@ interface GossipTemplate {
 }
 
 const GOSSIP_TEMPLATES: GossipTemplate[] = [
-  // Club milestones (aspirational)
-  {
-    id: 'billionaire_club',
-    template: 'WALL ST GOSSIP: {USER} JUST JOINED THE BILLIONAIRE CLUB.',
-    weight: 1,
-  },
-  {
-    id: '500m_club',
-    template: 'WALL ST GOSSIP: {USER} JUST JOINED THE $500M CLUB.',
-    weight: 2,
-  },
-  {
-    id: '100m_club',
-    template: 'WALL ST GOSSIP: {USER} JUST JOINED THE $100M CLUB.',
-    weight: 3,
-  },
-  {
-    id: '10m_club',
-    template: 'WALL ST GOSSIP: {USER} JUST JOINED THE $10M CLUB.',
-    weight: 4,
-  },
-  {
-    id: '1m_club',
-    template: 'WALL ST GOSSIP: {USER} JUST JOINED THE MILLIONAIRE CLUB.',
-    weight: 2,  // Reduced from 5
-  },
-
-  // NEW: Single trade profit (high frequency)
+  // Single trade profit (high frequency)
   {
     id: 'single_trade_profit',
     template: 'WALL ST GOSSIP: {USER} JUST MADE {AMOUNT} IN A SINGLE TRADE.',
@@ -250,13 +223,13 @@ const GOSSIP_TEMPLATES: GossipTemplate[] = [
     amountRange: { min: 500_000, max: 50_000_000 },
   },
 
-  // NEW: Net worth milestone (logarithmic, high frequency)
+  // Net worth milestone (logarithmic distribution from $5M to $50B)
   {
     id: 'net_worth_milestone',
     template: 'WALL ST GOSSIP: {USER} JUST REACHED {AMOUNT} NET WORTH.',
-    weight: 6,
+    weight: 8,
     useLogarithmic: true,
-    amountRange: { min: 15_000_000, max: 80_000_000_000 },
+    amountRange: { min: 5_000_000, max: 50_000_000_000 },
   },
 
   // Single trade flex (with asset)
@@ -339,41 +312,19 @@ function generateLogarithmicAmount(min: number, max: number): number {
   return Math.round(raw / 1_000_000) * 1_000_000
 }
 
-function selectTemplate(playerNetWorth: number): GossipTemplate {
-  // Filter templates based on player's net worth (show aspirational but not absurd)
-  let availableTemplates = GOSSIP_TEMPLATES
-
-  // If player is below $500K, don't show $500M+ club messages
-  if (playerNetWorth < 500_000) {
-    availableTemplates = availableTemplates.filter(t =>
-      !['billionaire_club', '500m_club', '100m_club'].includes(t.id)
-    )
-  }
-  // If player is below $5M, don't show billionaire messages
-  else if (playerNetWorth < 5_000_000) {
-    availableTemplates = availableTemplates.filter(t =>
-      !['billionaire_club', '500m_club'].includes(t.id)
-    )
-  }
-  // If player is below $50M, don't show billionaire messages
-  else if (playerNetWorth < 50_000_000) {
-    availableTemplates = availableTemplates.filter(t =>
-      t.id !== 'billionaire_club'
-    )
-  }
-
+function selectTemplate(_playerNetWorth: number): GossipTemplate {
   // Weighted random selection
-  const totalWeight = availableTemplates.reduce((sum, t) => sum + t.weight, 0)
+  const totalWeight = GOSSIP_TEMPLATES.reduce((sum, t) => sum + t.weight, 0)
   let roll = Math.random() * totalWeight
 
-  for (const template of availableTemplates) {
+  for (const template of GOSSIP_TEMPLATES) {
     roll -= template.weight
     if (roll <= 0) {
       return template
     }
   }
 
-  return availableTemplates[availableTemplates.length - 1]
+  return GOSSIP_TEMPLATES[GOSSIP_TEMPLATES.length - 1]
 }
 
 export function generateGossipMessage(playerNetWorth: number): string {
