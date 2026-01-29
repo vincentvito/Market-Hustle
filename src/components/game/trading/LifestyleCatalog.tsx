@@ -165,34 +165,34 @@ export function LifestyleCatalog() {
       {selectedAsset && (
         <Portal>
           <div
-            className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end justify-center"
+            className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end md:items-center justify-center"
             onClick={() => setSelectedAsset(null)}
           >
             <div
-              className={`w-full max-w-[400px] p-4 pb-8 animate-slide-up ${
+              className={`w-full max-w-[400px] md:max-w-[480px] p-4 pb-8 md:p-6 md:pb-6 animate-slide-up md:animate-none ${
                 isModern3
-                  ? 'bg-[#0f1419] rounded-t-xl'
+                  ? 'bg-[#0f1419] rounded-t-xl md:rounded-xl'
                   : isRetro2
-                    ? 'bg-[#0f1812] border-t border-mh-border'
-                    : 'bg-[#111920] border-t border-mh-border'
+                    ? 'bg-[#0f1812] border-t border-mh-border md:rounded-xl md:border'
+                    : 'bg-[#111920] border-t border-mh-border md:rounded-xl md:border'
               }`}
               style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))', ...(isModern3 ? { boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.4)' } : {}) }}
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-start gap-3 mb-4">
-                <div className="text-3xl">{selectedAsset.emoji}</div>
+              <div className="flex items-start gap-3 md:gap-4 mb-4 md:mb-6">
+                <div className="text-3xl md:text-4xl">{selectedAsset.emoji}</div>
                 <div className="flex-1">
-                  <div className="text-lg font-bold text-mh-text-bright">
+                  <div className="text-lg md:text-xl font-bold text-mh-text-bright">
                     {selectedAsset.name}
                   </div>
-                  <div className="text-sm text-mh-text-dim mt-1">
+                  <div className="text-sm md:text-base text-mh-text-dim mt-1">
                     {selectedAsset.description}
                   </div>
-                  <div className="flex items-center gap-4 mt-2">
-                    <span className="text-lg font-bold text-mh-text-main">
+                  <div className="flex items-center gap-4 mt-2 md:mt-3">
+                    <span className="text-lg md:text-xl font-bold text-mh-text-main">
                       {formatPrice(lifestylePrices[selectedAsset.id] || selectedAsset.basePrice)}
                     </span>
-                    <span className={`text-sm font-bold ${
+                    <span className={`text-sm md:text-base font-bold ${
                       selectedAsset.dailyReturn > 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
                     }`}>
                       {formatReturn(selectedAsset.dailyReturn, selectedAsset.category)}
@@ -201,21 +201,21 @@ export function LifestyleCatalog() {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 md:gap-3">
                 <button
                   onClick={() => setSelectedAsset(null)}
-                  className="flex-1 py-3 rounded text-base font-bold font-mono bg-[#1a2a3a] text-mh-text-dim hover:bg-[#243444]"
+                  className="flex-1 py-3 md:py-4 rounded text-base md:text-lg font-bold font-mono bg-[#1a2a3a] text-mh-text-dim hover:bg-[#243444]"
                 >
                   CANCEL
                 </button>
                 <button
                   onClick={() => handleBuy(selectedAsset)}
                   disabled={cash < (lifestylePrices[selectedAsset.id] || selectedAsset.basePrice)}
-                  className={`flex-1 py-3 rounded text-base font-bold font-mono transition-colors ${
+                  className={`flex-1 py-3 md:py-4 rounded text-base md:text-lg font-bold font-mono transition-colors ${
                     cash >= (lifestylePrices[selectedAsset.id] || selectedAsset.basePrice)
                       ? isRetro2
                         ? 'bg-[#0a2015] text-mh-profit-green hover:bg-[#0d2a1a] border border-mh-profit-green/30 shadow-[0_0_10px_rgba(0,255,136,0.3)]'
-                        : 'bg-[#0a2015] text-mh-profit-green hover:bg-[#0d2a1a] border border-mh-profit-green/30'
+                        : 'bg-mh-profit-green/20 text-mh-profit-green hover:bg-mh-profit-green/30 border-2 border-mh-profit-green/60'
                       : 'bg-[#111920] text-mh-border border border-mh-border/30'
                   }`}
                 >
@@ -237,34 +237,34 @@ export function LifestyleCatalog() {
         return (
           <Portal>
             <div
-              className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end justify-center"
+              className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end md:items-center justify-center"
               onClick={() => setSellConfirmAsset(null)}
             >
               <div
-                className={`w-full max-w-[400px] p-4 pb-8 animate-slide-up ${
+                className={`w-full max-w-[400px] md:max-w-[480px] p-4 pb-8 md:p-6 md:pb-6 animate-slide-up md:animate-none ${
                   isModern3
-                    ? 'bg-[#0f1419] rounded-t-xl'
+                    ? 'bg-[#0f1419] rounded-t-xl md:rounded-xl'
                     : isRetro2
-                      ? 'bg-[#0f1812] border-t border-mh-border'
-                      : 'bg-[#111920] border-t border-mh-border'
+                      ? 'bg-[#0f1812] border-t border-mh-border md:rounded-xl md:border'
+                      : 'bg-[#111920] border-t border-mh-border md:rounded-xl md:border'
                 }`}
                 style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))', ...(isModern3 ? { boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.4)' } : {}) }}
                 onClick={e => e.stopPropagation()}
               >
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="text-3xl">{sellConfirmAsset.emoji}</div>
+                <div className="flex items-start gap-3 md:gap-4 mb-4 md:mb-6">
+                  <div className="text-3xl md:text-4xl">{sellConfirmAsset.emoji}</div>
                   <div className="flex-1">
-                    <div className="text-lg font-bold text-mh-text-bright">
+                    <div className="text-lg md:text-xl font-bold text-mh-text-bright">
                       Sell {sellConfirmAsset.name}?
                     </div>
-                    <div className="text-sm text-mh-text-dim mt-1">
+                    <div className="text-sm md:text-base text-mh-text-dim mt-1">
                       {sellConfirmAsset.description}
                     </div>
-                    <div className="flex items-center gap-4 mt-2">
-                      <span className="text-lg font-bold text-mh-text-main">
+                    <div className="flex items-center gap-4 mt-2 md:mt-3">
+                      <span className="text-lg md:text-xl font-bold text-mh-text-main">
                         {formatPrice(price)}
                       </span>
-                      <span className={`text-sm font-bold ${
+                      <span className={`text-sm md:text-base font-bold ${
                         profitLoss >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
                       }`}>
                         {profitLoss >= 0 ? '+' : ''}{formatPrice(Math.abs(profitLoss))} ({profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(0)}%)
@@ -278,16 +278,16 @@ export function LifestyleCatalog() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 md:gap-3">
                   <button
                     onClick={() => setSellConfirmAsset(null)}
-                    className="flex-1 py-3 rounded text-base font-bold font-mono bg-[#1a2a3a] text-mh-text-dim hover:bg-[#243444]"
+                    className="flex-1 py-3 md:py-4 rounded text-base md:text-lg font-bold font-mono bg-[#1a2a3a] text-mh-text-dim hover:bg-[#243444]"
                   >
                     CANCEL
                   </button>
                   <button
                     onClick={() => handleSell(sellConfirmAsset)}
-                    className={`flex-1 py-3 rounded text-base font-bold font-mono transition-colors ${
+                    className={`flex-1 py-3 md:py-4 rounded text-base md:text-lg font-bold font-mono transition-colors ${
                       isRetro2
                         ? 'bg-[#150d0d] text-mh-loss-red hover:bg-[#1a1010] border border-mh-accent-blue/30'
                         : 'bg-[#200a0a] text-mh-loss-red hover:bg-[#2a0d0d] border border-mh-loss-red/30'

@@ -14,7 +14,7 @@ export function MarketHustle() {
   const screen = useGame(state => state.screen)
 
   return (
-    <div className="min-h-full w-full flex flex-col">
+    <div className="h-full w-full flex flex-col">
       <Scanlines />
       {screen === 'title' && <TitleScreen />}
       {screen === 'game' && <GameScreen />}

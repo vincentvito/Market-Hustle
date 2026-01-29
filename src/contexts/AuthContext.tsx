@@ -249,6 +249,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ? `${window.location.origin}/auth/callback`
       : `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
 
+    console.log('[Magic Link] Redirect URL:', redirectTo)
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {

@@ -68,7 +68,7 @@ export function AssetGrid() {
       </div>
 
       {activeTab === 'trading' ? (
-        <div className={`grid grid-cols-3 ${
+        <div className={`grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 md:gap-3 md:p-3 ${
           isBloomberg
             ? 'gap-px bg-[#333333]'
             : isRetro2
@@ -84,11 +84,6 @@ export function AssetGrid() {
               onSelect={selectAsset}
             />
           ))}
-          {/* Empty cells to complete the grid if needed */}
-          {ASSETS.length % 3 !== 0 &&
-            Array.from({ length: 3 - (ASSETS.length % 3) }).map((_, i) => (
-              <div key={`empty-${i}`} className={`bg-mh-bg ${isRetro2 || isModern3 ? '' : 'min-h-[72px]'}`} />
-            ))}
         </div>
       ) : (
         <LifestyleCatalog />

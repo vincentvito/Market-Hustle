@@ -28,14 +28,14 @@ export function Header() {
 
   return (
     <div
-      className={`p-4 flex justify-between items-start ${
+      className={`p-4 md:px-6 md:py-5 flex justify-between items-start ${
         isBloomberg ? 'border-b border-[#333333]' : isModern3 ? '' : 'border-b border-mh-border'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
     >
       <div>
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>DAY</div>
-        <div className={`text-3xl font-bold ${isBloomberg ? 'text-[#ff8c00]' : 'text-mh-text-bright glow-text'}`}>
+        <div className={`text-3xl md:text-4xl font-bold ${isBloomberg ? 'text-[#ff8c00]' : 'text-mh-text-bright glow-text'}`}>
           {day}<span className={`text-base ${isBloomberg ? 'text-[#8b6914]' : 'text-mh-text-dim'}`}>/{gameDuration}</span>
         </div>
       </div>
@@ -45,7 +45,7 @@ export function Header() {
       >
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>NET WORTH</div>
         <div
-          className={`text-3xl font-bold ${
+          className={`text-3xl md:text-4xl font-bold ${
             isBloomberg ? '' : netWorth >= 10000 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
           }`}
           style={isBloomberg ? getBloombergNetWorthStyle() : getNetWorthStyle()}

@@ -35,55 +35,55 @@ export function GuestEndView({
   const profitColor = netWorth >= 100000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
-    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 text-center">
+    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center">
       {/* Outcome Header */}
-      <div className="text-6xl mb-4">{message.emoji}</div>
-      <div className={`text-4xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
-      <div className="text-mh-text-dim text-sm mb-6 max-w-[280px] leading-relaxed">
+      <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
+      <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
+      <div className="text-mh-text-dim text-sm md:text-base mb-6 max-w-[280px] md:max-w-[400px] leading-relaxed">
         {message.flavor}
       </div>
 
       {/* Days Survived */}
-      <div className="text-mh-text-main text-lg mb-8">
+      <div className="text-mh-text-main text-lg md:text-xl mb-8">
         {isWin ? 'YOU SURVIVED' : 'SURVIVED'} {daysSurvived} / {gameDuration} DAYS
       </div>
 
       {/* Final Net Worth */}
-      <div className="border border-mh-border p-5 mb-2 min-w-[200px]">
-        <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
-        <div className={`text-3xl ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
+      <div className="border border-mh-border p-5 md:p-8 mb-2 min-w-[200px] md:min-w-[320px]">
+        <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
+        <div className={`text-3xl md:text-5xl ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
       </div>
 
       {/* Profit/Loss percentage - more prominent on wins */}
       {isWin && (
-        <div className={`text-lg mb-4 ${profitColor}`}>
+        <div className={`text-lg md:text-xl mb-4 ${profitColor}`}>
           {profitPercent >= 0 ? '+' : ''}
           {profitPercent.toFixed(1)}% RETURN
         </div>
       )}
 
       {/* Games Remaining Counter */}
-      <div className="border border-mh-border p-3 mb-6 min-w-[200px] bg-mh-border/10">
+      <div className="border border-mh-border p-3 md:p-4 mb-6 min-w-[200px] md:min-w-[320px] bg-mh-border/10">
         <div
-          className={`text-sm font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}
+          className={`text-sm md:text-base font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}
         >
           {gamesRemaining}/{ANONYMOUS_GAME_LIMIT} free games remaining
         </div>
         {gamesRemaining === 0 && (
-          <div className="text-mh-loss-red text-xs mt-1">Sign up to continue playing</div>
+          <div className="text-mh-loss-red text-xs md:text-sm mt-1">Sign up to continue playing</div>
         )}
       </div>
 
       {/* Tagline */}
-      <div className="text-mh-text-dim text-sm italic mb-4 max-w-[300px]">
+      <div className="text-mh-text-dim text-sm md:text-base italic mb-4 max-w-[300px] md:max-w-[450px]">
         The training wheels are off. Level up to Pro for the real hustle.
       </div>
 
       {/* Two-Column CTA Section */}
-      <div className="flex gap-3 w-full max-w-[340px] mb-6">
+      <div className="flex gap-3 md:gap-5 w-full max-w-[340px] md:max-w-[520px] mb-6">
         {/* Sign Up Box */}
-        <div className="flex-1 border border-mh-border p-4 bg-mh-border/5">
-          <div className="text-mh-accent-blue text-xs font-bold mb-3 text-center">
+        <div className="flex-1 border border-mh-border p-4 md:p-6 bg-mh-border/5">
+          <div className="text-mh-accent-blue text-xs md:text-sm font-bold mb-3 text-center">
             SAVE YOUR PROGRESS
           </div>
           <div className="text-mh-text-dim text-xs space-y-1.5 mb-4">
@@ -109,8 +109,8 @@ export function GuestEndView({
         </div>
 
         {/* Go Pro Box */}
-        <div className="flex-1 border-2 border-mh-profit-green p-4 bg-mh-profit-green/5">
-          <div className="text-mh-profit-green text-xs font-bold mb-3 text-center">GO UNLIMITED</div>
+        <div className="flex-1 border-2 border-mh-profit-green p-4 md:p-6 bg-mh-profit-green/5">
+          <div className="text-mh-profit-green text-xs md:text-sm font-bold mb-3 text-center">GO UNLIMITED</div>
           <div className="text-mh-text-dim text-xs space-y-1.5 mb-4">
             <div className="flex items-start gap-1.5">
               <span className="text-mh-profit-green">✓</span>

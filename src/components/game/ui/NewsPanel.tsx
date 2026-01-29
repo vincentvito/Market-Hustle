@@ -263,12 +263,12 @@ export function NewsPanel() {
   // PERSIST or IDLE: Normal news with optional milestone at top
   return (
     <div
-      className={`p-3 relative ${
+      className={`p-3 md:p-4 relative ${
         isBloomberg
-          ? 'bg-black h-[163px] border-b border-[#333333]'
+          ? 'bg-black h-[163px] md:h-full border-b md:border-b-0 border-[#333333]'
           : isModern3
-            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[163px] mt-2 mx-2'
-            : 'border-b border-mh-border bg-[#0a0d10] h-[163px]'
+            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[163px] md:h-full mt-2 mx-2 md:mt-0 md:mx-0 md:rounded-none md:border-l-0'
+            : 'border-b md:border-b-0 border-mh-border bg-[#0a0d10] h-[163px] md:h-full'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
     >

@@ -85,7 +85,7 @@ export function SettingsPanel() {
 
       {/* Slide-in Panel */}
       <div
-        className="fixed top-0 right-0 h-full w-[320px] max-w-[85vw] bg-mh-bg border-l border-mh-border z-[301] overflow-y-auto"
+        className="fixed top-0 right-0 h-full w-[320px] md:w-[380px] max-w-[85vw] bg-mh-bg border-l border-mh-border z-[301] overflow-y-auto"
         style={{
           animation: 'slideInRight 0.2s ease-out',
         }}

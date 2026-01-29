@@ -31,35 +31,35 @@ export function ProEndView({
   const profitColor = profitAmount >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
-    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 text-center">
+    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center">
       {/* Outcome Header */}
-      <div className="text-6xl mb-4">{message.emoji}</div>
-      <div className={`text-4xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
-      <div className="text-mh-text-dim text-sm mb-6 max-w-[280px] leading-relaxed">
+      <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
+      <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
+      <div className="text-mh-text-dim text-sm md:text-base mb-6 max-w-[280px] md:max-w-[400px] leading-relaxed">
         {message.flavor}
       </div>
 
       {/* Days Survived */}
-      <div className="text-mh-text-main text-lg mb-8">
+      <div className="text-mh-text-main text-lg md:text-xl mb-8">
         {isWin ? 'YOU SURVIVED' : 'SURVIVED'} {daysSurvived} / {gameDuration} DAYS
       </div>
 
       {/* Final Net Worth */}
-      <div className="border border-mh-border p-6 mb-4 min-w-[240px]">
-        <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
-        <div className={`text-4xl mb-4 ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
-        <div className={`text-lg ${profitColor}`}>
+      <div className="border border-mh-border p-6 md:p-8 mb-4 min-w-[240px] md:min-w-[360px]">
+        <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
+        <div className={`text-4xl md:text-5xl mb-4 ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
+        <div className={`text-lg md:text-xl ${profitColor}`}>
           {profitAmount >= 0 ? '+' : ''}
           {profitPercent.toFixed(1)}% RETURN
         </div>
-        <div className={`text-sm mt-1 ${profitColor}`}>
+        <div className={`text-sm md:text-base mt-1 ${profitColor}`}>
           ({profitAmount >= 0 ? '+' : ''}${profitAmount.toLocaleString()})
         </div>
       </div>
 
       {/* Detailed breakdown for margin-related game overs (Pro exclusive) */}
       {lossBreakdown && (
-        <div className="mb-8 p-4 bg-[#1a1a2e] rounded border border-mh-border text-left max-w-[300px] w-full">
+        <div className="mb-8 p-4 md:p-6 bg-[#1a1a2e] rounded border border-mh-border text-left max-w-[300px] md:max-w-[420px] w-full">
           <div className="text-mh-text-dim text-xs mb-3 text-center">WHAT WENT WRONG</div>
 
           {lossBreakdown.leveragedLosses.length > 0 && (

@@ -36,28 +36,28 @@ export function MemberEndView({
   const profitColor = netWorth >= 100000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
-    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 text-center">
+    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center">
       {/* Outcome Header */}
-      <div className="text-6xl mb-4">{message.emoji}</div>
-      <div className={`text-4xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
-      <div className="text-mh-text-dim text-sm mb-6 max-w-[280px] leading-relaxed">
+      <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
+      <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
+      <div className="text-mh-text-dim text-sm md:text-base mb-6 max-w-[280px] md:max-w-[400px] leading-relaxed">
         {message.flavor}
       </div>
 
       {/* Days Survived */}
-      <div className="text-mh-text-main text-lg mb-8">
+      <div className="text-mh-text-main text-lg md:text-xl mb-8">
         {isWin ? 'YOU SURVIVED' : 'SURVIVED'} {daysSurvived} / {gameDuration} DAYS
       </div>
 
       {/* Final Net Worth */}
-      <div className="border border-mh-border p-5 mb-2 min-w-[200px]">
-        <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
-        <div className={`text-3xl ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
+      <div className="border border-mh-border p-5 md:p-8 mb-2 min-w-[200px] md:min-w-[320px]">
+        <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
+        <div className={`text-3xl md:text-5xl ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
       </div>
 
       {/* Profit/Loss percentage - more prominent on wins */}
       {isWin && (
-        <div className={`text-lg mb-4 ${profitColor}`}>
+        <div className={`text-lg md:text-xl mb-4 ${profitColor}`}>
           {profitPercent >= 0 ? '+' : ''}
           {profitPercent.toFixed(1)}% RETURN
         </div>
@@ -95,8 +95,8 @@ export function MemberEndView({
       )}
 
       {/* Upsell Section - Different messaging based on trial status */}
-      <div className="mb-6 max-w-[280px]">
-        <div className="text-mh-text-bright text-sm font-bold mb-3">
+      <div className="mb-6 max-w-[280px] md:max-w-[400px]">
+        <div className="text-mh-text-bright text-sm md:text-base font-bold mb-3">
           {hasProTrial
             ? 'Love Pro features? Keep them forever:'
             : isWin
@@ -113,7 +113,7 @@ export function MemberEndView({
       </div>
 
       {/* Pricing Buttons */}
-      <div className="flex flex-col gap-2 w-full max-w-[280px] mb-6">
+      <div className="flex flex-col gap-2 w-full max-w-[280px] md:max-w-[400px] mb-6">
         <button
           onClick={() => onCheckout('yearly')}
           className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors"

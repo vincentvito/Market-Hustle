@@ -42,7 +42,7 @@ export default function RootLayout({
       <body style={{
         margin: 0,
         padding: 0,
-        backgroundColor: '#080a0d',
+        backgroundColor: '#0d1117',
         color: '#a0b3c6',
         minHeight: '100dvh',
       }}>
