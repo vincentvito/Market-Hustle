@@ -316,20 +316,21 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
 
   return (
     <>
-      {/* Backdrop - absolute within phone-container */}
+      {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 z-40"
+        className="absolute inset-0 bg-black/60 z-40 md:fixed"
         onClick={onClose}
       />
 
-      {/* Sheet - absolute to container bottom */}
+      {/* Sheet - bottom sheet on mobile, centered modal on desktop */}
       <div
-        className={`absolute bottom-0 left-0 right-0 z-50 animate-slide-up overflow-y-auto ${
-          isBloomberg
-            ? 'bg-black border-t-2 border-[#ff8c00] rounded-none'
+        className={`absolute bottom-0 left-0 right-0 z-50 animate-slide-up overflow-y-auto
+          md:fixed md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:bottom-auto md:w-[480px] md:max-h-[80vh] md:rounded-xl md:animate-none
+          ${isBloomberg
+            ? 'bg-black border-t-2 border-[#ff8c00] rounded-none md:border-2 md:border-[#ff8c00]'
             : isModern3
-              ? 'bg-[#0f1419] rounded-t-xl'
-              : 'bg-[#0d1117] border-t border-mh-border rounded-t-xl'
+              ? 'bg-[#0f1419] rounded-t-xl md:border md:border-[#1a2230]'
+              : 'bg-[#0d1117] border-t border-mh-border rounded-t-xl md:border md:border-mh-border'
         }`}
         style={{
           maxHeight: 'calc(100% - 60px)',

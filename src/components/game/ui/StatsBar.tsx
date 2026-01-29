@@ -23,17 +23,17 @@ export function StatsBar() {
 
   return (
     <div
-      className={`flex text-sm ${
+      className={`flex text-sm md:text-base ${
         isBloomberg ? 'border-b border-[#333333]' : isModern3 ? '' : 'border-b border-mh-border'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)' } : undefined}
     >
-      <div className={`flex-1 p-3 ${
+      <div className={`flex-1 p-3 md:p-4 ${
         isBloomberg ? 'border-r border-[#333333]' : isModern3 ? '' : 'border-r border-mh-border'
       }`}>
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>CASH</div>
         <div
-          className={`font-bold text-base ${
+          className={`font-bold text-base md:text-lg ${
             isBloomberg ? 'text-[#ff8c00]' : isModern3 ? 'text-mh-text-bright' : isRetro2 ? 'text-mh-text-bright glow-text' : 'text-mh-accent-blue glow-text'
           }`}
         >
@@ -42,7 +42,7 @@ export function StatsBar() {
       </div>
       <div
         onClick={() => hasPositions && setShowPortfolio(true)}
-        className={`flex-1 p-3 ${
+        className={`flex-1 p-3 md:p-4 ${
           hasPositions
             ? isBloomberg ? 'cursor-pointer bg-[#1a1000]' : 'cursor-pointer bg-mh-accent-blue/5'
             : ''
@@ -53,7 +53,7 @@ export function StatsBar() {
         </div>
         <div className="flex items-baseline gap-2">
           <span
-            className={`font-bold text-base ${
+            className={`font-bold text-base md:text-lg ${
               isBloomberg ? 'text-[#ff8c00]' : isModern3 ? 'text-mh-text-bright' : isRetro2 ? 'text-mh-text-bright glow-text' : 'text-mh-accent-blue glow-text'
             }`}
           >

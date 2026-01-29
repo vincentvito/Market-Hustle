@@ -112,7 +112,7 @@ export function AssetCell({ asset, onSelect }: AssetCellProps) {
       className={`
         flex flex-col items-center justify-center border border-mh-border
         cursor-pointer text-center relative overflow-hidden
-        ${isBloomberg ? 'p-2 min-h-[80px] rounded-none' : isModern3 ? 'p-3 min-h-[92px] rounded-lg' : 'p-4 min-h-[115px]'}
+        ${isBloomberg ? 'p-2 min-h-[80px] md:p-4 md:min-h-[130px] rounded-none' : isModern3 ? 'p-3 min-h-[92px] md:p-5 md:min-h-[140px] rounded-lg' : 'p-4 min-h-[115px] md:p-5 md:min-h-[140px]'}
         ${isRetro2 ? 'rounded' : ''}
         ${getBackgroundClass()}
       `}
@@ -125,14 +125,14 @@ export function AssetCell({ asset, onSelect }: AssetCellProps) {
           style={getModern3AccentStyle()}
         />
       )}
-      <div className={`font-bold text-mh-text-bright truncate w-full ${isModern3 ? 'text-xs' : 'text-sm'}`}>
+      <div className={`font-bold text-mh-text-bright truncate w-full ${isModern3 ? 'text-xs md:text-sm' : 'text-sm md:text-base'}`}>
         {asset.name}
       </div>
-      <div className={`font-bold text-mh-text-main mt-1 ${isModern3 ? 'text-base' : 'text-lg'}`}>
+      <div className={`font-bold text-mh-text-main mt-1 ${isModern3 ? 'text-base md:text-xl' : 'text-lg md:text-2xl'}`}>
         ${formatPrice(price)}
       </div>
       <div
-        className={`font-bold ${isModern3 ? 'text-xs mt-0.5' : 'text-sm mt-1'} ${
+        className={`font-bold ${isModern3 ? 'text-xs md:text-sm mt-0.5' : 'text-sm md:text-base mt-1'} ${
           change > 0
             ? 'text-mh-profit-green'
             : change < 0
