@@ -357,7 +357,7 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
     basePrice: 15_000_000,
     dailyCost: 150_000,
     description: 'G650ER. Skip the lines, close deals at 45,000 feet.',
-    passiveBenefit: '+15% Angel deal frequency, +30% VC deal frequency',
+    passiveBenefit: '+20% Angel deal frequency, +40% VC deal frequency',
   },
   {
     id: 'mega_yacht',

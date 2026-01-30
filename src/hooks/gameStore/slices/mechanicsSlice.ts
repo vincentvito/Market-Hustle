@@ -1202,8 +1202,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (!hasCelebrations && newDay <= gameLength - 6) {
 
       // ========== COOLDOWN CHECK ==========
-      // Minimum 8 days between any startup offers
-      const cooldownDays = 8
+      // Minimum 6 days between any startup offers (reduced from 8 for better accessibility)
+      const cooldownDays = 6
       const daysSinceLastOffer = lastStartupOfferDay ? newDay - lastStartupOfferDay : Infinity
       const cooldownPassed = daysSinceLastOffer >= cooldownDays
 
@@ -1216,15 +1216,15 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       const vcCap = 2     // Base: 2 VC offers per game
 
       // ========== BASE PROBABILITIES ==========
-      // Much lower than before for scarcity (was 8% Angel, 15% VC)
-      let angelBaseChance = 0.025  // 2.5%
-      let vcBaseChance = 0.04      // 4%
+      // Modestly increased for better accessibility (was 2.5% Angel, 4% VC)
+      let angelBaseChance = 0.035  // 3.5%
+      let vcBaseChance = 0.055     // 5.5%
 
-      // Private Jet luxury asset: +15% Angel frequency, +30% VC frequency
+      // Private Jet luxury asset: +20% Angel frequency, +40% VC frequency
       const ownsJet = ownedLuxury.includes('private_jet')
       if (ownsJet) {
-        angelBaseChance *= 1.15
-        vcBaseChance *= 1.30
+        angelBaseChance *= 1.20
+        vcBaseChance *= 1.40
       }
 
       // ========== ATTEMPT OFFER GENERATION ==========
