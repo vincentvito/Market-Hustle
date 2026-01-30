@@ -222,7 +222,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     // Load initial session and profile on mount
-    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: initialSession } }: { data: { session: any } }) => {
       if (cancelled) return
       setSession(initialSession)
       setUser(initialSession?.user ?? null)
