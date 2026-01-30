@@ -1,4 +1,110 @@
-import { LifestyleAsset, OwnedLifestyleItem } from './types'
+import { LifestyleAsset, LuxuryAsset, LuxuryAssetId, PEAbility, PEAbilityId } from './types'
+
+// =============================================================================
+// PE ABILITIES - One-time villain actions with 20% backfire risk
+// =============================================================================
+export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
+  // Sal's Corner abilities
+  defense_spending_bill: {
+    id: 'defense_spending_bill',
+    name: 'Defense Spending Bill',
+    emoji: '🎖️',
+    flavor: 'Lobby Congress to pass increased defense spending',
+    cost: 3_000_000,
+    successEffects: { defense: 0.30, uranium: 0.20, oil: 0.15 },
+    backfireEffects: {
+      priceEffects: { defense: -0.15 },
+      triggerEncounter: 'sec',
+    },
+    backfireChance: 0.20,
+  },
+  drug_fast_track: {
+    id: 'drug_fast_track',
+    name: 'Drug Fast-Track Act',
+    emoji: '💊',
+    flavor: 'Lobby Congress to deregulate drug approval process',
+    cost: 3_000_000,
+    successEffects: { biotech: 0.35, nasdaq: 0.12 },
+    backfireEffects: {
+      priceEffects: { biotech: -0.20 },
+      fine: 5_000_000,
+    },
+    backfireChance: 0.20,
+  },
+  // Blackstone abilities
+  yemen_operations: {
+    id: 'yemen_operations',
+    name: 'Yemen Operations',
+    emoji: '⚓',
+    flavor: 'Support rebels in Yemen, destabilize shipping routes',
+    cost: 50_000_000,
+    successEffects: { oil: 0.40, gold: 0.20, emerging: -0.25 },
+    backfireEffects: {
+      priceEffects: { oil: -0.20 },
+      losePE: true,
+    },
+    backfireChance: 0.20,
+  },
+  chile_acquisition: {
+    id: 'chile_acquisition',
+    name: 'Chile Acquisition',
+    emoji: '⛏️',
+    flavor: 'Seize lithium mine in Chile',
+    cost: 50_000_000,
+    successEffects: { lithium: 0.60, tesla: 0.25, emerging: -0.15 },
+    backfireEffects: {
+      priceEffects: { lithium: -0.30 },
+      fine: 100_000_000,
+    },
+    backfireChance: 0.20,
+  },
+  // Lazarus Genomics ability
+  project_chimera: {
+    id: 'project_chimera',
+    name: 'Project Chimera',
+    emoji: '🦠',
+    flavor: 'Develop a pathogen to trigger a new pandemic',
+    cost: 100_000_000,
+    successEffects: { biotech: 0.50, gold: 0.25, oil: -0.30, nasdaq: -0.20, emerging: -0.30 },
+    backfireEffects: {
+      priceEffects: { biotech: -0.25 },
+      losePE: true,
+      gameOverRisk: 0.50, // 50% chance of FBI investigation = game over
+    },
+    backfireChance: 0.20,
+  },
+  // Apex Media ability
+  operation_divide: {
+    id: 'operation_divide',
+    name: 'Operation Divide',
+    emoji: '🇺🇸',
+    flavor: 'Spread misinformation to polarize US public opinion',
+    cost: 25_000_000,
+    successEffects: { gold: 0.35, btc: 0.20, nasdaq: -0.18 },
+    backfireEffects: {
+      priceEffects: { nasdaq: -0.25 },
+      losePE: true,
+    },
+    backfireChance: 0.20,
+    specialEffect: {
+      type: 'event_trigger',
+      eventCategory: 'civil_war',
+      chance: 0.50,
+    },
+  },
+}
+
+// Helper to get abilities for a PE company
+export function getPEAbilities(peAssetId: string): PEAbility[] {
+  const abilityMap: Record<string, PEAbilityId[]> = {
+    pe_sals_corner: ['defense_spending_bill', 'drug_fast_track'],
+    pe_blackstone_services: ['yemen_operations', 'chile_acquisition'],
+    pe_lazarus_genomics: ['project_chimera'],
+    pe_apex_media: ['operation_divide'],
+  }
+  const abilityIds = abilityMap[peAssetId] || []
+  return abilityIds.map(id => PE_ABILITIES[id])
+}
 
 // =============================================================================
 // PROPERTIES - Stable rental income (1.5-4% daily), NEVER negative
@@ -134,16 +240,12 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     emoji: '🍝',
     category: 'private_equity',
     basePrice: 1_200_000,
-    volatility: 0.04,
-    dailyReturn: 0.05, // 5%/day
-    description: 'Brooklyn Italian restaurant. Michelin Bib Gourmand. Political connections.',
+    volatility: 0,        // No price fluctuation - safe haven
+    dailyReturn: 0.08,    // 8%/day - premium for stability
+    description: 'Defense industry lobbyist. K Street connections. Congressional golf buddies.',
     riskTier: 'blue_chip',
     failureChancePerDay: 0.001, // ~3%/month
-    strategicUnlock: {
-      strategyId: 'lobbying',
-      bonusType: 'unlock',
-      description: '🏛️ Unlocks Lobbying strategy',
-    },
+    // Abilities: defense_spending_bill, drug_fast_track (via getPEAbilities)
   },
   {
     id: 'pe_iron_oak_brewing',
@@ -156,6 +258,7 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     description: 'Craft brewery with cult following. Two taprooms, 200+ bar distribution.',
     riskTier: 'blue_chip',
     failureChancePerDay: 0.001, // ~3%/month
+    // No operation - passive income only
   },
   {
     id: 'pe_tenuta_luna',
@@ -168,21 +271,10 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     description: 'Tuscan vineyard. 80-hectare estate in Chianti Classico. 40K bottles annually.',
     riskTier: 'blue_chip',
     failureChancePerDay: 0.001, // ~3%/month
+    // No operation - passive income only
   },
 
-  // === GROWTH TIER - High risk, high reward + Strategy Unlocks ===
-  {
-    id: 'pe_terralith_minerals',
-    name: 'Terralith Minerals Corp',
-    emoji: '⛏️',
-    category: 'private_equity',
-    basePrice: 2_800_000_000,
-    volatility: 0.07,
-    dailyReturn: 0.09, // 9%/day
-    description: 'Rare earth mining. Critical for EVs, batteries, semiconductors, defense.',
-    riskTier: 'growth',
-    failureChancePerDay: 0.005, // ~15%/month
-  },
+  // === GROWTH TIER - High risk, high reward ===
   {
     id: 'pe_blackstone_services',
     name: 'Blackstone Strategic Services',
@@ -194,11 +286,20 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     description: 'Private military contractor. Government contracts, covert operations.',
     riskTier: 'growth',
     failureChancePerDay: 0.003, // ~9%/month
-    strategicUnlock: {
-      strategyId: 'destabilization',
-      bonusType: 'unlock',
-      description: '💀 Unlocks Destabilization strategy',
-    },
+    // Abilities: yemen_operations, chile_acquisition (via getPEAbilities)
+  },
+  {
+    id: 'pe_lazarus_genomics',
+    name: 'Lazarus Genomics',
+    emoji: '🧬',
+    category: 'private_equity',
+    basePrice: 5_000_000_000,
+    volatility: 0.07,
+    dailyReturn: 0.06, // 6%/day
+    description: 'Synthetic biology startup. Gain-of-function research. BSL-4 clearance.',
+    riskTier: 'growth',
+    failureChancePerDay: 0.005, // ~15%/month - highest risk
+    // Abilities: project_chimera (via getPEAbilities)
   },
   {
     id: 'pe_apex_media',
@@ -211,11 +312,7 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     description: 'Media conglomerate. News networks, film studios, streaming platform.',
     riskTier: 'growth',
     failureChancePerDay: 0.003, // ~9%/month
-    strategicUnlock: {
-      strategyId: 'mediaControl',
-      bonusType: 'unlock',
-      description: '📺 Unlocks Media Manipulation strategy',
-    },
+    // Abilities: operation_divide (via getPEAbilities)
   },
 ]
 
@@ -236,54 +333,6 @@ export function getLifestyleAssetsByCategory(category: LifestyleAsset['category'
 }
 
 // =============================================================================
-// STRATEGY UNLOCK CHECKER
-// Returns which strategies are unlocked based on PE ownership
-// =============================================================================
-export interface StrategyUnlocks {
-  lobbying: boolean      // Unlocked by Sal's Corner
-  mediaControl: boolean  // Unlocked by Apex Media
-  destabilization: boolean // Unlocked by Blackstone
-}
-
-export function getStrategyUnlocks(ownedLifestyle: OwnedLifestyleItem[]): StrategyUnlocks {
-  const unlocks: StrategyUnlocks = {
-    lobbying: false,
-    mediaControl: false,
-    destabilization: false,
-  }
-
-  ownedLifestyle.forEach(owned => {
-    const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
-    if (!asset?.strategicUnlock || asset.strategicUnlock.bonusType !== 'unlock') return
-
-    const strategyId = asset.strategicUnlock.strategyId
-    if (strategyId === 'lobbying') unlocks.lobbying = true
-    if (strategyId === 'mediaControl') unlocks.mediaControl = true
-    if (strategyId === 'destabilization') unlocks.destabilization = true
-  })
-
-  return unlocks
-}
-
-// Legacy function for compatibility - can be removed later
-export interface StrategicBonuses {
-  mediaControlEffectiveness: number
-  mediaControlExposureReduction: number
-  blackOpsSuccessBonus: number
-  blackOpsCostReduction: number
-}
-
-export function calculateStrategicBonuses(ownedLifestyle: OwnedLifestyleItem[]): StrategicBonuses {
-  // With simplified system, no numeric bonuses - just unlocks
-  return {
-    mediaControlEffectiveness: 0,
-    mediaControlExposureReduction: 0,
-    blackOpsSuccessBonus: 0,
-    blackOpsCostReduction: 0,
-  }
-}
-
-// =============================================================================
 // RISK TIER HELPERS - Simplified two-tier system
 // =============================================================================
 export const RISK_TIER_COLORS: Record<string, string> = {
@@ -294,4 +343,52 @@ export const RISK_TIER_COLORS: Record<string, string> = {
 export const RISK_TIER_LABELS: Record<string, string> = {
   blue_chip: 'BLUE CHIP',
   growth: 'GROWTH',
+}
+
+// =============================================================================
+// LUXURY ASSETS - Aspirational purchases with passive benefits
+// Fixed price, fixed daily cost, no price fluctuation
+// =============================================================================
+export const LUXURY_ASSETS: LuxuryAsset[] = [
+  {
+    id: 'private_jet',
+    name: 'Private Jet',
+    emoji: '✈️',
+    basePrice: 15_000_000,
+    dailyCost: 150_000,
+    description: 'G650ER. Skip the lines, close deals at 45,000 feet.',
+    passiveBenefit: '+15% Angel deal frequency, +30% VC deal frequency',
+  },
+  {
+    id: 'mega_yacht',
+    name: 'Mega Yacht',
+    emoji: '🛥️',
+    basePrice: 80_000_000,
+    dailyCost: 800_000,
+    description: '85m custom build. Helicopter pad. Submarine bay.',
+    passiveBenefit: '-20% PE purchase prices',
+  },
+  {
+    id: 'art_collection',
+    name: 'Art Collection',
+    emoji: '🎨',
+    basePrice: 25_000_000,
+    dailyCost: 0,
+    description: 'Basquiat. Warhol. Banksy. Appreciating assets.',
+    passiveBenefit: '-20% Tax Event probability',
+  },
+  {
+    id: 'la_lakers',
+    name: 'LA Lakers',
+    emoji: '🏀',
+    basePrice: 5_000_000_000,
+    dailyCost: 5_000_000,
+    description: 'Championship rings. Courtside seats. Ultimate flex.',
+    passiveBenefit: 'Pure flex. No benefit.',
+  },
+]
+
+// Helper to get luxury asset by ID
+export function getLuxuryAsset(id: LuxuryAssetId): LuxuryAsset | undefined {
+  return LUXURY_ASSETS.find(a => a.id === id)
 }

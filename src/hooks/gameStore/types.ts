@@ -21,11 +21,11 @@ import type {
   LeverageLevel,
   LeveragedPosition,
   ShortPosition,
-  StrategyId,
-  StrategyTier,
-  PolicyId,
-  DestabilizationTargetId,
   CelebrationEvent,
+  OperationId,
+  LuxuryAssetId,
+  PEAbilityId,
+  UsedPEAbility,
 } from '@/lib/game/types'
 import type { EncounterResult } from '@/lib/game/encounters'
 import type { UserTier } from '@/lib/game/userState'
@@ -144,36 +144,18 @@ export interface MechanicsSlice extends GameState {
   pendingLiquidation: PendingLiquidation | null
   confirmLiquidationSelection: (selectedAssets: Array<{ type: 'lifestyle' | 'trading'; id: string; currentValue: number; quantity: number }>) => void
 
-  // Strategy actions
-  activateStrategy: (strategyId: StrategyId, tier: 'active' | 'elite') => void
-  deactivateStrategy: (strategyId: StrategyId) => void
-  upgradeStrategy: (strategyId: StrategyId) => void
-  useSpin: () => void                          // Media Control Elite
-  usePlant: (assetId: string) => void          // Media Control Elite
-  pushPolicy: (policyId: PolicyId) => void     // Lobbying Elite
-  selectDestabilizationTarget: (targetId: DestabilizationTargetId) => void  // Destabilization
-  executeCoup: () => void                      // Destabilization Elite
-  executeTargetedElimination: (sectorId: string) => void  // Destabilization Elite
-  setShowStrategiesPanel: (show: boolean) => void
-  clearStrategyCostMessage: () => void
-
-  // Strategy computed
-  getStrategyTier: (strategyId: StrategyId) => StrategyTier
-  canAffordStrategy: (strategyId: StrategyId, tier: 'active' | 'elite') => boolean
-  meetsStrategyGate: (strategyId: StrategyId, tier: 'active' | 'elite') => boolean
-  getTotalDailyStrategyCost: () => number
-  canUseSpin: () => boolean
-  canUsePlant: () => boolean
-  canPushPolicy: () => boolean
-  getPolicyPushInfo: () => {
-    pushNumber: number
-    cost: number
-    successRate: number
-    cooldownRemaining: number
-    canAfford: boolean
+  // PE Ability actions (new one-time villain actions)
+  executePEAbility: (abilityId: PEAbilityId, peAssetId: string) => void
+  canExecutePEAbility: (abilityId: PEAbilityId, peAssetId: string) => boolean
+  getPEAbilityStatus: (abilityId: PEAbilityId) => {
+    isUsed: boolean
+    usedOnDay: number | null
+    didBackfire: boolean | null
   }
-  canExecuteCoup: () => boolean
-  canExecuteElimination: () => boolean
+
+  // Luxury asset actions
+  buyLuxuryAsset: (assetId: LuxuryAssetId) => void
+  sellLuxuryAsset: (assetId: LuxuryAssetId) => void
 
   // Computed
   getNetWorth: () => number

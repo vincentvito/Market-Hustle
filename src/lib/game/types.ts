@@ -1,54 +1,87 @@
 // =============================================================================
-// STRATEGY TYPES (defined here to avoid circular imports)
+// PE ABILITY TYPES (One-time villain actions)
 // =============================================================================
 
-export type StrategyTier = 'off' | 'active' | 'elite'
+export type PEAbilityId =
+  | 'defense_spending_bill'  // Sal's Corner
+  | 'drug_fast_track'        // Sal's Corner
+  | 'yemen_operations'       // Blackstone
+  | 'chile_acquisition'      // Blackstone
+  | 'project_chimera'        // Lazarus Genomics
+  | 'operation_divide'       // Apex Media
 
-export type StrategyId =
-  | 'privateJet'
-  | 'lobbying'
-  | 'mediaControl'
-  | 'destabilization'
-
-export interface ActiveStrategy {
-  strategyId: StrategyId
-  tier: 'active' | 'elite'
-  activatedDay: number
-  abilitiesUsed: {
-    spin?: number
-    plant?: number
-    policyPushed?: string
-    coupUsed?: boolean        // Destabilization Elite: 1x/game coup ability
-    eliminationUsed?: boolean // Destabilization Elite: 1x/game targeted elimination
+export interface PEAbility {
+  id: PEAbilityId
+  name: string
+  emoji: string
+  flavor: string
+  cost: number
+  successEffects: Record<string, number>  // Asset price effects on success
+  backfireEffects: {
+    priceEffects?: Record<string, number>  // Negative price swings
+    losePE?: boolean                       // Lose the PE asset entirely
+    fine?: number                          // Cash penalty
+    triggerEncounter?: EncounterType       // Force specific encounter
+    gameOverRisk?: number                  // % chance of game over (0-1)
+  }
+  backfireChance: number  // 0.20 = 20%
+  specialEffect?: {
+    type: 'event_trigger'
+    eventCategory: string
+    chance: number
   }
 }
 
-// Destabilization target regions
-export type DestabilizationTargetId = 'middle_east' | 'asia' | 'south_america' | 'africa'
-
-export interface ActiveDestabilization {
-  targetId: DestabilizationTargetId
-  activatedDay: number
-}
-
-// IntelligencePreview removed - Intelligence Network strategy removed
-
-export interface PlantedBoost {
-  assetId: string
-  appliedDay: number
+export interface UsedPEAbility {
+  abilityId: PEAbilityId
+  usedOnDay: number
   didBackfire: boolean
-  boostAmount: number
 }
 
-export type PolicyId =
-  | 'tech_tax'
-  | 'energy_subsidy'
-  | 'crypto_dereg'
-  | 'defense_spending'
-  | 'market_manipulation'
+export interface PendingAbilityEffects {
+  abilityId: PEAbilityId
+  effects: Record<string, number>
+  isBackfire: boolean
+  peAssetId: string  // The PE company that triggered this
+  additionalConsequences?: {
+    losePE?: boolean
+    fine?: number
+    triggerEncounter?: EncounterType
+    gameOverRisk?: number
+  }
+}
 
-// FavorType removed - Black Book strategy removed
-// InsiderIntelTip removed - Black Book strategy removed
+// =============================================================================
+// OPERATION TYPES (Legacy - to be removed)
+// =============================================================================
+
+export type OperationId =
+  | 'lobby_congress'      // Sal's Corner
+  | 'resource_extraction' // Terralith Minerals (removed)
+  | 'execute_coup'        // Blackstone Services
+  | 'plant_story'         // Apex Media
+
+export interface OperationState {
+  operationId: OperationId
+  lastUsedDay: number | null  // null = never used
+  timesUsed: number           // For escalating costs and once-per-game tracking
+}
+
+// =============================================================================
+// LUXURY ASSET TYPES
+// =============================================================================
+
+export type LuxuryAssetId = 'private_jet' | 'mega_yacht' | 'art_collection' | 'la_lakers'
+
+export interface LuxuryAsset {
+  id: LuxuryAssetId
+  name: string
+  emoji: string
+  basePrice: number
+  dailyCost: number  // Fixed daily cost (not percentage)
+  description: string
+  passiveBenefit: string  // Human-readable description
+}
 
 // =============================================================================
 // CORE TYPES
@@ -229,17 +262,13 @@ export interface GameState {
   assetMoods: AssetMood[]                    // Current mood per asset (decays after 3 days)
   // Flavor events (meme/celebrity news in secondary slot)
   usedFlavorHeadlines: string[]              // Headlines already shown this game
-  // Strategies state
-  activeStrategies: ActiveStrategy[]         // Currently active strategies
-  scheduledNextEvent: MarketEvent | null     // Pre-determined event (kept for lobbying policy effects)
-  plantedBoostActive: PlantedBoost | null    // Media Control Plant effect tracking
-  queuedPolicyPush: PolicyId | null          // Lobbying "Push policy"
-  activePolicies: PolicyId[]                 // Active policies (last rest of game)
-  policyPushAttempts: number                 // Total policy push attempts this game (for escalating costs)
-  lastPolicyPushDay: number | null           // Day of last push attempt (for cooldown)
-  activeDestabilization: ActiveDestabilization | null  // Destabilization target region
-  showStrategiesPanel: boolean               // UI state for strategies panel
-  strategyCostMessage: string | null         // Message about strategy costs
+  // Operations state (PE-based villain actions) - Legacy
+  operationStates: Record<OperationId, OperationState>
+  // Luxury assets state
+  ownedLuxury: LuxuryAssetId[]               // Owned luxury assets (no price fluctuation)
+  // PE Abilities state (new one-time villain actions)
+  usedPEAbilities: UsedPEAbility[]           // Abilities already used this game
+  pendingAbilityEffects: PendingAbilityEffects | null  // Effects to apply next day
 }
 
 // Wall St Gossip tracking
@@ -255,9 +284,10 @@ export interface EncounterState {
   usedSEC: boolean                // SEC can only happen once
   usedKidney: boolean             // Kidney can only happen once
   divorceCount: number            // Max 2 divorces per game
+  usedTax: boolean                // Tax can only happen once
 }
 
-export type EncounterType = 'sec' | 'divorce' | 'shitcoin' | 'kidney' | 'roulette'
+export type EncounterType = 'sec' | 'divorce' | 'shitcoin' | 'kidney' | 'roulette' | 'tax'
 export type RouletteColor = 'red' | 'black' | 'zero'
 
 export interface PendingEncounter {
@@ -267,10 +297,10 @@ export interface PendingEncounter {
   rouletteBet?: number
 }
 
-// Pending liquidation (forced asset sale for SEC/Divorce)
+// Pending liquidation (forced asset sale for SEC/Divorce/Tax)
 export interface PendingLiquidation {
   amountNeeded: number
-  reason: 'sec' | 'divorce'
+  reason: 'sec' | 'divorce' | 'tax'
   headline: string  // Result headline to show after liquidation
   encounterType: EncounterType
   encounterState: EncounterState  // Pre-computed updated state
@@ -335,19 +365,40 @@ export interface ActiveInvestment {
 }
 
 // Lifestyle Asset Types
-export type LifestyleCategory = 'property' | 'private_equity'
+export type LifestyleCategory = 'property' | 'private_equity' | 'strategy'
 
 // PE Risk Tiers - simplified to two categories
 // BLUE_CHIP: Established businesses, proven models, stable income (~5% return, ~3% monthly failure)
 // GROWTH: High risk/reward, volatile industries (~6-10% return, ~6-18% monthly failure)
 export type PERiskTier = 'blue_chip' | 'growth'
 
-// Strategic Unlock: Unlocks or enhances strategies from owning certain PE assets
-export interface StrategicUnlock {
-  strategyId?: StrategyId              // Which strategy this asset unlocks/enhances
-  bonusType: 'unlock' | 'effectiveness' | 'cost_reduction' | 'exposure_reduction' | 'placeholder'
-  bonusValue?: number                  // e.g., 0.15 for +15% bonus (not used for 'unlock')
-  description: string                  // Human-readable description shown in UI
+// PE Passive Bonus - Always active when you own the asset
+export type PassiveBonusType =
+  | 'regulatory_favor'      // +X% chance regulatory events favor you
+  | 'positive_events'       // +X% positive event frequency
+  | 'negative_reduction'    // -X% negative event damage
+  | 'commodity_boost'       // +X% commodity price gains
+  | 'destabilization_boost' // +X% returns from destabilized regions
+
+export interface PEPassiveBonus {
+  type: PassiveBonusType
+  value: number  // Percentage as decimal (0.15 = 15%)
+  description: string
+}
+
+// PE Operation - Active villain action with cost/cooldown
+export interface PEOperationConfig {
+  id: OperationId
+  name: string
+  emoji: string
+  description: string
+  executionConfig: {
+    type: 'escalating' | 'fixed' | 'once'
+    baseCost?: number        // For fixed/once
+    cooldownDays?: number    // For escalating/fixed (not for 'once')
+    successRate?: number     // Optional
+    backfireChance?: number  // Optional
+  }
 }
 
 export interface LifestyleAsset {
@@ -359,10 +410,12 @@ export interface LifestyleAsset {
   volatility: number // price fluctuation (like trading assets)
   dailyReturn: number // % of purchase price per day (positive = income, negative = cost)
   description: string
-  strategicUnlock?: StrategicUnlock    // Optional: unlocks/enhances strategies
   // PE Risk System (private_equity only)
   riskTier?: PERiskTier               // Risk tier determines failure chance and UI coloring
   failureChancePerDay?: number        // Daily probability of total loss (0-1), e.g., 0.0093 = ~25%/month
+  // NEW: PE Operations System
+  passiveBonus?: PEPassiveBonus       // Always-on bonus from owning this PE
+  operation?: PEOperationConfig       // Villain action this PE enables
 }
 
 export interface OwnedLifestyleItem {

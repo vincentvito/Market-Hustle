@@ -11,7 +11,6 @@ import { StartupOfferOverlay } from '../ui/StartupOfferOverlay'
 import { PEExitOfferOverlay } from '../ui/PEExitOfferOverlay'
 import { EncounterPopup } from '../ui/EncounterPopup'
 import { LiquidationSelectionOverlay } from '../ui/LiquidationSelectionOverlay'
-import { StrategiesPanel } from '../ui/StrategiesPanel'
 import { InvestmentResultOverlay } from '../ui/InvestmentResultOverlay'
 import { AssetGrid } from '../trading/AssetGrid'
 import { TradeSheet } from '../trading/TradeSheet'
@@ -28,8 +27,6 @@ export function GameScreen() {
     leveragedPositions,
     shortPositions,
     prices,
-    setShowStrategiesPanel,
-    activeStrategies,
   } = useGame()
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
@@ -73,7 +70,6 @@ export function GameScreen() {
       <PEExitOfferOverlay />
       <EncounterPopup />
       <LiquidationSelectionOverlay />
-      <StrategiesPanel />
       {/* Celebration overlays - highest priority (z-500) */}
       <InvestmentResultOverlay />
       <NewsPanel />
@@ -105,22 +101,6 @@ export function GameScreen() {
           title="Settings"
         >
           ⚙️
-        </button>
-        <button
-          onClick={() => setShowStrategiesPanel(true)}
-          className={`w-12 h-12 flex items-center justify-center cursor-pointer bg-transparent border-2 rounded text-xl relative ${
-            activeStrategies.length > 0
-              ? 'border-purple-500 text-purple-400'
-              : 'border-mh-border text-mh-text-dim hover:text-mh-text-bright'
-          }`}
-          title="Strategies"
-        >
-          ♟️
-          {activeStrategies.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-              {activeStrategies.length}
-            </span>
-          )}
         </button>
         <button
           onClick={triggerNextDay}
