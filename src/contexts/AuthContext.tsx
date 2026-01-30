@@ -5,7 +5,6 @@ import { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { getSupabaseClient } from '@/lib/supabase/client'
 import { loadUserState, saveUserState } from '@/lib/game/persistence'
 import type { GameResultData } from '@/lib/game/authBridge'
-import type { GameHistoryEntry } from '@/lib/game/userState'
 
 interface Profile {
   id: string
@@ -53,64 +52,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const supabase = getSupabaseClient()
 
-  // Fetch user profile from database
-  const fetchProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-
-    if (error) {
+  // Fetch user profile from API
+  const fetchProfile = useCallback(async (_userId: string): Promise<Profile | null> => {
+    try {
+      const res = await fetch('/api/profile')
+      if (!res.ok) return null
+      const data = await res.json()
+      return data.profile as Profile | null
+    } catch (error) {
       console.error('Error fetching profile:', error)
       return null
     }
-
-    // Fetch pro trial data from separate table
-    const { data: trialData } = await supabase
-      .from('pro_trials')
-      .select('games_used')
-      .eq('user_id', userId)
-      .single()
-
-    return {
-      ...data,
-      pro_trial_games_used: trialData?.games_used ?? 0,
-    } as Profile
-  }, [supabase])
-
-  // Migrate game history from localStorage to Supabase
-  const migrateGameHistory = useCallback(async (userId: string, gameHistory: GameHistoryEntry[]) => {
-    if (!gameHistory || gameHistory.length === 0) return
-
-    // Batch insert all game results (upsert to handle duplicates)
-    const gameResults = gameHistory.map(entry => ({
-      user_id: userId,
-      game_id: entry.gameId,
-      duration: entry.duration,
-      final_net_worth: entry.finalNetWorth,
-      profit_percent: entry.profitPercent,
-      days_survived: entry.daysSurvived,
-      outcome: entry.outcome,
-      created_at: entry.date, // Use original game date
-    }))
-
-    const { error } = await supabase
-      .from('game_results')
-      .upsert(gameResults, {
-        onConflict: 'user_id,game_id',
-        ignoreDuplicates: true
-      })
-
-    if (error) {
-      console.error('Error migrating game history:', error)
-    } else {
-      console.log(`Migrated ${gameHistory.length} game results to Supabase`)
-    }
-  }, [supabase])
+  }, [])
 
   // Migrate localStorage stats to database on first login
-  const migrateLocalStats = useCallback(async (userId: string) => {
+  const migrateLocalStats = useCallback(async (_userId: string) => {
     // Prevent double migration
     if (typeof window !== 'undefined' && localStorage.getItem('mh_migration_completed')) {
       console.log('Migration already completed, skipping')
@@ -124,29 +80,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    // Migrate game history first
-    if (localState.gameHistory && localState.gameHistory.length > 0) {
-      await migrateGameHistory(userId, localState.gameHistory)
-    }
+    try {
+      const res = await fetch('/api/profile/migrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stats: {
+            totalGamesPlayed: localState.totalGamesPlayed,
+            totalEarnings: localState.totalEarnings,
+            bestNetWorth: localState.bestNetWorth,
+            winCount: localState.winCount,
+            winStreak: localState.winStreak || 0,
+            currentStreak: localState.currentStreak || 0,
+          },
+          gameHistory: localState.gameHistory || [],
+        }),
+      })
 
-    // Then migrate aggregate stats (only if there are stats to migrate)
-    if (localState.totalGamesPlayed > 0) {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          total_games_played: localState.totalGamesPlayed,
-          total_earnings: localState.totalEarnings,
-          best_net_worth: localState.bestNetWorth,
-          win_count: localState.winCount,
-          win_streak: localState.winStreak || 0,
-          current_streak: localState.currentStreak || 0,
-        })
-        .eq('id', userId)
-
-      if (error) {
-        console.error('Error migrating stats:', error)
+      if (!res.ok) {
+        console.error('Error migrating stats:', await res.text())
         return // Don't clear local state if migration failed
       }
+    } catch (error) {
+      console.error('Error migrating stats:', error)
+      return
     }
 
     // Clear local stats after successful migration (keep settings)
@@ -165,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('mh_migration_completed', 'true')
     }
-  }, [supabase, migrateGameHistory])
+  }, [])
 
   // Refresh profile data
   const refreshProfile = useCallback(async () => {
@@ -176,7 +133,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, fetchProfile])
 
-  // Initialize auth state
   // Initialize auth state and listen for changes.
   useEffect(() => {
     let cancelled = false
@@ -200,8 +156,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Listen for future auth changes (sign-in, sign-out, token refresh).
-    // Only update user/session synchronously here — profile fetch happens
-    // separately to avoid Supabase client lock contention.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event: AuthChangeEvent, newSession: Session | null) => {
         if (cancelled) return
@@ -264,24 +218,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(null)
   }
 
-  // Update user settings (syncs to Supabase for Pro users)
+  // Update user settings (syncs to DB for Pro users)
   const updateSettings = async (settings: { theme?: string; duration?: number }) => {
     if (!user) return
 
-    const updates: Record<string, unknown> = {}
-    if (settings.theme !== undefined) updates.selected_theme = settings.theme
-    if (settings.duration !== undefined) updates.selected_duration = settings.duration
+    try {
+      const res = await fetch('/api/profile/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      })
 
-    const { error } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', user.id)
-
-    if (error) {
+      if (res.ok) {
+        // Update local profile state
+        const updates: Record<string, unknown> = {}
+        if (settings.theme !== undefined) updates.selected_theme = settings.theme
+        if (settings.duration !== undefined) updates.selected_duration = settings.duration
+        setProfile(prev => prev ? { ...prev, ...updates } as Profile : null)
+      } else {
+        console.error('Error updating settings:', await res.text())
+      }
+    } catch (error) {
       console.error('Error updating settings:', error)
-    } else {
-      // Update local profile state
-      setProfile(prev => prev ? { ...prev, ...updates } as Profile : null)
     }
   }
 
@@ -292,22 +250,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const today = new Date().toISOString().split('T')[0]
     const isNewDay = profile?.last_played_date !== today
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        games_played_today: isNewDay ? 1 : (profile?.games_played_today || 0) + 1,
-        last_played_date: today,
+    try {
+      const res = await fetch('/api/profile/increment-played', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isNewDay,
+          currentCount: profile?.games_played_today || 0,
+        }),
       })
-      .eq('id', user.id)
 
-    if (error) {
+      if (res.ok) {
+        await refreshProfile()
+      } else {
+        console.error('Error incrementing games played:', await res.text())
+      }
+    } catch (error) {
       console.error('Error incrementing games played:', error)
-    } else {
-      await refreshProfile()
     }
-  }, [user, profile?.last_played_date, profile?.games_played_today, supabase, refreshProfile])
+  }, [user, profile?.last_played_date, profile?.games_played_today, refreshProfile])
 
-  // Sync game stats to Supabase (called on game END)
+  // Sync game stats to DB (called on game END)
   const recordGameEnd = useCallback(async (
     finalNetWorth: number,
     isWin: boolean,
@@ -315,44 +278,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ) => {
     if (!user || !profile) return
 
-    const profit = Math.max(0, finalNetWorth - 100000)
-
-    // Update aggregate stats in profiles table
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({
-        total_games_played: profile.total_games_played + 1,
-        total_earnings: Math.round(profile.total_earnings + profit),
-        best_net_worth: Math.round(Math.max(profile.best_net_worth, finalNetWorth)),
-        win_count: isWin ? profile.win_count + 1 : profile.win_count,
+    try {
+      const res = await fetch('/api/profile/record-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          finalNetWorth,
+          isWin,
+          profileStats: {
+            total_games_played: profile.total_games_played,
+            total_earnings: profile.total_earnings,
+            best_net_worth: profile.best_net_worth,
+            win_count: profile.win_count,
+          },
+          gameData,
+        }),
       })
-      .eq('id', user.id)
 
-    if (profileError) {
-      console.error('Error updating profile stats:', profileError)
-    }
-
-    // Insert individual game result if game data provided
-    if (gameData) {
-      const { error: gameError } = await supabase
-        .from('game_results')
-        .insert({
-          user_id: user.id,
-          game_id: gameData.gameId,
-          duration: gameData.duration,
-          final_net_worth: Math.round(finalNetWorth),
-          profit_percent: gameData.profitPercent,
-          days_survived: gameData.daysSurvived,
-          outcome: gameData.outcome,
-        })
-
-      if (gameError) {
-        console.error('Error recording game result:', gameError)
+      if (!res.ok) {
+        console.error('Error recording game:', await res.text())
       }
-    }
 
-    await refreshProfile()
-  }, [user, profile, supabase, refreshProfile])
+      await refreshProfile()
+    } catch (error) {
+      console.error('Error recording game end:', error)
+    }
+  }, [user, profile, refreshProfile])
 
   // Increment pro trial games used counter (called on game END when using trial)
   const useProTrialGame = useCallback(async () => {
@@ -362,25 +313,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    const newCount = (profile.pro_trial_games_used || 0) + 1
-    console.log('[useProTrialGame] upserting pro_trials', { userId: user.id, newGamesUsed: newCount })
+    try {
+      console.log('[useProTrialGame] calling API')
+      const res = await fetch('/api/profile/use-trial', { method: 'POST' })
 
-    const { error } = await supabase
-      .from('pro_trials')
-      .upsert({
-        user_id: user.id,
-        games_used: newCount,
-        updated_at: new Date().toISOString(),
-      })
-
-    if (error) {
-      console.error('[useProTrialGame] DB error:', error)
-    } else {
-      console.log('[useProTrialGame] upsert success, refreshing profile...')
-      await refreshProfile()
-      console.log('[useProTrialGame] profile refreshed')
+      if (res.ok) {
+        console.log('[useProTrialGame] success, refreshing profile...')
+        await refreshProfile()
+        console.log('[useProTrialGame] profile refreshed')
+      } else {
+        console.error('[useProTrialGame] API error:', await res.text())
+      }
+    } catch (error) {
+      console.error('[useProTrialGame] error:', error)
     }
-  }, [user, profile, supabase, refreshProfile])
+  }, [user, profile, refreshProfile])
 
   // User needs onboarding if logged in but hasn't set username
   const needsOnboarding = !!user && !profile?.username

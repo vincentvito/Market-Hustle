@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/server'
+import { db } from '@/db'
+import { profiles } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 /**
  * POST /api/username/check
@@ -55,15 +57,14 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check availability in database (uses admin client to see all profiles)
-    const supabase = createAdminClient()
-    const { data: existing } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('username', trimmedUsername)
-      .single()
+    // Check availability in database
+    const existing = await db
+      .select({ id: profiles.id })
+      .from(profiles)
+      .where(eq(profiles.username, trimmedUsername))
+      .limit(1)
 
-    if (existing) {
+    if (existing.length > 0) {
       return NextResponse.json({
         available: false,
         reason: 'This username is already taken',

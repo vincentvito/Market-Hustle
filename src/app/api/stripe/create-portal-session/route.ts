@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe/server'
-import { createServerSupabaseClient, createAdminClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { db } from '@/db'
+import { subscriptions } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,14 +15,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user's Stripe customer ID
-    const adminClient = createAdminClient()
-    const { data: subscription, error } = await adminClient
-      .from('subscriptions')
-      .select('stripe_customer_id')
-      .eq('user_id', user.id)
-      .single()
+    const result = await db
+      .select({ stripeCustomerId: subscriptions.stripeCustomerId })
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, user.id))
+      .limit(1)
 
-    if (error || !subscription?.stripe_customer_id) {
+    if (!result[0]?.stripeCustomerId) {
       return NextResponse.json(
         { error: 'No subscription found' },
         { status: 404 }
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     // Create Stripe billing portal session
     const session = await stripe.billingPortal.sessions.create({
-      customer: subscription.stripe_customer_id,
+      customer: result[0].stripeCustomerId,
       return_url: `${baseUrl}${returnUrl || '/'}`,
     })
 

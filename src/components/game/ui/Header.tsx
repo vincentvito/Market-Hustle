@@ -16,6 +16,16 @@ export function Header() {
     return {}
   }
 
+  // Mobile: scale down font when net worth string gets too long
+  const formattedNetWorth = `$${netWorth.toLocaleString()}`
+  const getMobileTextSize = () => {
+    const len = formattedNetWorth.length
+    if (len > 15) return 'text-lg'
+    if (len > 12) return 'text-xl'
+    if (len > 9) return 'text-2xl'
+    return 'text-3xl'
+  }
+
   // Bloomberg: Colored cell background for net worth (key terminal feature)
   const getBloombergNetWorthStyle = (): React.CSSProperties => {
     if (!isBloomberg) return {}
@@ -45,12 +55,12 @@ export function Header() {
       >
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>NET WORTH</div>
         <div
-          className={`text-3xl md:text-4xl font-bold ${
+          className={`${getMobileTextSize()} md:text-4xl font-bold ${
             isBloomberg ? '' : netWorth >= 10000 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
           }`}
           style={isBloomberg ? getBloombergNetWorthStyle() : getNetWorthStyle()}
         >
-          ${netWorth.toLocaleString()}
+          {formattedNetWorth}
         </div>
       </div>
     </div>

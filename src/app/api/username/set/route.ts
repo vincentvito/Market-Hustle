@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient, createAdminClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { db } from '@/db'
+import { profiles } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 /**
  * POST /api/username/set
@@ -52,15 +55,14 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check availability (use admin client to see all profiles)
-    const adminClient = createAdminClient()
-    const { data: existing } = await adminClient
-      .from('profiles')
-      .select('id')
-      .eq('username', trimmedUsername)
-      .single()
+    // Check availability
+    const existing = await db
+      .select({ id: profiles.id })
+      .from(profiles)
+      .where(eq(profiles.username, trimmedUsername))
+      .limit(1)
 
-    if (existing && existing.id !== user.id) {
+    if (existing.length > 0 && existing[0].id !== user.id) {
       return NextResponse.json({
         success: false,
         error: 'This username is already taken',
@@ -75,37 +77,33 @@ export async function POST(request: NextRequest) {
     // Include local stats migration if provided
     if (localStats) {
       if (typeof localStats.totalGamesPlayed === 'number' && localStats.totalGamesPlayed > 0) {
-        updates.total_games_played = localStats.totalGamesPlayed
+        updates.totalGamesPlayed = localStats.totalGamesPlayed
       }
       if (typeof localStats.totalEarnings === 'number' && localStats.totalEarnings > 0) {
-        updates.total_earnings = localStats.totalEarnings
+        updates.totalEarnings = localStats.totalEarnings
       }
       if (typeof localStats.bestNetWorth === 'number' && localStats.bestNetWorth > 0) {
-        updates.best_net_worth = localStats.bestNetWorth
+        updates.bestNetWorth = localStats.bestNetWorth
       }
       if (typeof localStats.winCount === 'number' && localStats.winCount > 0) {
-        updates.win_count = localStats.winCount
+        updates.winCount = localStats.winCount
       }
       if (typeof localStats.winStreak === 'number' && localStats.winStreak > 0) {
-        updates.win_streak = localStats.winStreak
+        updates.winStreak = localStats.winStreak
       }
       if (typeof localStats.currentStreak === 'number') {
-        updates.current_streak = localStats.currentStreak
+        updates.currentStreak = localStats.currentStreak
       }
     }
 
     // Upsert profile (creates row if it doesn't exist)
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .upsert({ id: user.id, ...updates })
-
-    if (updateError) {
-      console.error('Error setting username:', updateError)
-      return NextResponse.json({
-        success: false,
-        error: 'Failed to set username. Please try again.',
+    await db
+      .insert(profiles)
+      .values({ id: user.id, ...updates })
+      .onConflictDoUpdate({
+        target: profiles.id,
+        set: updates,
       })
-    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

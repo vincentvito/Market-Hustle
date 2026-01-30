@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { stripe, STRIPE_PRICES, type StripePlan } from '@/lib/stripe/server'
 import { createAdminClient } from '@/lib/supabase/server'
+import { db } from '@/db'
+import { profiles, subscriptions } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 import Stripe from 'stripe'
 import { randomUUID } from 'crypto'
 
@@ -31,6 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
+  // Keep admin client for auth admin operations only
   const supabase = createAdminClient()
 
   try {
@@ -43,19 +47,19 @@ export async function POST(request: NextRequest) {
 
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
-        await handleSubscriptionUpdated(supabase, subscription)
+        await handleSubscriptionUpdated(subscription)
         break
       }
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
-        await handleSubscriptionDeleted(supabase, subscription)
+        await handleSubscriptionDeleted(subscription)
         break
       }
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
-        await handlePaymentFailed(supabase, invoice)
+        await handlePaymentFailed(invoice)
         break
       }
 
@@ -137,13 +141,11 @@ async function handleCheckoutCompleted(
       console.log(`Found existing user for ${customerEmail}`)
     } else {
       // Invite new user - this creates account AND sends magic link email
-      // New users will be redirected to onboarding first, then auto-start Pro game
       isNewUser = true
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
         customerEmail,
         {
-          // Auth callback will detect no username and redirect to onboarding
           redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent('/?autostart=pro')}`,
         }
       )
@@ -160,8 +162,6 @@ async function handleCheckoutCompleted(
 
   // For existing users (not invited), send a magic link email
   if (!isNewUser) {
-    // Use Supabase REST API to trigger magic link email
-    // Note: Using service role key for server-side email sending
     const existingUserBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/otp`, {
       method: 'POST',
@@ -182,76 +182,62 @@ async function handleCheckoutCompleted(
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Failed to send magic link email:', errorText)
-      // Throw error to trigger Stripe retry
       throw new Error(`Failed to send magic link email: ${errorText}`)
     }
     console.log(`Magic link email sent to existing user: ${customerEmail}`)
   }
 
   // Check if subscription already exists by stripe_subscription_id
-  const { data: existingSub } = await supabase
-    .from('subscriptions')
-    .select('id')
-    .eq('stripe_subscription_id', subscriptionId)
-    .single()
+  const existingSub = await db
+    .select({ id: subscriptions.id })
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeSubscriptionId, subscriptionId))
+    .limit(1)
 
-  if (existingSub) {
+  if (existingSub.length > 0) {
     // UPDATE existing subscription
-    const { error: subError } = await supabase
-      .from('subscriptions')
-      .update({
-        user_id: finalUserId,
-        stripe_customer_id: customerId,
+    await db
+      .update(subscriptions)
+      .set({
+        userId: finalUserId!,
+        stripeCustomerId: customerId,
         status: 'active',
         plan: plan as 'monthly' | 'yearly',
-        current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
+        currentPeriodEnd: new Date(currentPeriodEnd * 1000),
       })
-      .eq('id', existingSub.id)
-
-    if (subError) {
-      console.error('Error updating subscription:', subError)
-      throw new Error(`Failed to update subscription: ${subError.message}`)
-    }
+      .where(eq(subscriptions.id, existingSub[0].id))
   } else {
     // INSERT new subscription
-    const { error: subError } = await supabase
-      .from('subscriptions')
-      .insert({
+    await db
+      .insert(subscriptions)
+      .values({
         id: randomUUID(),
-        user_id: finalUserId,
-        stripe_customer_id: customerId,
-        stripe_subscription_id: subscriptionId,
+        userId: finalUserId!,
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: subscriptionId,
         status: 'active',
         plan: plan as 'monthly' | 'yearly',
-        current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
+        currentPeriodEnd: new Date(currentPeriodEnd * 1000),
       })
-
-    if (subError) {
-      console.error('Error inserting subscription:', subError)
-      throw new Error(`Failed to insert subscription: ${subError.message}`)
-    }
   }
 
-  // Upsert user's profile with pro tier (handles case where profile doesn't exist yet)
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .upsert({ id: finalUserId, tier: 'pro' }, { onConflict: 'id' })
-
-  if (profileError) {
-    console.error('Error upserting profile tier:', profileError)
-    throw new Error(`Failed to update profile tier: ${profileError.message}`)
-  }
+  // Upsert user's profile with pro tier
+  await db
+    .insert(profiles)
+    .values({ id: finalUserId!, tier: 'pro' })
+    .onConflictDoUpdate({
+      target: profiles.id,
+      set: { tier: 'pro' },
+    })
 
   console.log(`Checkout completed for user ${finalUserId}, plan: ${plan}`)
 }
 
 async function handleSubscriptionUpdated(
-  supabase: ReturnType<typeof createAdminClient>,
   subscription: Stripe.Subscription
 ) {
   const customerId = subscription.customer as string
   const status = mapStripeStatus(subscription.status)
-  // Get current_period_end from the first subscription item
   const currentPeriodEnd = subscription.items?.data[0]?.current_period_end || Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
 
   // Detect plan from price.id for plan change handling
@@ -259,81 +245,79 @@ async function handleSubscriptionUpdated(
   const plan: StripePlan = (priceId && PRICE_TO_PLAN[priceId]) || 'monthly'
 
   // Find user by customer ID
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('user_id')
-    .eq('stripe_customer_id', customerId)
-    .single()
+  const sub = await db
+    .select({ userId: subscriptions.userId })
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeCustomerId, customerId))
+    .limit(1)
 
-  if (!sub) {
+  if (sub.length === 0) {
     console.error('No subscription found for customer:', customerId)
     return
   }
 
   // Update subscription status and plan
-  await supabase
-    .from('subscriptions')
-    .update({
+  await db
+    .update(subscriptions)
+    .set({
       status,
       plan,
-      current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
+      currentPeriodEnd: new Date(currentPeriodEnd * 1000),
     })
-    .eq('stripe_customer_id', customerId)
+    .where(eq(subscriptions.stripeCustomerId, customerId))
 
   // Update tier based on status
   const tier = status === 'active' || status === 'trialing' ? 'pro' : 'free'
-  await supabase
-    .from('profiles')
-    .update({ tier })
-    .eq('id', sub.user_id)
+  await db
+    .update(profiles)
+    .set({ tier })
+    .where(eq(profiles.id, sub[0].userId))
 
-  console.log(`Subscription updated for user ${sub.user_id}, status: ${status}`)
+  console.log(`Subscription updated for user ${sub[0].userId}, status: ${status}`)
 }
 
 async function handleSubscriptionDeleted(
-  supabase: ReturnType<typeof createAdminClient>,
   subscription: Stripe.Subscription
 ) {
   const customerId = subscription.customer as string
 
   // Find user by customer ID
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('user_id')
-    .eq('stripe_customer_id', customerId)
-    .single()
+  const sub = await db
+    .select({ userId: subscriptions.userId })
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeCustomerId, customerId))
+    .limit(1)
 
-  if (!sub) {
+  if (sub.length === 0) {
     console.error('No subscription found for customer:', customerId)
     return
   }
 
   // Update subscription status
-  await supabase
-    .from('subscriptions')
-    .update({ status: 'canceled' })
-    .eq('stripe_customer_id', customerId)
+  await db
+    .update(subscriptions)
+    .set({ status: 'canceled' })
+    .where(eq(subscriptions.stripeCustomerId, customerId))
 
   // Revert tier to free
-  await supabase
-    .from('profiles')
-    .update({ tier: 'free' })
-    .eq('id', sub.user_id)
+  await db
+    .update(profiles)
+    .set({ tier: 'free' })
+    .where(eq(profiles.id, sub[0].userId))
 
-  console.log(`Subscription deleted for user ${sub.user_id}`)
+  console.log(`Subscription deleted for user ${sub[0].userId}`)
 }
 
 async function handlePaymentFailed(
-  supabase: ReturnType<typeof createAdminClient>,
   invoice: Stripe.Invoice
 ) {
   const customerId = invoice.customer as string
 
   // Update subscription status to past_due
-  await supabase
-    .from('subscriptions')
-    .update({ status: 'past_due' })
-    .eq('stripe_customer_id', customerId)
+  await db
+    .update(subscriptions)
+    .set({ status: 'past_due' })
+    .where(eq(subscriptions.stripeCustomerId, customerId))
 
   console.log(`Payment failed for customer ${customerId}`)
 }

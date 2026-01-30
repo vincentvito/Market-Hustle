@@ -425,6 +425,19 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       showAnonymousLimitModal: false,
       isUsingProTrial: willUseProTrial,
     })
+
+    // Record play timestamp for retention tracking (localStorage + Supabase)
+    try {
+      const playLog: string[] = JSON.parse(localStorage.getItem('mh_play_log') || '[]')
+      playLog.push(new Date().toISOString())
+      // Keep last 500 entries
+      localStorage.setItem('mh_play_log', JSON.stringify(playLog.slice(-500)))
+    } catch { /* silent */ }
+
+    // Fire-and-forget API call for logged-in users
+    if (storeIsLoggedIn) {
+      fetch('/api/game-plays', { method: 'POST' }).catch(() => {})
+    }
   },
 
   nextDay: () => {

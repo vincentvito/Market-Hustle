@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, STRIPE_PRICES, StripePlan } from '@/lib/stripe/server'
-import { createServerSupabaseClient, createAdminClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { db } from '@/db'
+import { subscriptions } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,15 +24,14 @@ export async function POST(request: NextRequest) {
     // If user is logged in, check if they already have a Stripe customer ID
     let customerId: string | undefined
     if (user) {
-      const adminClient = createAdminClient()
-      const { data: subscription } = await adminClient
-        .from('subscriptions')
-        .select('stripe_customer_id')
-        .eq('user_id', user.id)
-        .single()
+      const result = await db
+        .select({ stripeCustomerId: subscriptions.stripeCustomerId })
+        .from(subscriptions)
+        .where(eq(subscriptions.userId, user.id))
+        .limit(1)
 
-      if (subscription?.stripe_customer_id) {
-        customerId = subscription.stripe_customer_id
+      if (result[0]?.stripeCustomerId) {
+        customerId = result[0].stripeCustomerId
       }
     }
 
