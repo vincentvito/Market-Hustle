@@ -40,7 +40,8 @@ export function TitleScreen() {
   const { user, loading: authLoading } = useAuth()
   const { checkout, loading: checkoutLoading, error: checkoutError } = useStripeCheckout()
 
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>([])
   const [showAuthModal, setShowAuthModal] = useState(false)
   // Determine user state: anonymous vs logged-in
   const isAnonymous = !isLoggedIn && !user
@@ -57,9 +58,31 @@ export function TitleScreen() {
     initializeFromStorage()
   }, [initializeFromStorage])
 
-  // Generate leaderboard only on client side to avoid hydration mismatch
+  // Fetch daily + all-time leaderboards from API, fall back to generated data
   useEffect(() => {
-    setLeaderboard(generateLeaderboard(100))
+    let cancelled = false
+    async function fetchLeaderboards() {
+      try {
+        const [dailyRes, allTimeRes] = await Promise.all([
+          fetch('/api/leaderboard?period=daily'),
+          fetch('/api/leaderboard?period=all'),
+        ])
+        const [daily, allTime] = await Promise.all([dailyRes.json(), allTimeRes.json()])
+        if (!cancelled) {
+          setDailyLeaderboard(daily.entries ?? [])
+          setAllTimeLeaderboard(
+            allTime.entries?.length > 0 ? allTime.entries : generateLeaderboard(100)
+          )
+        }
+      } catch {
+        if (!cancelled) {
+          setDailyLeaderboard([])
+          setAllTimeLeaderboard(generateLeaderboard(100))
+        }
+      }
+    }
+    fetchLeaderboards()
+    return () => { cancelled = true }
   }, [])
 
   // Get appropriate limit message
@@ -246,11 +269,46 @@ export function TitleScreen() {
           </div>
         )}
 
-        {/* Leaderboard */}
-        <div className="w-full max-w-[320px]">
-          <div className="text-mh-text-dim text-sm mb-3 text-center">LEADERBOARD</div>
+        {/* Daily Leaderboard */}
+        <div className="w-full max-w-[320px] mb-6">
+          <div className="text-mh-text-dim text-sm mb-3 text-center">TODAY&apos;S LEADERBOARD</div>
           <div className="border border-mh-border rounded-lg overflow-hidden">
-            {leaderboard.map((entry, index) => (
+            {dailyLeaderboard.length === 0 ? (
+              <div className="px-3 py-4 text-sm text-mh-text-dim text-center">
+                No games played today yet. Be the first!
+              </div>
+            ) : (
+              dailyLeaderboard.map((entry, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center px-3 py-2 text-sm ${
+                    index < 3 ? 'bg-mh-profit-green/10' : index % 2 === 1 ? 'bg-mh-border/10' : ''
+                  }`}
+                >
+                  <span className={`w-10 ${index < 3 ? 'text-mh-profit-green font-bold' : 'text-mh-text-dim'}`}>
+                    #{index + 1}
+                  </span>
+                  <span className="flex-1 text-mh-text-main truncate text-left">
+                    {entry.username}
+                  </span>
+                  <span className={`font-mono text-right ${
+                    entry.score >= 1_000_000_000 ? 'text-mh-profit-green' :
+                    entry.score >= 1_000_000 ? 'text-mh-accent-blue' :
+                    'text-mh-text-main'
+                  }`}>
+                    {formatScore(entry.score)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* All-Time Leaderboard */}
+        <div className="w-full max-w-[320px]">
+          <div className="text-mh-text-dim text-sm mb-3 text-center">ALL-TIME LEADERBOARD</div>
+          <div className="border border-mh-border rounded-lg overflow-hidden">
+            {allTimeLeaderboard.map((entry, index) => (
               <div
                 key={index}
                 className={`flex items-center px-3 py-2 text-sm ${
