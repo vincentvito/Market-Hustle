@@ -1,9 +1,11 @@
-import { LifestyleAsset } from './types'
+import { LifestyleAsset, OwnedLifestyleItem } from './types'
 
 // =============================================================================
-// PROPERTIES - Generate rental income (5% daily of purchase price)
+// PROPERTIES - Stable rental income (1.5-4% daily), NEVER negative
+// Safe investments that generate consistent returns
 // =============================================================================
 export const PROPERTIES: LifestyleAsset[] = [
+  // === RESIDENTIAL PROPERTIES ===
   {
     id: 'miami_condo',
     name: 'Miami Beach Condo',
@@ -11,7 +13,7 @@ export const PROPERTIES: LifestyleAsset[] = [
     category: 'property',
     basePrice: 450_000,
     volatility: 0.02,
-    dailyReturn: 0.05, // 5% daily rental income
+    dailyReturn: 0.025, // 2.5% daily rental income
     description: 'Oceanfront 2BR in South Beach. Prime Airbnb territory.',
   },
   {
@@ -21,8 +23,19 @@ export const PROPERTIES: LifestyleAsset[] = [
     category: 'property',
     basePrice: 2_500_000,
     volatility: 0.015,
-    dailyReturn: 0.05, // 5% daily
+    dailyReturn: 0.02, // 2% daily
     description: 'Manhattan skyline views. Corporate housing goldmine.',
+  },
+  // === COMMERCIAL PROPERTIES (NEW) ===
+  {
+    id: 'strip_mall',
+    name: 'Austin Strip Mall',
+    emoji: '🏪',
+    category: 'property',
+    basePrice: 3_500_000,
+    volatility: 0.025,
+    dailyReturn: 0.035, // 3.5% daily - highest return (smaller, riskier)
+    description: 'Tech corridor retail. Tenants include coffee shops, yoga studios, taco joints.',
   },
   {
     id: 'la_mansion',
@@ -31,8 +44,18 @@ export const PROPERTIES: LifestyleAsset[] = [
     category: 'property',
     basePrice: 8_000_000,
     volatility: 0.025,
-    dailyReturn: 0.05, // 5% daily
+    dailyReturn: 0.018, // 1.8% daily
     description: 'Film location rentals. Celeb neighbor potential.',
+  },
+  {
+    id: 'warehouse_complex',
+    name: 'Dallas Warehouse Complex',
+    emoji: '🏭',
+    category: 'property',
+    basePrice: 12_000_000,
+    volatility: 0.02,
+    dailyReturn: 0.03, // 3% daily - logistics boom
+    description: 'E-commerce fulfillment hub. Amazon-proof location near major highways.',
   },
   {
     id: 'monaco_villa',
@@ -41,8 +64,28 @@ export const PROPERTIES: LifestyleAsset[] = [
     category: 'property',
     basePrice: 25_000_000,
     volatility: 0.02,
-    dailyReturn: 0.05, // 5% daily
+    dailyReturn: 0.015, // 1.5% daily
     description: 'Tax haven paradise. F1 weekend jackpot.',
+  },
+  {
+    id: 'medical_plaza',
+    name: 'Phoenix Medical Plaza',
+    emoji: '🏥',
+    category: 'property',
+    basePrice: 28_000_000,
+    volatility: 0.015,
+    dailyReturn: 0.028, // 2.8% daily - healthcare always in demand
+    description: 'Outpatient clinic hub. Triple-net leases with medical groups.',
+  },
+  {
+    id: 'office_tower',
+    name: 'Chicago Office Tower',
+    emoji: '🏢',
+    category: 'property',
+    basePrice: 45_000_000,
+    volatility: 0.025,
+    dailyReturn: 0.022, // 2.2% daily - post-COVID office uncertainty
+    description: 'Loop district Class A. Major law firms and consultancies.',
   },
   {
     id: 'dubai_palace',
@@ -51,144 +94,135 @@ export const PROPERTIES: LifestyleAsset[] = [
     category: 'property',
     basePrice: 50_000_000,
     volatility: 0.03,
-    dailyReturn: 0.05, // 5% daily
+    dailyReturn: 0.015, // 1.5% daily
     description: 'Oil sheikh neighbors. Ultimate flex property.',
   },
-]
-
-// =============================================================================
-// JETS - Fixed daily maintenance cost. Owning a jet increases chances of
-// high-multiplier VC investment opportunities appearing.
-// =============================================================================
-export const JETS: LifestyleAsset[] = [
   {
-    id: 'jet_citation',
-    name: 'Cessna Citation',
-    emoji: '🛩️',
-    category: 'jet',
-    basePrice: 3_000_000,
-    volatility: 0.01,
-    dailyReturn: -15_000, // Fixed $15K/day maintenance
-    vcDealBoost: 0.05, // +5% VC deal chance
-    description: 'Entry-level private. 6 seats. +5% VC deal chance.',
-  },
-  {
-    id: 'jet_challenger',
-    name: 'Bombardier Challenger',
-    emoji: '✈️',
-    category: 'jet',
-    basePrice: 15_000_000,
-    volatility: 0.015,
-    dailyReturn: -50_000, // Fixed $50K/day maintenance
-    vcDealBoost: 0.10, // +10% VC deal chance
-    description: 'Mid-size luxury. 10 seats. +10% VC deal chance.',
-  },
-  {
-    id: 'jet_gulfstream',
-    name: 'Gulfstream G650',
-    emoji: '🛫',
-    category: 'jet',
-    basePrice: 65_000_000,
-    volatility: 0.02,
-    dailyReturn: -150_000, // Fixed $150K/day maintenance
-    vcDealBoost: 0.15, // +15% VC deal chance
-    description: 'Ultra-long range. NYC to Tokyo nonstop. +15% VC deal chance.',
-  },
-  {
-    id: 'jet_global',
-    name: 'Bombardier Global 7500',
-    emoji: '🌐',
-    category: 'jet',
-    basePrice: 75_000_000,
-    volatility: 0.02,
-    dailyReturn: -200_000, // Fixed $200K/day maintenance
-    vcDealBoost: 0.20, // +20% VC deal chance
-    description: 'Flying penthouse. 4 living spaces. +20% VC deal chance.',
-  },
-  {
-    id: 'jet_bbj',
-    name: 'Boeing BBJ 787',
-    emoji: '👑',
-    category: 'jet',
-    basePrice: 250_000_000,
+    id: 'shopping_center',
+    name: 'Atlanta Shopping Center',
+    emoji: '🛒',
+    category: 'property',
+    basePrice: 85_000_000,
     volatility: 0.025,
-    dailyReturn: -500_000, // Fixed $500K/day maintenance
-    vcDealBoost: 0.25, // +25% VC deal chance
-    description: 'Flying mansion. Master suite, office. +25% VC deal chance.',
+    dailyReturn: 0.022, // 2.2% daily
+    description: 'Regional mall with anchor tenants. Entertainment-focused retail surviving online.',
+  },
+  {
+    id: 'industrial_park',
+    name: 'Seattle Industrial Park',
+    emoji: '🏗️',
+    category: 'property',
+    basePrice: 150_000_000,
+    volatility: 0.02,
+    dailyReturn: 0.018, // 1.8% daily - stable but lower yield at scale
+    description: 'Tech manufacturing campus. Data centers and cloud infrastructure.',
   },
 ]
 
 // =============================================================================
-// SPORTS TEAMS - Generate revenue (0.2-0.4% daily), prices swing with performance
+// PRIVATE EQUITY - Simplified 6-asset system
+// 3 prestige/income assets + 3 strategy unlock assets
+// BLUE CHIP: Established businesses (~5% return, ~3% monthly failure)
+// GROWTH: High risk/reward (~7-9% return, ~9-15% monthly failure)
+// Sorted by price (low to high)
 // =============================================================================
-export const TEAMS: LifestyleAsset[] = [
+export const PRIVATE_EQUITY: LifestyleAsset[] = [
+  // === BLUE CHIP TIER - Prestige/Income Assets ===
   {
-    id: 'team_mls',
-    name: 'MLS Franchise',
-    emoji: '⚽',
-    category: 'team',
-    basePrice: 500_000_000,
+    id: 'pe_sals_corner',
+    name: "Sal's Corner",
+    emoji: '🍝',
+    category: 'private_equity',
+    basePrice: 1_200_000,
     volatility: 0.04,
-    dailyReturn: 0.002, // 0.2% daily
-    description: 'Growing US soccer market. Stadium revenue.',
+    dailyReturn: 0.05, // 5%/day
+    description: 'Brooklyn Italian restaurant. Michelin Bib Gourmand. Political connections.',
+    riskTier: 'blue_chip',
+    failureChancePerDay: 0.001, // ~3%/month
+    strategicUnlock: {
+      strategyId: 'lobbying',
+      bonusType: 'unlock',
+      description: '🏛️ Unlocks Lobbying strategy',
+    },
   },
   {
-    id: 'team_nhl',
-    name: 'NHL Franchise',
-    emoji: '🏒',
-    category: 'team',
-    basePrice: 800_000_000,
-    volatility: 0.035,
-    dailyReturn: 0.0025, // 0.25% daily
-    description: 'Loyal fanbase. Canadian TV money.',
+    id: 'pe_iron_oak_brewing',
+    name: 'Iron Oak Brewing Co.',
+    emoji: '🍺',
+    category: 'private_equity',
+    basePrice: 1_900_000,
+    volatility: 0.04,
+    dailyReturn: 0.05, // 5%/day
+    description: 'Craft brewery with cult following. Two taprooms, 200+ bar distribution.',
+    riskTier: 'blue_chip',
+    failureChancePerDay: 0.001, // ~3%/month
   },
   {
-    id: 'team_nba',
-    name: 'NBA Franchise',
-    emoji: '🏀',
-    category: 'team',
+    id: 'pe_tenuta_luna',
+    name: 'Tenuta della Luna',
+    emoji: '🍷',
+    category: 'private_equity',
+    basePrice: 4_500_000,
+    volatility: 0.04,
+    dailyReturn: 0.05, // 5%/day
+    description: 'Tuscan vineyard. 80-hectare estate in Chianti Classico. 40K bottles annually.',
+    riskTier: 'blue_chip',
+    failureChancePerDay: 0.001, // ~3%/month
+  },
+
+  // === GROWTH TIER - High risk, high reward + Strategy Unlocks ===
+  {
+    id: 'pe_terralith_minerals',
+    name: 'Terralith Minerals Corp',
+    emoji: '⛏️',
+    category: 'private_equity',
+    basePrice: 2_800_000_000,
+    volatility: 0.07,
+    dailyReturn: 0.09, // 9%/day
+    description: 'Rare earth mining. Critical for EVs, batteries, semiconductors, defense.',
+    riskTier: 'growth',
+    failureChancePerDay: 0.005, // ~15%/month
+  },
+  {
+    id: 'pe_blackstone_services',
+    name: 'Blackstone Strategic Services',
+    emoji: '🎖️',
+    category: 'private_equity',
     basePrice: 3_000_000_000,
-    volatility: 0.03,
-    dailyReturn: 0.003, // 0.3% daily
-    description: 'Global brand potential. Streaming rights boom.',
-  },
-  {
-    id: 'team_nfl',
-    name: 'NFL Franchise',
-    emoji: '🏈',
-    category: 'team',
-    basePrice: 5_000_000_000,
-    volatility: 0.025,
-    dailyReturn: 0.0035, // 0.35% daily
-    description: 'Most valuable league. TV deal machine.',
-  },
-  {
-    id: 'team_f1',
-    name: 'F1 Racing Team',
-    emoji: '🏎️',
-    category: 'team',
-    basePrice: 1_500_000_000,
-    volatility: 0.06,
-    dailyReturn: 0.002, // 0.2% daily (high volatility offsets)
-    description: 'Global sponsor appeal. Netflix effect.',
-  },
-  {
-    id: 'team_epl',
-    name: 'Premier League Club',
-    emoji: '🦁',
-    category: 'team',
-    basePrice: 2_500_000_000,
     volatility: 0.05,
-    dailyReturn: 0.003, // 0.3% daily
-    description: 'Worldwide fanbase. Promotion/relegation drama.',
+    dailyReturn: 0.07, // 7%/day
+    description: 'Private military contractor. Government contracts, covert operations.',
+    riskTier: 'growth',
+    failureChancePerDay: 0.003, // ~9%/month
+    strategicUnlock: {
+      strategyId: 'destabilization',
+      bonusType: 'unlock',
+      description: '💀 Unlocks Destabilization strategy',
+    },
+  },
+  {
+    id: 'pe_apex_media',
+    name: 'Apex Media Group',
+    emoji: '📺',
+    category: 'private_equity',
+    basePrice: 12_000_000_000,
+    volatility: 0.05,
+    dailyReturn: 0.07, // 7%/day
+    description: 'Media conglomerate. News networks, film studios, streaming platform.',
+    riskTier: 'growth',
+    failureChancePerDay: 0.003, // ~9%/month
+    strategicUnlock: {
+      strategyId: 'mediaControl',
+      bonusType: 'unlock',
+      description: '📺 Unlocks Media Manipulation strategy',
+    },
   },
 ]
 
 // All lifestyle assets combined
 export const LIFESTYLE_ASSETS: LifestyleAsset[] = [
   ...PROPERTIES,
-  ...JETS,
-  ...TEAMS,
+  ...PRIVATE_EQUITY,
 ]
 
 // Helper to get asset by ID
@@ -199,4 +233,65 @@ export function getLifestyleAsset(id: string): LifestyleAsset | undefined {
 // Helper to get assets by category
 export function getLifestyleAssetsByCategory(category: LifestyleAsset['category']): LifestyleAsset[] {
   return LIFESTYLE_ASSETS.filter(a => a.category === category)
+}
+
+// =============================================================================
+// STRATEGY UNLOCK CHECKER
+// Returns which strategies are unlocked based on PE ownership
+// =============================================================================
+export interface StrategyUnlocks {
+  lobbying: boolean      // Unlocked by Sal's Corner
+  mediaControl: boolean  // Unlocked by Apex Media
+  destabilization: boolean // Unlocked by Blackstone
+}
+
+export function getStrategyUnlocks(ownedLifestyle: OwnedLifestyleItem[]): StrategyUnlocks {
+  const unlocks: StrategyUnlocks = {
+    lobbying: false,
+    mediaControl: false,
+    destabilization: false,
+  }
+
+  ownedLifestyle.forEach(owned => {
+    const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
+    if (!asset?.strategicUnlock || asset.strategicUnlock.bonusType !== 'unlock') return
+
+    const strategyId = asset.strategicUnlock.strategyId
+    if (strategyId === 'lobbying') unlocks.lobbying = true
+    if (strategyId === 'mediaControl') unlocks.mediaControl = true
+    if (strategyId === 'destabilization') unlocks.destabilization = true
+  })
+
+  return unlocks
+}
+
+// Legacy function for compatibility - can be removed later
+export interface StrategicBonuses {
+  mediaControlEffectiveness: number
+  mediaControlExposureReduction: number
+  blackOpsSuccessBonus: number
+  blackOpsCostReduction: number
+}
+
+export function calculateStrategicBonuses(ownedLifestyle: OwnedLifestyleItem[]): StrategicBonuses {
+  // With simplified system, no numeric bonuses - just unlocks
+  return {
+    mediaControlEffectiveness: 0,
+    mediaControlExposureReduction: 0,
+    blackOpsSuccessBonus: 0,
+    blackOpsCostReduction: 0,
+  }
+}
+
+// =============================================================================
+// RISK TIER HELPERS - Simplified two-tier system
+// =============================================================================
+export const RISK_TIER_COLORS: Record<string, string> = {
+  blue_chip: '#3b82f6',   // Blue - stable, proven businesses
+  growth: '#22c55e',      // Green - high risk, high reward
+}
+
+export const RISK_TIER_LABELS: Record<string, string> = {
+  blue_chip: 'BLUE CHIP',
+  growth: 'GROWTH',
 }

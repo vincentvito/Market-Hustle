@@ -8,7 +8,7 @@
 
 import type { MechanicsSliceCreator } from '../types'
 import { ASSETS } from '@/lib/game/assets'
-import { EVENTS, CATEGORY_WEIGHTS, QUIET_NEWS, LIFESTYLE_EFFECTS, expandLifestyleEffects } from '@/lib/game/events'
+import { EVENTS, CATEGORY_WEIGHTS, QUIET_NEWS, LIFESTYLE_EFFECTS, expandLifestyleEffects, rollForPEExit } from '@/lib/game/events'
 import { EVENT_CHAINS, CHAIN_CATEGORY_WEIGHTS } from '@/lib/game/eventChains'
 import { ANGEL_STARTUPS, VC_STARTUPS } from '@/lib/game/startups'
 import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
@@ -30,11 +30,32 @@ import type {
   EncounterType,
   LeveragedPosition,
   ShortPosition,
-  SoldPosition,
-  NearMissNotification,
-  NearMissType,
   OwnedLifestyleItem,
+  PEExitOffer,
+  StrategyId,
+  StrategyTier,
+  ActiveStrategy,
+  PolicyId,
+  MarketEvent,
+  ActiveDestabilization,
+  DestabilizationTargetId,
+  InvestmentResultEvent,
+  MilestoneCelebrationEvent,
+  CelebrationEvent,
 } from '@/lib/game/types'
+import {
+  STRATEGIES,
+  POLICIES,
+  POLICY_PUSH_CONFIG,
+  DESTABILIZATION_TARGETS,
+  calculateTotalDailyCost,
+  getActiveTier,
+  canAffordStrategy as checkCanAffordStrategy,
+  meetsNetWorthGate,
+  canUseAbility,
+  getDestabilizationTarget,
+} from '@/lib/game/strategies'
+import { getStrategyUnlocks } from '@/lib/game/lifestyleAssets'
 import {
   recordEventMood,
   recordChainOutcomeMood,
@@ -71,6 +92,7 @@ import {
   selectRandomChain,
   selectRandomStartup,
   selectOutcome,
+  selectOutcomeWithBonus,
   getRandomDuration,
 } from '../helpers'
 
@@ -160,10 +182,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   usedStartupIds: [],
   pendingStartupOffer: null,
   queuedStartupOffer: null,
+  startupOfferCounts: { angel: 0, vc: 0 },
+  lastStartupOfferDay: null,
 
   // Lifestyle
   ownedLifestyle: [],
   lifestylePrices: {},
+  activePEExitOffer: null,
 
   // Milestones
   hasReached1M: false,
@@ -171,15 +196,16 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   activeMilestone: null,
   milestonePhase: 'idle',
 
+  // Celebration queue (investment results + milestones)
+  celebrationQueue: [],
+  activeCelebration: null,
+  isCelebrationDay: false,
+
   // Gossip & encounters
   gossipState: DEFAULT_GOSSIP_STATE,
   encounterState: DEFAULT_ENCOUNTER_STATE,
   pendingEncounter: null,
-
-  // Near-miss
-  soldPositions: [],
-  activeNearMiss: null,
-  lastNearMissDay: 0,
+  pendingLiquidation: null,
 
   // UI state
   selectedAsset: null,
@@ -191,10 +217,23 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   activeBuyMessage: null,
   activeInvestmentBuyMessage: null,
   activeInvestmentResultToast: null,
+  activeErrorMessage: null,
 
   // Settings & achievements
   showSettings: false,
   pendingAchievement: null,
+
+  // Strategies
+  activeStrategies: [],
+  scheduledNextEvent: null,
+  plantedBoostActive: null,
+  queuedPolicyPush: null,
+  activePolicies: [],
+  policyPushAttempts: 0,
+  lastPolicyPushDay: null,
+  activeDestabilization: null,
+  showStrategiesPanel: false,
+  strategyCostMessage: null,
 
   // ============================================================================
   // GAME CONTROL ACTIONS
@@ -346,6 +385,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       activeInvestments: [],
       usedStartupIds: [],
       pendingStartupOffer: null,
+      startupOfferCounts: { angel: 0, vc: 0 },
+      lastStartupOfferDay: null,
       ownedLifestyle: [],
       lifestylePrices,
       activeEscalations,
@@ -353,17 +394,30 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       reachedMilestones: [],
       activeMilestone: null,
       milestonePhase: 'idle',
+      // Reset celebration queue
+      celebrationQueue: [],
+      activeCelebration: null,
+      isCelebrationDay: false,
       activeStories: [],
       usedStoryIds: [],
       gossipState: DEFAULT_GOSSIP_STATE,
       encounterState: DEFAULT_ENCOUNTER_STATE,
       pendingEncounter: null,
+      pendingLiquidation: null,
       queuedStartupOffer: null,
-      soldPositions: [],
-      activeNearMiss: null,
-      lastNearMissDay: 0,
       assetMoods: [],
       usedFlavorHeadlines: [],
+      // Reset strategies
+      activeStrategies: [],
+      scheduledNextEvent: null,
+      plantedBoostActive: null,
+      queuedPolicyPush: null,
+      activePolicies: [],
+      policyPushAttempts: 0,
+      lastPolicyPushDay: null,
+      activeDestabilization: null,
+      showStrategiesPanel: false,
+      strategyCostMessage: null,
       userTier: effectiveTier,
       gamesRemaining: remainingAfterStart,
       limitType,
@@ -374,7 +428,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   },
 
   nextDay: () => {
-    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, gossipState, soldPositions, lastNearMissDay, assetMoods, usedFlavorHeadlines } = get()
+    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activePEExitOffer, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, gossipState, assetMoods, usedFlavorHeadlines, activeStrategies, plantedBoostActive, activePolicies, leveragedPositions, shortPositions } = get()
     let effects: Record<string, number> = {}
     let updatedEscalations = [...activeEscalations]
     const todayNewsItems: NewsItem[] = []
@@ -391,31 +445,52 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     const newDay = day + 1
 
+    // ===========================================================================
+    // STEP 0: STRATEGY DAILY COSTS (processed BEFORE any income)
+    // ===========================================================================
+    const totalStrategyCost = calculateTotalDailyCost(activeStrategies)
+    let newStrategyCostMessage: string | null = null
+
+    if (totalStrategyCost > 0) {
+      cashChange -= totalStrategyCost
+      newStrategyCostMessage = `-$${totalStrategyCost.toLocaleString()} (${activeStrategies.length} active)`
+      todayNewsItems.push({
+        headline: `STRATEGY COSTS: -$${totalStrategyCost.toLocaleString()}`,
+        effects: {},
+        labelType: 'none'
+      })
+    }
+
+    // Calculate if we can afford tomorrow's costs (for warning)
+    const projectedCash = cash + cashChange
+    const canAffordTomorrow = projectedCash >= totalStrategyCost
+    if (activeStrategies.length > 0 && !canAffordTomorrow && projectedCash > 0) {
+      todayNewsItems.push({
+        headline: `⚠️ WARNING: Low cash - strategy costs may bankrupt you tomorrow!`,
+        effects: {},
+        labelType: 'none'
+      })
+    }
+
     // 0a. Process lifestyle asset income/costs
     let propertyIncome = 0
-    let jetCosts = 0
-    let teamRevenue = 0
+    let peReturns = 0
     let hasMarketNews = false // Track if we generated actual market news
 
     ownedLifestyle.forEach(owned => {
       const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
       if (asset) {
-        let dailyCashFlow: number
+        // Properties and PE use % of PURCHASE price
+        let dailyCashFlow = owned.purchasePrice * asset.dailyReturn
 
-        if (asset.category === 'jet') {
-          // Jets use FIXED daily cost (dailyReturn is already a dollar amount, negative)
-          dailyCashFlow = asset.dailyReturn
-          jetCosts += Math.abs(dailyCashFlow)
-        } else {
-          // Properties and teams use % of PURCHASE price
-          dailyCashFlow = owned.purchasePrice * asset.dailyReturn
-          if (asset.category === 'property') {
-            propertyIncome += dailyCashFlow
-          } else if (asset.category === 'team') {
-            teamRevenue += dailyCashFlow
-          }
+        // Properties: floor at 0% (never negative income)
+        if (asset.category === 'property') {
+          dailyCashFlow = Math.max(0, dailyCashFlow)
+          propertyIncome += dailyCashFlow
+        } else if (asset.category === 'private_equity') {
+          // PE: can go negative during bad conditions (future enhancement)
+          peReturns += dailyCashFlow
         }
-
         cashChange += dailyCashFlow
       }
     })
@@ -428,19 +503,103 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         labelType: 'none'
       })
     }
-    if (jetCosts > 0) {
+    // 0a2. PE FAILURE CHECK - high-risk PE investments can fail completely
+    // NOTE: PE RETURNS news is generated AFTER this check to avoid showing phantom income
+    const failedPEThisDay: string[] = []
+    let updatedOwnedLifestyle = [...ownedLifestyle]
+
+    ownedLifestyle.forEach(owned => {
+      const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
+      if (asset?.category === 'private_equity' && asset.failureChancePerDay) {
+        if (Math.random() < asset.failureChancePerDay) {
+          failedPEThisDay.push(owned.assetId)
+        }
+      }
+    })
+
+    // Process PE failures - 100% total loss, dramatic news
+    if (failedPEThisDay.length > 0) {
+      failedPEThisDay.forEach(assetId => {
+        const asset = LIFESTYLE_ASSETS.find(a => a.id === assetId)
+        const owned = ownedLifestyle.find(o => o.assetId === assetId)
+        if (asset && owned) {
+          // CRITICAL FIX: Deduct phantom income from failed asset
+          // (income was added earlier but asset failed same day)
+          const failedIncome = owned.purchasePrice * asset.dailyReturn
+          cashChange -= failedIncome
+          peReturns -= failedIncome
+
+          // Dramatic failure news with loss amount
+          const lossAmount = owned.purchasePrice
+          const formattedLoss = lossAmount >= 1_000_000_000
+            ? `$${(lossAmount / 1_000_000_000).toFixed(1)}B`
+            : lossAmount >= 1_000_000
+              ? `$${(lossAmount / 1_000_000).toFixed(1)}M`
+              : `$${Math.round(lossAmount).toLocaleString()}`
+          todayNewsItems.push({
+            headline: `💀 ${asset.name.toUpperCase()} COLLAPSES - ${formattedLoss} LOST`,
+            effects: {},
+            labelType: 'breaking'
+          })
+        }
+      })
+      // Remove failed assets from portfolio - NO salvage value (100% loss)
+      updatedOwnedLifestyle = updatedOwnedLifestyle.filter(o => !failedPEThisDay.includes(o.assetId))
+    }
+
+    // Generate PE RETURNS news AFTER failure check (shows actual income, not phantom)
+    if (peReturns > 0) {
       todayNewsItems.push({
-        headline: `JET MAINTENANCE: -$${Math.round(jetCosts).toLocaleString()}`,
+        headline: `PE RETURNS: +$${Math.round(peReturns).toLocaleString()}`,
         effects: {},
         labelType: 'none'
       })
     }
-    if (teamRevenue > 0) {
-      todayNewsItems.push({
-        headline: `TEAM REVENUE: +$${Math.round(teamRevenue).toLocaleString()}`,
-        effects: {},
-        labelType: 'none'
+
+    // 0a3. PE EXIT OFFER CHECK - Acquisition or IPO opportunities
+    // Only check if no current offer is pending (one at a time)
+    let newPEExitOffer: PEExitOffer | null = activePEExitOffer
+
+    // If existing offer expired, clear it
+    if (newPEExitOffer && newPEExitOffer.expiresDay <= newDay) {
+      newPEExitOffer = null
+    }
+
+    // Only roll for new offers if no pending offer
+    if (!newPEExitOffer) {
+      // FIX: Shuffle PE assets to avoid order-dependent bias
+      // (previously first asset in array had disproportionate exit chances)
+      const peAssets = updatedOwnedLifestyle.filter(o => {
+        const asset = LIFESTYLE_ASSETS.find(a => a.id === o.assetId)
+        return asset?.category === 'private_equity'
       })
+      const shuffledPE = [...peAssets].sort(() => Math.random() - 0.5)
+
+      // Check each owned PE asset for exit opportunity
+      for (const owned of shuffledPE) {
+        const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
+        if (!asset) continue
+
+        const exitRoll = rollForPEExit(asset.riskTier)
+        if (exitRoll) {
+          const offerAmount = Math.round(owned.purchasePrice * exitRoll.multiplier)
+          newPEExitOffer = {
+            assetId: owned.assetId,
+            type: exitRoll.type,
+            multiplier: exitRoll.multiplier,
+            offerAmount,
+            expiresDay: newDay + 2, // 2 days to decide
+          }
+          // Add news about the offer
+          const headline = exitRoll.headline.replace('{ASSET}', asset.name.toUpperCase())
+          todayNewsItems.push({
+            headline: exitRoll.type === 'ipo' ? `🚀 ${headline}` : `💰 ${headline}`,
+            effects: {},
+            labelType: 'breaking'
+          })
+          break // Only one offer at a time
+        }
+      }
     }
 
     // 0b. Initialize lifestyle prices with base volatility (event effects applied later in step 5b)
@@ -666,7 +825,60 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       } else {
         // Single event (70% of events) - use escalation-adjusted probabilities
         // Pass blocked categories and assetMoods to avoid event that conflicts
-        const e = selectRandomEvent(updatedEscalations, newDay, blockedCategories, updatedAssetMoods)
+        let e = selectRandomEvent(updatedEscalations, newDay, blockedCategories, updatedAssetMoods)
+
+        // ===========================================================================
+        // LOBBYING BIAS: Re-roll events that hurt player's holdings
+        // ===========================================================================
+        const lobbyingTier = getActiveTier('lobbying', activeStrategies)
+        if (e && lobbyingTier !== 'off') {
+          const favorBonus = lobbyingTier === 'elite' ? 0.35 : 0.15
+
+          // Check if event is net-negative for player's holdings
+          let netEffectOnHoldings = 0
+          Object.entries(e.effects).forEach(([assetId, effect]) => {
+            if (holdings[assetId] && holdings[assetId] > 0) {
+              netEffectOnHoldings += effect * holdings[assetId]
+            }
+          })
+
+          // If event hurts holdings, chance to re-roll for a better one
+          if (netEffectOnHoldings < -0.05 && Math.random() < favorBonus) {
+            // Try to find a more favorable event (up to 3 attempts)
+            for (let i = 0; i < 3; i++) {
+              const altEvent = selectRandomEvent(updatedEscalations, newDay, blockedCategories, updatedAssetMoods)
+              if (altEvent) {
+                let altNetEffect = 0
+                Object.entries(altEvent.effects).forEach(([assetId, effect]) => {
+                  if (holdings[assetId] && holdings[assetId] > 0) {
+                    altNetEffect += effect * holdings[assetId]
+                  }
+                })
+                if (altNetEffect > netEffectOnHoldings) {
+                  e = altEvent
+                  break
+                }
+              }
+            }
+          }
+
+          // Check active policy bonus
+          activePolicies.forEach(policyId => {
+            const policy = POLICIES.find(p => p.id === policyId)
+            if (policy?.effect.category === e?.category && policy?.effect.positiveBoost) {
+              // Policy boosts this category - extra chance for positive effect
+              if (Math.random() < policy.effect.positiveBoost) {
+                // Flip negative effects to positive for this category
+                Object.entries(e!.effects).forEach(([assetId, effect]) => {
+                  if (effect < 0) {
+                    effects[assetId] = (effects[assetId] || 0) + Math.abs(effect) * 0.5
+                  }
+                })
+              }
+            }
+          })
+        }
+
         if (e) {
           // Single events = NEWS
           todayNewsItems.push({ headline: e.headline, effects: e.effects, labelType: 'news' })
@@ -729,6 +941,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     } | null = null
     let maxAbsoluteChange = 0
 
+    // Collect celebration events for investment results
+    const investmentCelebrationEvents: InvestmentResultEvent[] = []
+
     investmentsToResolve.forEach(inv => {
       if (inv.outcome) {
         const payout = inv.amount * inv.outcome.multiplier
@@ -754,6 +969,19 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
             isProfit,
           }
         }
+
+        // Create celebration event for this investment result
+        investmentCelebrationEvents.push({
+          type: 'investment_result',
+          startupName: inv.startupName,
+          investedAmount: inv.amount,
+          returnAmount: payout,
+          multiplier: inv.outcome.multiplier,
+          profitLoss,
+          profitLossPct,
+          isProfit,
+          headline: inv.outcome.headline,
+        })
 
         // Add news headline (startup resolution = NEWS)
         const headlineWithAmount = inv.outcome.multiplier === 0
@@ -855,6 +1083,77 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       newLifestylePrices[asset.id] = Math.round(currentPrice * (1 + totalChange))
     })
 
+    // ===========================================================================
+    // STRATEGY EFFECT PROCESSING (before price calculation)
+    // ===========================================================================
+
+    // 5a. Media Control damage reduction - reduce negative effects on held assets
+    const mediaControlTier = getActiveTier('mediaControl', activeStrategies)
+    if (mediaControlTier !== 'off') {
+      const reductionFactor = mediaControlTier === 'elite' ? 0.40 : 0.20
+
+      // Check for active Spin ability (additional 50% reduction this turn)
+      const mediaControl = activeStrategies.find(s => s.strategyId === 'mediaControl')
+      const spinActiveToday = mediaControl?.abilitiesUsed.spin === newDay
+
+      Object.entries(effects).forEach(([assetId, effect]) => {
+        // Only reduce negative effects on assets the player holds
+        if (effect < 0 && holdings[assetId] && holdings[assetId] > 0) {
+          let reduction = reductionFactor
+          if (spinActiveToday) {
+            reduction = 0.5 + (reductionFactor * 0.5) // Spin halves remaining damage
+          }
+          effects[assetId] = effect * (1 - reduction)
+        }
+      })
+
+      if (spinActiveToday) {
+        todayNewsItems.push({
+          headline: `📺 MEDIA SPIN: Negative coverage softened`,
+          effects: {},
+          labelType: 'none'
+        })
+      }
+    }
+
+    // 5b. Process Lobbying active policies (additional positive event chance)
+    activePolicies.forEach(policyId => {
+      const policy = POLICIES.find(p => p.id === policyId)
+      if (policy?.effect.globalNegativeReduction) {
+        // Market Manipulation policy - reduce all negative effects
+        Object.entries(effects).forEach(([assetId, effect]) => {
+          if (effect < 0) {
+            effects[assetId] = effect * (1 - policy.effect.globalNegativeReduction!)
+          }
+        })
+      }
+    })
+
+    // 5c. Process Plant effect (Media Control Elite)
+    let newPlantedBoostActive = plantedBoostActive
+    if (plantedBoostActive && plantedBoostActive.appliedDay === newDay) {
+      const asset = ASSETS.find(a => a.id === plantedBoostActive.assetId)
+      if (asset) {
+        if (plantedBoostActive.didBackfire) {
+          // Backfire: negative effect instead
+          effects[plantedBoostActive.assetId] = (effects[plantedBoostActive.assetId] || 0) - 0.20
+          todayNewsItems.push({
+            headline: `📰 PLANTED STORY BACKFIRES - ${asset.name.toUpperCase()} investigation launched`,
+            effects: { [plantedBoostActive.assetId]: -0.20 },
+            labelType: 'breaking'
+          })
+        } else {
+          effects[plantedBoostActive.assetId] = (effects[plantedBoostActive.assetId] || 0) + plantedBoostActive.boostAmount
+          todayNewsItems.push({
+            headline: `📰 POSITIVE COVERAGE: ${asset.name.toUpperCase()} gets glowing press`,
+            effects: { [plantedBoostActive.assetId]: plantedBoostActive.boostAmount },
+            labelType: 'news'
+          })
+        }
+      }
+      newPlantedBoostActive = null // Clear after processing
+    }
+
     // 6. Calculate new prices and update price history
     const newPrices: Record<string, number> = {}
     const newPriceHistory: Record<string, DayCandle[]> = {}
@@ -900,8 +1199,21 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     ownedLifestyle.forEach(item => {
       lifestyleValue += newLifestylePrices[item.assetId] || 0
     })
+    // Include leveraged positions (value minus debt)
+    let leveragedValue = 0
+    leveragedPositions.forEach(pos => {
+      const currentPrice = newPrices[pos.assetId] || 0
+      const positionValue = currentPrice * pos.qty
+      leveragedValue += (positionValue - pos.debtAmount)
+    })
+    // Include short position liabilities
+    let shortLiability = 0
+    shortPositions.forEach(pos => {
+      const currentPrice = newPrices[pos.assetId] || 0
+      shortLiability += currentPrice * pos.qty
+    })
     const currentCash = cash + cashChange
-    const nw = Math.round((currentCash + portfolioValue + startupValue + lifestyleValue) * 100) / 100
+    const nw = Math.round((currentCash + portfolioValue + startupValue + lifestyleValue + leveragedValue - shortLiability) * 100) / 100
 
     // Check if reaching $1M milestone for the first time ever in this game
     let newHasReached1M = hasReached1M
@@ -914,6 +1226,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     let newReachedMilestones = [...reachedMilestones]
     let newActiveMilestone: { id: string; title: string; tier: string; scarcityMessage: string } | null = null
     let newMilestonePhase: 'idle' | 'takeover' | 'persist' = 'idle'
+    let milestoneCelebrationEvent: MilestoneCelebrationEvent | null = null
 
     const milestone = checkMilestone(nw, reachedMilestones)
     if (milestone) {
@@ -926,94 +1239,128 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         scarcityMessage: milestone.scarcityMessage,
       }
       newMilestonePhase = 'takeover'
-    }
 
-    // Near-miss detection: Check sold positions from 3-7 days ago for significant price moves
-    let newActiveNearMiss: NearMissNotification | null = null
-    let newLastNearMissDay = lastNearMissDay
-    const updatedSoldPositions = [...soldPositions]
-
-    // Only check if cooldown has passed (3 days since last near-miss notification)
-    if (newDay - lastNearMissDay >= 3) {
-      for (const sp of updatedSoldPositions) {
-        // Skip if already shown or outside 3-7 day window
-        if (sp.notificationShown) continue
-        const daysSinceSale = newDay - sp.soldDay
-        if (daysSinceSale < 3 || daysSinceSale > 7) continue
-
-        const currentPrice = newPrices[sp.assetId]
-        if (!currentPrice) continue
-
-        const pctChange = ((currentPrice - sp.soldPrice) / sp.soldPrice) * 100
-        const cashDiff = sp.soldQty * (currentPrice - sp.soldPrice)
-
-        // Determine if this qualifies for a near-miss notification
-        let type: NearMissType | null = null
-        if (pctChange >= 50) type = 'missed_moon'
-        else if (pctChange >= 25) type = 'missed_gain'
-        else if (pctChange <= -30) type = 'bullet_dodged'
-        else if (pctChange <= -15) type = 'lucky_exit'
-
-        // Only trigger 30% of qualifying events to avoid notification fatigue
-        if (type && Math.random() < 0.3) {
-          // Format the near-miss message
-          let message: string
-          const absChange = Math.abs(pctChange).toFixed(0)
-          const absCashDiff = Math.abs(cashDiff)
-          const cashFormatted = absCashDiff >= 1000000
-            ? `$${(absCashDiff / 1000000).toFixed(1)}M`
-            : absCashDiff >= 1000
-            ? `$${(absCashDiff / 1000).toFixed(0)}K`
-            : `$${Math.round(absCashDiff)}`
-
-          if (type === 'missed_moon') {
-            message = `${sp.assetName} is up ${absChange}% since you sold — you missed ${cashFormatted}`
-          } else if (type === 'missed_gain') {
-            message = `${sp.assetName} would have made you +${cashFormatted} (up ${absChange}%)`
-          } else if (type === 'bullet_dodged') {
-            message = `${sp.assetName} crashed ${absChange}% after you sold — you avoided losing ${cashFormatted}`
-          } else {
-            message = `${sp.assetName} dropped ${absChange}% since you sold`
-          }
-
-          newActiveNearMiss = {
-            type,
-            assetName: sp.assetName,
-            message,
-            cashDiff,
-            percentChange: pctChange,
-          }
-          sp.notificationShown = true
-          newLastNearMissDay = newDay
-          break // Only one near-miss per day
-        }
+      // Create milestone celebration event for the overlay
+      milestoneCelebrationEvent = {
+        type: 'milestone',
+        id: milestone.id,
+        title: milestone.title,
+        tier: milestone.tier,
+        scarcityMessage: milestone.scarcityMessage,
+        netWorth: nw,
       }
     }
+
+    // Build celebration queue: investments only (milestones use NewsPanel takeover instead)
+    const newCelebrationQueue: CelebrationEvent[] = [
+      ...investmentCelebrationEvents,
+    ]
+    const hasCelebrations = newCelebrationQueue.length > 0
+    // Pop first celebration as active (if any)
+    const newActiveCelebration = newCelebrationQueue.length > 0 ? newCelebrationQueue.shift()! : null
 
     let newStartupOffer: typeof get extends () => { pendingStartupOffer: infer T } ? T : never = null
 
+    // Get current tracking state for caps and cooldowns
+    const { startupOfferCounts, lastStartupOfferDay } = get()
+    let updatedOfferCounts = { ...startupOfferCounts }
+
     // Only offer startups up to gameDuration - 6 (max duration is 6 days, must resolve by end)
+    // IMPORTANT: Suppress new startup offers on celebration days - let the player savor their win!
     // Note: gameLength is already defined earlier in this function
-    if (newDay <= gameLength - 6) {
-      // Angel: 8% chance per day (~2 offers per game)
-      if (Math.random() < 0.08) {
-        newStartupOffer = selectRandomStartup('angel', updatedUsedStartupIds)
+    if (!hasCelebrations && newDay <= gameLength - 6) {
+
+      // ========== COOLDOWN CHECK ==========
+      // Minimum 8 days between any startup offers
+      const cooldownDays = 8
+      const daysSinceLastOffer = lastStartupOfferDay ? newDay - lastStartupOfferDay : Infinity
+      const cooldownPassed = daysSinceLastOffer >= cooldownDays
+
+      // ========== NET WORTH GATES ==========
+      const angelNetWorthGate = 250_000
+      const vcNetWorthGate = 1_000_000
+
+      // ========== HARD CAPS (base) ==========
+      // Private Jet can increase these caps
+      const privateJetTier = getActiveTier('privateJet', activeStrategies)
+
+      let angelCap = 2  // Base: 2 Angel offers per game
+      let vcCap = 2     // Base: 2 VC offers per game
+
+      if (privateJetTier === 'active') {
+        angelCap = 3  // +1 Angel cap
+      } else if (privateJetTier === 'elite') {
+        angelCap = 3  // +1 Angel cap
+        vcCap = 3     // +1 VC cap
       }
 
-      // VC: 15% base chance + jet bonus, if net worth > $1M (overrides angel if both trigger)
-      // Calculate jet bonus from owned jets (uses highest bonus, jets don't stack)
-      let vcBonus = 0
-      ownedLifestyle.forEach(owned => {
-        const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
-        if (asset?.vcDealBoost && asset.vcDealBoost > vcBonus) {
-          vcBonus = asset.vcDealBoost
-        }
-      })
-      const vcChance = 0.15 + vcBonus // Base 15% + jet bonus (up to 25%)
+      // ========== BASE PROBABILITIES ==========
+      // Much lower than before for scarcity (was 8% Angel, 15% VC)
+      const angelBaseChance = 0.025  // 2.5%
+      const vcBaseChance = 0.04      // 4%
 
-      if (nw >= 1000000 && Math.random() < vcChance) {
-        const vcOffer = selectRandomStartup('vc', updatedUsedStartupIds)
-        if (vcOffer) newStartupOffer = vcOffer
+      // ========== ATTEMPT OFFER GENERATION ==========
+      if (cooldownPassed) {
+        let selectedTier: 'angel' | 'vc' | null = null
+
+        // Angel offer check (requires $250K+ net worth)
+        if (nw >= angelNetWorthGate && updatedOfferCounts.angel < angelCap) {
+          if (Math.random() < angelBaseChance) {
+            const angelOffer = selectRandomStartup('angel', updatedUsedStartupIds)
+            if (angelOffer) {
+              newStartupOffer = angelOffer
+              selectedTier = 'angel'
+            }
+          }
+        }
+
+        // VC offer check (requires $1M+ net worth, overrides angel if both trigger)
+        if (nw >= vcNetWorthGate && updatedOfferCounts.vc < vcCap) {
+          if (Math.random() < vcBaseChance) {
+            const vcOffer = selectRandomStartup('vc', updatedUsedStartupIds)
+            if (vcOffer) {
+              newStartupOffer = vcOffer
+              selectedTier = 'vc'
+            }
+          }
+        }
+
+        // Update count for whichever tier was actually selected
+        if (selectedTier === 'angel') {
+          updatedOfferCounts.angel++
+        } else if (selectedTier === 'vc') {
+          updatedOfferCounts.vc++
+        }
+      }
+    }
+
+    // ===========================================================================
+    // DESTABILIZATION EFFECTS: Boost commodities from targeted region
+    // ===========================================================================
+    const { activeDestabilization } = get()
+    const destabTier = getActiveTier('destabilization', activeStrategies)
+
+    if (activeDestabilization && destabTier !== 'off') {
+      const target = getDestabilizationTarget(activeDestabilization.targetId)
+      if (target) {
+        const boost = destabTier === 'elite' ? 0.40 : 0.20
+
+        // Boost affected asset prices
+        target.affectedAssets.forEach(assetId => {
+          if (newPrices[assetId]) {
+            const extraReturn = newPrices[assetId] * boost * (Math.random() * 0.5 + 0.5)
+            newPrices[assetId] += extraReturn
+          }
+        })
+
+        // 10% daily chance to trigger geopolitical event news
+        if (Math.random() < 0.10) {
+          todayNewsItems.push({
+            headline: `💀 INSTABILITY IN ${target.name.toUpperCase()}: Markets react`,
+            effects: Object.fromEntries(target.affectedAssets.map(a => [a, 0.05])),
+            labelType: 'none'
+          })
+        }
       }
     }
 
@@ -1024,6 +1371,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       prices: newPrices,
       priceHistory: newPriceHistory,
       lifestylePrices: newLifestylePrices,
+      ownedLifestyle: updatedOwnedLifestyle,
+      activePEExitOffer: newPEExitOffer,
       event: null,
       day: newDay,
       cash: Math.round(currentCash * 100) / 100,
@@ -1031,7 +1380,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       activeSellToast: null,
       activeBuyMessage: null,
       activeInvestmentBuyMessage: null,
-      activeInvestmentResultToast: mostSignificantInvestmentResult,
+      // Use overlay for investment results when there are celebrations, otherwise use toast
+      activeInvestmentResultToast: hasCelebrations ? null : mostSignificantInvestmentResult,
+      activeErrorMessage: null,
       selectedAsset: null,
       buyQty: 1,
       newsHistory: [...headlines, ...newsHistory].slice(0, 10),
@@ -1043,26 +1394,30 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       activeInvestments: updatedInvestments,
       usedStartupIds: updatedUsedStartupIds,
       pendingStartupOffer: newStartupOffer,
+      startupOfferCounts: updatedOfferCounts,
+      lastStartupOfferDay: newStartupOffer ? newDay : lastStartupOfferDay,
       activeEscalations: updatedEscalations,
       hasReached1M: newHasReached1M,
       reachedMilestones: newReachedMilestones,
       activeMilestone: newActiveMilestone,
       milestonePhase: newMilestonePhase,
+      // Celebration queue (investment results + milestones shown as overlays)
+      celebrationQueue: newCelebrationQueue,
+      activeCelebration: newActiveCelebration,
+      isCelebrationDay: hasCelebrations,
       activeStories: updatedStories,
       usedStoryIds: updatedUsedStoryIds,
       gossipState: updatedGossipState,
-      soldPositions: updatedSoldPositions,
-      activeNearMiss: newActiveNearMiss,
-      lastNearMissDay: newLastNearMissDay,
       assetMoods: updatedAssetMoods,
       usedFlavorHeadlines: updatedFlavorHeadlines,
+      // Strategy state updates
+      strategyCostMessage: newStrategyCostMessage,
+      plantedBoostActive: newPlantedBoostActive,
     })
 
     // 9. Check win/lose conditions
     // Re-calculate net worth after all updates (includes margin positions)
     const finalNetWorth = get().getNetWorth()
-    const { shortPositions, leveragedPositions } = get()
-
     const { gameDuration } = get()
 
     if (finalNetWorth < 0) {
@@ -1093,8 +1448,14 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
   // Called when user clicks "Next Day" - checks for encounter before advancing
   triggerNextDay: () => {
-    const { day, cash, encounterState, pendingStartupOffer, gameDuration } = get()
+    const { day, cash, encounterState, pendingStartupOffer, gameDuration, isCelebrationDay } = get()
     const netWorth = get().getNetWorth()
+
+    // Skip encounter check on celebration days - let the player enjoy their moment!
+    if (isCelebrationDay) {
+      get().nextDay()
+      return
+    }
 
     // Check if an encounter should trigger
     const encounterType = rollForEncounter(day + 1, encounterState, cash, netWorth, gameDuration)
@@ -1125,7 +1486,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const maxQty = Math.floor(cash / price)
 
     if (qty > maxQty) {
-      set({ message: 'NOT ENOUGH CASH' })
+      set({ activeErrorMessage: 'NOT ENOUGH CASH' })
       return
     }
 
@@ -1155,11 +1516,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   },
 
   sell: (assetId: string, qty: number) => {
-    const { cash, holdings, prices, costBasis, soldPositions, day } = get()
+    const { cash, holdings, prices, costBasis } = get()
     const owned = holdings[assetId] || 0
 
     if (qty > owned || qty < 1) {
-      set({ message: 'NOTHING TO SELL' })
+      set({ activeErrorMessage: 'NOTHING TO SELL' })
       return
     }
 
@@ -1186,9 +1547,17 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     // Format the message
     const plSign = profitLoss >= 0 ? '+' : ''
-    const plFormatted = Math.abs(profitLoss) >= 1000
-      ? `${plSign}$${(profitLoss / 1000).toFixed(1)}K`
-      : `${plSign}$${Math.round(profitLoss)}`
+    const absValue = Math.abs(profitLoss)
+    let plFormatted: string
+    if (absValue >= 1_000_000_000) {
+      plFormatted = `${plSign}$${(profitLoss / 1_000_000_000).toFixed(1)}B`
+    } else if (absValue >= 1_000_000) {
+      plFormatted = `${plSign}$${(profitLoss / 1_000_000).toFixed(1)}M`
+    } else if (absValue >= 1_000) {
+      plFormatted = `${plSign}$${(profitLoss / 1_000).toFixed(1)}K`
+    } else {
+      plFormatted = `${plSign}$${Math.round(profitLoss)}`
+    }
     const pctFormatted = `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(0)}%`
     const tradeMessage = `${emoji} SOLD ${qty} ${asset?.name}: ${plFormatted} (${pctFormatted})`
 
@@ -1207,18 +1576,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       }
     }
 
-    // Track sold position for near-miss detection
-    const newSoldPosition: SoldPosition = {
-      assetId,
-      assetName: asset?.name || assetId,
-      soldDay: day,
-      soldPrice: price,
-      soldQty: qty,
-      notificationShown: false,
-    }
-    // Keep only last 20 sold positions to limit memory
-    const updatedSoldPositions = [...soldPositions, newSoldPosition].slice(-20)
-
     set({
       cash: Math.round((cash + revenue) * 100) / 100,
       holdings: { ...holdings, [assetId]: owned - qty },
@@ -1230,7 +1587,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       },
       buyQty: 1,
       selectedAsset: null,
-      soldPositions: updatedSoldPositions,
     })
   },
 
@@ -1255,7 +1611,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const debtAmount = totalCost - downPayment
 
     if (downPayment > cash) {
-      set({ message: 'NOT ENOUGH CASH FOR MARGIN' })
+      set({ activeErrorMessage: 'NOT ENOUGH CASH FOR MARGIN' })
       return
     }
 
@@ -1312,7 +1668,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const profitLossPct = (profitLoss / position.cashReceived) * 100
 
     if (coverCost > cash) {
-      set({ message: 'NOT ENOUGH CASH TO COVER' })
+      set({ activeErrorMessage: 'NOT ENOUGH CASH TO COVER' })
       return
     }
 
@@ -1373,16 +1729,25 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // ============================================================================
 
   investInStartup: (amount: number) => {
-    const { cash, day, pendingStartupOffer, activeInvestments, usedStartupIds } = get()
+    const { cash, day, pendingStartupOffer, activeInvestments, usedStartupIds, activeStrategies } = get()
 
     if (!pendingStartupOffer) return
     if (amount > cash) {
-      set({ message: 'NOT ENOUGH CASH' })
+      set({ activeErrorMessage: 'NOT ENOUGH CASH' })
       return
     }
 
-    // Pre-determine the outcome at investment time
-    const outcome = selectOutcome(pendingStartupOffer)
+    // Check Private Jet tier for outcome improvement
+    const privateJetTier = getActiveTier('privateJet', activeStrategies)
+    let outcomeBonus = 0
+    if (privateJetTier === 'elite') {
+      outcomeBonus = 0.10  // 10% reduction in failure rate
+    } else if (privateJetTier === 'active') {
+      outcomeBonus = 0.05  // 5% reduction in failure rate
+    }
+
+    // Pre-determine the outcome at investment time (with Private Jet bonus if applicable)
+    const outcome = selectOutcomeWithBonus(pendingStartupOffer, outcomeBonus)
     let duration = getRandomDuration(pendingStartupOffer)
 
     // Ensure investment resolves before game ends
@@ -1411,7 +1776,16 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   },
 
   dismissStartupOffer: () => {
-    set({ pendingStartupOffer: null })
+    const { pendingStartupOffer, usedStartupIds } = get()
+    if (pendingStartupOffer) {
+      // Add dismissed startup to usedStartupIds so it doesn't reappear
+      set({
+        pendingStartupOffer: null,
+        usedStartupIds: [...usedStartupIds, pendingStartupOffer.id]
+      })
+    } else {
+      set({ pendingStartupOffer: null })
+    }
   },
 
   // ============================================================================
@@ -1426,13 +1800,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const price = lifestylePrices[assetId] || asset.basePrice
 
     if (cash < price) {
-      set({ message: 'NOT ENOUGH CASH' })
+      set({ activeErrorMessage: 'NOT ENOUGH CASH' })
       return
     }
 
     // Check if already owned
     if (ownedLifestyle.some(o => o.assetId === assetId)) {
-      set({ message: 'ALREADY OWNED' })
+      set({ activeErrorMessage: 'ALREADY OWNED' })
       return
     }
 
@@ -1457,7 +1831,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // Check if owned
     const ownedItem = ownedLifestyle.find(o => o.assetId === assetId)
     if (!ownedItem) {
-      set({ message: 'NOT OWNED' })
+      set({ activeErrorMessage: 'NOT OWNED' })
       return
     }
 
@@ -1491,6 +1865,41 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     })
   },
 
+  // PE Exit Offer Actions
+  acceptPEExitOffer: () => {
+    const { cash, ownedLifestyle, activePEExitOffer } = get()
+    if (!activePEExitOffer) return
+
+    const asset = LIFESTYLE_ASSETS.find(a => a.id === activePEExitOffer.assetId)
+    const owned = ownedLifestyle.find(o => o.assetId === activePEExitOffer.assetId)
+    if (!asset || !owned) return
+
+    const profitLoss = activePEExitOffer.offerAmount - owned.purchasePrice
+    const profitLossPct = ((activePEExitOffer.offerAmount / owned.purchasePrice) - 1) * 100
+
+    const exitType = activePEExitOffer.type === 'ipo' ? 'IPO' : 'ACQUISITION'
+    const emoji = activePEExitOffer.type === 'ipo' ? '🚀' : '💰'
+    const plSign = profitLoss >= 0 ? '+' : ''
+    const plFormatted = `${plSign}$${Math.abs(profitLoss).toLocaleString()}`
+    const pctFormatted = `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(0)}%`
+    const saleMessage = `${emoji} ${exitType}: ${asset.name} - ${plFormatted} (${pctFormatted})`
+
+    set({
+      cash: Math.round((cash + activePEExitOffer.offerAmount) * 100) / 100,
+      ownedLifestyle: ownedLifestyle.filter(o => o.assetId !== activePEExitOffer.assetId),
+      activePEExitOffer: null,
+      activeSellToast: {
+        message: saleMessage,
+        profitLossPct,
+        isProfit: profitLoss >= 0,
+      },
+    })
+  },
+
+  declinePEExitOffer: () => {
+    set({ activePEExitOffer: null })
+  },
+
   // ============================================================================
   // UI ACTIONS
   // ============================================================================
@@ -1507,6 +1916,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   clearBuyMessage: () => set({ activeBuyMessage: null }),
   clearInvestmentBuyMessage: () => set({ activeInvestmentBuyMessage: null }),
   clearInvestmentResultToast: () => set({ activeInvestmentResultToast: null }),
+  clearErrorMessage: () => set({ activeErrorMessage: null }),
   clearPendingAchievement: () => set({ pendingAchievement: null }),
   triggerAchievement: (id: string) => set({ pendingAchievement: id }),
 
@@ -1517,10 +1927,27 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   clearMilestone: () => set({ milestonePhase: 'idle', activeMilestone: null }),
 
   // ============================================================================
-  // NEAR-MISS ACTIONS
+  // CELEBRATION ACTIONS
   // ============================================================================
 
-  clearNearMiss: () => set({ activeNearMiss: null }),
+  dismissCelebration: () => {
+    const { celebrationQueue } = get()
+
+    if (celebrationQueue.length > 0) {
+      // Pop next celebration from queue
+      const [next, ...rest] = celebrationQueue
+      set({
+        celebrationQueue: rest,
+        activeCelebration: next,
+      })
+    } else {
+      // Queue empty - clear celebration state
+      set({
+        activeCelebration: null,
+        isCelebrationDay: false,
+      })
+    }
+  },
 
   // ============================================================================
   // ENCOUNTER ACTIONS
@@ -1552,25 +1979,36 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         // Cash covers it
         newCash = cash - amountNeeded
       } else {
-        // Need to liquidate assets
+        // Need to liquidate assets - check if player has enough
         const shortfall = amountNeeded - cash
-        newCash = 0
 
-        // Calculate total portfolio value
-        let portfolioValue = 0
+        // Get lifestyle assets for potential liquidation
+        const { ownedLifestyle, lifestylePrices } = get()
+
+        // Calculate total liquidatable value (holdings + lifestyle assets)
+        let holdingsValue = 0
         Object.entries(holdings).forEach(([id, qty]) => {
-          portfolioValue += (prices[id] || 0) * qty
+          holdingsValue += (prices[id] || 0) * qty
         })
 
-        if (portfolioValue < shortfall) {
+        let lifestyleValue = 0
+        ownedLifestyle.forEach(owned => {
+          lifestyleValue += lifestylePrices[owned.assetId] || 0
+        })
+
+        const totalLiquidatableValue = holdingsValue + lifestyleValue
+
+        if (totalLiquidatableValue < shortfall) {
           // Can't cover the penalty even with all assets → Bankruptcy
           const { day, gameDuration } = get()
           saveGameResult(false, 0, day, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial)
           set({
             cash: 0,
             holdings: {},
+            ownedLifestyle: [],
             encounterState: newEncounterState,
             pendingEncounter: null,
+            pendingLiquidation: null,
             queuedStartupOffer: null,
             screen: 'gameover',
             gameOverReason: 'BANKRUPT',
@@ -1580,29 +2018,19 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
           return
         }
 
-        // Proportional liquidation: sell enough of each holding to cover shortfall
-        const liquidationRatio = shortfall / portfolioValue
-        let totalLiquidated = 0
-
-        Object.entries(holdings).forEach(([id, qty]) => {
-          const price = prices[id] || 0
-          const holdingValue = price * qty
-          const valueToLiquidate = holdingValue * liquidationRatio
-          const qtyToSell = Math.ceil(valueToLiquidate / price)  // Round up to ensure we cover
-          const actualQtyToSell = Math.min(qtyToSell, qty)
-
-          newHoldings[id] = qty - actualQtyToSell
-          totalLiquidated += actualQtyToSell * price
-
-          // Clean up zero holdings
-          if (newHoldings[id] <= 0) {
-            delete newHoldings[id]
-          }
+        // Player can cover it - show liquidation selection UI
+        const reason = encounterType === 'sec' ? 'sec' : 'divorce'
+        set({
+          pendingLiquidation: {
+            amountNeeded: shortfall, // Only need to liquidate the shortfall
+            reason: reason as 'sec' | 'divorce',
+            headline: result.headline,
+            encounterType,
+            encounterState: newEncounterState,
+          },
+          pendingEncounter: null, // Clear the encounter popup
         })
-
-        // Any excess from rounding goes back to cash
-        newCash = totalLiquidated - shortfall
-        finalHeadline = `${result.headline} (Assets liquidated to cover penalty)`
+        return // Wait for player to select assets
       }
     } else if (result.cashChange) {
       // Standard cash change (non-liquidation encounters)
@@ -1649,6 +2077,545 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     // Clear queued offer
     set({ queuedStartupOffer: null })
+  },
+
+  // ============================================================================
+  // LIQUIDATION SELECTION (Player chooses which assets to sell)
+  // ============================================================================
+
+  confirmLiquidationSelection: (selectedAssets: Array<{ type: 'lifestyle' | 'trading'; id: string; currentValue: number; quantity: number }>) => {
+    const { pendingLiquidation, cash, holdings, prices, ownedLifestyle, queuedStartupOffer } = get()
+
+    if (!pendingLiquidation) return
+
+    const { amountNeeded, headline, encounterState: newEncounterState } = pendingLiquidation
+
+    // Calculate total value being liquidated
+    let totalLiquidated = 0
+    let newHoldings = { ...holdings }
+    let newOwnedLifestyle = [...ownedLifestyle]
+
+    // Process each selected asset
+    selectedAssets.forEach(asset => {
+      if (asset.type === 'lifestyle') {
+        // Remove lifestyle asset
+        newOwnedLifestyle = newOwnedLifestyle.filter(owned => owned.assetId !== asset.id)
+        totalLiquidated += asset.currentValue
+      } else {
+        // Sell trading holdings
+        const currentQty = newHoldings[asset.id] || 0
+        const price = prices[asset.id] || 0
+        const qtyToSell = Math.min(asset.quantity, currentQty)
+        newHoldings[asset.id] = currentQty - qtyToSell
+        totalLiquidated += qtyToSell * price
+
+        if (newHoldings[asset.id] <= 0) {
+          delete newHoldings[asset.id]
+        }
+      }
+    })
+
+    // Calculate new cash: current cash goes to penalty, excess from liquidation returns
+    const newCash = Math.max(0, totalLiquidated - amountNeeded)
+    const finalHeadline = `${headline} (Assets seized to cover penalty)`
+
+    // Clear liquidation and update state
+    set({
+      cash: Math.round(newCash * 100) / 100,
+      holdings: newHoldings,
+      ownedLifestyle: newOwnedLifestyle,
+      encounterState: newEncounterState,
+      pendingLiquidation: null,
+      message: finalHeadline,
+    })
+
+    // Advance the day normally
+    get().nextDay()
+
+    // Restore any queued startup offer
+    const currentState = get()
+    if (queuedStartupOffer && !currentState.pendingStartupOffer) {
+      set({ pendingStartupOffer: queuedStartupOffer })
+    }
+    set({ queuedStartupOffer: null })
+  },
+
+  // ============================================================================
+  // STRATEGY ACTIONS
+  // ============================================================================
+
+  activateStrategy: (strategyId: StrategyId, tier: 'active' | 'elite') => {
+    const { cash, activeStrategies, day, ownedLifestyle } = get()
+    const def = STRATEGIES[strategyId]
+    const netWorth = get().getNetWorth()
+
+    // Check PE ownership requirement (for ownership-gated strategies)
+    if (def.unlockRequirement.type === 'pe_ownership') {
+      const unlocks = getStrategyUnlocks(ownedLifestyle)
+      const isUnlocked = strategyId === 'lobbying' ? unlocks.lobbying :
+                         strategyId === 'mediaControl' ? unlocks.mediaControl :
+                         strategyId === 'destabilization' ? unlocks.destabilization : true
+      if (!isUnlocked) {
+        set({ activeErrorMessage: `🔒 REQUIRES ${def.unlockRequirement.assetName?.toUpperCase()}` })
+        return
+      }
+    }
+
+    // Check net worth gate (only for non-ownership-gated strategies like Private Jet)
+    if (def.netWorthGate[tier] > 0 && !meetsNetWorthGate(strategyId, tier, netWorth)) {
+      set({ activeErrorMessage: `NEED ${tier === 'active' ? '$1M' : '$10M'} NET WORTH FOR ${tier.toUpperCase()}` })
+      return
+    }
+
+    // Calculate upfront cost
+    const currentTier = getActiveTier(strategyId, activeStrategies)
+    let upfrontCost = def.tiers[tier].upfrontCost
+
+    if (tier === 'elite' && currentTier === 'active') {
+      // Upgrading from active - only pay elite upfront
+      upfrontCost = def.tiers.elite.upfrontCost
+    } else if (tier === 'elite' && currentTier === 'off') {
+      // Direct to elite - pay both
+      upfrontCost = def.tiers.active.upfrontCost + def.tiers.elite.upfrontCost
+    }
+
+    if (cash < upfrontCost) {
+      set({ activeErrorMessage: 'NOT ENOUGH CASH FOR STRATEGY' })
+      return
+    }
+
+    const newStrategy: ActiveStrategy = {
+      strategyId,
+      tier,
+      activatedDay: day,
+      abilitiesUsed: {},
+    }
+
+    // Remove existing strategy of same type if upgrading
+    const filteredStrategies = activeStrategies.filter(s => s.strategyId !== strategyId)
+
+    set({
+      cash: cash - upfrontCost,
+      activeStrategies: [...filteredStrategies, newStrategy],
+      activeBuyMessage: `${def.emoji} ${def.name.toUpperCase()} ${tier.toUpperCase()} ACTIVATED`,
+    })
+  },
+
+  deactivateStrategy: (strategyId: StrategyId) => {
+    const { activeStrategies } = get()
+    const def = STRATEGIES[strategyId]
+
+    set({
+      activeStrategies: activeStrategies.filter(s => s.strategyId !== strategyId),
+      activeBuyMessage: `${def.emoji} ${def.name.toUpperCase()} DEACTIVATED`,
+    })
+  },
+
+  upgradeStrategy: (strategyId: StrategyId) => {
+    const { activeStrategies } = get()
+    const currentTier = getActiveTier(strategyId, activeStrategies)
+
+    if (currentTier !== 'active') {
+      set({ activeErrorMessage: 'STRATEGY MUST BE ACTIVE TO UPGRADE' })
+      return
+    }
+
+    // Use activateStrategy to handle upgrade
+    get().activateStrategy(strategyId, 'elite')
+  },
+
+  useSpin: () => {
+    const { activeStrategies, day, todayNews } = get()
+    const mediaControl = activeStrategies.find(s => s.strategyId === 'mediaControl')
+
+    if (!mediaControl || mediaControl.tier !== 'elite') {
+      set({ activeErrorMessage: 'REQUIRES MEDIA CONTROL ELITE' })
+      return
+    }
+
+    if (mediaControl.abilitiesUsed.spin !== undefined) {
+      set({ activeErrorMessage: 'SPIN ALREADY USED THIS GAME' })
+      return
+    }
+
+    // Find the most recent negative news - effect will be applied via damage reduction
+    // Mark as used
+    const updated = activeStrategies.map(s =>
+      s.strategyId === 'mediaControl'
+        ? { ...s, abilitiesUsed: { ...s.abilitiesUsed, spin: day } }
+        : s
+    )
+
+    set({
+      activeStrategies: updated,
+      activeBuyMessage: '📺 SPIN DEPLOYED - DAMAGE HALVED',
+    })
+  },
+
+  usePlant: (assetId: string) => {
+    const { activeStrategies, day } = get()
+    const mediaControl = activeStrategies.find(s => s.strategyId === 'mediaControl')
+
+    if (!mediaControl || mediaControl.tier !== 'elite') {
+      set({ activeErrorMessage: 'REQUIRES MEDIA CONTROL ELITE' })
+      return
+    }
+
+    if (mediaControl.abilitiesUsed.plant !== undefined) {
+      set({ activeErrorMessage: 'PLANT ALREADY USED THIS GAME' })
+      return
+    }
+
+    // 15% backfire chance
+    const willBackfire = Math.random() < 0.15
+    const boostAmount = 0.10 + Math.random() * 0.05 // 10-15%
+
+    // Schedule the planted story for next day
+    set({
+      plantedBoostActive: {
+        assetId,
+        appliedDay: day + 1,
+        didBackfire: willBackfire,
+        boostAmount,
+      },
+    })
+
+    // Mark as used
+    const updated = activeStrategies.map(s =>
+      s.strategyId === 'mediaControl'
+        ? { ...s, abilitiesUsed: { ...s.abilitiesUsed, plant: day } }
+        : s
+    )
+
+    set({
+      activeStrategies: updated,
+      activeBuyMessage: '📰 POSITIVE STORY PLANTED FOR TOMORROW',
+    })
+  },
+
+  pushPolicy: (policyId: PolicyId) => {
+    const { activeStrategies, day, activePolicies, cash, policyPushAttempts, lastPolicyPushDay } = get()
+    const lobbying = activeStrategies.find(s => s.strategyId === 'lobbying')
+
+    // 1. Must have Lobbying Elite
+    if (!lobbying || lobbying.tier !== 'elite') {
+      set({ activeErrorMessage: 'REQUIRES LOBBYING ELITE' })
+      return
+    }
+
+    // 2. Check cooldown (15 days since last attempt)
+    if (lastPolicyPushDay !== null && day - lastPolicyPushDay < POLICY_PUSH_CONFIG.cooldownDays) {
+      const daysLeft = POLICY_PUSH_CONFIG.cooldownDays - (day - lastPolicyPushDay)
+      set({ activeErrorMessage: `COOLDOWN: ${daysLeft} DAY${daysLeft > 1 ? 'S' : ''} REMAINING` })
+      return
+    }
+
+    // 3. Get cost/success for current attempt count
+    const config = POLICY_PUSH_CONFIG.getConfig(policyPushAttempts)
+
+    // 4. Check affordability
+    if (cash < config.cost) {
+      set({ activeErrorMessage: `NEED $${config.cost.toLocaleString()} TO PUSH POLICY` })
+      return
+    }
+
+    // 5. Validate policy exists and meets tier requirement
+    const policy = POLICIES.find(p => p.id === policyId)
+    if (!policy) return
+
+    if (policy.requiredTier === 'elite' && lobbying.tier !== 'elite') {
+      set({ activeErrorMessage: 'POLICY REQUIRES ELITE TIER' })
+      return
+    }
+
+    // 6. Deduct cost
+    const newCash = cash - config.cost
+
+    // 7. Roll for success
+    const roll = Math.random()
+    const success = roll < config.successRate
+
+    if (success) {
+      set({
+        cash: newCash,
+        policyPushAttempts: policyPushAttempts + 1,
+        lastPolicyPushDay: day,
+        activePolicies: [...activePolicies, policyId],
+        activeBuyMessage: `🏛️ ${policy.name.toUpperCase()} POLICY ENACTED!`,
+      })
+    } else {
+      set({
+        cash: newCash,
+        policyPushAttempts: policyPushAttempts + 1,
+        lastPolicyPushDay: day,
+        activeErrorMessage: `🏛️ POLICY BLOCKED IN COMMITTEE (-$${config.cost.toLocaleString()})`,
+      })
+    }
+  },
+
+  setShowStrategiesPanel: (show: boolean) => {
+    set({ showStrategiesPanel: show })
+  },
+
+  clearStrategyCostMessage: () => {
+    set({ strategyCostMessage: null })
+  },
+
+  // Destabilization actions
+  selectDestabilizationTarget: (targetId: DestabilizationTargetId) => {
+    const { activeStrategies, day } = get()
+    const destab = activeStrategies.find(s => s.strategyId === 'destabilization')
+
+    if (!destab) {
+      set({ activeErrorMessage: 'REQUIRES DESTABILIZATION STRATEGY' })
+      return
+    }
+
+    const target = getDestabilizationTarget(targetId)
+    if (!target) return
+
+    set({
+      activeDestabilization: {
+        targetId,
+        activatedDay: day,
+      },
+      activeBuyMessage: `💀 TARGETING ${target.name.toUpperCase()}`,
+    })
+  },
+
+  executeCoup: () => {
+    const { activeStrategies, activeDestabilization, prices, todayNews } = get()
+    const destab = activeStrategies.find(s => s.strategyId === 'destabilization')
+
+    if (!destab || destab.tier !== 'elite') {
+      set({ activeErrorMessage: 'REQUIRES DESTABILIZATION ELITE' })
+      return
+    }
+
+    if (destab.abilitiesUsed.coupUsed) {
+      set({ activeErrorMessage: 'COUP ALREADY EXECUTED THIS GAME' })
+      return
+    }
+
+    if (!activeDestabilization) {
+      set({ activeErrorMessage: 'SELECT A TARGET REGION FIRST' })
+      return
+    }
+
+    const target = getDestabilizationTarget(activeDestabilization.targetId)
+    if (!target) {
+      set({ activeErrorMessage: 'INVALID TARGET REGION' })
+      return
+    }
+
+    // MAJOR MARKET SHOCK: Apply +50-80% spike to affected assets
+    const coupBoost = 0.50 + Math.random() * 0.30
+    const newPrices = { ...prices }
+
+    target.affectedAssets.forEach(assetId => {
+      if (newPrices[assetId]) {
+        newPrices[assetId] = newPrices[assetId] * (1 + coupBoost)
+      }
+    })
+
+    // Generate dramatic news headline
+    const coupHeadlines = [
+      `💀 COUP D'ÉTAT IN ${target.name.toUpperCase()} - MARKETS IN TURMOIL`,
+      `💀 MILITARY TAKEOVER IN ${target.name.toUpperCase()} - COMMODITIES SPIKE`,
+      `💀 REGIME CHANGE IN ${target.name.toUpperCase()} - CHAOS ERUPTS`,
+    ]
+    const headline = coupHeadlines[Math.floor(Math.random() * coupHeadlines.length)]
+
+    // Mark coup as used
+    const updated = activeStrategies.map(s =>
+      s.strategyId === 'destabilization'
+        ? { ...s, abilitiesUsed: { ...s.abilitiesUsed, coupUsed: true } }
+        : s
+    )
+
+    set({
+      activeStrategies: updated,
+      prices: newPrices,
+      todayNews: [...todayNews, {
+        headline,
+        effects: Object.fromEntries(target.affectedAssets.map(a => [a, coupBoost])),
+        labelType: 'breaking' as const,
+      }],
+      activeBuyMessage: `💀 COUP EXECUTED - ${target.name.toUpperCase()} DESTABILIZED (+${Math.round(coupBoost * 100)}%)`,
+    })
+  },
+
+  executeTargetedElimination: (sectorId: string) => {
+    const { activeStrategies, prices, todayNews } = get()
+    const destab = activeStrategies.find(s => s.strategyId === 'destabilization')
+
+    if (!destab || destab.tier !== 'elite') {
+      set({ activeErrorMessage: 'REQUIRES DESTABILIZATION ELITE' })
+      return
+    }
+
+    if (destab.abilitiesUsed.eliminationUsed) {
+      set({ activeErrorMessage: 'ELIMINATION ALREADY EXECUTED THIS GAME' })
+      return
+    }
+
+    // Define sector targets with affected assets and headlines
+    const ELIMINATION_SECTORS: Record<string, { assets: string[], headlines: string[] }> = {
+      tech: {
+        assets: ['nasdaq'],
+        headlines: [
+          '💀 TECH MOGUL DIES IN MYSTERIOUS ACCIDENT',
+          '💀 SILICON VALLEY CEO FOUND DEAD - INVESTIGATION LAUNCHED',
+          '💀 TECH TITAN KILLED IN PRIVATE PLANE CRASH',
+        ]
+      },
+      energy: {
+        assets: ['oil', 'uranium'],
+        headlines: [
+          '💀 ENERGY CEO FOUND DEAD - FOUL PLAY SUSPECTED',
+          '💀 OIL BARON ASSASSINATED IN BROAD DAYLIGHT',
+          '💀 ENERGY EXECUTIVE DIES UNDER SUSPICIOUS CIRCUMSTANCES',
+        ]
+      },
+      finance: {
+        assets: ['sp500', 'bonds'],
+        headlines: [
+          '💀 WALL STREET LEGEND KILLED IN PRIVATE JET CRASH',
+          '💀 BANK CEO FOUND DEAD IN PENTHOUSE',
+          '💀 HEDGE FUND TITAN DIES - SUICIDE OR MURDER?',
+        ]
+      },
+      mining: {
+        assets: ['gold', 'lithium'],
+        headlines: [
+          '💀 MINING BARON KILLED IN UNDERGROUND "ACCIDENT"',
+          '💀 RARE EARTH MOGUL DIES IN EXPLOSION - SABOTAGE?',
+          '💀 GOLD MINE OWNER ASSASSINATED',
+        ]
+      },
+      crypto: {
+        assets: ['bitcoin', 'ethereum'],
+        headlines: [
+          '💀 CRYPTO FOUNDER DISAPPEARS - BILLIONS MISSING',
+          '💀 EXCHANGE CEO FOUND DEAD - KEYS LOST FOREVER',
+          '💀 BLOCKCHAIN PIONEER KILLED - MARKET PANICS',
+        ]
+      },
+    }
+
+    const sector = ELIMINATION_SECTORS[sectorId]
+    if (!sector) {
+      set({ activeErrorMessage: 'INVALID SECTOR TARGET' })
+      return
+    }
+
+    // Apply -25% crash to affected assets
+    const crashAmount = -0.25
+    const newPrices = { ...prices }
+    sector.assets.forEach(assetId => {
+      if (newPrices[assetId]) {
+        newPrices[assetId] = newPrices[assetId] * (1 + crashAmount)
+      }
+    })
+
+    // Random headline
+    const headline = sector.headlines[Math.floor(Math.random() * sector.headlines.length)]
+
+    // Mark ability as used
+    const updated = activeStrategies.map(s =>
+      s.strategyId === 'destabilization'
+        ? { ...s, abilitiesUsed: { ...s.abilitiesUsed, eliminationUsed: true } }
+        : s
+    )
+
+    set({
+      activeStrategies: updated,
+      prices: newPrices,
+      todayNews: [...todayNews, {
+        headline,
+        effects: Object.fromEntries(sector.assets.map(a => [a, crashAmount])),
+        labelType: 'breaking' as const,
+      }],
+      activeBuyMessage: `💀 TARGET ELIMINATED - ${sectorId.toUpperCase()} SECTOR IN FREEFALL (-25%)`,
+    })
+  },
+
+  // ============================================================================
+  // STRATEGY COMPUTED PROPERTIES
+  // ============================================================================
+
+  getStrategyTier: (strategyId: StrategyId): StrategyTier => {
+    const { activeStrategies } = get()
+    return getActiveTier(strategyId, activeStrategies)
+  },
+
+  canAffordStrategy: (strategyId: StrategyId, tier: 'active' | 'elite'): boolean => {
+    const { cash, activeStrategies } = get()
+    const currentTier = getActiveTier(strategyId, activeStrategies)
+    return checkCanAffordStrategy(strategyId, tier, cash, currentTier)
+  },
+
+  meetsStrategyGate: (strategyId: StrategyId, tier: 'active' | 'elite'): boolean => {
+    const netWorth = get().getNetWorth()
+    return meetsNetWorthGate(strategyId, tier, netWorth)
+  },
+
+  getTotalDailyStrategyCost: (): number => {
+    const { activeStrategies } = get()
+    return calculateTotalDailyCost(activeStrategies)
+  },
+
+  canUseSpin: (): boolean => {
+    const { activeStrategies } = get()
+    return canUseAbility('spin', activeStrategies)
+  },
+
+  canUsePlant: (): boolean => {
+    const { activeStrategies } = get()
+    return canUseAbility('plant', activeStrategies)
+  },
+
+  canPushPolicy: (): boolean => {
+    const { activeStrategies, day, lastPolicyPushDay } = get()
+    const lobbying = activeStrategies.find(s => s.strategyId === 'lobbying')
+
+    // Must have Lobbying Elite
+    if (!lobbying || lobbying.tier !== 'elite') return false
+
+    // Check cooldown
+    if (lastPolicyPushDay !== null && day - lastPolicyPushDay < POLICY_PUSH_CONFIG.cooldownDays) {
+      return false
+    }
+
+    return true
+  },
+
+  getPolicyPushInfo: () => {
+    const { policyPushAttempts, lastPolicyPushDay, day, cash } = get()
+    const config = POLICY_PUSH_CONFIG.getConfig(policyPushAttempts)
+
+    let cooldownRemaining = 0
+    if (lastPolicyPushDay !== null) {
+      cooldownRemaining = Math.max(0, POLICY_PUSH_CONFIG.cooldownDays - (day - lastPolicyPushDay))
+    }
+
+    return {
+      pushNumber: policyPushAttempts + 1,
+      cost: config.cost,
+      successRate: config.successRate,
+      cooldownRemaining,
+      canAfford: cash >= config.cost,
+    }
+  },
+
+  canExecuteCoup: (): boolean => {
+    const { activeStrategies } = get()
+    return canUseAbility('coup', activeStrategies)
+  },
+
+  canExecuteElimination: (): boolean => {
+    const { activeStrategies } = get()
+    return canUseAbility('elimination', activeStrategies)
   },
 
   // ============================================================================

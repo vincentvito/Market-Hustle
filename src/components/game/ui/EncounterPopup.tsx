@@ -361,9 +361,9 @@ export function EncounterPopup() {
     }
   }
 
-  // Determine if result is a win
+  // Determine if result is a win (liquidationRequired means forced asset loss, so it's a loss)
   // Note: liquidationRequired means money was lost (SEC fine, divorce settlement, etc.)
-  const isWin = encounterResult ? (encounterResult.cashChange ?? 0) >= 0 && !encounterResult.gameOver && !encounterResult.liquidationRequired : false
+  const isWin = encounterResult ? (encounterResult.cashChange ?? 0) >= 0 && !encounterResult.gameOver && !encounterResult.liquidationRequired && !encounterResult.liquidationRequired : false
 
   // Show result screen if we have a result
   if (encounterResult) {
@@ -584,7 +584,7 @@ export function EncounterPopup() {
                   ${!canAfford
                     ? 'bg-mh-border/50 border border-mh-border text-mh-text-dim cursor-not-allowed opacity-50'
                     : isPassOption
-                      ? 'bg-transparent border border-mh-border text-mh-text-dim hover:bg-mh-border/20 cursor-pointer'
+                      ? 'bg-transparent border border-mh-border text-mh-text-main hover:bg-mh-border/20 cursor-pointer'
                       : isRetro2
                         ? 'bg-mh-accent-blue/20 border border-mh-accent-blue text-mh-accent-blue hover:bg-mh-accent-blue/30 cursor-pointer'
                         : 'bg-mh-loss-red/20 border border-mh-loss-red text-mh-loss-red hover:bg-mh-loss-red/30 cursor-pointer'

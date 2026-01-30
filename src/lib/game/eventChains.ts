@@ -559,14 +559,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'emerging', 'tesla'],
     outcomes: [
       {
-        headline: 'WHO DECLARES DISEASE X PANDEMIC',
+        headline: 'WHO DECLARES PUBLIC HEALTH EMERGENCY OF INTERNATIONAL CONCERN',
         probability: 0.65,
         effects: { biotech: 0.50, gold: 0.22, nasdaq: -0.18, oil: -0.30, emerging: -0.28, tesla: -0.20 },
         sentiment: 'bearish',
         sentimentAssets: ['nasdaq', 'emerging', 'tesla']
       },
       {
-        headline: 'OUTBREAK CONTAINED - FALSE ALARM',
+        headline: 'CDC: OUTBREAK CONTAINED, NO SUSTAINED TRANSMISSION',
         probability: 0.35,
         effects: { biotech: -0.15, oil: 0.08, emerging: 0.12, tesla: 0.10 },
         sentiment: 'bullish',

@@ -343,6 +343,53 @@ export function selectOutcome(startup: Startup): StartupOutcome {
   return startup.outcomes[startup.outcomes.length - 1]
 }
 
+/**
+ * Select outcome with bonus that shifts probability toward better outcomes
+ * Bonus reduces failure probability and redistributes to success tiers
+ * @param startup The startup to select outcome for
+ * @param bonus Probability shift (e.g., 0.05 = 5% reduction in failure rate)
+ */
+export function selectOutcomeWithBonus(startup: Startup, bonus: number): StartupOutcome {
+  if (bonus <= 0) {
+    return selectOutcome(startup)
+  }
+
+  // Clone outcomes and adjust probabilities
+  const adjustedOutcomes = startup.outcomes.map(o => ({ ...o }))
+
+  // Find the failure outcome (multiplier = 0)
+  const failIndex = adjustedOutcomes.findIndex(o => o.multiplier === 0)
+  if (failIndex === -1) {
+    return selectOutcome(startup)  // No failure outcome to reduce
+  }
+
+  // Reduce failure probability by bonus amount
+  const failReduction = Math.min(adjustedOutcomes[failIndex].probability, bonus)
+  adjustedOutcomes[failIndex].probability -= failReduction
+
+  // Redistribute to non-failure outcomes proportionally
+  const nonFailOutcomes = adjustedOutcomes.filter(o => o.multiplier > 0)
+  if (nonFailOutcomes.length > 0) {
+    const redistributeEach = failReduction / nonFailOutcomes.length
+    adjustedOutcomes.forEach(o => {
+      if (o.multiplier > 0) {
+        o.probability += redistributeEach
+      }
+    })
+  }
+
+  // Select from adjusted probabilities
+  const roll = Math.random()
+  let cumulative = 0
+  for (const outcome of adjustedOutcomes) {
+    cumulative += outcome.probability
+    if (roll <= cumulative) {
+      return outcome
+    }
+  }
+  return adjustedOutcomes[adjustedOutcomes.length - 1]
+}
+
 export function getRandomDuration(startup: Startup): number {
   const [min, max] = startup.duration
   return min + Math.floor(Math.random() * (max - min + 1))

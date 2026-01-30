@@ -158,50 +158,70 @@ export const QUIET_NEWS = [
 
 // =============================================================================
 // LIFESTYLE ASSET EFFECTS
-// Maps event headlines to effects on lifestyle assets (properties, jets, teams)
+// Maps event headlines to effects on lifestyle assets (properties, private equity)
 // Effects are percentage changes (e.g., -0.25 = -25%)
 // =============================================================================
 
 export type LifestyleEffects = {
-  // Property effects by ID
+  // Property effects by ID - Residential
   miami_condo?: number
   nyc_apartment?: number
   la_mansion?: number
   monaco_villa?: number
   dubai_palace?: number
+  // Commercial properties
+  strip_mall?: number
+  warehouse_complex?: number
+  medical_plaza?: number
+  office_tower?: number
+  shopping_center?: number
+  industrial_park?: number
   // All properties shorthand
   all_properties?: number
   us_properties?: number
   foreign_properties?: number
-  // Jet effects
-  all_jets?: number
-  // Team effects
-  all_teams?: number
+  commercial_properties?: number
+
+  // Private Equity shorthands (simplified 6-asset system)
+  all_private_equity?: number
+  pe_blue_chip?: number        // Sal's Corner, Iron Oak Brewing, Tenuta della Luna
+  pe_growth?: number           // Terralith, Blackstone, Apex Media
+
+  // Individual PE assets (6 remaining)
+  pe_sals_corner?: number
+  pe_iron_oak_brewing?: number
+  pe_tenuta_luna?: number
+  pe_terralith_minerals?: number
+  pe_blackstone_services?: number
+  pe_apex_media?: number
 }
 
 // Map headlines to lifestyle effects
+// Simplified for 6 PE assets: Sal's Corner, Iron Oak Brewing, Tenuta della Luna (blue chip)
+//                             Terralith Minerals, Blackstone Services, Apex Media (growth)
 export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
   // === HOUSING / ECONOMIC EVENTS (from stories) ===
   "HOUSING MARKET CRASHES 30% - 2008 COMPARISONS MOUNT": {
     all_properties: -0.25,
+    pe_blue_chip: -0.12,
   },
   "RECESSION OFFICIALLY DECLARED - NBER CONFIRMS TWO NEGATIVE QUARTERS": {
     all_properties: -0.15,
-    all_jets: -0.20,
-    all_teams: -0.10,
+    all_private_equity: -0.12,
+    pe_blue_chip: -0.18, // Small businesses hit hard in recession
   },
   "MAJOR BANK DECLARES INSOLVENCY - FED INTERVENES": {
     all_properties: -0.12,
-    all_jets: -0.10,
+    all_private_equity: -0.10,
   },
   "CHINA DEFAULTS ON SOVEREIGN DEBT - GLOBAL PANIC": {
     all_properties: -0.10,
-    all_jets: -0.15,
     dubai_palace: -0.20, // Emerging market exposure
+    pe_terralith_minerals: 0.15, // Rare earth becomes more valuable (non-China)
   },
   "UNEMPLOYMENT HITS 15%": {
     all_properties: -0.10,
-    all_jets: -0.12,
+    pe_blue_chip: -0.15, // Small businesses hurt
   },
 
   // === DISASTER EVENTS ===
@@ -209,6 +229,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     la_mansion: -0.35, // Nearby, sympathy fears
     miami_condo: -0.15, // General fear
     nyc_apartment: -0.12,
+    office_tower: -0.18, // Commercial real estate concerns
     // Foreign properties benefit from flight capital
     monaco_villa: 0.08,
     dubai_palace: 0.10,
@@ -217,7 +238,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     us_properties: -0.30,
     monaco_villa: 0.15,
     dubai_palace: 0.20,
-    all_jets: -0.15, // Travel disruption
+    pe_growth: -0.20, // Major disruption
   },
 
   // === GEOPOLITICAL / WAR EVENTS (from stories) ===
@@ -225,58 +246,56 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     us_properties: -0.40,
     monaco_villa: 0.20,
     dubai_palace: 0.25,
-    all_jets: -0.25, // No-fly zones
-    all_teams: -0.30, // Sports suspended
+    pe_blackstone_services: 0.35, // PMC demand spikes
+    pe_apex_media: 0.20, // News viewership spikes
   },
   "NATO INVOKES ARTICLE 5 - COLLECTIVE DEFENSE ACTIVATED": {
     all_properties: -0.08,
-    all_jets: -0.10,
+    pe_blackstone_services: 0.25, // Defense contracts
   },
-  // Russia/Taiwan crises covered by existing stories
   "TACTICAL NUCLEAR STRIKE ON UKRAINE - WORLD IN SHOCK": {
     all_properties: -0.20,
     monaco_villa: -0.25, // European exposure
-    all_jets: -0.30,
-    all_teams: -0.15,
+    all_private_equity: -0.15,
   },
   "HISTORIC PEACE ACCORD SIGNED - NEW ERA OF COOPERATION": {
     all_properties: 0.08,
-    all_jets: 0.10,
+    all_private_equity: 0.10,
+    pe_blackstone_services: -0.15, // Less conflict = less PMC demand
   },
 
   // === PANDEMIC / HEALTH EVENTS ===
   "WHO DECLARES NEW PANDEMIC": {
     all_properties: -0.20, // Rental income crash
-    all_jets: -0.30, // Travel restrictions
-    all_teams: -0.25, // No spectators
+    pe_sals_corner: -0.30, // Restaurant crushed
+    pe_iron_oak_brewing: -0.25, // Brewery taprooms closed
+    pe_apex_media: 0.15, // News consumption up
   },
 
   // === TECH EVENTS (from stories) ===
   "AGI DEPLOYED ACROSS MAJOR CORPORATIONS": {
     all_properties: 0.05,
-    all_jets: 0.08,
+    pe_apex_media: 0.15, // AI content generation
   },
   "ROOM-TEMP SUPERCONDUCTOR CONFIRMED - ENERGY REVOLUTION BEGINS": {
-    all_jets: 0.20, // Cheaper energy future
+    commercial_properties: 0.10, // Cheaper operations
+    pe_terralith_minerals: -0.10, // Some minerals less critical
   },
 
-  // === ENERGY EVENTS (affect jets via fuel costs) ===
-  "OPEC ANNOUNCES EMERGENCY 3M BARREL/DAY CUT": {
-    all_jets: -0.08,
-  },
+  // === ENERGY EVENTS ===
   "OIL TANKER EXPLODES IN STRAIT OF HORMUZ": {
-    all_jets: -0.12,
+    warehouse_complex: -0.08, // Supply chain disruption
+    pe_terralith_minerals: 0.10, // Resource scarcity
   },
   "NUCLEAR FUSION BREAKTHROUGH ACHIEVED": {
-    all_jets: 0.15, // Cheaper energy future
-  },
-  "MASSIVE OIL FIELD DISCOVERED IN TURKEY": {
-    all_jets: 0.10,
+    commercial_properties: 0.12, // Cheaper energy future
   },
 
   // === INFLATION / CURRENCY ===
   "INFLATION HITS 40-YEAR HIGH": {
     all_properties: 0.08, // Real assets hedge
+    pe_terralith_minerals: 0.20, // Hard assets appreciate
+    pe_tenuta_luna: 0.12, // Luxury wine appreciates
   },
   "DOLLAR INDEX CRASHES 5%": {
     foreign_properties: 0.12,
@@ -290,28 +309,52 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
   // === CHINA / EMERGING MARKET ===
   "CHINA DEFAULTS ON SOVEREIGN DEBT": {
     dubai_palace: -0.15, // Wealthy Chinese buyers affected
-    all_jets: -0.10,
+    pe_terralith_minerals: 0.25, // Non-China rare earth more valuable
+  },
+  "CHINA CORNERS LITHIUM SUPPLY": {
+    pe_terralith_minerals: 0.30, // Non-China rare earth more valuable
   },
 
-  // === SPIKE EVENTS (from spikes.ts) ===
+  // === SPIKE EVENTS ===
   "MIDDLE EAST CONFLICT SHUTS DOWN STRAIT OF HORMUZ": {
     dubai_palace: -0.25, // War zone proximity
-    all_jets: -0.20, // Fuel crisis
+    pe_blackstone_services: 0.20, // PMC contracts
   },
   "NATO DOUBLES DEFENSE BUDGETS WORLDWIDE": {
     all_properties: -0.05, // War fears
+    pe_blackstone_services: 0.35, // Defense contracts boom
   },
   "ALIEN CONTACT CONFIRMED - DEFENSE STOCKS SURGE": {
     all_properties: 0.10, // Chaos hedge
-    all_jets: 0.15, // Escape vehicles
+    pe_blackstone_services: 0.25, // Defense spending up
+    pe_apex_media: 0.30, // News viewership explodes
   },
   "FED ANNOUNCES UNLIMITED QE FOREVER": {
     all_properties: 0.15, // Asset inflation
-    all_jets: 0.12,
-    all_teams: 0.10,
+    all_private_equity: 0.12,
   },
-  "TESLA DECLARES BANKRUPTCY - ELON STEPS DOWN": {
-    all_jets: -0.08, // Luxury market jitters
+
+  // === JOBS / ECONOMIC GROWTH ===
+  "JOBS REPORT SHOCKS - 500K ADDED": {
+    pe_sals_corner: 0.10, // More dining out
+    pe_iron_oak_brewing: 0.08, // Craft beer consumption up
+    commercial_properties: 0.05, // Business expansion
+  },
+
+  // === AGRICULTURE EVENTS ===
+  "WORST DROUGHT IN 500 YEARS": {
+    pe_tenuta_luna: -0.30, // Vineyard affected
+  },
+
+  // === TECH LAYOFFS ===
+  "SILICON VALLEY LAYOFFS HIT 100,000": {
+    office_tower: -0.15, // Less office demand
+    pe_sals_corner: -0.05, // Brooklyn less affected than Bay Area
+  },
+
+  // === DEFENSE / MILITARY ===
+  "PENTAGON AWARDS $50B CONTRACT": {
+    pe_blackstone_services: 0.30, // PMC benefits
   },
 }
 
@@ -319,13 +362,21 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
 export function expandLifestyleEffects(effects: LifestyleEffects): Record<string, number> {
   const expanded: Record<string, number> = {}
 
-  const US_PROPERTIES = ['miami_condo', 'nyc_apartment', 'la_mansion']
-  const FOREIGN_PROPERTIES = ['monaco_villa', 'dubai_palace']
+  // Property groupings - Residential
+  const US_RESIDENTIAL = ['miami_condo', 'nyc_apartment', 'la_mansion']
+  const FOREIGN_RESIDENTIAL = ['monaco_villa', 'dubai_palace']
+  // Commercial properties
+  const COMMERCIAL_PROPERTIES = ['strip_mall', 'warehouse_complex', 'medical_plaza', 'office_tower', 'shopping_center', 'industrial_park']
+  const US_PROPERTIES = [...US_RESIDENTIAL, ...COMMERCIAL_PROPERTIES]
+  const FOREIGN_PROPERTIES = [...FOREIGN_RESIDENTIAL]
   const ALL_PROPERTIES = [...US_PROPERTIES, ...FOREIGN_PROPERTIES]
-  const ALL_JETS = ['jet_citation', 'jet_challenger', 'jet_gulfstream', 'jet_global', 'jet_bbj']
-  const ALL_TEAMS = ['team_mls', 'team_nhl', 'team_nba', 'team_nfl', 'team_f1', 'team_epl']
 
-  // Apply shorthand effects first
+  // Private Equity groupings - Simplified 6-asset system
+  const PE_BLUE_CHIP = ['pe_sals_corner', 'pe_iron_oak_brewing', 'pe_tenuta_luna']
+  const PE_GROWTH = ['pe_terralith_minerals', 'pe_blackstone_services', 'pe_apex_media']
+  const ALL_PRIVATE_EQUITY = [...PE_BLUE_CHIP, ...PE_GROWTH]
+
+  // Apply property shorthand effects
   if (effects.all_properties !== undefined) {
     ALL_PROPERTIES.forEach(id => expanded[id] = effects.all_properties!)
   }
@@ -335,19 +386,115 @@ export function expandLifestyleEffects(effects: LifestyleEffects): Record<string
   if (effects.foreign_properties !== undefined) {
     FOREIGN_PROPERTIES.forEach(id => expanded[id] = effects.foreign_properties!)
   }
-  if (effects.all_jets !== undefined) {
-    ALL_JETS.forEach(id => expanded[id] = effects.all_jets!)
-  }
-  if (effects.all_teams !== undefined) {
-    ALL_TEAMS.forEach(id => expanded[id] = effects.all_teams!)
+  if (effects.commercial_properties !== undefined) {
+    COMMERCIAL_PROPERTIES.forEach(id => expanded[id] = effects.commercial_properties!)
   }
 
-  // Apply individual effects (override shorthands)
+  // Apply PE shorthand effects
+  if (effects.all_private_equity !== undefined) {
+    ALL_PRIVATE_EQUITY.forEach(id => expanded[id] = effects.all_private_equity!)
+  }
+  if (effects.pe_blue_chip !== undefined) {
+    PE_BLUE_CHIP.forEach(id => expanded[id] = effects.pe_blue_chip!)
+  }
+  if (effects.pe_growth !== undefined) {
+    PE_GROWTH.forEach(id => expanded[id] = effects.pe_growth!)
+  }
+
+  // Apply individual property effects (override shorthands)
   if (effects.miami_condo !== undefined) expanded.miami_condo = effects.miami_condo
   if (effects.nyc_apartment !== undefined) expanded.nyc_apartment = effects.nyc_apartment
   if (effects.la_mansion !== undefined) expanded.la_mansion = effects.la_mansion
   if (effects.monaco_villa !== undefined) expanded.monaco_villa = effects.monaco_villa
   if (effects.dubai_palace !== undefined) expanded.dubai_palace = effects.dubai_palace
+  // Commercial properties
+  if (effects.strip_mall !== undefined) expanded.strip_mall = effects.strip_mall
+  if (effects.warehouse_complex !== undefined) expanded.warehouse_complex = effects.warehouse_complex
+  if (effects.medical_plaza !== undefined) expanded.medical_plaza = effects.medical_plaza
+  if (effects.office_tower !== undefined) expanded.office_tower = effects.office_tower
+  if (effects.shopping_center !== undefined) expanded.shopping_center = effects.shopping_center
+  if (effects.industrial_park !== undefined) expanded.industrial_park = effects.industrial_park
+
+  // Apply individual PE effects (override shorthands)
+  ALL_PRIVATE_EQUITY.forEach(id => {
+    const key = id as keyof LifestyleEffects
+    if (effects[key] !== undefined) expanded[id] = effects[key] as number
+  })
 
   return expanded
+}
+
+// =============================================================================
+// PE EXIT EVENTS - Acquisition and IPO opportunities
+// =============================================================================
+import { PERiskTier } from './types'
+
+export interface PEExitEventConfig {
+  type: 'acquisition' | 'ipo'
+  targetTiers: PERiskTier[]
+  multiplierRange: [number, number]  // [min, max] return multiplier
+  probabilityPerDay: number          // Daily chance per eligible owned asset
+  headlines: string[]                // {ASSET} will be replaced with asset name
+}
+
+// NOTE: Only GROWTH tier assets can receive exit offers
+// Blue chip assets are "lifestyle" investments - stable income, not typically acquired/IPO'd
+// Growth assets have high valuations tied to performance, TV deals, tech - prime exit targets
+export const PE_EXIT_EVENTS: PEExitEventConfig[] = [
+  {
+    type: 'acquisition',
+    // Only growth tier - sports teams change hands, biotech gets bought, etc.
+    targetTiers: ['growth'],
+    multiplierRange: [1.5, 5.0],
+    probabilityPerDay: 0.015,  // 1.5% daily chance per asset (~35%/month)
+    headlines: [
+      'STRATEGIC BUYER EMERGES FOR {ASSET}',
+      'BIDDING WAR BREAKS OUT FOR {ASSET}',
+      '{ASSET} RECEIVES ACQUISITION OFFER',
+      'PRIVATE EQUITY FIRM CIRCLES {ASSET}',
+    ]
+  },
+  {
+    type: 'ipo',
+    // Only growth tier - sports franchises, biotech, mining can IPO
+    targetTiers: ['growth'],
+    multiplierRange: [3.0, 10.0],
+    probabilityPerDay: 0.005,  // 0.5% daily chance (rare, but lucrative)
+    headlines: [
+      '{ASSET} FILES FOR IPO',
+      '{ASSET} TO GO PUBLIC',
+      'WALL STREET BUZZING: {ASSET} IPO IMMINENT',
+      'UNDERWRITERS LINE UP FOR {ASSET} IPO',
+    ]
+  }
+]
+
+// Helper to check if a PE exit event should trigger for an asset
+export function rollForPEExit(
+  assetRiskTier: PERiskTier | undefined
+): { type: 'acquisition' | 'ipo'; multiplier: number; headline: string } | null {
+  if (!assetRiskTier) return null
+
+  for (const exitEvent of PE_EXIT_EVENTS) {
+    if (!exitEvent.targetTiers.includes(assetRiskTier)) continue
+
+    if (Math.random() < exitEvent.probabilityPerDay) {
+      // Calculate multiplier within range
+      const [min, max] = exitEvent.multiplierRange
+      const multiplier = min + Math.random() * (max - min)
+      // Round to 1 decimal place
+      const roundedMultiplier = Math.round(multiplier * 10) / 10
+
+      // Pick random headline
+      const headline = exitEvent.headlines[Math.floor(Math.random() * exitEvent.headlines.length)]
+
+      return {
+        type: exitEvent.type,
+        multiplier: roundedMultiplier,
+        headline
+      }
+    }
+  }
+
+  return null
 }

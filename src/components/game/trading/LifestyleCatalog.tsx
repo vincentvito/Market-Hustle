@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useGame } from '@/hooks/useGame'
-import { PROPERTIES, JETS, TEAMS } from '@/lib/game/lifestyleAssets'
+import { PROPERTIES, PRIVATE_EQUITY, RISK_TIER_COLORS, RISK_TIER_LABELS } from '@/lib/game/lifestyleAssets'
 import { Portal } from '@/components/ui/Portal'
 import type { LifestyleAsset, LifestyleCategory } from '@/lib/game/types'
 
@@ -19,15 +19,7 @@ function formatPrice(value: number): string {
   return `$${value.toFixed(0)}`
 }
 
-function formatReturn(dailyReturn: number, category: LifestyleCategory): string {
-  if (category === 'jet') {
-    // Jets have fixed daily costs (dailyReturn is a dollar amount)
-    const cost = Math.abs(dailyReturn)
-    if (cost >= 1_000_000) {
-      return `-$${(cost / 1_000_000).toFixed(1)}M/day`
-    }
-    return `-$${(cost / 1_000).toFixed(0)}K/day`
-  }
+function formatReturn(dailyReturn: number): string {
   // Properties and teams use percentage of purchase price
   const pct = (dailyReturn * 100).toFixed(1)
   if (dailyReturn > 0) return `+${pct}%/day`
@@ -36,8 +28,7 @@ function formatReturn(dailyReturn: number, category: LifestyleCategory): string 
 
 const CATEGORIES: { id: LifestyleCategory; label: string; emoji: string }[] = [
   { id: 'property', label: 'PROPERTIES', emoji: '🏠' },
-  { id: 'jet', label: 'JETS', emoji: '✈️' },
-  { id: 'team', label: 'TEAMS', emoji: '🏆' },
+  { id: 'private_equity', label: 'PRIVATE EQUITY', emoji: '💼' },
 ]
 
 export function LifestyleCatalog() {
@@ -48,9 +39,7 @@ export function LifestyleCatalog() {
   const [selectedAsset, setSelectedAsset] = useState<LifestyleAsset | null>(null)
   const [sellConfirmAsset, setSellConfirmAsset] = useState<LifestyleAsset | null>(null)
 
-  const assets = activeCategory === 'property' ? PROPERTIES
-    : activeCategory === 'jet' ? JETS
-    : TEAMS
+  const assets = activeCategory === 'property' ? PROPERTIES : PRIVATE_EQUITY
 
   const ownedIds = new Set(ownedLifestyle.map(o => o.assetId))
   const ownedMap = new Map(ownedLifestyle.map(o => [o.assetId, o]))
@@ -126,26 +115,53 @@ export function LifestyleCatalog() {
               <div className="flex items-start gap-3">
                 <div className="text-2xl">{asset.emoji}</div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-mh-text-bright truncate">
                       {asset.name}
                     </span>
                     {isOwned && (
                       <span className="text-xs text-mh-accent-blue font-bold">OWNED</span>
                     )}
+                    {/* Risk tier badge for PE assets */}
+                    {asset.riskTier && (
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded font-bold"
+                        style={{
+                          color: RISK_TIER_COLORS[asset.riskTier],
+                          background: `${RISK_TIER_COLORS[asset.riskTier]}20`,
+                        }}
+                      >
+                        {RISK_TIER_LABELS[asset.riskTier]}
+                      </span>
+                    )}
+                    {asset.strategicUnlock && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                        asset.strategicUnlock.bonusType === 'placeholder'
+                          ? 'bg-gray-600/30 text-gray-400'
+                          : 'bg-amber-500/20 text-amber-400'
+                      }`}>
+                        {asset.strategicUnlock.bonusType === 'placeholder' ? '🔮 FUTURE' : '⚡ UNLOCK'}
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-mh-text-dim mt-0.5 line-clamp-1">
                     {asset.description}
                   </div>
-                  <div className="flex items-center gap-3 mt-1">
+                  <div className="flex items-center gap-3 mt-1 flex-wrap">
                     <span className="text-sm font-bold text-mh-text-main">
                       {formatPrice(price)}
                     </span>
                     <span className={`text-xs font-bold ${
                       asset.dailyReturn > 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
                     }`}>
-                      {formatReturn(asset.dailyReturn, asset.category)}
+                      {formatReturn(asset.dailyReturn)}
                     </span>
+                    {/* Failure risk indicator for high-risk PE */}
+                    {asset.failureChancePerDay && asset.failureChancePerDay >= 0.005 && (
+                      <span className="text-[10px] text-mh-loss-red">
+                        ⚠️ {Math.round(asset.failureChancePerDay * 30 * 100)}%/mo risk
+                      </span>
+                    )}
                     {isOwned && (
                       <span className={`text-xs font-bold ${
                         profitLoss >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
@@ -188,16 +204,47 @@ export function LifestyleCatalog() {
                   <div className="text-sm md:text-base text-mh-text-dim mt-1">
                     {selectedAsset.description}
                   </div>
-                  <div className="flex items-center gap-4 mt-2 md:mt-3">
-                    <span className="text-lg md:text-xl font-bold text-mh-text-main">
+                  <div className="flex items-center gap-4 mt-2 flex-wrap">
+                    <span className="text-lg font-bold text-mh-text-main">
                       {formatPrice(lifestylePrices[selectedAsset.id] || selectedAsset.basePrice)}
                     </span>
                     <span className={`text-sm md:text-base font-bold ${
                       selectedAsset.dailyReturn > 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
                     }`}>
-                      {formatReturn(selectedAsset.dailyReturn, selectedAsset.category)}
+                      {formatReturn(selectedAsset.dailyReturn)}
                     </span>
+                    {/* Risk tier badge for PE */}
+                    {selectedAsset.riskTier && (
+                      <span
+                        className="text-xs px-2 py-0.5 rounded font-bold"
+                        style={{
+                          color: RISK_TIER_COLORS[selectedAsset.riskTier],
+                          background: `${RISK_TIER_COLORS[selectedAsset.riskTier]}20`,
+                        }}
+                      >
+                        {RISK_TIER_LABELS[selectedAsset.riskTier]}
+                      </span>
+                    )}
                   </div>
+                  {/* Failure risk warning for high-risk PE */}
+                  {selectedAsset.failureChancePerDay && selectedAsset.failureChancePerDay >= 0.005 && (
+                    <div className="mt-2 p-2 rounded text-xs bg-mh-loss-red/10 text-mh-loss-red">
+                      <span className="font-bold">⚠️ HIGH RISK: </span>
+                      ~{Math.round(selectedAsset.failureChancePerDay * 30 * 100)}% monthly chance of total loss
+                    </div>
+                  )}
+                  {selectedAsset.strategicUnlock && (
+                    <div className={`mt-2 p-2 rounded text-xs ${
+                      selectedAsset.strategicUnlock.bonusType === 'placeholder'
+                        ? 'bg-gray-600/20 text-gray-400'
+                        : 'bg-amber-500/10 text-amber-400'
+                    }`}>
+                      <span className="font-bold">
+                        {selectedAsset.strategicUnlock.bonusType === 'placeholder' ? '🔮 Coming Soon: ' : '⚡ Strategic Unlock: '}
+                      </span>
+                      {selectedAsset.strategicUnlock.description}
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -2,7 +2,7 @@
 
 import { useGame } from '@/hooks/useGame'
 import { ASSETS } from '@/lib/game/assets'
-import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
+import { LIFESTYLE_ASSETS, RISK_TIER_COLORS, RISK_TIER_LABELS } from '@/lib/game/lifestyleAssets'
 
 function formatPrice(p: number): string {
   if (p >= 1_000_000) return `${(p / 1_000_000).toFixed(1)}M`
@@ -348,11 +348,29 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
                   className="py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="text-base">{asset.emoji}</span>
                       <span className="text-mh-text-bright font-bold text-sm">
                         {asset.name}
                       </span>
+                      {/* Risk tier badge for PE assets */}
+                      {asset.riskTier && (
+                        <span
+                          className="text-[9px] px-1.5 py-0.5 rounded font-bold"
+                          style={{
+                            color: RISK_TIER_COLORS[asset.riskTier],
+                            background: `${RISK_TIER_COLORS[asset.riskTier]}20`,
+                          }}
+                        >
+                          {RISK_TIER_LABELS[asset.riskTier]}
+                        </span>
+                      )}
+                      {/* AT RISK warning for high-risk PE */}
+                      {asset.failureChancePerDay && asset.failureChancePerDay >= 0.005 && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-mh-loss-red/20 text-mh-loss-red">
+                          ⚠️ AT RISK
+                        </span>
+                      )}
                     </div>
                     <div className="text-mh-text-dim text-[11px]">
                       Bought Day {owned.purchaseDay} for {formatLargePrice(owned.purchasePrice)}
