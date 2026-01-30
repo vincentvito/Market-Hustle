@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
-import { ENCOUNTERS, getDivorceDescription, resolveSEC, resolveDivorce, resolveShitcoin, resolveKidney, resolveRoulette } from '@/lib/game/encounters'
+import { ENCOUNTERS, getDivorceDescription, resolveSEC, resolveDivorce, resolveShitcoin, resolveKidney, resolveRoulette, resolveTax } from '@/lib/game/encounters'
 import type { EncounterResult } from '@/lib/game/encounters'
 import type { RouletteColor, EncounterType } from '@/lib/game/types'
 
@@ -324,6 +324,9 @@ export function EncounterPopup() {
         // Decline roulette
         result = resolveRoulette('decline', null, 0)
         break
+      case 'tax':
+        result = choiceIndex === 0 ? resolveTax('pay', netWorth) : resolveTax('offshore', netWorth)
+        break
       default:
         result = { headline: 'Encounter resolved' }
     }
@@ -558,7 +561,7 @@ export function EncounterPopup() {
         </div>
 
         {/* Stakes Info */}
-        {(pendingEncounter.type === 'sec' || pendingEncounter.type === 'divorce') && (
+        {(pendingEncounter.type === 'sec' || pendingEncounter.type === 'divorce' || pendingEncounter.type === 'tax') && (
           <div className="px-4 py-2 bg-[#0d0808] border-b border-mh-border">
             <div className="text-mh-text-dim text-xs text-center">
               Your net worth: <span className="text-mh-text-bright">${netWorth.toLocaleString()}</span>

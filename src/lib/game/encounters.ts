@@ -1,7 +1,7 @@
 // Random Encounters - High-stakes popup events during gameplay
 // Design: Max 2 encounters per game, 8-day cooldown, first encounter no earlier than Day 3
 
-export type EncounterType = 'sec' | 'divorce' | 'shitcoin' | 'kidney' | 'roulette'
+export type EncounterType = 'sec' | 'divorce' | 'shitcoin' | 'kidney' | 'roulette' | 'tax'
 
 export interface EncounterChoice {
   label: string
@@ -105,6 +105,18 @@ export const ENCOUNTERS: Record<EncounterType, EncounterDefinition> = {
     ],
     requiresCash: 2000,  // Minimum to play
   },
+  tax: {
+    id: 'tax',
+    title: 'IRS AUDIT',
+    emoji: '📋',
+    description: 'The IRS has questions about your offshore accounts and "creative" deductions. Your accountant is sweating.',
+    flavor: '"We\'ve noticed some... irregularities."',
+    choices: [
+      { label: 'PAY UP', description: 'Lose 15% of net worth, avoid prosecution' },
+      { label: 'OFFSHORE', description: '40% chance you escape, 60% chance you lose 30% + prison risk' },
+    ],
+    maxPerGame: 1,
+  },
 }
 
 // Encounter state for the game
@@ -114,6 +126,7 @@ export interface EncounterState {
   usedSEC: boolean                // SEC can only happen once
   usedKidney: boolean             // Kidney can only happen once
   divorceCount: number            // Max 2 divorces per game
+  usedTax: boolean                // Tax can only happen once
 }
 
 export const DEFAULT_ENCOUNTER_STATE: EncounterState = {
@@ -122,6 +135,7 @@ export const DEFAULT_ENCOUNTER_STATE: EncounterState = {
   usedSEC: false,
   usedKidney: false,
   divorceCount: 0,
+  usedTax: false,
 }
 
 // Check if encounters can trigger
@@ -168,6 +182,9 @@ export function getAvailableEncounters(
   // Roulette - needs $2K minimum
   if (cash >= 2000) available.push('roulette')
 
+  // Tax - once per game
+  if (!state.usedTax) available.push('tax')
+
   return available
 }
 
@@ -178,7 +195,8 @@ export function rollForEncounter(
   state: EncounterState,
   cash: number,
   netWorth: number,
-  gameLength: number = 30
+  gameLength: number = 30,
+  ownsArtCollection: boolean = false  // Art Collection reduces Tax Event probability
 ): EncounterType | null {
   if (!canTriggerEncounter(day, state, gameLength)) return null
 
@@ -206,7 +224,22 @@ export function rollForEncounter(
   if (Math.random() >= triggerChance) return null
 
   // Select random encounter from available pool
-  return available[Math.floor(Math.random() * available.length)]
+  let selected = available[Math.floor(Math.random() * available.length)]
+
+  // Art Collection protection: if tax was selected and player owns Art, 20% chance to skip
+  if (selected === 'tax' && ownsArtCollection) {
+    if (Math.random() < 0.20) {
+      // Tax avoided - try to select different encounter or none
+      const nonTaxAvailable = available.filter(e => e !== 'tax')
+      if (nonTaxAvailable.length > 0) {
+        selected = nonTaxAvailable[Math.floor(Math.random() * nonTaxAvailable.length)]
+      } else {
+        return null  // Only tax was available and Art Collection blocked it
+      }
+    }
+  }
+
+  return selected
 }
 
 // Resolve SEC Investigation
@@ -401,4 +434,41 @@ export function getDivorceDescription(divorceCount: number): string {
     return encounter.secondDescription
   }
   return encounter.description
+}
+
+// Resolve Tax Event (IRS Audit)
+export function resolveTax(
+  choice: 'pay' | 'offshore',
+  netWorth: number
+): EncounterResult {
+  if (choice === 'pay') {
+    const penalty = Math.floor(netWorth * 0.15)
+    return {
+      headline: `IRS SETTLEMENT: You paid $${penalty.toLocaleString()} in back taxes and penalties`,
+      liquidationRequired: penalty,
+    }
+  } else {
+    // Offshore: 40% escape, 60% bad
+    if (Math.random() < 0.4) {
+      return {
+        headline: 'OFFSHORE SUCCESS: Your Swiss accounts remain hidden. For now.',
+        cashChange: 0,
+      }
+    } else {
+      // 60% bad outcome - lose 30%
+      const penalty = Math.floor(netWorth * 0.30)
+      // 50% of the bad outcomes also result in prison
+      if (Math.random() < 0.5) {
+        return {
+          headline: 'TAX EVASION: Federal agents found everything. Your trading days are over.',
+          gameOver: true,
+          gameOverReason: 'IMPRISONED',
+        }
+      }
+      return {
+        headline: `AUDIT FAILED: Offshore scheme exposed. $${penalty.toLocaleString()} in penalties.`,
+        liquidationRequired: penalty,
+      }
+    }
+  }
 }
