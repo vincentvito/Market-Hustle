@@ -31,7 +31,8 @@ export async function POST() {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error using pro trial:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error using pro trial:', message, error)
+    return NextResponse.json({ error: `Failed to use pro trial: ${message}` }, { status: 500 })
   }
 }

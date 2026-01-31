@@ -59,7 +59,7 @@ function ResultScreen({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5">
+    <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5 select-none">
       <div
         className={`bg-mh-bg border-2 ${borderColor} rounded-lg w-full max-w-[340px] overflow-hidden`}
         style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
@@ -232,7 +232,7 @@ function RouletteSpinner({
     'bg-gray-800'
 
   return (
-    <div className="fixed inset-0 bg-black/95 z-[400] flex items-center justify-center p-5">
+    <div className="fixed inset-0 bg-black/95 z-[400] flex items-center justify-center p-5 select-none">
       <div className="flex flex-col items-center">
         {/* Bet info */}
         <div className="text-mh-text-dim text-sm mb-6">
@@ -403,7 +403,7 @@ export function EncounterPopup() {
     ]
 
     return (
-      <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5">
+      <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5 select-none">
         <div
           className={`bg-mh-bg border-2 ${isRetro2 ? 'border-mh-accent-blue' : 'border-yellow-500'} rounded-lg w-full max-w-[340px] overflow-hidden`}
           style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
@@ -471,7 +471,7 @@ export function EncounterPopup() {
   // Roulette color selection screen
   if (pendingEncounter.type === 'roulette' && rouletteStep === 'color') {
     return (
-      <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5">
+      <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5 select-none">
         <div
           className={`bg-mh-bg border-2 ${isRetro2 ? 'border-mh-accent-blue' : 'border-yellow-500'} rounded-lg w-full max-w-[340px] overflow-hidden`}
           style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
@@ -528,7 +528,7 @@ export function EncounterPopup() {
 
   // Main encounter popup
   return (
-    <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5">
+    <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5 select-none">
       <div
         className={`bg-mh-bg border-2 ${isRetro2 ? 'border-mh-accent-blue' : 'border-mh-loss-red'} rounded-lg w-full max-w-[340px] overflow-hidden`}
         style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}

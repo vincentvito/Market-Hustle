@@ -42,6 +42,7 @@ export function TitleScreen() {
 
   const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>([])
   const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [worstLeaderboard, setWorstLeaderboard] = useState<LeaderboardEntry[]>([])
   const [showAuthModal, setShowAuthModal] = useState(false)
   // Determine user state: anonymous vs logged-in
   const isAnonymous = !isLoggedIn && !user
@@ -63,16 +64,18 @@ export function TitleScreen() {
     let cancelled = false
     async function fetchLeaderboards() {
       try {
-        const [dailyRes, allTimeRes] = await Promise.all([
+        const [dailyRes, allTimeRes, worstRes] = await Promise.all([
           fetch('/api/leaderboard?period=daily'),
           fetch('/api/leaderboard?period=all'),
+          fetch('/api/leaderboard?period=worst'),
         ])
-        const [daily, allTime] = await Promise.all([dailyRes.json(), allTimeRes.json()])
+        const [daily, allTime, worst] = await Promise.all([dailyRes.json(), allTimeRes.json(), worstRes.json()])
         if (!cancelled) {
           setDailyLeaderboard(daily.entries ?? [])
           setAllTimeLeaderboard(
             allTime.entries?.length > 0 ? allTime.entries : generateLeaderboard(100)
           )
+          setWorstLeaderboard(worst.entries ?? [])
         }
       } catch {
         if (!cancelled) {
@@ -305,7 +308,7 @@ export function TitleScreen() {
         </div>
 
         {/* All-Time Leaderboard */}
-        <div className="w-full max-w-[320px]">
+        <div className="w-full max-w-[320px] mb-6">
           <div className="text-mh-text-dim text-sm mb-3 text-center">ALL-TIME LEADERBOARD</div>
           <div className="border border-mh-border rounded-lg overflow-hidden">
             {allTimeLeaderboard.map((entry, index) => (
@@ -332,6 +335,32 @@ export function TitleScreen() {
             ))}
           </div>
         </div>
+        {/* Worst Scores Leaderboard */}
+        {worstLeaderboard.length > 0 && (
+          <div className="w-full max-w-[320px]">
+            <div className="text-mh-text-dim text-sm mb-3 text-center">HALL OF SHAME</div>
+            <div className="border border-mh-border rounded-lg overflow-hidden">
+              {worstLeaderboard.map((entry, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center px-3 py-2 text-sm ${
+                    index < 3 ? 'bg-mh-loss-red/10' : index % 2 === 1 ? 'bg-mh-border/10' : ''
+                  }`}
+                >
+                  <span className={`w-10 ${index < 3 ? 'text-mh-loss-red font-bold' : 'text-mh-text-dim'}`}>
+                    #{index + 1}
+                  </span>
+                  <span className="flex-1 text-mh-text-main truncate text-left">
+                    {entry.username}
+                  </span>
+                  <span className="font-mono text-right text-mh-loss-red">
+                    {formatScore(entry.score)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Auth Modal */}

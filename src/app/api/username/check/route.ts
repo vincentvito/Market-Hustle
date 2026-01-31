@@ -74,8 +74,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ available: true })
   } catch (error) {
     console.error('Error checking username:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error checking username:', message, error)
     return NextResponse.json(
-      { available: false, reason: 'An error occurred. Please try again.' },
+      { available: false, reason: `Username check failed: ${message}` },
       { status: 500 }
     )
   }

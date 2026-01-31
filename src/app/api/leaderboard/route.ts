@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
     const period = request.nextUrl.searchParams.get('period') ?? 'all'
     const supabase = createAdminClient()
 
+    const isWorst = period === 'worst'
+
     let query = supabase
       .from('game_results')
       .select(`
@@ -21,7 +23,7 @@ export async function GET(request: NextRequest) {
         created_at,
         profiles!inner(username)
       `)
-      .order('final_net_worth', { ascending: false })
+      .order('final_net_worth', { ascending: isWorst })
       .limit(500)
 
     // For daily, filter to today's results (UTC)
@@ -47,14 +49,14 @@ export async function GET(request: NextRequest) {
       const username = profile?.username ?? 'Unknown'
 
       const existing = bestByUser.get(userId)
-      if (!existing || score > existing.score) {
+      if (!existing || (isWorst ? score < existing.score : score > existing.score)) {
         bestByUser.set(userId, { username, score })
       }
     }
 
     // Sort by score desc and take top 100
     const entries = Array.from(bestByUser.values())
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => isWorst ? a.score - b.score : b.score - a.score)
       .slice(0, 100)
 
     return NextResponse.json(
@@ -68,7 +70,8 @@ export async function GET(request: NextRequest) {
       }
     )
   } catch (error) {
-    console.error('Leaderboard error:', error)
-    return NextResponse.json({ entries: [] })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Leaderboard error:', message, error)
+    return NextResponse.json({ entries: [], error: `Leaderboard failed: ${message}` })
   }
 }

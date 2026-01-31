@@ -19,7 +19,8 @@ export async function POST() {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error recording game play:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error recording game play:', message, error)
+    return NextResponse.json({ error: `Failed to record game play: ${message}` }, { status: 500 })
   }
 }

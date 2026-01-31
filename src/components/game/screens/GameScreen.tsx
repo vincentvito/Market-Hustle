@@ -92,7 +92,7 @@ export function GameScreen() {
 
       {/* Bottom Bar */}
       <div
-        className={`p-3 bg-mh-bg flex items-center gap-3 ${isModern3 ? '' : 'border-t border-mh-border'}`}
+        className={`p-3 bg-mh-bg flex items-center gap-3 sticky bottom-0 z-50 ${isModern3 ? '' : 'border-t border-mh-border'}`}
         style={isModern3 ? { boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
       >
         <button
