@@ -108,8 +108,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error in username set:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error in username set:', message, error)
     return NextResponse.json(
-      { success: false, error: 'An error occurred. Please try again.' },
+      { success: false, error: `Username set failed: ${message}` },
       { status: 500 }
     )
   }

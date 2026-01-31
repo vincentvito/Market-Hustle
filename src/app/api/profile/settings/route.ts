@@ -28,7 +28,8 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error updating settings:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error updating settings:', message, error)
+    return NextResponse.json({ error: `Failed to update settings: ${message}` }, { status: 500 })
   }
 }

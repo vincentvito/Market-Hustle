@@ -54,7 +54,8 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.error('Error fetching profile:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error fetching profile:', message, error)
+    return NextResponse.json({ error: `Failed to fetch profile: ${message}` }, { status: 500 })
   }
 }
