@@ -45,6 +45,7 @@ export interface AuthTierSlice {
   // State
   userTier: UserTier
   isLoggedIn: boolean
+  username: string | null
   selectedDuration: GameDuration
   selectedTheme: 'retro' | 'modern3' | 'retro2' | 'bloomberg'
   showDailyLimitModal: boolean
@@ -60,6 +61,7 @@ export interface AuthTierSlice {
   // Actions
   setIsLoggedIn: (isLoggedIn: boolean) => void
   setUserTier: (tier: 'free' | 'pro') => void
+  setUsername: (username: string) => void
   setSelectedDuration: (duration: GameDuration) => void
   setSelectedTheme: (theme: 'retro' | 'modern3' | 'retro2' | 'bloomberg') => void
   setShowDailyLimitModal: (show: boolean) => void

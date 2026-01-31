@@ -87,23 +87,9 @@ export function getTodayDateString(): string {
 }
 
 // Check if user can start a new game based on their tier
-// isLoggedIn should be passed from auth context
+// AUTH DISABLED: Always allow game starts
 export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
-  // Pro users have no limits
-  if (state.tier === 'pro') return true
-
-  // Anonymous users (not logged in): lifetime games limit
-  // Trust isLoggedIn from auth context over localStorage's isAnonymous flag
-  if (!isLoggedIn) {
-    return state.anonymousGamesPlayed < ANONYMOUS_GAME_LIMIT
-  }
-
-  // Registered free users: 3 games per day
-  const today = getTodayDateString()
-  if (state.lastPlayedDate !== today) {
-    return true // New day, counter will reset
-  }
-  return state.gamesPlayedToday < REGISTERED_FREE_DAILY_LIMIT
+  return true
 }
 
 // Get remaining games based on user tier

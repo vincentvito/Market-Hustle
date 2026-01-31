@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 
 /**
  * GET /api/leaderboard?period=all|daily
- * Returns top 100 scores from game_results joined with profiles.
+ * Returns top 100 scores from game_results.
  * Each user appears only once (their best score within the period).
  */
 export async function GET(request: NextRequest) {
@@ -15,12 +15,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('game_results')
-      .select(`
-        final_net_worth,
-        user_id,
-        created_at,
-        profiles!inner(username)
-      `)
+      .select('final_net_worth, user_id, username, created_at')
       .order('final_net_worth', { ascending: false })
       .limit(500)
 
@@ -38,17 +33,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ entries: [] })
     }
 
-    // Dedupe: keep only the best score per user
+    // Dedupe: keep only the best score per username
     const bestByUser = new Map<string, { username: string; score: number }>()
     for (const row of data ?? []) {
-      const userId = row.user_id
+      const username = row.username ?? 'Unknown'
+      if (username === 'Unknown') continue
       const score = row.final_net_worth
-      const profile = row.profiles as unknown as { username: string }
-      const username = profile?.username ?? 'Unknown'
 
-      const existing = bestByUser.get(userId)
+      const existing = bestByUser.get(username)
       if (!existing || score > existing.score) {
-        bestByUser.set(userId, { username, score })
+        bestByUser.set(username, { username, score })
       }
     }
 

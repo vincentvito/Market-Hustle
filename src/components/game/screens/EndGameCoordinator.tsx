@@ -143,14 +143,10 @@ export function EndGameCoordinator() {
     proTrialGamesRemaining: getProTrialGamesRemaining(),
   }
 
-  // Determine user type and render appropriate view
-  const isGuest = !isLoggedIn
-
+  // AUTH DISABLED: Always show Pro end view for all users
   return (
     <>
-      {isGuest && <GuestEndView {...props} />}
-      {!isGuest && isPro && <ProEndView {...props} />}
-      {!isGuest && !isPro && <MemberEndView {...props} />}
+      <ProEndView {...props} />
 
       {/* Auth Modal (shared across views) */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />

@@ -52,7 +52,8 @@ export const subscriptions = pgTable('subscriptions', {
 // ============================================
 export const gameResults = pgTable('game_results', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
+  username: text('username'),
   gameId: text('game_id').notNull(),
   duration: smallint('duration').notNull(),
   finalNetWorth: integer('final_net_worth').notNull(),
@@ -63,7 +64,8 @@ export const gameResults = pgTable('game_results', {
 }, (table) => [
   index('idx_game_results_user_id').on(table.userId),
   index('idx_game_results_created_at').on(table.createdAt),
-  uniqueIndex('idx_game_results_unique_game').on(table.userId, table.gameId),
+  index('idx_game_results_username').on(table.username),
+  uniqueIndex('idx_game_results_unique_game').on(table.username, table.gameId),
 ])
 
 // ============================================

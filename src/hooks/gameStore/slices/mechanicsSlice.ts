@@ -58,7 +58,7 @@ import {
   incrementGamesPlayed,
   incrementAnonymousGames,
 } from '@/lib/game/persistence'
-import { callIncrementGamesPlayed, callRecordGameEnd, callUseProTrialGame } from '@/lib/game/authBridge'
+import { callIncrementGamesPlayed } from '@/lib/game/authBridge'
 import {
   canStartGame,
   getRemainingGames,
@@ -91,8 +91,9 @@ function saveGameResult(
   daysSurvived: number,
   gameDuration: GameDuration,
   gameOverReason?: string,
-  isLoggedIn?: boolean,
-  isUsingProTrial?: boolean
+  _isLoggedIn?: boolean,
+  _isUsingProTrial?: boolean,
+  username?: string | null
 ): void {
   const userState = loadUserState()
 
@@ -109,20 +110,23 @@ function saveGameResult(
   const updatedState = recordGameEnd(userState, entry, isWin)
   saveUserState(updatedState)
 
-  // Sync to Supabase for logged-in users (fire-and-forget)
-  if (isLoggedIn) {
-    callRecordGameEnd(finalNetWorth, isWin, {
-      gameId: entry.gameId,
-      duration: entry.duration,
-      profitPercent: entry.profitPercent,
-      daysSurvived: entry.daysSurvived,
-      outcome: entry.outcome,
-    })
-
-    // If this was a Pro trial game, consume one trial
-    if (isUsingProTrial) {
-      callUseProTrialGame()
-    }
+  // Sync to Supabase with username (fire-and-forget)
+  if (username) {
+    fetch('/api/profile/record-game', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username,
+        finalNetWorth,
+        gameData: {
+          gameId: entry.gameId,
+          duration: entry.duration,
+          profitPercent: entry.profitPercent,
+          daysSurvived: entry.daysSurvived,
+          outcome: entry.outcome,
+        },
+      }),
+    }).catch((err) => console.error('Error recording game:', err))
   }
 }
 
@@ -1352,15 +1356,15 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       }
 
       // Record game result before showing game over screen
-      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn, get().isUsingProTrial)
+      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn, get().isUsingProTrial, get().username)
       set({ screen: 'gameover', gameOverReason, isUsingProTrial: false })
     } else if (finalNetWorth <= 0) {
       // Regular bankruptcy (net worth exactly 0)
-      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial)
+      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial, get().username)
       set({ screen: 'gameover', gameOverReason: 'BANKRUPT', isUsingProTrial: false })
     } else if (newDay > gameDuration) {
       // Player survived the full duration - WIN!
-      saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial)
+      saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial, get().username)
       set({ screen: 'win', isUsingProTrial: false })
     }
   },
@@ -1925,7 +1929,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         if (totalLiquidatableValue < shortfall) {
           // Can't cover the penalty even with all assets → Bankruptcy
           const { day, gameDuration } = get()
-          saveGameResult(false, 0, day, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial)
+          saveGameResult(false, 0, day, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial, get().username)
           set({
             cash: 0,
             holdings: {},
@@ -1965,7 +1969,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (result.gameOver) {
       const { day, gameDuration } = get()
       const finalNetWorth = get().getNetWorth()
-      saveGameResult(false, finalNetWorth, day, gameDuration, result.gameOverReason || 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial)
+      saveGameResult(false, finalNetWorth, day, gameDuration, result.gameOverReason || 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial, get().username)
       set({
         cash: Math.round(newCash * 100) / 100,
         holdings: newHoldings,

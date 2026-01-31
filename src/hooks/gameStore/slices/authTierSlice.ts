@@ -32,6 +32,9 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
   // Auth state (synced from AuthContext via TierSync)
   isLoggedIn: false,
 
+  // Username (persisted to localStorage)
+  username: null,
+
   // Duration selection (persisted)
   selectedDuration: 30,
 
@@ -84,6 +87,14 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
   // User tier - synced from Supabase profile
   setUserTier: (tier: 'free' | 'pro') => {
     set({ userTier: tier })
+  },
+
+  // Username - persisted to localStorage
+  setUsername: (username: string) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mh_username', username)
+    }
+    set({ username })
   },
 
   // Duration selection - persists to localStorage
@@ -139,8 +150,12 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
     const remaining = getRemainingGames(userState, isLoggedIn)
     const limitType = getLimitType(userState, isLoggedIn)
 
+    // Load username from localStorage
+    const savedUsername = typeof window !== 'undefined' ? localStorage.getItem('mh_username') : null
+
     set({
       userTier: userState.tier,
+      username: savedUsername,
       selectedDuration: userState.selectedDuration ?? 30,
       selectedTheme: validTheme,
       gamesRemaining: remaining,
@@ -179,14 +194,9 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
   setIsUsingProTrial: (isUsing: boolean) => set({ isUsingProTrial: isUsing }),
 
   // Computed: effective tier considering Pro trial
+  // AUTH DISABLED: Always return 'pro' so all users can play pro games
   getEffectiveTier: () => {
-    const { userTier, isLoggedIn, proTrialGamesUsed } = get()
-    // Paid Pro users always get Pro
-    if (userTier === 'pro') return 'pro'
-    // Signed-in free users with trial games remaining get Pro
-    if (isLoggedIn && proTrialGamesUsed < PRO_TRIAL_GAME_LIMIT) return 'pro'
-    // Otherwise free
-    return 'free'
+    return 'pro'
   },
 
   hasProTrialRemaining: () => {

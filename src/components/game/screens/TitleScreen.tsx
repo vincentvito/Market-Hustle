@@ -2,14 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
-import { useUserDetails } from '@/hooks/useUserDetails'
-import { useAuth } from '@/contexts/AuthContext'
-import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
-import { UserDashboard } from '../ui/UserDashboard'
-import { AuthModal } from '@/components/auth/AuthModal'
-import { ANONYMOUS_GAME_LIMIT, REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
@@ -32,19 +26,40 @@ export function TitleScreen() {
   const startGame = useGame(state => state.startGame)
   const setShowSettings = useGame(state => state.setShowSettings)
   const initializeFromStorage = useGame(state => state.initializeFromStorage)
-  const gamesRemaining = useGame(state => state.gamesRemaining)
-  const limitType = useGame(state => state.limitType)
-  const isLoggedIn = useGame(state => state.isLoggedIn)
-  const { isPro } = useUserDetails()
-
-  const { user, loading: authLoading } = useAuth()
-  const { checkout, loading: checkoutLoading, error: checkoutError } = useStripeCheckout()
+  const username = useGame(state => state.username)
+  const setUsername = useGame(state => state.setUsername)
 
   const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>([])
   const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  // Determine user state: anonymous vs logged-in
-  const isAnonymous = !isLoggedIn && !user
+  const [usernameInput, setUsernameInput] = useState('')
+  const [usernameError, setUsernameError] = useState<string | null>(null)
+  const [isEditingUsername, setIsEditingUsername] = useState(false)
+
+  // Sync input with stored username
+  useEffect(() => {
+    if (username) setUsernameInput(username)
+  }, [username])
+
+  const validateAndSetUsername = () => {
+    const value = usernameInput.trim().toLowerCase()
+    if (value.length < 3) {
+      setUsernameError('Min 3 characters')
+      return
+    }
+    if (value.length > 15) {
+      setUsernameError('Max 15 characters')
+      return
+    }
+    if (!/^[a-z0-9_]+$/.test(value)) {
+      setUsernameError('Only letters, numbers, underscores')
+      return
+    }
+    setUsernameError(null)
+    setUsername(value)
+    setIsEditingUsername(false)
+  }
+
+  const hasValidUsername = !!username
 
   // Initialize store from localStorage on mount
   useEffect(() => {
@@ -85,19 +100,6 @@ export function TitleScreen() {
     return () => { cancelled = true }
   }, [])
 
-  // Get appropriate limit message
-  const getLimitMessage = () => {
-    if (isPro) return null
-    if (gamesRemaining === 0) {
-      return limitType === 'anonymous'
-        ? 'Free games used — sign up to continue'
-        : 'Daily limit reached — upgrade for unlimited games'
-    }
-    if (limitType === 'anonymous') {
-      return `${gamesRemaining}/${ANONYMOUS_GAME_LIMIT} free games`
-    }
-    return `${gamesRemaining}/${REGISTERED_FREE_DAILY_LIMIT} games today`
-  }
 
   return (
     <div className="h-full bg-mh-bg overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch">
@@ -121,153 +123,71 @@ export function TitleScreen() {
           BUY LOW. SELL HIGH.<br />DON&apos;T GO BROKE.
         </div>
 
-        {/* ========================= */}
-        {/* STATE-AWARE CONTENT */}
-        {/* ========================= */}
-
-        {/* For logged-in users: Show user dashboard */}
-        {isLoggedIn && !authLoading && (
-          <UserDashboard />
-        )}
-
-        {/* For anonymous users: Show "How to Play" */}
-        {isAnonymous && (
-          <div className="mb-8 w-full max-w-[320px]">
-            <div className="text-mh-text-dim text-sm mb-3 text-center">HOW TO PLAY</div>
-            <div className="text-mh-text-main text-sm leading-relaxed space-y-2 text-center">
-              <div>▸ Buy assets. Sell for profit.</div>
-              <div>▸ News moves markets. Read carefully.</div>
-              <div>▸ Survive to win. Stay above $10K.</div>
-            </div>
+        {/* How to Play */}
+        <div className="mb-8 w-full max-w-[320px]">
+          <div className="text-mh-text-dim text-sm mb-3 text-center">HOW TO PLAY</div>
+          <div className="text-mh-text-main text-sm leading-relaxed space-y-2 text-center">
+            <div>▸ Buy assets. Sell for profit.</div>
+            <div>▸ News moves markets. Read carefully.</div>
+            <div>▸ Survive to win. Stay above $10K.</div>
           </div>
-        )}
+        </div>
 
-        {/* Buttons - side by side for anonymous users */}
-        {isAnonymous ? (
-          <>
-            <div className="flex gap-3 mb-2">
-              {/* PLAY NOW button */}
+        {/* Username Input */}
+        <div className="w-full max-w-[280px] mb-4">
+          {hasValidUsername && !isEditingUsername ? (
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-mh-text-dim text-sm">Playing as</span>
+              <span className="text-mh-accent-blue text-sm font-bold">{username}</span>
               <button
-                onClick={() => startGame()}
-                className="bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
-                  px-6 py-3 text-base font-mono cursor-pointer glow-text
-                  hover:bg-mh-accent-blue/10 active:bg-mh-accent-blue/20 transition-colors"
+                onClick={() => setIsEditingUsername(true)}
+                className="text-mh-text-dim text-xs hover:text-mh-text-main transition-colors cursor-pointer bg-transparent border-none"
               >
-                [ PLAY NOW ]
-              </button>
-
-              {/* SIGN UP button */}
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="bg-transparent border-2 border-mh-profit-green text-mh-profit-green
-                  px-6 py-3 text-base font-mono cursor-pointer
-                  hover:bg-mh-profit-green/10 active:bg-mh-profit-green/20 transition-colors"
-              >
-                [ SIGN UP ]
+                [change]
               </button>
             </div>
-
-            {/* Sub-text under buttons */}
-            <div className="flex gap-3 mb-1 w-full max-w-[280px]">
-              <div className="flex-1 text-center">
-                <div className="text-xs text-mh-text-dim">
-                  Get 5 Free Games
-                </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-mh-text-dim text-xs mb-1">ENTER USERNAME TO PLAY</div>
+              <div className="flex gap-2 w-full">
+                <input
+                  type="text"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') validateAndSetUsername() }}
+                  maxLength={15}
+                  placeholder="your_username"
+                  className="flex-1 bg-transparent border border-mh-border text-mh-text-main text-sm font-mono
+                    px-3 py-2 outline-none focus:border-mh-accent-blue transition-colors placeholder:text-mh-text-dim/50"
+                />
+                <button
+                  onClick={validateAndSetUsername}
+                  className="bg-transparent border border-mh-accent-blue text-mh-accent-blue
+                    px-3 py-2 text-xs font-mono cursor-pointer
+                    hover:bg-mh-accent-blue/10 transition-colors"
+                >
+                  OK
+                </button>
               </div>
-              <div className="flex-1 text-center">
-                <div className="text-xs text-mh-profit-green">
-                  3 Games Every Day
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Single button for logged-in users */}
-            <button
-              onClick={() => startGame()}
-              className="bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
-                px-8 py-3 text-base font-mono cursor-pointer glow-text
-                hover:bg-mh-accent-blue/10 active:bg-mh-accent-blue/20 transition-colors mb-2"
-            >
-              {isPro ? '[ START GAME ]' : '[ PLAY NOW ]'}
-            </button>
-
-            {/* Games Remaining Message */}
-            {!isPro && (
-              <div className={`text-xs mb-1 ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-dim'}`}>
-                {getLimitMessage()}
-              </div>
-            )}
-            {isPro && <div className="mb-1 text-xs text-mh-profit-green">UNLIMITED GAMES</div>}
-          </>
-        )}
-
-        {/* Free vs Pro Comparison (show for anonymous and free registered) */}
-        {!isPro && (
-          <div className="w-full max-w-[320px] mb-8 mt-10">
-            <div className="border border-mh-border rounded-lg overflow-hidden">
-              {/* Header row */}
-              <div className="flex items-center py-2.5 px-3 text-sm font-bold bg-mh-border/20 border-b border-mh-border">
-                <div className="flex-1 text-left text-mh-text-dim"></div>
-                <div className="w-14 text-center text-mh-text-dim">FREE</div>
-                <div className="w-14 text-center text-mh-profit-green glow-green">PRO</div>
-              </div>
-              {/* Feature rows */}
-              {[
-                { feature: '30-day mode', free: true, pro: true },
-                { feature: '45 & 60-day modes', free: false, pro: true },
-                { feature: 'Long positions', free: true, pro: true },
-                { feature: 'Short selling', free: false, pro: true },
-                { feature: 'Margin trading', free: false, pro: true },
-                { feature: 'Statistics', free: false, pro: true },
-                { feature: 'Historical scenarios', free: false, pro: true },
-              ].map((row, i) => (
-                <div key={i} className={`flex items-center py-2.5 px-3 ${i % 2 === 1 ? 'bg-mh-border/10' : ''}`}>
-                  <div className="flex-1 text-mh-text-main text-left text-sm">{row.feature}</div>
-                  <div className="w-14 text-center text-sm">{row.free ? '✓' : '—'}</div>
-                  <div className={`w-14 text-center text-sm ${row.pro ? 'text-mh-profit-green' : ''}`}>
-                    {row.pro ? '✓' : '—'}
-                  </div>
-                </div>
-              ))}
-            </div>
-            {/* Pricing buttons */}
-            <div className="flex flex-col gap-2 mt-4">
-              <button
-                onClick={() => checkout('monthly')}
-                disabled={checkoutLoading}
-                className="w-full py-2.5 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {checkoutLoading ? 'LOADING...' : '$4.99/MONTH'}
-              </button>
-              <button
-                onClick={() => checkout('yearly')}
-                disabled={checkoutLoading}
-                className="w-full py-2.5 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {checkoutLoading ? 'LOADING...' : '$29.99/YEAR — SAVE 50%'}
-              </button>
-              {checkoutError && (
-                <div className="mt-2 text-xs text-mh-loss-red text-center">
-                  {checkoutError}
-                </div>
+              {usernameError && (
+                <div className="text-mh-loss-red text-xs">{usernameError}</div>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Pro users: Manage subscription link */}
-        {isPro && (
-          <div className="mb-8">
-            <button
-              onClick={() => setShowSettings(true)}
-              className="text-xs text-mh-text-dim hover:text-mh-accent-blue transition-colors"
-            >
-              Manage Subscription →
-            </button>
-          </div>
-        )}
+        {/* Play Button */}
+        <button
+          onClick={() => startGame()}
+          disabled={!hasValidUsername}
+          className={`border-2 px-8 py-3 text-base font-mono transition-colors mb-2
+            ${hasValidUsername
+              ? 'border-mh-accent-blue text-mh-accent-blue bg-transparent cursor-pointer glow-text hover:bg-mh-accent-blue/10 active:bg-mh-accent-blue/20'
+              : 'border-mh-border text-mh-text-dim bg-transparent cursor-not-allowed opacity-50'
+            }`}
+        >
+          [ PLAY NOW ]
+        </button>
 
         {/* Daily Leaderboard */}
         <div className="w-full max-w-[320px] mb-6">
@@ -334,8 +254,6 @@ export function TitleScreen() {
         </div>
       </div>
 
-      {/* Auth Modal */}
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   )
 }
