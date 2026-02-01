@@ -93,22 +93,9 @@ export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
 }
 
 // Get remaining games based on user tier
-// isLoggedIn should be passed from auth context
+// AUTH DISABLED: Always return unlimited
 export function getRemainingGames(state: UserState, isLoggedIn: boolean): number {
-  // Pro users have unlimited games
-  if (state.tier === 'pro') return Infinity
-
-  // Anonymous users: remaining out of 10 lifetime
-  if (!isLoggedIn) {
-    return Math.max(0, ANONYMOUS_GAME_LIMIT - state.anonymousGamesPlayed)
-  }
-
-  // Registered free users: remaining out of 3 daily
-  const today = getTodayDateString()
-  if (state.lastPlayedDate !== today) {
-    return REGISTERED_FREE_DAILY_LIMIT
-  }
-  return Math.max(0, REGISTERED_FREE_DAILY_LIMIT - state.gamesPlayedToday)
+  return Infinity
 }
 
 // Get the limit type for display purposes

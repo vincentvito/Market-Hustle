@@ -1,5 +1,7 @@
 'use client'
 
+import { useState, useRef } from 'react'
+import { toPng } from 'html-to-image'
 import type { EndGameProps } from './types'
 
 /**
@@ -23,6 +25,8 @@ export function ProEndView({
   onPlayAgain,
   lossBreakdown,
 }: EndGameProps) {
+  const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
+  const resultsRef = useRef<HTMLDivElement>(null)
   const isWin = outcome === 'win'
 
   // Color scheme based on outcome
@@ -32,6 +36,8 @@ export function ProEndView({
 
   return (
     <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center">
+      {/* Shareable results card */}
+      <div ref={resultsRef} className="bg-mh-bg flex flex-col items-center p-6 md:p-10 text-center">
       {/* Outcome Header */}
       <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
       <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
@@ -55,6 +61,9 @@ export function ProEndView({
         <div className={`text-sm md:text-base mt-1 ${profitColor}`}>
           ({profitAmount >= 0 ? '+' : ''}${profitAmount.toLocaleString()})
         </div>
+      </div>
+
+      <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>
 
       {/* Detailed breakdown for margin-related game overs (Pro exclusive) */}
@@ -105,6 +114,47 @@ export function ProEndView({
           hover:bg-mh-accent-blue/10 transition-colors"
       >
         [ PLAY AGAIN ]
+      </button>
+
+      {/* Share Results Button */}
+      <button
+        onClick={async () => {
+          if (!resultsRef.current || shareState === 'sharing') return
+          setShareState('sharing')
+
+          try {
+            const dataUrl = await toPng(resultsRef.current, { pixelRatio: 2 })
+            const res = await fetch(dataUrl)
+            const blob = await res.blob()
+            const file = new File([blob], 'market-hustle-results.png', { type: 'image/png' })
+
+            const text = [
+              'Market Hustle \u{1F4C8}',
+              `${isWin ? '\u{1F3C6} MARKET CLOSED' : '\u{1F480} ' + message.title}`,
+              `Survived ${daysSurvived}/${gameDuration} days`,
+              `Can you beat my score? markethustle.com`,
+            ].join('\n')
+
+            if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare?.({ files: [file] })) {
+              await navigator.share({ files: [file], text })
+            } else {
+              // Fallback: download the image
+              const a = document.createElement('a')
+              a.href = dataUrl
+              a.download = 'market-hustle-results.png'
+              a.click()
+            }
+          } catch {
+            // Share cancelled or failed
+          } finally {
+            setShareState('idle')
+          }
+        }}
+        className="mt-3 bg-transparent border border-mh-border text-mh-text-dim
+          px-8 py-3 text-sm font-mono cursor-pointer
+          hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
+      >
+        {shareState === 'sharing' ? '[ CAPTURING... ]' : shareState === 'copied' ? '[ COPIED! ]' : '[ SHARE RESULTS ]'}
       </button>
     </div>
   )

@@ -1,46 +1,45 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/server'
+import { db } from '@/db'
+import { gameResults } from '@/db/schema'
+import { desc, asc, gte, sql } from 'drizzle-orm'
 
 /**
- * GET /api/leaderboard?period=all|daily
+ * GET /api/leaderboard?period=all|daily|worst
  * Returns top 100 scores from game_results.
  * Each user appears only once (their best score within the period).
  */
 export async function GET(request: NextRequest) {
   try {
     const period = request.nextUrl.searchParams.get('period') ?? 'all'
-    const supabase = createAdminClient()
-
     const isWorst = period === 'worst'
 
-    let query = supabase
-      .from('game_results')
-      .select('final_net_worth, user_id, username, created_at')
-      .order('final_net_worth', { ascending: isWorst })
-      .limit(500)
-
-    // For daily, filter to today's results (UTC)
+    // Build conditions
+    const conditions = []
     if (period === 'daily') {
       const today = new Date()
       today.setUTCHours(0, 0, 0, 0)
-      query = query.gte('created_at', today.toISOString())
+      conditions.push(gte(gameResults.createdAt, today))
     }
 
-    const { data, error } = await query
-
-    if (error) {
-      console.error('Leaderboard query error:', error)
-      return NextResponse.json({ entries: [] })
-    }
+    const data = await db
+      .select({
+        username: gameResults.username,
+        finalNetWorth: gameResults.finalNetWorth,
+        createdAt: gameResults.createdAt,
+      })
+      .from(gameResults)
+      .where(conditions.length > 0 ? conditions[0] : undefined)
+      .orderBy(isWorst ? asc(gameResults.finalNetWorth) : desc(gameResults.finalNetWorth))
+      .limit(500)
 
     // Dedupe: keep only the best score per username
     const bestByUser = new Map<string, { username: string; score: number }>()
-    for (const row of data ?? []) {
-      const username = row.username ?? 'Unknown'
-      if (username === 'Unknown') continue
-      const score = row.final_net_worth
+    for (const row of data) {
+      const username = row.username
+      if (!username) continue
+      const score = row.finalNetWorth
 
       const existing = bestByUser.get(username)
       if (!existing || (isWorst ? score < existing.score : score > existing.score)) {
@@ -48,7 +47,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Sort by score desc and take top 100
+    // Sort by score and take top 100
     const entries = Array.from(bestByUser.values())
       .sort((a, b) => isWorst ? a.score - b.score : b.score - a.score)
       .slice(0, 100)

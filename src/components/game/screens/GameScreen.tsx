@@ -14,6 +14,8 @@ import { LiquidationSelectionOverlay } from '../ui/LiquidationSelectionOverlay'
 import { InvestmentResultOverlay } from '../ui/InvestmentResultOverlay'
 import { AssetGrid } from '../trading/AssetGrid'
 import { TradeSheet } from '../trading/TradeSheet'
+import { HowToPlayModal, isTutorialSeen, markTutorialSeen } from '../ui/HowToPlayModal'
+import { useState, useEffect } from 'react'
 
 export function GameScreen() {
   const {
@@ -28,6 +30,15 @@ export function GameScreen() {
     shortPositions,
     prices,
   } = useGame()
+  const [showHelp, setShowHelp] = useState(false)
+
+  useEffect(() => {
+    if (!isTutorialSeen()) {
+      setShowHelp(true)
+      markTutorialSeen()
+    }
+  }, [])
+
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
@@ -62,6 +73,7 @@ export function GameScreen() {
 
   return (
     <div className="bg-mh-bg flex flex-col min-h-full relative">
+      {showHelp && <HowToPlayModal onClose={() => setShowHelp(false)} />}
       <Header />
       <StatsBar />
       <PortfolioOverlay onSelectAsset={handlePortfolioAssetSelect} />
@@ -95,6 +107,13 @@ export function GameScreen() {
         className={`p-3 bg-mh-bg flex items-center gap-3 sticky bottom-0 z-50 ${isModern3 ? '' : 'border-t border-mh-border'}`}
         style={isModern3 ? { boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
       >
+        <button
+          onClick={() => setShowHelp(true)}
+          className="w-12 h-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded text-base font-mono"
+          title="How to Play"
+        >
+          ?
+        </button>
         <button
           onClick={() => setShowSettings(true)}
           className="w-12 h-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded text-xl"

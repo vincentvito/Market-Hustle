@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
           daysSurvived: gameData.daysSurvived,
           outcome: gameData.outcome,
         })
+        .onConflictDoNothing()
     }
 
     return NextResponse.json({ success: true })

@@ -74,15 +74,22 @@ export function TitleScreen() {
     initializeFromStorage()
   }, [initializeFromStorage])
 
-  // Fetch daily + all-time leaderboards from API, fall back to generated data
+  // Fetch leaderboards from API, fall back to generated data
+  // Runs every time TitleScreen mounts (e.g. after finishing a game)
+  // Uses cache-busting to ensure fresh data after game results are recorded
   useEffect(() => {
     let cancelled = false
     async function fetchLeaderboards() {
       try {
+        // Small delay to allow the fire-and-forget record-game POST to complete
+        await new Promise(resolve => setTimeout(resolve, 500))
+        if (cancelled) return
+
+        const cacheBust = `&_t=${Date.now()}`
         const [dailyRes, allTimeRes, worstRes] = await Promise.all([
-          fetch('/api/leaderboard?period=daily'),
-          fetch('/api/leaderboard?period=all'),
-          fetch('/api/leaderboard?period=worst'),
+          fetch(`/api/leaderboard?period=daily${cacheBust}`, { cache: 'no-store' }),
+          fetch(`/api/leaderboard?period=all${cacheBust}`, { cache: 'no-store' }),
+          fetch(`/api/leaderboard?period=worst${cacheBust}`, { cache: 'no-store' }),
         ])
         const [daily, allTime, worst] = await Promise.all([dailyRes.json(), allTimeRes.json(), worstRes.json()])
         if (!cancelled) {

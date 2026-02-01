@@ -109,9 +109,7 @@ export function EndGameCoordinator() {
 
   // Action handlers
   const handlePlayAgain = () => {
-    if (canPlayAgain) {
-      startGame()
-    }
+    startGame()
   }
 
   const handleCheckout = (plan: 'monthly' | 'yearly') => {
