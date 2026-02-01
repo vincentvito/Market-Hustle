@@ -324,8 +324,8 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
 
       {/* Sheet - bottom sheet on mobile, centered modal on desktop */}
       <div
-        className={`absolute bottom-0 left-0 right-0 z-50 animate-slide-up overflow-y-auto
-          md:fixed md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:bottom-auto md:w-[480px] md:max-h-[80vh] md:rounded-xl md:animate-none
+        className={`fixed bottom-0 left-0 right-0 z-50 animate-slide-up overflow-y-auto
+          md:left-1/2 md:-translate-x-1/2 md:w-[480px] md:max-h-[80vh] md:rounded-t-xl
           ${isBloomberg
             ? 'bg-black border-t-2 border-[#ff8c00] rounded-none md:border-2 md:border-[#ff8c00]'
             : isModern3

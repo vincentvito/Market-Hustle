@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { useAuth } from '@/contexts/AuthContext'
-import { ACHIEVEMENTS } from '@/lib/game/achievements'
 import { loadUserState } from '@/lib/game/persistence'
 import type { UserState } from '@/lib/game/userState'
 import { AuthModal } from '@/components/auth/AuthModal'
@@ -29,7 +28,7 @@ function getStreakEmoji(streak: number): string {
 }
 
 export function SettingsPanel() {
-  const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme, getEffectiveTier } = useGame()
+  const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme } = useGame()
   const { user, profile, signOut, loading: authLoading, updateSettings } = useAuth()
 
   // Wrapper to sync settings to Supabase when changed
@@ -46,9 +45,9 @@ export function SettingsPanel() {
       updateSettings({ theme })
     }
   }
-  const [achievementsExpanded, setAchievementsExpanded] = useState(false)
   const [optionsExpanded, setOptionsExpanded] = useState(false)
   const [historicalExpanded, setHistoricalExpanded] = useState(false)
+  const [personalBestExpanded, setPersonalBestExpanded] = useState(false)
   const [userStats, setUserStats] = useState<UserState | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
 
@@ -67,11 +66,8 @@ export function SettingsPanel() {
   const winRate = gamesPlayed > 0 ? Math.round((winCount / gamesPlayed) * 100) : 0
   const winStreak = userStats?.winStreak ?? 0
 
-  // Achievements not tracked yet - show empty for now
-  const unlockedAchievements: string[] = []
-  const unlockedCount = unlockedAchievements.length
-  const totalCount = ACHIEVEMENTS.length
-  const isPro = getEffectiveTier() === 'pro'
+  // Personal best history for "compete against yourself" leaderboard
+  const gameHistory = userStats?.gameHistory ?? []
 
   if (!showSettings) return null
 
@@ -183,107 +179,114 @@ export function SettingsPanel() {
               </div>
             </button>
 
-            {/* 45 Days - Premium */}
+            {/* 45 Days */}
             <button
-              onClick={() => {
-                if (isPro) handleDurationChange(45)
-              }}
-              className={`w-full p-3 rounded border text-left ${
-                isPro
-                  ? selectedDuration === 45
-                    ? 'border-mh-accent-blue bg-mh-accent-blue/10 cursor-pointer'
-                    : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim cursor-pointer'
-                  : 'border-mh-border bg-[#0a1015] opacity-60 cursor-not-allowed'
+              onClick={() => handleDurationChange(45)}
+              className={`w-full p-3 rounded border text-left cursor-pointer ${
+                selectedDuration === 45
+                  ? 'border-mh-accent-blue bg-mh-accent-blue/10'
+                  : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <div className={`font-bold ${selectedDuration === 45 && isPro ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
+                  <div className={`font-bold ${selectedDuration === 45 ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
                     45 DAYS — EXTENDED
                   </div>
                   <div className="text-mh-text-dim text-xs mt-0.5">
                     More time to build an empire
                   </div>
                 </div>
-                {!isPro ? (
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
-                ) : selectedDuration === 45 ? (
+                {selectedDuration === 45 && (
                   <div className="text-mh-accent-blue text-lg">●</div>
-                ) : null}
+                )}
               </div>
             </button>
 
-            {/* 60 Days - Premium */}
+            {/* 60 Days */}
             <button
-              onClick={() => {
-                if (isPro) handleDurationChange(60)
-              }}
-              className={`w-full p-3 rounded border text-left ${
-                isPro
-                  ? selectedDuration === 60
-                    ? 'border-mh-accent-blue bg-mh-accent-blue/10 cursor-pointer'
-                    : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim cursor-pointer'
-                  : 'border-mh-border bg-[#0a1015] opacity-60 cursor-not-allowed'
+              onClick={() => handleDurationChange(60)}
+              className={`w-full p-3 rounded border text-left cursor-pointer ${
+                selectedDuration === 60
+                  ? 'border-mh-accent-blue bg-mh-accent-blue/10'
+                  : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <div className={`font-bold ${selectedDuration === 60 && isPro ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
+                  <div className={`font-bold ${selectedDuration === 60 ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
                     60 DAYS — MARATHON
                   </div>
                   <div className="text-mh-text-dim text-xs mt-0.5">
                     True market mastery
                   </div>
                 </div>
-                {!isPro ? (
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">🔒 PRO</div>
-                ) : selectedDuration === 60 ? (
+                {selectedDuration === 60 && (
                   <div className="text-mh-accent-blue text-lg">●</div>
-                ) : null}
+                )}
               </div>
             </button>
           </div>
         </div>
 
-        {/* 4. MARGIN TRADING (PRO Features) */}
-        <div className="p-4 border-b border-mh-border">
-          <div className="text-mh-text-dim text-xs font-bold mb-3 tracking-wider">
-            📊 MARGIN TRADING
-          </div>
-          <div className="space-y-2">
-            {/* Short Stocks - PRO */}
-            <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-mh-text-bright">
-                    SHORT STOCKS
-                  </div>
-                  <div className="text-mh-text-dim text-xs mt-0.5">
-                    Profit when prices fall
-                  </div>
-                </div>
-                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">{isPro ? 'PRO' : '🔒 PRO'}</div>
-              </div>
+        {/* 4. PERSONAL LEADERBOARD - Compete against yourself */}
+        <div className="border-b border-mh-border">
+          <button
+            onClick={() => setPersonalBestExpanded(!personalBestExpanded)}
+            className="w-full p-4 flex items-center justify-between cursor-pointer bg-transparent border-none text-left"
+          >
+            <div className="text-mh-text-dim text-xs font-bold tracking-wider">
+              🏅 PERSONAL BESTS
             </div>
-
-            {/* Leverage Trading - PRO */}
-            <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-mh-text-bright">
-                    2X, 5X, 10X LEVERAGE
-                  </div>
-                  <div className="text-mh-text-dim text-xs mt-0.5">
-                    Amplify your gains (and losses)
-                  </div>
-                </div>
-                <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded">{isPro ? 'PRO' : '🔒 PRO'}</div>
-              </div>
+            <div className="text-mh-text-dim text-sm">
+              {personalBestExpanded ? '▲' : '▼'}
             </div>
-          </div>
+          </button>
+          {personalBestExpanded && (
+            <div className="px-4 pb-4">
+              {gameHistory.length === 0 ? (
+                <div className="text-mh-text-dim text-xs text-center py-4">
+                  Play some games to see your history here!
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-[10px] text-mh-text-dim font-bold tracking-wider mb-2">
+                    <span>#</span>
+                    <span>NET WORTH</span>
+                    <span>DURATION</span>
+                    <span>RESULT</span>
+                  </div>
+                  {[...gameHistory]
+                    .sort((a, b) => b.finalNetWorth - a.finalNetWorth)
+                    .slice(0, 10)
+                    .map((game, i) => (
+                      <div
+                        key={i}
+                        className={`flex items-center justify-between text-xs p-2 rounded ${
+                          i === 0 ? 'bg-yellow-500/10 border border-yellow-500/30' : 'bg-[#0a1015]'
+                        }`}
+                      >
+                        <span className={`font-bold ${i === 0 ? 'text-yellow-500' : 'text-mh-text-dim'}`}>
+                          {i === 0 ? '👑' : `#${i + 1}`}
+                        </span>
+                        <span className="font-bold text-mh-text-bright">
+                          {formatCurrency(game.finalNetWorth)}
+                        </span>
+                        <span className="text-mh-text-dim">
+                          {game.duration ?? 30}d
+                        </span>
+                        <span className={game.finalNetWorth >= 10000 ? 'text-mh-profit-green' : 'text-mh-loss-red'}>
+                          {game.finalNetWorth >= 10000 ? 'W' : 'L'}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* 5. HISTORICAL GAMES (PRO - Collapsible) */}
+        {/* 5. HISTORICAL GAMES (Collapsible) */}
         <div className="border-b border-mh-border">
           <button
             onClick={() => setHistoricalExpanded(!historicalExpanded)}
@@ -309,7 +312,7 @@ export function SettingsPanel() {
           {historicalExpanded && (
             <div className="px-4 pb-4 space-y-2">
               {/* The Roaring 20s */}
-              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -319,12 +322,12 @@ export function SettingsPanel() {
                       Ride the first retail stock boom (RCA, Steel, Rails) and exit before Black Tuesday
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">COMING SOON</div>
                 </div>
               </div>
 
               {/* WWII */}
-              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -334,12 +337,12 @@ export function SettingsPanel() {
                       Command economy trading with price caps and rationing
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">COMING SOON</div>
                 </div>
               </div>
 
               {/* 80s */}
-              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -349,12 +352,12 @@ export function SettingsPanel() {
                       Hostile takeovers and junk bonds before Black Monday
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">COMING SOON</div>
                 </div>
               </div>
 
               {/* Dot-Com */}
-              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -364,12 +367,12 @@ export function SettingsPanel() {
                       Speculate on zero-revenue tech before the NASDAQ collapse
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">COMING SOON</div>
                 </div>
               </div>
 
               {/* 2008 */}
-              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] ${!isPro ? 'opacity-60' : ''}`}>
+              <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-bold text-mh-text-bright text-sm">
@@ -379,54 +382,14 @@ export function SettingsPanel() {
                       Short seller&apos;s dream — bet against Lehman, Bear Stearns
                     </div>
                   </div>
-                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">{isPro ? 'PRO' : '🔒 PRO'}</div>
+                  <div className="text-yellow-500 text-xs font-bold px-2 py-1 bg-yellow-500/10 rounded shrink-0 ml-2">COMING SOON</div>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* 6. ACHIEVEMENTS (Collapsible) */}
-        <div className="border-b border-mh-border">
-          <button
-            onClick={() => setAchievementsExpanded(!achievementsExpanded)}
-            className="w-full p-4 flex items-center justify-between cursor-pointer bg-transparent border-none text-left"
-          >
-            <div className="text-mh-text-dim text-xs font-bold tracking-wider">
-              🏆 ACHIEVEMENTS ({unlockedCount}/{totalCount})
-            </div>
-            <div className="text-mh-text-dim text-sm">
-              {achievementsExpanded ? '▲' : '▼'}
-            </div>
-          </button>
-          {achievementsExpanded && (
-            <div className="px-4 pb-4">
-              {/* Achievement Grid */}
-              <div className="flex flex-wrap gap-2 mb-3">
-                {ACHIEVEMENTS.map(achievement => {
-                  const isUnlocked = unlockedAchievements.includes(achievement.id)
-                  return (
-                    <div
-                      key={achievement.id}
-                      className={`
-                        w-8 h-8 flex items-center justify-center text-lg rounded
-                        ${isUnlocked
-                          ? 'bg-[#1a2a3a] cursor-help'
-                          : 'bg-[#0a0d10] opacity-30 grayscale'
-                        }
-                      `}
-                      title={isUnlocked ? `${achievement.name}: ${achievement.description}` : '???'}
-                    >
-                      {achievement.emoji}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 5. GAME OPTIONS (Collapsible) */}
+        {/* 6. GAME OPTIONS (Collapsible) */}
         <div className="border-b border-mh-border">
           <button
             onClick={() => setOptionsExpanded(!optionsExpanded)}
