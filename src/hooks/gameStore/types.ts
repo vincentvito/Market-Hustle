@@ -157,6 +157,12 @@ export interface MechanicsSlice extends GameState {
   buyLuxuryAsset: (assetId: LuxuryAssetId) => void
   sellLuxuryAsset: (assetId: LuxuryAssetId) => void
 
+  // Portfolio navigation state (for clicking assets in portfolio)
+  pendingLifestyleAssetId: string | null
+  pendingLuxuryAssetId: LuxuryAssetId | null
+  setPendingLifestyleAsset: (assetId: string | null) => void
+  setPendingLuxuryAsset: (assetId: LuxuryAssetId | null) => void
+
   // Computed
   getNetWorth: () => number
   getPortfolioValue: () => number

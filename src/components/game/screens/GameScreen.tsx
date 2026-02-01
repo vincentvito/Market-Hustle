@@ -2,6 +2,7 @@
 
 import { useGame } from '@/hooks/useGame'
 import { ASSETS } from '@/lib/game/assets'
+import type { LuxuryAssetId } from '@/lib/game/types'
 import { Header } from '../ui/Header'
 import { StatsBar } from '../ui/StatsBar'
 import { NewsPanel } from '../ui/NewsPanel'
@@ -27,6 +28,8 @@ export function GameScreen() {
     leveragedPositions,
     shortPositions,
     prices,
+    setPendingLifestyleAsset,
+    setPendingLuxuryAsset,
   } = useGame()
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
@@ -55,6 +58,18 @@ export function GameScreen() {
     selectAsset(assetId)
   }
 
+  // Handler for clicking a lifestyle asset in portfolio
+  const handlePortfolioLifestyleSelect = (assetId: string) => {
+    setShowPortfolio(false)
+    setPendingLifestyleAsset(assetId)
+  }
+
+  // Handler for clicking a luxury asset in portfolio
+  const handlePortfolioLuxurySelect = (assetId: LuxuryAssetId) => {
+    setShowPortfolio(false)
+    setPendingLuxuryAsset(assetId)
+  }
+
   // Get selected asset object
   const selectedAsset = selectedAssetId
     ? ASSETS.find(a => a.id === selectedAssetId)
@@ -64,7 +79,11 @@ export function GameScreen() {
     <div className="bg-mh-bg flex flex-col min-h-full relative">
       <Header />
       <StatsBar />
-      <PortfolioOverlay onSelectAsset={handlePortfolioAssetSelect} />
+      <PortfolioOverlay
+        onSelectAsset={handlePortfolioAssetSelect}
+        onSelectLifestyle={handlePortfolioLifestyleSelect}
+        onSelectLuxury={handlePortfolioLuxurySelect}
+      />
       <NewsDetailOverlay />
       <StartupOfferOverlay />
       <PEExitOfferOverlay />

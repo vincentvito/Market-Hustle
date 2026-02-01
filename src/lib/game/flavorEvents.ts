@@ -14,7 +14,10 @@ export const FLAVOR_EVENTS: FlavorEvent[] = [
   { headline: "JEFF BEZOS SPOTTED PARTYING IN MIAMI", effects: {} },
   { headline: "RIHANNA LAUNCHES COFFEE-BASED SKINCARE LINE", effects: { coffee: 0.15 } },
   { headline: "STUDY - LOOKING AT GOLD REDUCES ANXIETY", effects: { gold: 0.08 } },
-  { headline: "GENZ REPORT - DRINKING IS BACK", effects: { coffee: -0.05, emerging: 0.03 } },
+  { headline: "GENZ REPORT - DRINKING IS BACK", effects: { coffee: -0.05, emerging: 0.03 } }, // Also boosts Iron Oak via LIFESTYLE_EFFECTS
+  { headline: "CRAFT BEER RENAISSANCE - MILLENNIALS DITCH HARD SELTZER", effects: { coffee: -0.03 } }, // Boosts Iron Oak via LIFESTYLE_EFFECTS
+  { headline: "CHIANTI CLASSICO WINS WORLD'S BEST WINE - PRICES SURGE", effects: { emerging: 0.02 } }, // Boosts Tenuta via LIFESTYLE_EFFECTS
+  { headline: "ITALIAN WINE EXPORTS HIT ALL-TIME HIGH", effects: {} }, // Boosts Tenuta via LIFESTYLE_EFFECTS
   { headline: "REPORT - FENTANYL MIGHT CURE DEPRESSION", effects: { biotech: 0.12 } },
   { headline: "TAYLOR SWIFT PROMOTES COFFEE DIET ON INSTAGRAM", effects: { coffee: 0.25 } },
   { headline: "JIM CRAMER SAYS TO SELL", effects: { nasdaq: 0.10 } },
@@ -25,7 +28,7 @@ export const FLAVOR_EVENTS: FlavorEvent[] = [
   { headline: "HEDGE FUND MANAGER SEEN CRYING IN LAMBO", effects: {} },
   { headline: "MILLENNIAL HOMEBUYERS GIVE UP, BUY CRYPTO INSTEAD", effects: { btc: 0.08, altcoins: 0.10 } },
   { headline: "POLYMARKET WHALES BETTING ON ASTEROID IMPACT", effects: { gold: 0.05 } },
-  { headline: "POLAR BEARS EXTINCT - BULLISH FOR OIL", effects: { oil: -0.05 } },
+  { headline: "POLAR BEARS EXTINCT - BULLISH FOR OIL", effects: { oil: 0.05 } },
   { headline: "JIM CRAMER SAYS TO BUY", effects: { nasdaq: -0.08 } },
   { headline: "ELON MUSK CLAIMS GDP WILL GROW 100X THANKS TO HUMANOID ROBOTS", effects: { tesla: 0.12 } },
   { headline: "JEFF BEZOS SPOTTED PARTYING IN SAINT-TROPEZ", effects: {} },

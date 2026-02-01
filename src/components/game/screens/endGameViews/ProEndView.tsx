@@ -1,6 +1,7 @@
 'use client'
 
 import type { EndGameProps } from './types'
+import { formatNetWorth, formatCompact } from '@/lib/utils/formatMoney'
 
 /**
  * ProEndView - End-game screen for Pro-tier users.
@@ -47,13 +48,13 @@ export function ProEndView({
       {/* Final Net Worth */}
       <div className="border border-mh-border p-6 mb-4 min-w-[240px]">
         <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
-        <div className={`text-4xl mb-4 ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
+        <div className={`${formatNetWorth(netWorth).sizeClass} mb-4 ${netWorthColor}`}>{formatNetWorth(netWorth).text}</div>
         <div className={`text-lg ${profitColor}`}>
           {profitAmount >= 0 ? '+' : ''}
           {profitPercent.toFixed(1)}% RETURN
         </div>
         <div className={`text-sm mt-1 ${profitColor}`}>
-          ({profitAmount >= 0 ? '+' : ''}${profitAmount.toLocaleString()})
+          ({profitAmount >= 0 ? '+' : ''}{formatCompact(profitAmount)})
         </div>
       </div>
 
@@ -71,7 +72,7 @@ export function ProEndView({
                     {p.leverage}x {p.name}
                   </span>
                   <span>
-                    ${p.pl.toLocaleString()}
+                    {formatCompact(p.pl)}
                     {p.isUnderwater ? ' ⚠️' : ''}
                   </span>
                 </div>
@@ -85,14 +86,14 @@ export function ProEndView({
               {lossBreakdown.shortLosses.map((p, i) => (
                 <div key={i} className="text-sm text-mh-loss-red flex justify-between">
                   <span>SHORT {p.name}</span>
-                  <span>${p.pl.toLocaleString()}</span>
+                  <span>{formatCompact(p.pl)}</span>
                 </div>
               ))}
             </div>
           )}
 
           <div className="text-mh-text-dim text-xs pt-2 border-t border-mh-border mt-2">
-            Cash remaining: ${lossBreakdown.cashRemaining.toLocaleString()}
+            Cash remaining: {formatCompact(lossBreakdown.cashRemaining)}
           </div>
         </div>
       )}

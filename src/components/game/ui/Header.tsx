@@ -1,10 +1,12 @@
 'use client'
 
 import { useGame } from '@/hooks/useGame'
+import { formatNetWorth } from '@/lib/utils/formatMoney'
 
 export function Header() {
   const { day, gameDuration, getNetWorth, selectedTheme } = useGame()
   const netWorth = getNetWorth()
+  const { text: netWorthText, sizeClass: netWorthSize } = formatNetWorth(netWorth)
   const isModern3 = selectedTheme === 'modern3'
   const isBloomberg = selectedTheme === 'bloomberg'
 
@@ -42,12 +44,12 @@ export function Header() {
       <div className="text-right">
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>NET WORTH</div>
         <div
-          className={`text-3xl font-bold ${
+          className={`${netWorthSize} font-bold ${
             isBloomberg ? '' : netWorth >= 10000 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
           }`}
           style={isBloomberg ? getBloombergNetWorthStyle() : getNetWorthStyle()}
         >
-          ${netWorth.toLocaleString()}
+          {netWorthText}
         </div>
       </div>
     </div>

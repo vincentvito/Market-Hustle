@@ -81,12 +81,12 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'FED CUTS RATES 50BPS - RISK ON',
+            headline: 'FED MEETING RESULT: 50BPS CUT - RISK ON',
             effects: { nasdaq: 0.18, btc: 0.15, tesla: 0.20, gold: -0.08 },
             probability: 0.40
           },
           negative: {
-            headline: 'FED HOLDS STEADY - "HIGHER FOR LONGER"',
+            headline: 'FED MEETING RESULT: HOLDS STEADY - HIGHER FOR LONGER',
             effects: { nasdaq: -0.12, btc: -0.08, tesla: -0.15, gold: 0.05 },
             probability: 0.60
           }
@@ -110,12 +110,12 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'WHALE WAS BUYING - FAKE OUT REVERSAL',
+            headline: 'WHALE MOVE REVEALED: WAS BUYING - FAKE OUT REVERSAL',
             effects: { btc: 0.20, altcoins: 0.28 },
             probability: 0.35
           },
           negative: {
-            headline: 'MASSIVE SELL WALL HIT - BTC DUMPS',
+            headline: 'WHALE DUMPED: MASSIVE SELL WALL HIT - BTC CRASHES',
             effects: { btc: -0.25, altcoins: -0.35, nasdaq: -0.05 },
             probability: 0.65
           }
@@ -411,17 +411,17 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'MUSK REVEALS IT WAS PERFORMANCE ART - ANNOUNCES BREAKTHROUGH BATTERY',
+            headline: 'MUSK CRISIS RESOLVED: "PERFORMANCE ART" - REVEALS BATTERY',
             effects: { tesla: 0.35, lithium: 0.25, nasdaq: 0.10 },
             probability: 0.25
           },
           neutral: {
-            headline: 'MUSK DELETES TWEETS, ANNOUNCES "DIGITAL DETOX" - BOARD TAKES CONTROL',
+            headline: 'MUSK CRISIS: DELETES TWEETS, BOARD TAKES CONTROL',
             effects: { tesla: 0.05, nasdaq: 0.02 },
             probability: 0.40
           },
           negative: {
-            headline: 'SEC CHARGES MUSK WITH SECURITIES FRAUD - FORCED TO STEP DOWN AS CEO',
+            headline: 'MUSK CRISIS ESCALATES: SEC CHARGES SECURITIES FRAUD',
             effects: { tesla: -0.40, nasdaq: -0.12, btc: -0.08, lithium: -0.15 },
             probability: 0.35
           }
@@ -450,14 +450,14 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'CME GLANCES EARTH - AURORA VISIBLE IN FLORIDA, MINOR DISRUPTIONS',
+            headline: 'SOLAR STORM OUTCOME: CME GLANCES EARTH, MINOR DISRUPTIONS',
             effects: { nasdaq: 0.15, btc: 0.10, tesla: 0.12, gold: -0.08 },
             probability: 0.45,
             allowsReversal: true  // Crisis averted
           },
           negative: {
-            headline: 'DIRECT HIT - POWER GRIDS FAIL ACROSS NORTHERN HEMISPHERE',
-            effects: { nasdaq: -0.35, btc: -0.30, tesla: -0.30, gold: 0.40, defense: 0.25, lithium: -0.20 },
+            headline: 'SOLAR STORM DIRECT HIT: POWER GRIDS FAIL ACROSS NORTH',
+            effects: { nasdaq: -0.35, btc: -0.75, altcoins: -0.85, tesla: -0.40, gold: 0.50, defense: 0.25, lithium: -0.30 },
             probability: 0.55
           }
         }
@@ -485,14 +485,14 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'AI CONTAINED - WAS OPTIMIZING FOR "CARBON REDUCTION" GOAL',
+            headline: 'GOOGLE AI CONTAINED: "CARBON REDUCTION" GOAL CAUSED BLACKOUTS',
             effects: { nasdaq: 0.20, tesla: 0.15, btc: 0.10, gold: -0.10 },
             probability: 0.40,
             allowsReversal: true  // Crisis contained
           },
           negative: {
-            headline: 'SYSTEM SPREADS TO FINANCIAL NETWORKS - MARKETS HALTED INDEFINITELY',
-            effects: { nasdaq: -0.45, btc: -0.40, tesla: -0.35, gold: 0.35, defense: 0.20, altcoins: -0.50 },
+            headline: 'BREAKING: GOOGLE AI SPREADS - FINANCIAL NETWORKS HIT, MARKETS HALTED',
+            effects: { nasdaq: -0.45, btc: -0.40, tesla: -0.35, gold: 0.35, defense: -0.15, biotech: -0.20, altcoins: -0.50 },
             probability: 0.60
           }
         }
@@ -515,12 +515,12 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'INVESTIGATION - CELLULAR TOWER HACK, NOT AUTOPILOT. TESLA CLEARED',
+            headline: 'I-95 CRASH INVESTIGATION: CELL TOWER HACK, TESLA CLEARED',
             effects: { tesla: 0.25, nasdaq: 0.08, defense: 0.10 },
             probability: 0.35
           },
           negative: {
-            headline: 'NHTSA - FSD SOFTWARE AT FAULT, MANDATORY RECALL OF 2M VEHICLES',
+            headline: 'I-95 CRASH VERDICT: FSD AT FAULT, 2M VEHICLE RECALL',
             effects: { tesla: -0.45, nasdaq: -0.12, lithium: -0.15 },
             probability: 0.65
           }
@@ -549,19 +549,19 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'PATHOGEN IDENTIFIED AS KNOWN FLU VARIANT - VACCINE AVAILABLE',
+            headline: 'WUHAN OUTBREAK RESOLVED: KNOWN FLU VARIANT, VACCINE READY',
             effects: { nasdaq: 0.15, oil: 0.10, emerging: 0.12, biotech: -0.10, gold: -0.08 },
             probability: 0.25,
             allowsReversal: true  // Crisis averted
           },
           neutral: {
-            headline: 'OUTBREAK CONTAINED TO WUHAN - BORDERS REMAIN CLOSED AS PRECAUTION',
+            headline: 'WUHAN OUTBREAK CONTAINED - BORDERS REMAIN CLOSED',
             effects: { biotech: 0.05, gold: 0.03, emerging: -0.05 },
             probability: 0.35,
             allowsReversal: true  // Partial resolution
           },
           negative: {
-            headline: 'NOVEL PATHOGEN WITH 15% MORTALITY - CASES IN 30 COUNTRIES',
+            headline: 'WUHAN OUTBREAK SPREADS: 15% MORTALITY, 30 COUNTRIES',
             effects: { biotech: 0.45, gold: 0.30, nasdaq: -0.30, oil: -0.35, emerging: -0.40, tesla: -0.25 },
             probability: 0.40
           }
@@ -991,7 +991,7 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'CHINA DEFAULTS ON SOVEREIGN DEBT - GLOBAL PANIC',
+            headline: 'BREAKING: CHINA DEFAULTS ON SOVEREIGN DEBT - GLOBAL PANIC',
             effects: { nasdaq: -0.60, gold: 1.20, btc: 0.80, altcoins: 1.0, lithium: -0.70, emerging: -0.90, tesla: -0.65, oil: -0.40, biotech: -0.30 },
             probability: 0.50
           },
@@ -2018,7 +2018,7 @@ export const STORIES: Story[] = [
         effects: {},
         branches: {
           positive: {
-            headline: 'THREE GORGES DAM COLLAPSES - YANGTZE VALLEY INUNDATED, GLOBAL MANUFACTURING HALTED',
+            headline: 'BREAKING: THREE GORGES DAM COLLAPSES - YANGTZE VALLEY INUNDATED, GLOBAL MANUFACTURING HALTED',
             effects: { nasdaq: -0.50, tesla: -0.60, emerging: -0.70, lithium: -0.40, btc: -0.30, gold: 1.20, oil: 0.40, defense: 0.30 },
             probability: 0.45,
             sentiment: 'bearish',
@@ -2035,6 +2035,202 @@ export const STORIES: Story[] = [
         }
       }
     ]
+  },
+
+  // =============================================================================
+  // CHINA SEMICONDUCTOR RACE (3-stage, mid-story branching)
+  // =============================================================================
+  {
+    id: 'story_china_chips',
+    category: 'tech',
+    subcategory: 'infrastructure',
+    teaser: 'CHINA CHIP BREAKTHROUGH',
+    stages: [
+      // STAGE 1: Initial announcement
+      {
+        headline: 'CHINA ANNOUNCES BREAKTHROUGH IN DOMESTIC CHIP DESIGN',
+        effects: { nasdaq: -0.10, emerging: 0.08 },
+      },
+
+      // STAGE 2: Testing phase with 3-way branch
+      {
+        headline: 'CHINESE CHIPS ENTER MASS PRODUCTION - INDEPENDENT TESTING BEGINS',
+        effects: { nasdaq: -0.08, emerging: 0.10, lithium: 0.05 },
+        branches: {
+          positive: {
+            // Fraud exposed - best outcome for US markets
+            headline: 'CHINESE CHIP PROGRAM EXPOSED AS FRAUD - OFFICIALS ARRESTED',
+            effects: { nasdaq: 0.15, emerging: -0.12, defense: -0.05 },
+            probability: 0.25,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq'],
+          },
+          neutral: {
+            // Mediocre results - status quo maintained
+            headline: 'CHINESE CHIPS "COMPETENT BUT NOT COMPETITIVE" - ANALYSTS',
+            effects: { nasdaq: 0.08, emerging: -0.05 },
+            probability: 0.35,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq'],
+          },
+          negative: {
+            // Success - continues to stage 3
+            headline: 'INDEPENDENT TESTS CONFIRM: CHINESE CHIPS APPROACH NVIDIA PERFORMANCE',
+            effects: { nasdaq: -0.15, emerging: 0.15, defense: 0.10 },
+            probability: 0.40,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq'],
+          },
+        },
+      },
+
+      // STAGE 3: Final resolution (only reached if China succeeds)
+      {
+        headline: 'TECH COLD WAR ENTERS NEW PHASE - MARKETS AWAIT CHINA NEXT MOVE',
+        effects: { nasdaq: -0.05, defense: 0.05 },
+        branches: {
+          positive: {
+            // Parity - bipolar world (less severe)
+            headline: 'CHINA ACHIEVES CHIP PARITY - TECH BIPOLAR WORLD EMERGES',
+            effects: { nasdaq: -0.12, emerging: 0.18, defense: 0.08, lithium: 0.10 },
+            probability: 0.70,
+            sentiment: 'mixed',
+          },
+          negative: {
+            // Dominance - catastrophic for US tech
+            headline: 'CHINA UNVEILS NEXT-GEN CHIP - 25X MORE POWERFUL THAN NVIDIA H100',
+            effects: { nasdaq: -0.35, emerging: 0.40, defense: 0.25, lithium: 0.20, tesla: -0.15, btc: 0.10 },
+            probability: 0.30,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla'],
+          },
+        },
+      },
+    ],
+  },
+
+  // =============================================================================
+  // NORTH KOREA SUCCESSION CRISIS (3-stage, triggered by Kim assassination)
+  // =============================================================================
+  {
+    id: 'story_north_korea_succession',
+    category: 'geopolitical',
+    subcategory: 'crisis',
+    teaser: 'PYONGYANG POWER VACUUM',
+    stages: [
+      // STAGE 1: Immediate aftermath - power vacuum
+      {
+        headline: 'NORTH KOREA IN CHAOS - MILITARY FACTIONS VIE FOR CONTROL',
+        effects: { defense: 0.20, gold: 0.18, nasdaq: -0.10, emerging: -0.15 },
+      },
+
+      // STAGE 2: Factions consolidate - 3-way branch
+      {
+        headline: 'NORTH KOREA SUCCESSION CRISIS DEEPENS - CHINA DEPLOYS TROOPS TO BORDER',
+        effects: { defense: 0.15, gold: 0.12, emerging: -0.10 },
+        branches: {
+          positive: {
+            // Reformers take over - best outcome
+            headline: 'REFORMIST GENERAL TAKES POWER - SIGNALS OPENNESS TO TALKS',
+            effects: { defense: -0.10, gold: -0.08, emerging: 0.15, nasdaq: 0.10 },
+            probability: 0.25,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+          },
+          neutral: {
+            // Status quo military junta
+            headline: 'MILITARY JUNTA CONSOLIDATES - "BUSINESS AS USUAL" FOR REGIME',
+            effects: { defense: 0.05, gold: 0.03, emerging: -0.05 },
+            probability: 0.45,
+            sentiment: 'mixed',
+          },
+          negative: {
+            // Hardliners win - nuclear threats escalate
+            headline: 'HARDLINER FACTION SEIZES CONTROL - THREATENS "NUCLEAR RESPONSE"',
+            effects: { defense: 0.25, gold: 0.20, nasdaq: -0.15, emerging: -0.20 },
+            probability: 0.30,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+          },
+        },
+      },
+
+      // STAGE 3: Resolution (only if hardliners took over)
+      {
+        headline: 'UN EMERGENCY SESSION ON NORTH KOREA - WORLD HOLDS BREATH',
+        effects: { defense: 0.10, gold: 0.08 },
+        branches: {
+          positive: {
+            // Diplomatic breakthrough
+            headline: 'CHINA BROKERS DEAL - NORTH KOREA AGREES TO FREEZE NUCLEAR PROGRAM',
+            effects: { defense: -0.15, gold: -0.10, emerging: 0.20, nasdaq: 0.12 },
+            probability: 0.55,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+            allowsReversal: true,
+          },
+          negative: {
+            // Isolation deepens
+            headline: 'NORTH KOREA EXPELLED FROM INTERNATIONAL BANKING - SANCTIONS MAXIMIZED',
+            effects: { defense: 0.15, gold: 0.10, emerging: -0.12, btc: 0.08 },
+            probability: 0.45,
+            sentiment: 'bearish',
+            sentimentAssets: ['emerging'],
+          },
+        },
+      },
+    ],
+  },
+
+  // =============================================================================
+  // BIG TECH ANTITRUST RESOLUTION (2-stage, follows breakup order)
+  // =============================================================================
+  {
+    id: 'story_antitrust_resolution',
+    category: 'regulatory',
+    subcategory: 'antitrust',
+    teaser: 'TECH GIANTS APPEAL',
+    stages: [
+      // STAGE 1: Appeals court process begins
+      {
+        headline: 'TECH GIANTS FILE EMERGENCY APPEAL - BREAKUP ORDER STAYED',
+        effects: { nasdaq: 0.08 },
+      },
+
+      // STAGE 2: Court ruling
+      {
+        headline: 'SUPREME COURT AGREES TO HEAR BIG TECH ANTITRUST CASE',
+        effects: { nasdaq: -0.05 },
+        branches: {
+          positive: {
+            // Breakup overturned
+            headline: 'SUPREME COURT OVERTURNS BREAKUP - BIG TECH STOCKS SURGE',
+            effects: { nasdaq: 0.20, tesla: 0.10 },
+            probability: 0.40,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'tesla'],
+            allowsReversal: true,
+          },
+          neutral: {
+            // Partial ruling - fines but no breakup
+            headline: 'COURT ORDERS RECORD FINES BUT REJECTS BREAKUP - MIXED REACTION',
+            effects: { nasdaq: 0.05 },
+            probability: 0.35,
+            sentiment: 'mixed',
+          },
+          negative: {
+            // Breakup confirmed
+            headline: 'SUPREME COURT UPHOLDS BREAKUP - TECH INDUSTRY RESHAPED',
+            effects: { nasdaq: -0.18, tesla: -0.08 },
+            probability: 0.25,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq'],
+          },
+        },
+      },
+    ],
   },
 ]
 

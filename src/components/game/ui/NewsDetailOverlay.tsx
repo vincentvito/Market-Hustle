@@ -3,14 +3,80 @@
 import { useGame } from '@/hooks/useGame'
 import { ASSETS } from '@/lib/game/assets'
 import { NEWS_EXPLANATIONS } from '@/lib/game/newsExplanations'
+import { NEWS_CONTENT } from '@/lib/game/newsContent'
 
-function getCommentary(headline: string, effects: Record<string, number>): string {
-  // First, try to find a pre-written explanation
-  if (NEWS_EXPLANATIONS[headline]) {
-    return NEWS_EXPLANATIONS[headline]
+// Explanations for dynamic headlines that can't be in the static map
+const DYNAMIC_EXPLANATIONS: { prefix: string; explanation: string }[] = [
+  {
+    prefix: 'PE RETURNS:',
+    explanation: "This is PASSIVE INCOME from your Private Equity holdings. You bought PE assets (Blackstone Services, Growth Partners, Apex Media, etc.) in the Lifestyle tab. These PE funds own stakes in real companies. Every day, they generate returns through: (1) Management fees from portfolio companies, (2) Dividends from profitable businesses they own, (3) Realized gains when they sell investments. The amount shown is calculated as ~0.1% of your total PE portfolio value PER DAY. More PE assets = bigger daily passive income. This cash is automatically added to your balance - no action needed."
+  },
+  {
+    prefix: 'RENTAL INCOME:',
+    explanation: "This is PASSIVE INCOME from your real estate portfolio. You bought properties (Miami Condo, NYC Penthouse, Monaco Villa, Dubai Palace, etc.) in the Lifestyle tab. Each property generates rental income based on: (1) The property's base rental yield (varies by location and property type), (2) Current market conditions affecting rent prices. The amount shown is your DAILY rental income from ALL properties combined. More properties = bigger daily income. This cash is automatically added to your balance - no action needed. Note: Properties never generate negative income (rent floor is $0)."
+  },
+  // Luxury asset daily costs
+  {
+    prefix: 'JET MAINTENANCE:',
+    explanation: "Your G650ER private jet requires constant upkeep. This daily cost covers: hangar fees at private terminals, flight crew salaries (pilots, attendants), fuel reserves, mandatory FAA inspections, insurance premiums, and routine maintenance. Owning a jet isn't just the purchase price - it's a lifestyle commitment that costs roughly 1% of the aircraft's value per day to maintain flight-ready status. The benefit? +20% Angel deal frequency and +40% VC deal frequency from networking at 45,000 feet."
+  },
+  {
+    prefix: 'YACHT UPKEEP:',
+    explanation: "Your 85-meter mega yacht is a floating palace that requires a full-time crew of 15+. Daily costs include: captain and crew salaries, docking fees at premium marinas, fuel for generators and propulsion, constant maintenance against saltwater corrosion, insurance, and provisions. A yacht this size costs roughly 1% of its value annually just to keep afloat - that's your daily burn rate. The benefit? -20% discount on all PE purchases from deals made on the high seas."
+  },
+  {
+    prefix: 'TEAM PAYROLL:',
+    explanation: "The LA Lakers roster doesn't pay itself. This daily cost covers: player salaries (including max contracts), coaching staff, training personnel, medical team, front office executives, and facility operations at Crypto.com Arena. NBA teams operate at a loss for most owners - the value is in appreciation, championship prestige, and the ultimate status symbol. You own LeBron's legacy team. There's no financial benefit. Just pure flex."
+  },
+  {
+    prefix: 'ART INSURANCE:',
+    explanation: "Your Basquiat, Warhol, and Banksy collection requires specialized fine art insurance and climate-controlled storage. Daily costs cover: insurance premiums against theft, damage, and depreciation claims, museum-grade storage facilities, security systems, and periodic authentication and appraisal services. Unlike other luxury assets, art tends to appreciate over time. The benefit? -20% probability of Tax Event encounters - the IRS is less aggressive with collectors who donate to museums."
+  },
+]
+
+interface NewsContent {
+  blurb: string | null
+  analysis: string
+}
+
+function getNewsContent(headline: string, effects: Record<string, number>): NewsContent {
+  // Check for structured content in NEWS_CONTENT first
+  const content = NEWS_CONTENT[headline]
+  if (content) {
+    // If we have structured content, use it (with fallback to NEWS_EXPLANATIONS for analysis)
+    const analysis = content.analysis || NEWS_EXPLANATIONS[headline] || generateFallbackAnalysis(effects)
+    return {
+      blurb: content.blurb || null,
+      analysis
+    }
   }
 
-  // Fallback: generate basic commentary if no explanation found
+  // Check for pre-written explanation in NEWS_EXPLANATIONS (legacy support)
+  if (NEWS_EXPLANATIONS[headline]) {
+    return {
+      blurb: null,
+      analysis: NEWS_EXPLANATIONS[headline]
+    }
+  }
+
+  // Check for dynamic headline patterns (prefix matches)
+  for (const { prefix, explanation } of DYNAMIC_EXPLANATIONS) {
+    if (headline.startsWith(prefix)) {
+      return {
+        blurb: null,
+        analysis: explanation
+      }
+    }
+  }
+
+  // Fallback: generate basic analysis
+  return {
+    blurb: null,
+    analysis: generateFallbackAnalysis(effects)
+  }
+}
+
+function generateFallbackAnalysis(effects: Record<string, number>): string {
   if (Object.keys(effects).length === 0) {
     return "Markets are digesting this news. No significant price movements expected from this development."
   }
@@ -70,7 +136,7 @@ export function NewsDetailOverlay() {
   if (!selectedNews) return null
 
   const { headline, effects } = selectedNews
-  const commentary = getCommentary(headline, effects)
+  const { blurb, analysis } = getNewsContent(headline, effects)
 
   const sortedEffects = Object.entries(effects)
     .map(([id, effect]) => {
@@ -107,11 +173,21 @@ export function NewsDetailOverlay() {
           </button>
         </div>
 
-        {/* Anchor Commentary */}
+        {/* News Blurb - Short article (only shown if available) */}
+        {blurb && (
+          <div className="p-4 border-b border-mh-border">
+            <div className="text-mh-text-dim text-[10px] mb-2">📰 REPORT</div>
+            <div className="text-mh-text-bright text-sm leading-relaxed italic">
+              {blurb}
+            </div>
+          </div>
+        )}
+
+        {/* Market Analysis */}
         <div className="p-4 border-b border-mh-border bg-[#0a1015]">
           <div className="text-mh-text-dim text-[10px] mb-2">🎙️ MARKET ANALYSIS</div>
           <div className="text-mh-text-bright text-sm leading-relaxed">
-            {commentary}
+            {analysis}
           </div>
         </div>
 

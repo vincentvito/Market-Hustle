@@ -1,6 +1,7 @@
 'use client'
 
 import { useGame } from '@/hooks/useGame'
+import { formatCompact } from '@/lib/utils/formatMoney'
 
 export function StatsBar() {
   const {
@@ -37,7 +38,7 @@ export function StatsBar() {
             isBloomberg ? 'text-[#ff8c00]' : isModern3 ? 'text-mh-text-bright' : isRetro2 ? 'text-mh-text-bright glow-text' : 'text-mh-accent-blue glow-text'
           }`}
         >
-          ${cash.toLocaleString()}
+          {formatCompact(cash)}
         </div>
       </div>
       <div
@@ -57,7 +58,7 @@ export function StatsBar() {
               isBloomberg ? 'text-[#ff8c00]' : isModern3 ? 'text-mh-text-bright' : isRetro2 ? 'text-mh-text-bright glow-text' : 'text-mh-accent-blue glow-text'
             }`}
           >
-            ${portfolioValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            {formatCompact(portfolioValue)}
           </span>
           {hasPositions && (
             <span

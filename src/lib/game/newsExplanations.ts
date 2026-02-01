@@ -46,7 +46,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "COUP ATTEMPT IN NATO MEMBER STATE": "Political instability in NATO rattles the alliance. Defense stocks rally on security concerns. Gold catches a bid on geopolitical uncertainty. The broader market dips slightly on European risk - but NATO countries have recovered from coups before.",
 
-  "KIM JONG UN, NORTH KOREA LEADER - ASSASSINATED": "Nuclear-armed state without clear succession is a nightmare scenario. Defense stocks explode on Korean Peninsula risk. Gold surges as safe haven. Emerging markets, especially those near the DMZ, crash on potential chaos. The world holds its breath for Pyongyang's next move.",
+  "BREAKING: KIM JONG UN ASSASSINATED": "Nuclear-armed state without clear succession is a nightmare scenario. Defense stocks explode on Korean Peninsula risk. Gold surges as safe haven. Emerging markets, especially those near the DMZ, crash on potential chaos. The world holds its breath for Pyongyang's next move.",
 
   "SUBMARINE COLLISION IN SOUTH CHINA SEA": "Naval incidents in disputed waters can escalate fast. Defense rallies on potential conflict. Oil moves on shipping route concerns. Gold rises on geopolitical risk. Markets remember - World War I started with less.",
 
@@ -65,7 +65,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "$2 TRILLION STIMULUS APPROVED": "Massive money printing inflates financial assets. Stocks, crypto, real estate all rise on the liquidity flood. Gold rises too - stimulus is just debt that debases the currency long-term.",
 
-  "CHINA DEFAULTS ON SOVEREIGN DEBT": "A sovereign default from the world's second-largest economy sends shockwaves globally. Emerging markets collapse on contagion fears. Gold and crypto rally as trust in governments evaporates. The dollar strengthens as the least dirty shirt.",
+  "BREAKING: CHINA DEFAULTS ON SOVEREIGN DEBT - GLOBAL PANIC": "A sovereign default from the world's second-largest economy sends shockwaves globally. Emerging markets collapse on contagion fears. Gold and crypto rally as trust in governments evaporates. The dollar strengthens as the least dirty shirt.",
 
   "UNEMPLOYMENT HITS 15%": "Mass unemployment means crushed consumer spending. Stocks fall. Real estate drops as people can't pay rent. Gold rises - economic distress drives safe haven demand. The Fed will have to respond, but first comes the pain.",
 
@@ -73,7 +73,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "CPI COMES IN HOT - 9.1% ANNUAL": "Inflation near double digits is a five-alarm fire. Gold and Bitcoin rally as inflation hedges. Tech crashes because the Fed will have to raise rates aggressively. Your dollars are melting - hard assets are the shelter.",
 
-  "FLASH CRASH - DOW DROPS 1000 POINTS": "When markets crash 1000 points in minutes, it's usually algorithms gone haywire. Gold spikes on panic. Stocks crater. Tesla falls harder than most - it's the most volatile large-cap name. The crash creates buying opportunities for those with nerve.",
+  "FLASH CRASH: DOW PLUNGES 1000 POINTS IN MINUTES": "When markets crash 1000 points in minutes, it's usually algorithms gone haywire. Gold spikes on panic. Stocks crater. Tesla falls harder than most - it's the most volatile large-cap name. The crash creates buying opportunities for those with nerve.",
 
   "HEDGE FUND BLOWS UP - MARGIN CALLS SPREAD": "One fund's margin call becomes another's forced selling. Contagion spreads through prime brokers. Stocks sell off on credit concerns. Gold rises as paper assets burn. Even crypto can dip if the fund was long Bitcoin.",
 
@@ -125,7 +125,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "BITCOIN HALVING COMPLETES": "Halvings cut Bitcoin's new supply in half. Simple economics - same demand, less supply, price goes up. Every previous halving preceded a bull market. Altcoins rally in anticipation of the cycle.",
 
-  "ALTCOIN SEASON BEGINS": "When Bitcoin consolidates, profits rotate into altcoins. Higher risk, higher reward. Speculators chase 10x gains. GameStop correlates because it's the same gambling mentality.",
+  "CRYPTO: ALTCOIN SEASON OFFICIALLY BEGINS": "When Bitcoin consolidates, profits rotate into altcoins. Higher risk, higher reward. Speculators chase 10x gains. GameStop correlates because it's the same gambling mentality.",
 
   "WHALE DUMPS 10,000 BTC": "Large sells crash prices because liquidity is thin. Panic spreads. Altcoins fall harder because they're even less liquid. The market usually recovers, but weak hands get shaken out first.",
 
@@ -174,7 +174,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   // ===========================================
   // BIOTECH & HEALTH
   // ===========================================
-  "WHO DECLARES NEW PANDEMIC": "Pandemics mean lockdowns, travel bans, and economic shutdown. Airlines and real estate crash. Oil collapses - nobody's driving. Biotech soars on vaccine and treatment demand. Gold rises on fear.",
+  "BREAKING: WHO DECLARES NEW PANDEMIC": "Pandemics mean lockdowns, travel bans, and economic shutdown. Airlines and real estate crash. Oil collapses - nobody's driving. Biotech soars on vaccine and treatment demand. Gold rises on fear.",
 
   "CANCER CURE ENTERS PHASE 3 TRIALS": "Phase 3 is the final trial before approval. A cancer cure would be worth hundreds of billions. Biotech rallies on the promise. Success would lift healthcare broadly.",
 
@@ -199,7 +199,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "RUSSIA THREATENS NUCLEAR WAR": "Nuclear threats spike every fear asset simultaneously. Gold, oil, uranium, defense all rally. Stocks crash. Emerging markets get destroyed as capital flees to safety.",
 
-  "NUCLEAR FUSION BREAKTHROUGH ACHIEVED": "Fusion means unlimited clean energy. Traditional energy stocks crash - who needs oil or uranium fission? Tech rallies on cheap electricity powering AI. The future just got cleaner and cheaper.",
+  "NUCLEAR FUSION BREAKTHROUGH ACHIEVED": "Fusion means unlimited clean energy - but also massive economic disruption. Oil economies collapse, energy workers displaced, geopolitical balance shifts. Tech rallies on cheap electricity, but gold surges as a chaos hedge. This is the biggest paradigm shift since the industrial revolution.",
 
   "EU BANS RUSSIAN ENERGY IMPORTS": "Europe cutting off Russian energy creates supply shortage. Oil and uranium spike. Gold rises on economic instability. Emerging markets suffer from the global supply shock.",
 
@@ -241,7 +241,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "BRAZIL COFFEE FROST WORST IN DECADES": "Brazil produces 40% of world coffee. Frost destroying crops means years of supply shortfall. Coffee prices spike. Emerging markets like Brazil suffer from agricultural income loss.",
 
-  "GLOBAL SUPPLY CHAIN MELTDOWN": "Supply chains breaking means goods stuck in wrong places. Coffee and wheat spike on delivery issues. The economy slows as companies can't get inputs.",
+  "GLOBAL SUPPLY CHAIN MELTDOWN - SHORTAGES SPREAD": "Supply chains breaking means goods stuck in wrong places. Coffee and wheat spike on delivery issues. The economy slows as companies can't get inputs.",
 
   "SYNTHETIC GOLD CREATED IN LAB": "If you can manufacture gold, it loses its scarcity value. Gold crashes. Bitcoin and crypto rally as the new scarce assets. Tech benefits from the alchemy breakthrough.",
 
@@ -261,9 +261,9 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   // ===========================================
   // BLACK SWAN / DISASTERS
   // ===========================================
-  "9.2 EARTHQUAKE DEVASTATES SAN FRANCISCO": "Silicon Valley headquarters destroyed. NASDAQ crashes on tech infrastructure damage. REITs fall on property destruction. Gold and dollar rise as safe havens during the crisis.",
+  "BREAKING: 9.2 EARTHQUAKE DEVASTATES SAN FRANCISCO": "Silicon Valley headquarters destroyed. NASDAQ crashes on tech infrastructure damage. REITs fall on property destruction. Gold and dollar rise as safe havens during the crisis.",
 
-  "ALIEN SIGNAL CONFIRMED FROM PROXIMA B": "Confirmed alien intelligence would be the biggest news in human history. Speculative assets go parabolic - crypto, meme stocks, anything with optionality on the future. Defense rallies on space spending. Even gold rises as the ultimate unknown unfolds.",
+  "BREAKING: ALIEN SIGNAL CONFIRMED FROM PROXIMA B": "Confirmed alien intelligence triggers existential panic. Markets hate uncertainty, and this is the ultimate unknown. Gold and defense surge as safe havens. Speculative assets crash as investors flee to safety - who cares about quarterly earnings when humanity's place in the universe just changed?",
 
   "YELLOWSTONE SUPERVOLCANO ERUPTS": "A supervolcano would blanket the US in ash, disrupting agriculture for years. Wheat prices explode on crop destruction. Gold spikes on civilizational risk. Everything else crashes.",
 
@@ -271,78 +271,78 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "ASTEROID MINING SHIP RETURNS WITH GOLD": "Space-mined gold flooding the market destroys scarcity. Gold crashes. Bitcoin rallies as the new digital scarcity. Tech benefits from asteroid mining technology validation.",
 
-  "US GOVERNMENT DEFAULTS ON DEBT": "US default would be the financial apocalypse. The dollar crashes. Gold and crypto explode as alternatives to worthless government promises. Every financial asset tied to US credit collapses.",
+  "BREAKING: US GOVERNMENT DEFAULTS ON DEBT": "US default would be the financial apocalypse. The dollar crashes. Gold and crypto explode as alternatives to worthless government promises. Every financial asset tied to US credit collapses.",
 
   // ===========================================
   // EVENT CHAIN OUTCOMES
   // ===========================================
-  "CHINA INVADES TAIWAN - FULL SCALE WAR": "War over Taiwan means chip factories offline indefinitely. The entire tech supply chain breaks. Oil spikes on conflict. Gold and defense rally. Emerging markets crash as Asia becomes a war zone.",
+  "BREAKING: CHINA INVADES TAIWAN - FULL SCALE WAR": "War over Taiwan means chip factories offline indefinitely. The entire tech supply chain breaks. Oil spikes on conflict. Gold and defense rally. Emerging markets crash as Asia becomes a war zone.",
 
-  "BEIJING BACKS DOWN AFTER US WARNING": "De-escalation removes the war premium from everything. Oil and gold drop. Tech and emerging markets rally on avoided catastrophe. Defense falls without conflict.",
+  "TAIWAN CRISIS: BEIJING BACKS DOWN AFTER US WARNING": "De-escalation removes the war premium from everything. Oil and gold drop. Tech and emerging markets rally on avoided catastrophe. Defense falls without conflict.",
 
-  "FULL BLOCKADE OF TAIWAN STRAIT": "A blockade stops ships carrying chips, lithium, and goods. Supply chains freeze. Oil spikes on shipping disruption. Tech crashes without components.",
+  "TAIWAN EMERGENCY ESCALATES: FULL BLOCKADE OF STRAIT": "A blockade stops ships carrying chips, lithium, and goods. Supply chains freeze. Oil spikes on shipping disruption. Tech crashes without components.",
 
-  "SURPRISE DIPLOMATIC BREAKTHROUGH": "Diplomacy succeeding is the best outcome for markets. Risk assets rally. Safe havens fall. Emerging markets benefit most from regional stability.",
+  "TAIWAN CRISIS AVERTED: SURPRISE DIPLOMATIC BREAKTHROUGH": "Diplomacy succeeding is the best outcome for markets. Risk assets rally. Safe havens fall. Emerging markets benefit most from regional stability.",
 
-  "HISTORIC PEACE FRAMEWORK SIGNED": "Peace frameworks enable trade and investment. Oil drops without conflict premium. Tech and emerging markets rally on supply chain restoration.",
+  "US-CHINA SUMMIT: HISTORIC PEACE FRAMEWORK SIGNED": "Peace frameworks enable trade and investment. Oil drops without conflict premium. Tech and emerging markets rally on supply chain restoration.",
 
-  "SUMMIT COLLAPSES - TENSIONS ESCALATE": "Failed diplomacy means conflict is more likely. Oil and gold spike. Defense rallies. Tech and emerging markets crash on renewed risk.",
+  "US-CHINA SUMMIT COLLAPSES - TENSIONS ESCALATE": "Failed diplomacy means conflict is more likely. Oil and gold spike. Defense rallies. Tech and emerging markets crash on renewed risk.",
 
-  "FED PIVOTS TO RATE CUTS - MARKETS SOAR": "Rate cuts flood markets with cheap money. Everything that borrowing makes better - real estate, growth stocks, crypto - rallies hard. Dollar weakens.",
+  "POWELL DELIVERS: FED PIVOTS TO RATE CUTS": "Rate cuts flood markets with cheap money. Everything that borrowing makes better - real estate, growth stocks, crypto - rallies hard. Dollar weakens.",
 
-  "FED STAYS HAWKISH - MARKETS DISAPPOINTED": "No pivot means expensive money continues. Growth stocks and real estate suffer. Dollar strengthens on rate differentials.",
+  "POWELL REVERSES: FED STAYS HAWKISH DESPITE HINTS": "No pivot means expensive money continues. Growth stocks and real estate suffer. Dollar strengthens on rate differentials.",
 
-  "INFLATION SPIKES TO 9.2% - FED TRAPPED": "High inflation with no policy response destroys purchasing power. Hard assets like gold and Bitcoin rally. Stocks fall because the Fed will eventually have to crush inflation with rate hikes.",
+  "INFLATION REPORT: 9.2% - FED POLICY TRAPPED": "High inflation with no policy response destroys purchasing power. Hard assets like gold and Bitcoin rally. Stocks fall because the Fed will eventually have to crush inflation with rate hikes.",
 
-  "INFLATION FINALLY COOLING - SOFT LANDING": "Cooling inflation without recession is the dream scenario. Stocks rally. Real estate benefits from stable rates. The Fed can ease without consequences.",
+  "INFLATION REPORT: COOLING DATA SIGNALS SOFT LANDING": "Cooling inflation without recession is the dream scenario. Stocks rally. Real estate benefits from stable rates. The Fed can ease without consequences.",
 
-  "BINANCE CEO ARRESTED - EXCHANGE FROZEN": "The largest crypto exchange freezing is catastrophic. Billions become inaccessible. Crypto crashes on liquidity crisis. Gold rises as money seeks safety.",
+  "DOJ ACTS: BINANCE CEO ARRESTED, EXCHANGE FROZEN": "The largest crypto exchange freezing is catastrophic. Billions become inaccessible. Crypto crashes on liquidity crisis. Gold rises as money seeks safety.",
 
-  "BINANCE SETTLES - PAYS RECORD $4B FINE": "A settlement means business continues. Crypto rallies on regulatory clarity. Paying the fine is better than shutdown - the market prices in survival.",
+  "DOJ PROBE RESOLVED: BINANCE SETTLES FOR $4B": "A settlement means business continues. Crypto rallies on regulatory clarity. Paying the fine is better than shutdown - the market prices in survival.",
 
-  "SPOT BITCOIN ETF APPROVED - HISTORIC DAY": "ETF approval is institutional adoption. Trillions can now flow into Bitcoin through traditional channels. The entire crypto market rockets on legitimization.",
+  "SEC RULING: SPOT BITCOIN ETF APPROVED": "ETF approval is institutional adoption. Trillions can now flow into Bitcoin through traditional channels. The entire crypto market rockets on legitimization.",
 
-  "SEC REJECTS ETF - CITES MARKET MANIPULATION": "Rejection delays institutional money indefinitely. Bitcoin crashes. Altcoins fall harder on dimmed mainstream hopes.",
+  "SEC RULING: ETF REJECTED, CITES MANIPULATION": "Rejection delays institutional money indefinitely. Bitcoin crashes. Altcoins fall harder on dimmed mainstream hopes.",
 
-  "SAYLOR FORCED TO LIQUIDATE 100K BTC": "Forced selling at any price crashes the market. MicroStrategy holds 1% of Bitcoin supply. Liquidation would cascade through the entire market.",
+  "MARGIN CALL CONFIRMED: SAYLOR LIQUIDATES 100K BTC": "Forced selling at any price crashes the market. MicroStrategy holds 1% of Bitcoin supply. Liquidation would cascade through the entire market.",
 
-  "MICROSTRATEGY SECURES EMERGENCY FUNDING": "Avoiding liquidation removes the forced selling threat. Crypto rallies on crisis averted. The leverage risk was priced in - removing it is pure upside.",
+  "MARGIN CRISIS AVERTED: MICROSTRATEGY SECURES FUNDING": "Avoiding liquidation removes the forced selling threat. Crypto rallies on crisis averted. The leverage risk was priced in - removing it is pure upside.",
 
-  "SAUDIS SLASH OUTPUT BY 3M BARRELS": "OPEC cutting supply spikes oil prices globally. Energy inflation hurts economic growth. Emerging markets pay more for imports.",
+  "OPEC MEETING RESULT: SAUDIS SLASH 3M BARRELS": "OPEC cutting supply spikes oil prices globally. Energy inflation hurts economic growth. Emerging markets pay more for imports.",
 
-  "OPEC FAILS TO AGREE - OUTPUT UNCHANGED": "No supply cut means oil stays cheap. Good for consumers, bad for producers. Markets modestly benefit from stable energy costs.",
+  "OPEC MEETING FAILS - OUTPUT UNCHANGED": "No supply cut means oil stays cheap. Good for consumers, bad for producers. Markets modestly benefit from stable energy costs.",
 
-  "LARGEST US REFINERY OFFLINE FOR MONTHS": "Refineries turn crude into gasoline. Losing capacity spikes fuel prices even if crude oil is available. Economic drag from energy costs.",
+  "REFINERY FIRE CONFIRMED: OFFLINE FOR MONTHS": "Refineries turn crude into gasoline. Losing capacity spikes fuel prices even if crude oil is available. Economic drag from energy costs.",
 
-  "FIRE CONTAINED - MINIMAL DAMAGE": "Crisis averted. Oil drops on avoided disruption. Markets continue normally.",
+  "REFINERY FIRE CONTAINED - MINIMAL DAMAGE CONFIRMED": "Crisis averted. Oil drops on avoided disruption. Markets continue normally.",
 
-  "CORE MELTDOWN - WORST SINCE CHERNOBYL": "Nuclear disasters destroy the industry's reputation. Uranium crashes as plants get shut down globally. Oil rallies as the alternative. Defense rises on cleanup spending.",
+  "LENINGRAD-2 MELTDOWN - WORST SINCE CHERNOBYL": "Nuclear disasters destroy the industry's reputation. Uranium crashes as plants get shut down globally. Oil rallies as the alternative. Defense rises on cleanup spending.",
 
-  "COOLANT SYSTEMS RESTORED - CRISIS AVERTED": "Avoided meltdown is bullish for nuclear. Uranium rises on continued plant operations. Oil falls as nuclear stays online.",
+  "LENINGRAD-2 CRISIS AVERTED: COOLANT RESTORED": "Avoided meltdown is bullish for nuclear. Uranium rises on continued plant operations. Oil falls as nuclear stays online.",
 
-  "STARSHIP REACHES MARS ORBIT - HISTORY MADE": "Successful Mars mission proves interplanetary capability. Space economy becomes real. Tech rallies on the frontier. Lithium rises on rocket battery demand.",
+  "STARSHIP LAUNCH SUCCESS: MARS ORBIT ACHIEVED": "Successful Mars mission proves interplanetary capability. Space economy becomes real. Tech rallies on the frontier. Lithium rises on rocket battery demand.",
 
-  "STARSHIP EXPLODES ON LAUNCHPAD": "Launch failures set programs back years. Tech dips on delayed space economy. But SpaceX has recovered from explosions before.",
+  "STARSHIP LAUNCH FAILS: EXPLOSION ON LAUNCHPAD": "Launch failures set programs back years. Tech dips on delayed space economy. But SpaceX has recovered from explosions before.",
 
-  "AGI CONFIRMED - GOOGLE LAYS OFF 50,000": "True AGI means machines can do human jobs. Tech soars on productivity. But mass layoffs signal human labor is devalued. Real estate falls on reduced office workers.",
+  "BREAKING: AGI CONFIRMED - GOOGLE CUTS 50K JOBS": "True AGI means machines can do human jobs. Tech soars on productivity. But mass layoffs signal human labor is devalued. Real estate falls on reduced office workers.",
 
-  "AGI CLAIMS OVERBLOWN - JUST INCREMENTAL": "No AGI means AI hype was ahead of reality. Tech stocks correct downward. The AI bubble deflates.",
+  "DEEPMIND AGI CLAIMS OVERBLOWN - INCREMENTAL ONLY": "No AGI means AI hype was ahead of reality. Tech stocks correct downward. The AI bubble deflates.",
 
-  "VISION PRO 2 UNVEILED - PREORDERS CRASH": "Successful product launch validates Apple's AR bet. Tech rallies. Lithium rises on device battery demand.",
+  "APPLE AR REVEALED: VISION PRO 2 PREORDERS CRASH": "Successful product launch validates Apple's AR bet. Tech rallies. Lithium rises on device battery demand.",
 
-  "APPLE DELAYS AR LAUNCH INDEFINITELY": "Product delays mean revenue pushed out. Tech stocks dip on growth concerns.",
+  "APPLE AR RUMORS FALSE: LAUNCH DELAYED INDEFINITELY": "Product delays mean revenue pushed out. Tech stocks dip on growth concerns.",
 
-  "COFFEE AND SOYBEAN CROPS DEVASTATED": "Brazil's agricultural loss means global supply shock. Coffee prices explode. Wheat rises in sympathy. Emerging markets lose export revenue.",
+  "BRAZIL DROUGHT CONFIRMED: COFFEE/SOYBEAN CROPS DEVASTATED": "Brazil's agricultural loss means global supply shock. Coffee prices explode. Wheat rises in sympathy. Emerging markets lose export revenue.",
 
-  "LATE RAINS SAVE THE HARVEST": "Avoided crop failure. Coffee prices drop on supply relief. Emerging markets benefit from intact exports.",
+  "BRAZIL DROUGHT RELIEF: LATE RAINS SAVE HARVEST": "Avoided crop failure. Coffee prices drop on supply relief. Emerging markets benefit from intact exports.",
 
-  "RUSSIA EXITS BLACK SEA GRAIN DEAL": "Without safe passage, Ukrainian grain can't reach world markets. Wheat spikes. Food security fears lift gold. The global poor suffer most.",
+  "GRAIN CRISIS: RUSSIA EXITS BLACK SEA DEAL": "Without safe passage, Ukrainian grain can't reach world markets. Wheat spikes. Food security fears lift gold. The global poor suffer most.",
 
-  "UN BROKERS LAST-MINUTE EXTENSION": "Diplomacy preserving grain flow. Wheat drops. Stability benefits emerging markets.",
+  "GRAIN CRISIS RESOLVED: UN BROKERS EXTENSION": "Diplomacy preserving grain flow. Wheat drops. Stability benefits emerging markets.",
 
-  "WORST LOCUST PLAGUE IN A CENTURY": "Locusts devastating crops is biblical-scale disaster. Wheat and coffee spike. Emerging markets with food insecurity crash.",
+  "LOCUST SWARMS ARRIVE: WORST PLAGUE IN A CENTURY": "Locusts devastating crops is biblical-scale disaster. Wheat and coffee spike. Emerging markets with food insecurity crash.",
 
-  "SWARMS DISPERSE BEFORE REACHING FARMLAND": "Disaster avoided. Crop prices drop. Emerging markets rally on food security.",
+  "LOCUST THREAT AVERTED: SWARMS DISPERSE BEFORE IMPACT": "Disaster avoided. Crop prices drop. Emerging markets rally on food security.",
 
   "GAMESTOP SHORT SQUEEZE 2.0 BEGINS": "Roaring Kitty returning sparks retail frenzy. GameStop explodes. Meme energy spreads to altcoins. The casino reopens.",
 
@@ -356,17 +356,17 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "SEC WARNS ELON - HE DELETES TWEET": "Regulatory pressure kills the rally. Meme assets retreat. Fun's over.",
 
-  "FDA FAST-TRACKS APPROVAL - BREAKTHROUGH": "Fast-track means the drug works and demand is urgent. Biotech rallies on coming revenue. Healthcare broadly benefits.",
+  "MODERNA VACCINE: FDA FAST-TRACKS APPROVAL": "Fast-track means the drug works and demand is urgent. Biotech rallies on coming revenue. Healthcare broadly benefits.",
 
-  "FDA REQUESTS ADDITIONAL TRIALS": "More trials mean years of delay. Biotech crashes on pushed-out revenue. Regulatory uncertainty weighs on the sector.",
+  "MODERNA VACCINE: FDA DEMANDS MORE TRIALS": "More trials mean years of delay. Biotech crashes on pushed-out revenue. Regulatory uncertainty weighs on the sector.",
 
-  "WHO DECLARES PUBLIC HEALTH EMERGENCY OF INTERNATIONAL CONCERN": "PHEIC declaration triggers global response protocols. Biotech surges on vaccine and treatment demand. Broad markets sell off on lockdown fears. Oil collapses as travel halts. Gold rises as safe haven.",
+  "SE ASIA OUTBREAK: WHO DECLARES EMERGENCY": "PHEIC declaration triggers global response protocols. Biotech surges on vaccine and treatment demand. Broad markets sell off on lockdown fears. Oil collapses as travel halts. Gold rises as safe haven.",
 
-  "CDC: OUTBREAK CONTAINED, NO SUSTAINED TRANSMISSION": "Epidemiological data confirms no community spread. Markets recover as pandemic risk fades. Oil and travel rally. Biotech gives back speculative gains.",
+  "SE ASIA OUTBREAK CONTAINED - CDC CONFIRMS": "Epidemiological data confirms no community spread. Markets recover as pandemic risk fades. Oil and travel rally. Biotech gives back speculative gains.",
 
-  "TRIAL RESULTS: 90% EFFICACY - CURE IN SIGHT": "Alzheimer's cure would be one of history's biggest breakthroughs. Biotech explodes. Healthcare transforms. Millions of families get hope.",
+  "PFIZER TRIAL SUCCESS: 90% EFFICACY ALZHEIMER'S DRUG": "Alzheimer's cure would be one of history's biggest breakthroughs. Biotech explodes. Healthcare transforms. Millions of families get hope.",
 
-  "DATA FALSIFIED - PFIZER FACES CRIMINAL PROBE": "Research fraud destroys trust in the company and the sector. Biotech crashes on regulatory and legal fears.",
+  "PFIZER LEAK SCANDAL: TRIAL DATA FALSIFIED": "Research fraud destroys trust in the company and the sector. Biotech crashes on regulatory and legal fears.",
 
   "BLACKSTONE REIT HALTS REDEMPTIONS - PANIC": "Halting redemptions means the fund can't meet withdrawals - assets are worth less than stated. REITs crash on contagion fears. Gold and Bitcoin rally as alternatives.",
 

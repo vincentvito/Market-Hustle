@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ASSETS } from '@/lib/game/assets'
 import { useGame } from '@/hooks/useGame'
 import { AssetCell } from './AssetCell'
@@ -9,8 +9,15 @@ import { LifestyleCatalog } from './LifestyleCatalog'
 type TabType = 'trading' | 'lifestyle'
 
 export function AssetGrid() {
-  const { selectAsset, selectedTheme } = useGame()
+  const { selectAsset, selectedTheme, pendingLifestyleAssetId, pendingLuxuryAssetId } = useGame()
   const [activeTab, setActiveTab] = useState<TabType>('trading')
+
+  // Auto-switch to lifestyle tab when there's a pending asset from portfolio
+  useEffect(() => {
+    if (pendingLifestyleAssetId || pendingLuxuryAssetId) {
+      setActiveTab('lifestyle')
+    }
+  }, [pendingLifestyleAssetId, pendingLuxuryAssetId])
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'

@@ -2,6 +2,7 @@
 
 import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 import type { EndGameProps } from './types'
+import { formatNetWorth } from '@/lib/utils/formatMoney'
 
 /**
  * MemberEndView - End-game screen for registered free-tier users.
@@ -49,7 +50,7 @@ export function MemberEndView({
       {/* Final Net Worth */}
       <div className="border border-mh-border p-5 mb-2 min-w-[200px]">
         <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
-        <div className={`text-3xl ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
+        <div className={`${formatNetWorth(netWorth).sizeClass} ${netWorthColor}`}>{formatNetWorth(netWorth).text}</div>
       </div>
 
       {/* Profit/Loss percentage - more prominent on wins */}
