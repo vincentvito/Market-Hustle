@@ -1,5 +1,6 @@
 import {
   pgTable,
+  pgSchema,
   uuid,
   text,
   boolean,
@@ -11,6 +12,16 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core'
+
+// ============================================
+// auth.users (Supabase auth schema, read-only)
+// ============================================
+const authSchema = pgSchema('auth')
+
+export const authUsers = authSchema.table('users', {
+  id: uuid('id').primaryKey(),
+  email: text('email'),
+})
 
 // ============================================
 // profiles

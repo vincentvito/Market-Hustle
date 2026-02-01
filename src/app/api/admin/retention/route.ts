@@ -1,34 +1,26 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { db } from '@/db'
-import { profiles, gameResults } from '@/db/schema'
-import { eq, sql } from 'drizzle-orm'
-import { NextResponse } from 'next/server'
+import { authUsers, profiles, gameResults } from '@/db/schema'
+import { eq, and, sql } from 'drizzle-orm'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const userSupabase = await createServerSupabaseClient()
-    const { data: { user }, error: authError } = await userSupabase.auth.getUser()
+    const email = request.nextUrl.searchParams.get('email')
 
-    if (authError) {
-      console.error('Admin retention auth error:', authError)
-      return NextResponse.json({ error: `Authentication failed: ${authError.message}` }, { status: 401 })
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 401 })
     }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized — you must be logged in' }, { status: 401 })
-    }
-
-    const [profile] = await db
+    // Join auth.users with profiles to check admin status by email
+    const [admin] = await db
       .select({ isAdmin: profiles.isAdmin })
-      .from(profiles)
-      .where(eq(profiles.id, user.id))
+      .from(authUsers)
+      .innerJoin(profiles, eq(profiles.id, authUsers.id))
+      .where(and(eq(authUsers.email, email), eq(profiles.isAdmin, true)))
+      .limit(1)
 
-    if (!profile) {
-      return NextResponse.json({ error: `Profile not found for user ${user.id}` }, { status: 404 })
-    }
-
-    if (!profile.isAdmin) {
-      return NextResponse.json({ error: `Access denied — user ${user.id} is not an admin` }, { status: 403 })
+    if (!admin) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
     const rows = await db
