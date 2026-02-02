@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
@@ -22,19 +23,43 @@ function formatScore(value: number): string {
   return `$${value.toLocaleString()}`
 }
 
-export function TitleScreen() {
+function LeaderboardSkeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center px-3 py-2 gap-2">
+          <Skeleton className="w-8 h-4" />
+          <Skeleton className="flex-1 h-4" />
+          <Skeleton className="w-20 h-4" />
+        </div>
+      ))}
+    </>
+  )
+}
+
+interface TitleScreenProps {
+  initialLeaderboards?: {
+    daily: LeaderboardEntry[]
+    allTime: LeaderboardEntry[]
+    worst: LeaderboardEntry[]
+  }
+}
+
+export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const startGame = useGame(state => state.startGame)
   const setShowSettings = useGame(state => state.setShowSettings)
   const initializeFromStorage = useGame(state => state.initializeFromStorage)
   const username = useGame(state => state.username)
   const setUsername = useGame(state => state.setUsername)
 
-  const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [worstLeaderboard, setWorstLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.daily ?? [])
+  const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.allTime ?? [])
+  const [worstLeaderboard, setWorstLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.worst ?? [])
   const [usernameInput, setUsernameInput] = useState('')
   const [usernameError, setUsernameError] = useState<string | null>(null)
   const [isEditingUsername, setIsEditingUsername] = useState(false)
+  const hasInitialData = useRef(!!initialLeaderboards)
+  const hasMountedBefore = useRef(false)
 
   // Sync input with stored username
   useEffect(() => {
@@ -74,10 +99,15 @@ export function TitleScreen() {
     initializeFromStorage()
   }, [initializeFromStorage])
 
-  // Fetch leaderboards from API, fall back to generated data
-  // Runs every time TitleScreen mounts (e.g. after finishing a game)
-  // Uses cache-busting to ensure fresh data after game results are recorded
+  // Fetch leaderboards from API
+  // Skip on first mount if we have SSR data; always fetch on subsequent mounts (returning from game)
   useEffect(() => {
+    if (hasInitialData.current && !hasMountedBefore.current) {
+      hasMountedBefore.current = true
+      return
+    }
+    hasMountedBefore.current = true
+
     let cancelled = false
     async function fetchLeaderboards() {
       try {
@@ -110,6 +140,7 @@ export function TitleScreen() {
     return () => { cancelled = true }
   }, [])
 
+  const showAllTimeSkeleton = allTimeLeaderboard.length === 0 && !hasInitialData.current
 
   return (
     <div className="h-full bg-mh-bg overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch">
@@ -238,28 +269,32 @@ export function TitleScreen() {
         <div className="w-full max-w-[320px] mb-6">
           <div className="text-mh-text-dim text-sm mb-3 text-center">ALL-TIME LEADERBOARD</div>
           <div className="border border-mh-border rounded-lg overflow-hidden">
-            {allTimeLeaderboard.map((entry, index) => (
-              <div
-                key={index}
-                className={`flex items-center px-3 py-2 text-sm ${
-                  index < 3 ? 'bg-mh-accent-blue/10' : index % 2 === 1 ? 'bg-mh-border/10' : ''
-                }`}
-              >
-                <span className={`w-10 ${index < 3 ? 'text-mh-accent-blue font-bold' : 'text-mh-text-dim'}`}>
-                  #{index + 1}
-                </span>
-                <span className="flex-1 text-mh-text-main truncate text-left">
-                  {entry.username}
-                </span>
-                <span className={`font-mono text-right ${
-                  entry.score >= 1_000_000_000 ? 'text-mh-profit-green' :
-                  entry.score >= 1_000_000 ? 'text-mh-accent-blue' :
-                  'text-mh-text-main'
-                }`}>
-                  {formatScore(entry.score)}
-                </span>
-              </div>
-            ))}
+            {showAllTimeSkeleton ? (
+              <LeaderboardSkeleton rows={5} />
+            ) : (
+              allTimeLeaderboard.map((entry, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center px-3 py-2 text-sm ${
+                    index < 3 ? 'bg-mh-accent-blue/10' : index % 2 === 1 ? 'bg-mh-border/10' : ''
+                  }`}
+                >
+                  <span className={`w-10 ${index < 3 ? 'text-mh-accent-blue font-bold' : 'text-mh-text-dim'}`}>
+                    #{index + 1}
+                  </span>
+                  <span className="flex-1 text-mh-text-main truncate text-left">
+                    {entry.username}
+                  </span>
+                  <span className={`font-mono text-right ${
+                    entry.score >= 1_000_000_000 ? 'text-mh-profit-green' :
+                    entry.score >= 1_000_000 ? 'text-mh-accent-blue' :
+                    'text-mh-text-main'
+                  }`}>
+                    {formatScore(entry.score)}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
         {/* Worst Scores Leaderboard */}

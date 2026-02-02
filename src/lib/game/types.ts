@@ -217,6 +217,8 @@ export interface GameState {
   buyQty: number
   newsHistory: string[]
   showPortfolio: boolean
+  showPortfolioBeforeAdvance: boolean
+  portfolioAdvancePending: boolean
   // Event chain state
   activeChains: ActiveChain[]
   usedChainIds: string[] // chains already used this game (prevents repeats)
