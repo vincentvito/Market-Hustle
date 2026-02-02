@@ -25,11 +25,13 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <ol className="text-mh-text-main text-sm space-y-3 list-decimal list-inside">
-          <li><span className="text-mh-text-dim">Buy &amp; sell</span> assets each day to grow your portfolio.</li>
-          <li><span className="text-mh-text-dim">Read the news</span> — headlines move prices. Rumors hint at tomorrow.</li>
-          <li><span className="text-mh-text-dim">Survive all days</span> to win. The market gets wilder over time.</li>
-          <li><span className="text-mh-text-dim">Go bankrupt</span> (net worth ≤ $0) and it&apos;s game over.</li>
-          <li><span className="text-mh-text-dim">Leverage &amp; shorts</span> amplify gains — and losses. Use with care.</li>
+          <li><span className="text-mh-text-dim">Start with cash</span> — Buy and sell stocks, crypto, and commodities to grow wealth</li>
+          <li><span className="text-mh-text-dim">Read the news</span> — Headlines move markets. Buy before good news, sell before bad</li>
+          <li><span className="text-mh-text-dim">Advance days</span> — Each day updates prices, triggers events, and pays rental income</li>
+          <li><span className="text-mh-text-dim">Buy real assets</span> — Properties generate passive income; Private Equity unlocks special abilities</li>
+          <li><span className="text-mh-text-dim">Invest in startups</span> — High-risk deals can 10x your money or go to zero</li>
+          <li><span className="text-mh-text-dim">Use PE abilities</span> — Lobbying and destabilization schemes manipulate markets (20% backfire risk)</li>
+          <li><span className="text-mh-text-dim">Maximize net worth</span> — Total assets minus debts. Build an empire before time runs out</li>
         </ol>
 
         <button
