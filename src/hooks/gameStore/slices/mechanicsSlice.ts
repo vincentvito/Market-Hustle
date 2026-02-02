@@ -224,6 +224,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   selectedAsset: null,
   buyQty: 1,
   showPortfolio: false,
+  showPortfolioBeforeAdvance: typeof window !== 'undefined' ? localStorage.getItem('showPortfolioBeforeAdvance') === 'true' : false,
+  portfolioAdvancePending: false,
 
   // Feedback state
   activeSellToast: null,
@@ -401,6 +403,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       buyQty: 1,
       newsHistory: [openingEvent?.headline || 'MARKETS OPEN - GOOD LUCK TRADER'],
       showPortfolio: false,
+      portfolioAdvancePending: false,
       activeChains: [],
       usedChainIds: [],
       todayNews: todayNewsItems,
@@ -1544,8 +1547,15 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
   // Called when user clicks "Next Day" - checks for encounter before advancing
   triggerNextDay: () => {
-    const { day, cash, encounterState, pendingStartupOffer, gameDuration, isCelebrationDay, ownedLuxury } = get()
+    const { day, cash, encounterState, pendingStartupOffer, gameDuration, isCelebrationDay, ownedLuxury, showPortfolioBeforeAdvance, holdings } = get()
     const netWorth = get().getNetWorth()
+
+    // Show portfolio recap before advancing if setting is on and player has positions
+    const hasPositions = Object.values(holdings).some(qty => qty > 0)
+    if (showPortfolioBeforeAdvance && hasPositions) {
+      set({ showPortfolio: true, portfolioAdvancePending: true })
+      return
+    }
 
     // Skip encounter check on celebration days - let the player enjoy their moment!
     if (isCelebrationDay) {
@@ -2004,7 +2014,34 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // UI ACTIONS
   // ============================================================================
 
-  setShowPortfolio: (show: boolean) => set({ showPortfolio: show }),
+  setShowPortfolio: (show: boolean) => set({ showPortfolio: show, ...(show ? {} : { portfolioAdvancePending: false }) }),
+  setShowPortfolioBeforeAdvance: (show: boolean) => {
+    set({ showPortfolioBeforeAdvance: show })
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('showPortfolioBeforeAdvance', String(show))
+    }
+  },
+  confirmAdvance: () => {
+    set({ showPortfolio: false, portfolioAdvancePending: false })
+    // Now run the real advance logic (duplicated encounter check from triggerNextDay)
+    const { day, cash, encounterState, pendingStartupOffer, gameDuration, isCelebrationDay, ownedLuxury } = get()
+    const netWorth = get().getNetWorth()
+    if (isCelebrationDay) {
+      get().nextDay()
+      return
+    }
+    const ownsArtCollection = ownedLuxury.includes('art_collection')
+    const encounterType = rollForEncounter(day + 1, encounterState, cash, netWorth, gameDuration, ownsArtCollection)
+    if (encounterType) {
+      set({
+        pendingEncounter: { type: encounterType },
+        queuedStartupOffer: pendingStartupOffer,
+        pendingStartupOffer: null,
+      })
+    } else {
+      get().nextDay()
+    }
+  },
   setSelectedNews: (news) => set({ selectedNews: news }),
   setShowSettings: (show: boolean) => set({ showSettings: show }),
 

@@ -53,6 +53,10 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
     getInvestmentChange,
     getAvgCost,
     getTotalPortfolioChange,
+    showPortfolioBeforeAdvance,
+    setShowPortfolioBeforeAdvance,
+    portfolioAdvancePending,
+    confirmAdvance,
   } = useGame()
 
   if (!showPortfolio) return null
@@ -515,6 +519,43 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
                 </span>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Advance button when reviewing before advance */}
+        {portfolioAdvancePending && (
+          <div className="p-3 border-t border-mh-border">
+            <button
+              onClick={confirmAdvance}
+              className="w-full h-10 font-mono font-bold text-sm tracking-wider rounded cursor-pointer"
+              style={{
+                background: 'transparent',
+                color: '#c8d8e8',
+                border: '2px solid #c8d8e8',
+                boxShadow: '0 0 10px rgba(200, 216, 232, 0.4), 0 0 20px rgba(200, 216, 232, 0.2)',
+              }}
+            >
+              ADVANCE ▶
+            </button>
+          </div>
+        )}
+
+        {/* Toggle: show portfolio before advancing */}
+        <div
+          className="p-3 border-t border-mh-border flex items-center justify-between cursor-pointer"
+          onClick={() => setShowPortfolioBeforeAdvance(!showPortfolioBeforeAdvance)}
+        >
+          <span className="text-mh-text-dim text-[11px]">Show portfolio before advancing</span>
+          <div
+            className={`w-9 h-5 rounded-full relative transition-colors ${
+              showPortfolioBeforeAdvance ? 'bg-mh-accent-blue' : 'bg-[#1a2a3a]'
+            }`}
+          >
+            <div
+              className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                showPortfolioBeforeAdvance ? 'translate-x-4' : 'translate-x-0.5'
+              }`}
+            />
           </div>
         </div>
       </div>

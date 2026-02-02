@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { loadUserState } from '@/lib/game/persistence'
 import type { UserState } from '@/lib/game/userState'
 import { AuthModal } from '@/components/auth/AuthModal'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 function formatCurrency(value: number): string {
   if (value >= 1_000_000_000) {
@@ -28,7 +29,7 @@ function getStreakEmoji(streak: number): string {
 }
 
 export function SettingsPanel() {
-  const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme } = useGame()
+  const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme, showPortfolioBeforeAdvance, setShowPortfolioBeforeAdvance } = useGame()
   const { user, profile, signOut, loading: authLoading, updateSettings } = useAuth()
 
   // Wrapper to sync settings to Supabase when changed
@@ -145,6 +146,33 @@ export function SettingsPanel() {
               <div className="text-xl font-bold text-mh-text-bright">
                 {winStreak} {getStreakEmoji(winStreak)}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* PREFERENCES */}
+        <div className="p-4 border-b border-mh-border">
+          <div className="text-mh-text-dim text-xs font-bold mb-3 tracking-wider">
+            PREFERENCES
+          </div>
+          <div
+            className="flex items-center justify-between cursor-pointer p-3 rounded border border-mh-border bg-[#0a1015] hover:border-mh-text-dim"
+            onClick={() => setShowPortfolioBeforeAdvance(!showPortfolioBeforeAdvance)}
+          >
+            <div>
+              <div className="text-mh-text-bright text-sm font-bold">Portfolio recap on advance</div>
+              <div className="text-mh-text-dim text-[10px] mt-0.5">Review your positions before each day advances</div>
+            </div>
+            <div
+              className={`w-9 h-5 rounded-full relative transition-colors shrink-0 ml-3 ${
+                showPortfolioBeforeAdvance ? 'bg-mh-accent-blue' : 'bg-[#1a2a3a]'
+              }`}
+            >
+              <div
+                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                  showPortfolioBeforeAdvance ? 'translate-x-4' : 'translate-x-0.5'
+                }`}
+              />
             </div>
           </div>
         </div>
@@ -468,7 +496,14 @@ export function SettingsPanel() {
             👤 ACCOUNT
           </div>
           {authLoading ? (
-            <div className="text-mh-text-dim text-sm">Loading...</div>
+            <div className="space-y-3">
+              <div className="bg-[#0a1015] border border-mh-border rounded p-3 space-y-2">
+                <Skeleton className="w-20 h-3" />
+                <Skeleton className="w-40 h-4" />
+                <Skeleton className="w-24 h-3 mt-2" />
+              </div>
+              <Skeleton className="w-full h-9 rounded" />
+            </div>
           ) : user ? (
             <div className="space-y-3">
               <div className="bg-[#0a1015] border border-mh-border rounded p-3">

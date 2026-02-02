@@ -132,6 +132,8 @@ export interface MechanicsSlice extends GameState {
 
   // UI actions
   setShowPortfolio: (show: boolean) => void
+  setShowPortfolioBeforeAdvance: (show: boolean) => void
+  confirmAdvance: () => void
   setSelectedNews: (news: NewsItem | null) => void
   setShowSettings: (show: boolean) => void
 
