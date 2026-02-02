@@ -78,11 +78,32 @@ import {
   getActiveTopics,
   selectRandomEvent,
   selectRandomChain,
+  selectRandomEventWithDirector,
+  selectRandomChainWithDirector,
   selectRandomStartup,
   selectOutcome,
   selectOutcomeWithBonus,
   getRandomDuration,
 } from '../helpers'
+
+// Import Game Director system
+import {
+  createInitialDirectorState,
+  DEFAULT_DIRECTOR_CONFIG,
+  getDirectorModifiers,
+  updateDirectorState,
+  prepareDirectorForDay,
+  isExcitingEvent,
+  // Second-order effects (ripples)
+  createRippleFromEvent,
+  updateRipples,
+  addRipple,
+  applyCounterRipple,
+  isHighImpactEvent,
+  type DirectorState,
+  type DirectorConfig,
+} from '@/lib/game/director'
+import { getEventSentiment } from '@/lib/game/sentimentHelpers'
 
 // Helper to record game completion to localStorage and Supabase
 function saveGameResult(
@@ -218,7 +239,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // Operations state (PE-based villain actions)
   operationStates: {
     lobby_congress: { operationId: 'lobby_congress', lastUsedDay: null, timesUsed: 0 },
-    resource_extraction: { operationId: 'resource_extraction', lastUsedDay: null, timesUsed: 0 },
     execute_coup: { operationId: 'execute_coup', lastUsedDay: null, timesUsed: 0 },
     plant_story: { operationId: 'plant_story', lastUsedDay: null, timesUsed: 0 },
   },
@@ -226,9 +246,18 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // Luxury assets state
   ownedLuxury: [],
 
+  // Portfolio navigation state (for clicking assets in portfolio)
+  pendingLifestyleAssetId: null,
+  pendingLuxuryAssetId: null,
+
   // PE Abilities state (new one-time villain actions)
   usedPEAbilities: [],
   pendingAbilityEffects: null,
+  pendingPhase2Effects: null,  // Two-phase effects (e.g., Project Chimera Day N+2)
+
+  // Game Director state (narrative pacing system)
+  directorState: createInitialDirectorState(100000),
+  directorConfig: DEFAULT_DIRECTOR_CONFIG,
 
   // ============================================================================
   // GAME CONTROL ACTIONS
@@ -405,7 +434,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       // Operations state (PE-based villain actions)
       operationStates: {
         lobby_congress: { operationId: 'lobby_congress', lastUsedDay: null, timesUsed: 0 },
-        resource_extraction: { operationId: 'resource_extraction', lastUsedDay: null, timesUsed: 0 },
         execute_coup: { operationId: 'execute_coup', lastUsedDay: null, timesUsed: 0 },
         plant_story: { operationId: 'plant_story', lastUsedDay: null, timesUsed: 0 },
       },
@@ -414,12 +442,16 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       // PE Abilities state
       usedPEAbilities: [],
       pendingAbilityEffects: null,
+      pendingPhase2Effects: null,
       userTier: effectiveTier,
       gamesRemaining: remainingAfterStart,
       limitType,
       showDailyLimitModal: false,
       showAnonymousLimitModal: false,
       isUsingProTrial: willUseProTrial,
+      // Game Director state
+      directorState: createInitialDirectorState(100000),
+      directorConfig: DEFAULT_DIRECTOR_CONFIG,
     })
 
     // Record play timestamp for retention tracking (localStorage + Supabase)
@@ -437,7 +469,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   },
 
   nextDay: () => {
-    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activePEExitOffer, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, gossipState, assetMoods, usedFlavorHeadlines, leveragedPositions, shortPositions, ownedLuxury, operationStates, pendingAbilityEffects } = get()
+    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activePEExitOffer, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, gossipState, assetMoods, usedFlavorHeadlines, leveragedPositions, shortPositions, ownedLuxury, operationStates, pendingAbilityEffects, pendingPhase2Effects, directorState, directorConfig, gameDuration, initialNetWorth } = get()
     let effects: Record<string, number> = {}
     let updatedEscalations = [...activeEscalations]
     const todayNewsItems: NewsItem[] = []
@@ -464,40 +496,67 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         effects[assetId] = (effects[assetId] || 0) + effect
       })
 
-      // Add news headline
-      const abilityName = pendingAbilityEffects.abilityId.replace(/_/g, ' ').toUpperCase()
-      if (pendingAbilityEffects.isBackfire) {
-        todayNewsItems.push({
-          headline: `⚠️ BACKFIRE: ${abilityName} OPERATION EXPOSED`,
-          effects: pendingAbilityEffects.effects,
-          labelType: 'breaking',
-        })
-      } else {
-        todayNewsItems.push({
-          headline: `🎯 ${abilityName} SUCCESSFUL`,
-          effects: pendingAbilityEffects.effects,
-          labelType: 'breaking',
-        })
-      }
+      // Add news headline (use stored eventHeadline from rumor → event buildup)
+      const prefix = pendingAbilityEffects.isBackfire ? '⚠️' : '🎯'
+      const fallbackName = pendingAbilityEffects.abilityId.replace(/_/g, ' ').toUpperCase()
+      const eventHeadline = pendingAbilityEffects.eventHeadline
+        || (pendingAbilityEffects.isBackfire ? `BACKFIRE: ${fallbackName} OPERATION EXPOSED` : `${fallbackName} SUCCESSFUL`)
+
+      todayNewsItems.push({
+        headline: `${prefix} ${eventHeadline}`,
+        effects: pendingAbilityEffects.effects,
+        labelType: 'breaking',
+      })
 
       clearedPendingEffects = true
     }
 
     // ===========================================================================
-    // STEP 0.5: LUXURY ASSET DAILY COSTS
+    // STEP -0.5: APPLY PENDING PHASE 2 EFFECTS (two-phase abilities like Chimera)
     // ===========================================================================
-    const luxuryDailyCost = ownedLuxury.reduce((sum, id) => {
+    let clearedPhase2Effects = false
+    if (pendingPhase2Effects && newDay >= pendingPhase2Effects.triggerOnDay) {
+      // Apply phase 2 price effects
+      Object.entries(pendingPhase2Effects.effects).forEach(([assetId, effect]) => {
+        effects[assetId] = (effects[assetId] || 0) + effect
+      })
+
+      // Add phase 2 news headline
+      todayNewsItems.push({
+        headline: `📈 ${pendingPhase2Effects.headline}`,
+        effects: pendingPhase2Effects.effects,
+        labelType: 'breaking',
+      })
+
+      clearedPhase2Effects = true
+    }
+
+    // ===========================================================================
+    // STEP 0.5: LUXURY ASSET DAILY COSTS (itemized per asset)
+    // ===========================================================================
+    const luxuryCostLabels: Record<string, string> = {
+      private_jet: 'JET MAINTENANCE',
+      mega_yacht: 'YACHT UPKEEP',
+      la_lakers: 'TEAM PAYROLL',
+      art_collection: 'ART INSURANCE',
+    }
+
+    let luxuryDailyCost = 0
+    ownedLuxury.forEach(id => {
       const asset = getLuxuryAsset(id)
-      return sum + (asset?.dailyCost || 0)
-    }, 0)
+      if (asset && asset.dailyCost > 0) {
+        luxuryDailyCost += asset.dailyCost
+        const label = luxuryCostLabels[id] || `${asset.name.toUpperCase()} COSTS`
+        todayNewsItems.push({
+          headline: `${label}: -$${asset.dailyCost.toLocaleString('en-US')}`,
+          effects: {},
+          labelType: 'none'
+        })
+      }
+    })
 
     if (luxuryDailyCost > 0) {
       cashChange -= luxuryDailyCost
-      todayNewsItems.push({
-        headline: `LUXURY COSTS: -$${luxuryDailyCost.toLocaleString()}`,
-        effects: {},
-        labelType: 'none'
-      })
     }
 
     // Calculate if we can afford tomorrow's costs (for warning)
@@ -517,7 +576,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const ownsTenutaLuna = ownedLifestyle.some(o => o.assetId === 'pe_tenuta_luna')
     const ownsApexMedia = ownedLifestyle.some(o => o.assetId === 'pe_apex_media')
     // Note: Iron Oak's +5% positive event frequency is not yet implemented
-    const ownsTerralith = ownedLifestyle.some(o => o.assetId === 'pe_terralith_minerals')
     const ownsArtCollection = ownedLuxury.includes('art_collection')
 
     // Negative event damage reduction (Tenuta -10%, Apex -20%, stacks)
@@ -551,7 +609,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // Add lifestyle news if there's any cash flow (no label - these are personal finance)
     if (propertyIncome > 0) {
       todayNewsItems.push({
-        headline: `RENTAL INCOME: +$${Math.round(propertyIncome).toLocaleString()}`,
+        headline: `RENTAL INCOME: +$${Math.round(propertyIncome).toLocaleString('en-US')}`,
         effects: {},
         labelType: 'none'
       })
@@ -588,7 +646,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
             ? `$${(lossAmount / 1_000_000_000).toFixed(1)}B`
             : lossAmount >= 1_000_000
               ? `$${(lossAmount / 1_000_000).toFixed(1)}M`
-              : `$${Math.round(lossAmount).toLocaleString()}`
+              : `$${Math.round(lossAmount).toLocaleString('en-US')}`
           todayNewsItems.push({
             headline: `💀 ${asset.name.toUpperCase()} COLLAPSES - ${formattedLoss} LOST`,
             effects: {},
@@ -603,7 +661,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // Generate PE RETURNS news AFTER failure check (shows actual income, not phantom)
     if (peReturns > 0) {
       todayNewsItems.push({
-        headline: `PE RETURNS: +$${Math.round(peReturns).toLocaleString()}`,
+        headline: `PE RETURNS: +$${Math.round(peReturns).toLocaleString('en-US')}`,
         effects: {},
         labelType: 'none'
       })
@@ -839,6 +897,48 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     updatedChains = remainingChains
 
+    // ===========================================================================
+    // GAME DIRECTOR: Prepare modifiers for event selection
+    // ===========================================================================
+    // Prepare director state for this day (updates phase)
+    let preparedDirectorState = prepareDirectorForDay(directorState, newDay, gameDuration)
+
+    // IMPORTANT: Decay existing ripples BEFORE event selection
+    // This ensures yesterday's ripples affect today's events with decayed strength
+    preparedDirectorState = {
+      ...preparedDirectorState,
+      secondOrder: updateRipples(preparedDirectorState.secondOrder, newDay),
+    }
+
+    // Get recent categories from news history for variety enforcement
+    const recentCategoriesForDirector = newsHistory
+      .slice(-5)
+      .map(headline => {
+        // Extract category from headline (simplified - relies on event effects)
+        const matchingEvent = EVENTS.find(e => e.headline === headline)
+        return matchingEvent?.category
+      })
+      .filter((cat): cat is string => typeof cat === 'string')
+
+    // Generate director modifiers
+    const directorModifiers = getDirectorModifiers(
+      preparedDirectorState,
+      directorConfig,
+      {
+        day: newDay,
+        gameDuration,
+        recentCategories: recentCategoriesForDirector,
+      }
+    )
+
+    // Adjust event probability based on director (dopamine debt increases chance)
+    const directorEventBoost = preparedDirectorState.dopamineDebt > 0.7 ? 0.15 : 0
+    const chainProbabilityBoost = (directorModifiers.chainProbabilityMultiplier - 1) * 0.1
+
+    // Track if we started a new chain (for director state update)
+    let chainStartedToday = false
+    let eventFiredToday: MarketEvent | null = null
+
     // 3. Determine if we should start a new chain or fire a single event
     // Skip entirely if story already fired today (prevents headline stacking)
     // 30% chance for chain, 70% for single event (when event happens)
@@ -849,15 +949,30 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // Compute blocked categories (active stories + active chains) to prevent conflicts
     const blockedCategories = getActiveTopics(updatedStories, updatedChains)
 
+    // Director can force an event type
+    const forceChain = directorModifiers.forceEventType === 'chain' && !hasActiveChain
+    const forceEvent = directorModifiers.forceEventType === 'spike'
+
     // Only roll for chain/event if no story fired today (prevents stacking)
-    if (!storyFiredToday && eventRoll < 0.45) {
-      // Event happens (45% base chance)
+    // Director boost increases event probability
+    if (!storyFiredToday && (eventRoll < (0.45 + directorEventBoost) || forceChain || forceEvent)) {
+      // Event happens (45% base chance + director boost)
       const chainOrSingleRoll = Math.random()
 
-      if (!hasActiveChain && chainOrSingleRoll < 0.30) {
-        // Start a new chain (30% of events = ~13.5% overall)
-        // Pass blocked categories and assetMoods to avoid starting chain that conflicts
-        const newChain = selectRandomChain(updatedUsedChainIds, blockedCategories, updatedAssetMoods, newDay)
+      // Adjusted chain probability with director influence
+      const adjustedChainProb = 0.30 + chainProbabilityBoost
+
+      if (!hasActiveChain && (forceChain || (!forceEvent && chainOrSingleRoll < adjustedChainProb))) {
+        // Start a new chain (director-influenced probability)
+        // Use director-aware selection with category boosts, preferences, and ripple modifiers
+        const newChain = selectRandomChainWithDirector(
+          updatedUsedChainIds,
+          blockedCategories,
+          updatedAssetMoods,
+          newDay,
+          directorModifiers,
+          preparedDirectorState.secondOrder
+        )
         if (newChain) {
           const activeChain: ActiveChain = {
             chainId: newChain.id,
@@ -872,18 +987,26 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
           // Chain rumor is displayed via the 'rumors' state in NewsPanel
           // Don't add to todayNewsItems to avoid duplication
           hasMarketNews = true
+          chainStartedToday = true
           // Record mood from chain rumor for conflict prevention
           updatedAssetMoods = recordChainRumorMood(newChain, newDay, updatedAssetMoods)
         }
       } else {
-        // Single event (70% of events) - use escalation-adjusted probabilities
-        // Pass blocked categories and assetMoods to avoid event that conflicts
-        const e = selectRandomEvent(updatedEscalations, newDay, blockedCategories, updatedAssetMoods)
+        // Single event - use director-aware selection with sentiment bias, volatility scaling, and ripple modifiers
+        const e = selectRandomEventWithDirector(
+          updatedEscalations,
+          newDay,
+          blockedCategories,
+          updatedAssetMoods,
+          directorModifiers,
+          preparedDirectorState.secondOrder
+        )
 
         if (e) {
           // Single events = NEWS
           todayNewsItems.push({ headline: e.headline, effects: e.effects, labelType: 'news' })
           hasMarketNews = true
+          eventFiredToday = e
           Object.entries(e.effects).forEach(([assetId, effect]) => {
             effects[assetId] = (effects[assetId] || 0) + effect
           })
@@ -957,8 +1080,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
         // Build result message
         const resultMessage = inv.outcome.multiplier === 0
-          ? `💀 LOST $${inv.amount.toLocaleString()} ON ${inv.startupName}`
-          : `${isProfit ? '🎉' : '😓'} ${inv.startupName}: ${isProfit ? '+' : ''}$${Math.round(profitLoss).toLocaleString()} (${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(0)}%)`
+          ? `💀 LOST $${inv.amount.toLocaleString('en-US')} ON ${inv.startupName}`
+          : `${isProfit ? '🎉' : '😓'} ${inv.startupName}: ${isProfit ? '+' : ''}$${Math.round(profitLoss).toLocaleString('en-US')} (${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(0)}%)`
 
         // Track most significant result (largest absolute profit/loss)
         const absoluteChange = Math.abs(profitLoss)
@@ -986,8 +1109,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
         // Add news headline (startup resolution = NEWS)
         const headlineWithAmount = inv.outcome.multiplier === 0
-          ? `${inv.outcome.headline} - YOUR $${inv.amount.toLocaleString()} INVESTMENT LOST`
-          : `${inv.outcome.headline} - YOU MADE $${Math.round(payout).toLocaleString()}!`
+          ? `${inv.outcome.headline} - YOUR $${inv.amount.toLocaleString('en-US')} INVESTMENT LOST`
+          : `${inv.outcome.headline} - YOU MADE $${Math.round(payout).toLocaleString('en-US')}!`
         todayNewsItems.push({ headline: headlineWithAmount, effects: inv.outcome.marketEffects || {}, labelType: 'news' })
 
         // Merge market effects
@@ -1092,16 +1215,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       Object.keys(effects).forEach(assetId => {
         if (effects[assetId] < 0) {
           effects[assetId] = effects[assetId] * (1 - negativeReduction)
-        }
-      })
-    }
-
-    // Commodity boost (Terralith +20% on positive commodity moves)
-    if (ownsTerralith) {
-      const commodities = ['oil', 'gold', 'coffee', 'uranium', 'lithium']
-      commodities.forEach(c => {
-        if (effects[c] && effects[c] > 0) {
-          effects[c] = effects[c] * 1.20
         }
       })
     }
@@ -1288,6 +1401,62 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       }
     }
 
+    // ===========================================================================
+    // GAME DIRECTOR: Update director state at end of day
+    // ===========================================================================
+    // Determine if this was an "exciting" day for dopamine tracking
+    const hadExcitingEvent = isExcitingEvent(
+      eventFiredToday ? Object.values(eventFiredToday.effects).reduce((sum, e) => sum + Math.abs(e), 0) : null,
+      chainStartedToday,
+      chainResolvedToday
+    )
+
+    // Update director state with today's results
+    let updatedDirectorState = updateDirectorState(
+      preparedDirectorState,
+      {
+        day: newDay,
+        gameDuration,
+        netWorth: nw,
+        initialNetWorth,
+        hadMarketEvent: hadExcitingEvent || hasMarketNews,
+        eventEffects: eventFiredToday?.effects || null,
+        hadChainResolution: chainResolvedToday,
+      },
+      directorConfig
+    )
+
+    // ===========================================================================
+    // SECOND-ORDER EFFECTS: Create new ripples from today's events
+    // ===========================================================================
+    // Note: Ripple decay already happened at start of day (before event selection)
+    // New ripples created here will affect TOMORROW's event selection
+    if (eventFiredToday) {
+      const newRipple = createRippleFromEvent(
+        eventFiredToday.headline,
+        eventFiredToday.category,
+        eventFiredToday.effects,
+        newDay,
+        updatedDirectorState.currentPhase
+      )
+      if (newRipple) {
+        updatedDirectorState = {
+          ...updatedDirectorState,
+          secondOrder: addRipple(updatedDirectorState.secondOrder, newRipple),
+        }
+      }
+
+      // Apply counter-ripple if event sentiment opposes current ripple sentiment
+      // (bullish events weaken bearish ripples, bearish events weaken bullish ripples)
+      const eventSentiment = getEventSentiment(eventFiredToday)
+      if (eventSentiment === 'bullish' || eventSentiment === 'bearish') {
+        updatedDirectorState = {
+          ...updatedDirectorState,
+          secondOrder: applyCounterRipple(updatedDirectorState.secondOrder, eventSentiment),
+        }
+      }
+    }
+
     // 8. Update state
     const headlines = todayNewsItems.map(n => n.headline)
     set({
@@ -1336,12 +1505,16 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       usedFlavorHeadlines: updatedFlavorHeadlines,
       // Clear pending PE ability effects after they've been applied
       pendingAbilityEffects: clearedPendingEffects ? null : pendingAbilityEffects,
+      // Clear pending phase 2 effects after they've been applied
+      pendingPhase2Effects: clearedPhase2Effects ? null : pendingPhase2Effects,
+      // Update Game Director state
+      directorState: updatedDirectorState,
     })
 
     // 9. Check win/lose conditions
     // Re-calculate net worth after all updates (includes margin positions)
     const finalNetWorth = get().getNetWorth()
-    const { gameDuration } = get()
+    // Note: gameDuration already destructured at top of function
 
     if (finalNetWorth < 0) {
       // Margin trading bankruptcy - determine specific reason
@@ -1579,7 +1752,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     set({
       cash: Math.round((cash + cashReceived) * 100) / 100,
       shortPositions: [...shortPositions, newPosition],
-      activeBuyMessage: `SHORTED ${qty} ${asset?.name} @ $${price.toLocaleString()}`,
+      activeBuyMessage: `SHORTED ${qty} ${asset?.name} @ $${price.toLocaleString('en-US')}`,
     })
   },
 
@@ -1601,7 +1774,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const asset = ASSETS.find(a => a.id === position.assetId)
     const plSign = profitLoss >= 0 ? '+' : ''
     const emoji = profitLoss >= 0 ? '📈' : '📉'
-    const tradeMessage = `${emoji} COVERED ${position.qty} ${asset?.name}: ${plSign}$${Math.abs(profitLoss).toLocaleString()}`
+    const tradeMessage = `${emoji} COVERED ${position.qty} ${asset?.name}: ${plSign}$${Math.abs(profitLoss).toLocaleString('en-US')}`
 
     const newShortPositions = shortPositions.filter(p => p.id !== positionId)
 
@@ -1637,7 +1810,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     // Allow negative afterDebt (underwater position) - bankruptcy check at end-of-day
     const warningMessage = afterDebt < 0 ? ' (UNDERWATER!)' : ''
-    const tradeMessage = `${emoji} CLOSED ${position.leverage}x ${asset?.name}: ${plSign}$${Math.abs(profitLoss).toLocaleString()}${warningMessage}`
+    const tradeMessage = `${emoji} CLOSED ${position.leverage}x ${asset?.name}: ${plSign}$${Math.abs(profitLoss).toLocaleString('en-US')}${warningMessage}`
 
     set({
       cash: Math.round((cash + afterDebt) * 100) / 100,
@@ -1692,7 +1865,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       activeInvestments: [...activeInvestments, newInvestment],
       usedStartupIds: [...usedStartupIds, pendingStartupOffer.id],
       pendingStartupOffer: null,
-      activeInvestmentBuyMessage: `INVESTED $${amount.toLocaleString()} IN ${pendingStartupOffer.name}`,
+      activeInvestmentBuyMessage: `INVESTED $${amount.toLocaleString('en-US')} IN ${pendingStartupOffer.name}`,
     })
   },
 
@@ -1777,7 +1950,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     else emoji = '🔥'
 
     const plSign = profitLoss >= 0 ? '+' : ''
-    const plFormatted = `${plSign}$${Math.abs(profitLoss).toLocaleString()}`
+    const plFormatted = `${plSign}$${Math.abs(profitLoss).toLocaleString('en-US')}`
     const pctFormatted = `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(0)}%`
     const saleMessage = `${emoji} SOLD ${asset.name}: ${plFormatted} (${pctFormatted})`
 
@@ -1807,7 +1980,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const exitType = activePEExitOffer.type === 'ipo' ? 'IPO' : 'ACQUISITION'
     const emoji = activePEExitOffer.type === 'ipo' ? '🚀' : '💰'
     const plSign = profitLoss >= 0 ? '+' : ''
-    const plFormatted = `${plSign}$${Math.abs(profitLoss).toLocaleString()}`
+    const plFormatted = `${plSign}$${Math.abs(profitLoss).toLocaleString('en-US')}`
     const pctFormatted = `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(0)}%`
     const saleMessage = `${emoji} ${exitType}: ${asset.name} - ${plFormatted} (${pctFormatted})`
 
@@ -2114,8 +2287,20 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     set({
       cash: cash + sellPrice,
       ownedLuxury: ownedLuxury.filter(id => id !== assetId),
-      activeBuyMessage: `${asset.emoji} SOLD FOR $${sellPrice.toLocaleString()}`,
+      activeBuyMessage: `${asset.emoji} SOLD FOR $${sellPrice.toLocaleString('en-US')}`,
     })
+  },
+
+  // ============================================================================
+  // PORTFOLIO NAVIGATION ACTIONS
+  // ============================================================================
+
+  setPendingLifestyleAsset: (assetId: string | null) => {
+    set({ pendingLifestyleAssetId: assetId })
+  },
+
+  setPendingLuxuryAsset: (assetId: LuxuryAssetId | null) => {
+    set({ pendingLuxuryAssetId: assetId })
   },
 
   // ============================================================================
@@ -2123,10 +2308,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // ============================================================================
 
   executePEAbility: (abilityId, peAssetId) => {
-    const { cash, day, ownedLifestyle, usedPEAbilities } = get()
+    const { cash, day, ownedLifestyle, usedPEAbilities, todayNews } = get()
 
-    // Import ability data
+    // Import ability data and headlines
     const { PE_ABILITIES, getPEAbilities } = require('@/lib/game/lifestyleAssets')
+    const { ABILITY_HEADLINES } = require('@/lib/game/abilityHeadlines')
     const ability = PE_ABILITIES[abilityId]
     if (!ability) {
       set({ activeErrorMessage: 'INVALID ABILITY' })
@@ -2168,12 +2354,20 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // Determine effects
     const effects = didBackfire ? (ability.backfireEffects.priceEffects || {}) : ability.successEffects
 
+    // Get headlines for rumor → event buildup
+    const headlines = ABILITY_HEADLINES[abilityId]
+    const rumorHeadline = headlines?.rumor || `${ability.name.toUpperCase()} OPERATION UNDERWAY`
+    const eventHeadline = didBackfire
+      ? (headlines?.backfire || `${ability.name.toUpperCase()} OPERATION EXPOSED`)
+      : (headlines?.success || `${ability.name.toUpperCase()} SUCCESSFUL`)
+
     // Create pending effects for next day
     const pendingEffects = {
       abilityId,
       effects,
       isBackfire: didBackfire,
       peAssetId,
+      eventHeadline, // Pre-computed headline for Day N+1
       additionalConsequences: didBackfire ? {
         losePE: ability.backfireEffects.losePE,
         fine: ability.backfireEffects.fine,
@@ -2220,12 +2414,29 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       }
     }
 
+    // Add rumor to today's news (shows immediately on Day N)
+    const rumorNewsItem = {
+      headline: `🕵️ ${rumorHeadline}`,
+      effects: {}, // Rumors have no immediate market effect
+      labelType: 'rumor' as const,
+    }
+
+    // Queue phase 2 effects if ability has them and didn't backfire
+    const phase2Effects = (!didBackfire && ability.phase2Effects) ? {
+      abilityId,
+      effects: ability.phase2Effects.effects,
+      headline: ability.phase2Effects.headline,
+      triggerOnDay: day + 2, // Day N+2 (Day N = today, Day N+1 = phase 1, Day N+2 = phase 2)
+    } : null
+
     set({
       cash: finalCash,
       usedPEAbilities: newUsedAbilities,
       pendingAbilityEffects: pendingEffects,
+      pendingPhase2Effects: phase2Effects,
       ownedLifestyle: updatedOwnedLifestyle,
       activeBuyMessage: message,
+      todayNews: [...todayNews, rumorNewsItem], // Add rumor to news
     })
   },
 

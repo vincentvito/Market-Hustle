@@ -2,34 +2,38 @@
 
 import { useGame } from '@/hooks/useGame'
 import { ASSETS } from '@/lib/game/assets'
-import { LIFESTYLE_ASSETS, RISK_TIER_COLORS, RISK_TIER_LABELS } from '@/lib/game/lifestyleAssets'
+import { LIFESTYLE_ASSETS, LUXURY_ASSETS, RISK_TIER_COLORS, RISK_TIER_LABELS, getLuxuryAsset } from '@/lib/game/lifestyleAssets'
+import { formatPrice, formatLargePrice, formatCompact } from '@/lib/utils/formatMoney'
+import type { LuxuryAssetId } from '@/lib/game/types'
 
-function formatPrice(p: number): string {
-  if (p >= 1_000_000) return `${(p / 1_000_000).toFixed(1)}M`
-  if (p >= 1000) return `${(p / 1000).toFixed(1)}K`
-  if (p >= 100) return p.toFixed(0)
-  if (p >= 10) return p.toFixed(1)
-  return p.toFixed(2)
-}
+// Helper to get PE ability description for portfolio display
+function getPEAbilityDescription(assetId: string, dailyReturn?: number): string | null {
+  const abilityDescriptions: Record<string, string> = {
+    pe_sals_corner: 'Unlocks lobbying abilities',
+    pe_blackstone_services: 'Unlocks destabilization operations',
+    pe_lazarus_genomics: 'Unlocks bioweapon research',
+    pe_apex_media: 'Unlocks misinformation campaigns',
+  }
 
-function formatLargePrice(value: number): string {
-  if (value >= 1_000_000_000) {
-    return `$${(value / 1_000_000_000).toFixed(1)}B`
+  if (abilityDescriptions[assetId]) {
+    return abilityDescriptions[assetId]
   }
-  if (value >= 1_000_000) {
-    return `$${(value / 1_000_000).toFixed(1)}M`
+
+  // Passive PE assets show daily return
+  if (dailyReturn) {
+    return `+${(dailyReturn * 100).toFixed(0)}%/day income`
   }
-  if (value >= 1_000) {
-    return `$${(value / 1_000).toFixed(0)}K`
-  }
-  return `$${value.toFixed(0)}`
+
+  return null
 }
 
 interface PortfolioOverlayProps {
   onSelectAsset?: (assetId: string) => void
+  onSelectLifestyle?: (assetId: string) => void
+  onSelectLuxury?: (assetId: LuxuryAssetId) => void
 }
 
-export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
+export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLuxury }: PortfolioOverlayProps) {
   const {
     showPortfolio,
     setShowPortfolio,
@@ -42,6 +46,7 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
     lifestylePrices,
     leveragedPositions,
     shortPositions,
+    ownedLuxury,
     getNetWorth,
     getPortfolioValue,
     getPortfolioChange,
@@ -71,7 +76,7 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
           <div>
             <div className="text-mh-text-dim text-[10px]">PORTFOLIO VALUE</div>
             <div className="text-mh-text-bright text-2xl font-bold">
-              ${portfolioValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              {formatCompact(portfolioValue)}
             </div>
             <div className="flex gap-3 mt-1 text-[10px]">
               <span className="text-mh-text-dim">
@@ -134,7 +139,7 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
                   </div>
                   <div className="text-right ml-4">
                     <div className="text-mh-accent-blue font-bold text-sm mb-1">
-                      ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {formatCompact(value)}
                     </div>
                     <div
                       className={`text-xs font-bold ${
@@ -195,12 +200,12 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
                       {pos.qty} shares @ ${formatPrice(pos.entryPrice)}
                     </div>
                     <div className="text-mh-text-dim text-[10px] mt-0.5">
-                      Debt: ${pos.debtAmount.toLocaleString()}
+                      Debt: {formatCompact(pos.debtAmount)}
                     </div>
                   </div>
                   <div className="text-right ml-4">
                     <div className={`font-bold text-sm mb-1 ${isUnderwater ? 'text-mh-loss-red' : 'text-mh-accent-blue'}`}>
-                      ${equity.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {formatCompact(equity)}
                     </div>
                     <div
                       className={`text-xs font-bold ${
@@ -260,12 +265,12 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
                       {pos.qty} shares @ ${formatPrice(pos.entryPrice)}
                     </div>
                     <div className="text-mh-text-dim text-[10px] mt-0.5">
-                      Received: ${pos.cashReceived.toLocaleString()}
+                      Received: {formatCompact(pos.cashReceived)}
                     </div>
                   </div>
                   <div className="text-right ml-4">
                     <div className="text-yellow-500 font-bold text-sm mb-1">
-                      -${currentLiability.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      -{formatCompact(currentLiability)}
                     </div>
                     <div
                       className={`text-xs font-bold ${
@@ -311,7 +316,7 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
                   </div>
                   <div className="text-right ml-4">
                     <div className="text-mh-accent-blue font-bold text-sm mb-1">
-                      ${inv.amount.toLocaleString()}
+                      {formatCompact(inv.amount)}
                     </div>
                     <div className="text-mh-text-dim text-[10px]">
                       {daysRemaining > 0
@@ -345,7 +350,10 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
               return (
                 <div
                   key={owned.assetId}
-                  className="py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center"
+                  onClick={() => onSelectLifestyle?.(owned.assetId)}
+                  className={`py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center ${
+                    onSelectLifestyle ? 'cursor-pointer hover:bg-[#1a2a3a]/50 active:bg-[#1a2a3a]' : ''
+                  }`}
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -375,6 +383,12 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
                     <div className="text-mh-text-dim text-[11px]">
                       Bought Day {owned.purchaseDay} for {formatLargePrice(owned.purchasePrice)}
                     </div>
+                    {/* PE ability/income description */}
+                    {asset.category === 'private_equity' && (
+                      <div className="text-yellow-400 text-[11px] font-medium mt-0.5">
+                        {getPEAbilityDescription(asset.id, asset.dailyReturn)}
+                      </div>
+                    )}
                     {/* Allocation bar */}
                     <div className="mt-1.5 h-1 bg-[#1a2a3a] rounded-sm overflow-hidden">
                       <div
@@ -406,34 +420,98 @@ export function PortfolioOverlay({ onSelectAsset }: PortfolioOverlayProps) {
           </div>
         )}
 
+        {/* Luxury Assets Section */}
+        {ownedLuxury.length > 0 && (
+          <div className="border-t border-mh-border">
+            <div className="px-4 py-2 bg-[#0a0d10]">
+              <div className="text-purple-400 text-[10px] font-bold tracking-wider">
+                ✨ LUXURY ASSETS
+              </div>
+            </div>
+            {ownedLuxury.map(luxuryId => {
+              const asset = getLuxuryAsset(luxuryId)
+              if (!asset) return null
+              const currentValue = asset.basePrice
+              const sellValue = Math.floor(currentValue * 0.80)
+              const pctOfPortfolio = portfolioValue > 0 ? (currentValue / portfolioValue) * 100 : 0
+
+              return (
+                <div
+                  key={luxuryId}
+                  onClick={() => onSelectLuxury?.(luxuryId)}
+                  className={`py-3 px-4 border-b border-[#1a2a3a] flex justify-between items-center ${
+                    onSelectLuxury ? 'cursor-pointer hover:bg-[#1a2a3a]/50 active:bg-[#1a2a3a]' : ''
+                  }`}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="text-base">{asset.emoji}</span>
+                      <span className="text-mh-text-bright font-bold text-sm">
+                        {asset.name}
+                      </span>
+                    </div>
+                    <div className="text-mh-text-dim text-[11px]">
+                      {asset.dailyCost > 0 ? `${formatLargePrice(asset.dailyCost)}/day upkeep` : 'No upkeep'}
+                    </div>
+                    {/* Allocation bar */}
+                    <div className="mt-1.5 h-1 bg-[#1a2a3a] rounded-sm overflow-hidden">
+                      <div
+                        className="h-full bg-purple-500"
+                        style={{ width: `${Math.min(pctOfPortfolio, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-right ml-4">
+                    <div className="text-purple-400 font-bold text-sm mb-1">
+                      {formatLargePrice(currentValue)}
+                    </div>
+                    <div className="text-mh-loss-red text-xs font-bold">
+                      Sells for {formatLargePrice(sellValue)}
+                    </div>
+                    <div className="text-mh-text-dim text-[10px] mt-0.5">
+                      {pctOfPortfolio.toFixed(1)}% of portfolio
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
         {/* Total row */}
         <div className="p-4 border-t border-mh-border flex justify-between items-center bg-[#0a0f14]">
           <div className="text-mh-text-dim font-bold">NET WORTH</div>
           <div className="text-right">
             <div className="text-mh-text-bright font-bold text-lg">
-              ${netWorth.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              {formatCompact(netWorth)}
             </div>
             <div className="text-mh-text-dim text-[10px] mt-0.5">
-              ${cash.toLocaleString()} cash
+              {formatCompact(cash)} cash
               {activeInvestments.length > 0 && (
-                <span className="text-mh-news"> + ${activeInvestments.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()} startups</span>
+                <span className="text-mh-news"> + {formatCompact(activeInvestments.reduce((sum, inv) => sum + inv.amount, 0))} startups</span>
               )}
               {ownedLifestyle.length > 0 && (
-                <span className="text-mh-accent-blue"> + {formatLargePrice(ownedLifestyle.reduce((sum, owned) => sum + (lifestylePrices[owned.assetId] || 0), 0))} lifestyle</span>
+                <span className="text-mh-accent-blue"> + {formatCompact(ownedLifestyle.reduce((sum, owned) => sum + (lifestylePrices[owned.assetId] || 0), 0))} lifestyle</span>
+              )}
+              {ownedLuxury.length > 0 && (
+                <span className="text-purple-400"> + {formatCompact(ownedLuxury.reduce((sum, id) => {
+                  const asset = getLuxuryAsset(id)
+                  return sum + (asset?.basePrice || 0)
+                }, 0))} luxury</span>
               )}
               {leveragedPositions.length > 0 && (
                 <span className="text-mh-accent-blue">
-                  {' '}+ ${leveragedPositions.reduce((sum, pos) => {
+                  {' '}+ {formatCompact(leveragedPositions.reduce((sum, pos) => {
                     const currentValue = pos.qty * (prices[pos.assetId] || 0)
                     return sum + (currentValue - pos.debtAmount)
-                  }, 0).toLocaleString()} leveraged
+                  }, 0))} leveraged
                 </span>
               )}
               {shortPositions.length > 0 && (
                 <span className="text-yellow-500">
-                  {' '}- ${shortPositions.reduce((sum, pos) => {
+                  {' '}- {formatCompact(shortPositions.reduce((sum, pos) => {
                     return sum + pos.qty * (prices[pos.assetId] || 0)
-                  }, 0).toLocaleString()} short
+                  }, 0))} short
                 </span>
               )}
             </div>

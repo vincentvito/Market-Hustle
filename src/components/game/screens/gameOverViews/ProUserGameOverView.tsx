@@ -97,7 +97,7 @@ export function ProUserGameOverView() {
         <div
           className={`text-3xl ${netWorth >= 0 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'}`}
         >
-          ${netWorth.toLocaleString()}
+          ${netWorth.toLocaleString('en-US')}
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export function ProUserGameOverView() {
               {leveragedLosses.map((p, i) => (
                 <div key={i} className="text-sm text-mh-loss-red flex justify-between">
                   <span>{p.leverage}x {p.name}</span>
-                  <span>${p.pl.toLocaleString()}{p.isUnderwater ? ' ⚠️' : ''}</span>
+                  <span>${p.pl.toLocaleString('en-US')}{p.isUnderwater ? ' ⚠️' : ''}</span>
                 </div>
               ))}
             </div>
@@ -124,14 +124,14 @@ export function ProUserGameOverView() {
               {shortLosses.map((p, i) => (
                 <div key={i} className="text-sm text-mh-loss-red flex justify-between">
                   <span>SHORT {p.name}</span>
-                  <span>${p.pl.toLocaleString()}</span>
+                  <span>${p.pl.toLocaleString('en-US')}</span>
                 </div>
               ))}
             </div>
           )}
 
           <div className="text-mh-text-dim text-xs pt-2 border-t border-mh-border mt-2">
-            Cash remaining: ${cash.toLocaleString()}
+            Cash remaining: ${cash.toLocaleString('en-US')}
           </div>
         </div>
       )}

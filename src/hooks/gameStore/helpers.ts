@@ -13,7 +13,13 @@ import {
   hasEventConflict,
   hasChainConflict,
   MAX_CONFLICT_RETRIES,
+  getEventSentiment,
 } from '@/lib/game/sentimentHelpers'
+import type { DirectorEventModifiers, SecondOrderState } from '@/lib/game/director'
+import {
+  shouldSurpriseBypass,
+  combineSentiment,
+} from '@/lib/game/director'
 import { loadUserState, recordGameEnd } from '@/lib/game/persistence'
 import { generateGameId, type GameOutcome, type GameHistoryEntry } from '@/lib/game/userState'
 import type {
@@ -318,6 +324,264 @@ export function selectRandomChain(
 
   // After MAX_CONFLICT_RETRIES attempts, return null (no chain starts today)
   return null
+}
+
+// ============================================================================
+// DIRECTOR-AWARE EVENT SELECTION
+// ============================================================================
+
+/**
+ * Select a random event with Director and Second-Order (Ripple) modifiers applied
+ * This enhances the base selection with narrative pacing and event clustering
+ */
+export function selectRandomEventWithDirector(
+  activeEscalations: ActiveEscalation[],
+  currentDay: number,
+  blockedCategories: Set<string>,
+  assetMoods: AssetMood[],
+  modifiers: DirectorEventModifiers,
+  secondOrder?: SecondOrderState
+): MarketEvent | null {
+  // Check for surprise bypass (12% chance to ignore all modifiers)
+  const isSurprise = shouldSurpriseBypass()
+
+  // Merge Director's blocked categories with existing blocked categories
+  const allBlockedCategories = new Set([
+    ...Array.from(blockedCategories),
+    ...Array.from(modifiers.blockedCategories),
+  ])
+
+  // Build adjusted weights - start with base
+  const adjustedWeights: Record<string, number> = { ...CATEGORY_WEIGHTS }
+
+  // If surprise bypass, skip all modifier applications
+  if (!isSurprise) {
+    // 1. Apply RIPPLE modifiers FIRST (from second-order state)
+    if (secondOrder) {
+      for (const [cat, modifier] of Object.entries(secondOrder.effectiveCategoryModifiers)) {
+        if (adjustedWeights[cat] !== undefined) {
+          adjustedWeights[cat] *= modifier
+        }
+      }
+    }
+
+    // 2. Apply escalation boosts (existing behavior)
+    activeEscalations
+      .filter(esc => esc.expiresDay > currentDay)
+      .forEach(esc => {
+        esc.categories.forEach(cat => {
+          if (adjustedWeights[cat] !== undefined) {
+            adjustedWeights[cat] *= esc.boost
+          }
+        })
+      })
+
+    // 3. Apply Director category boosts
+    for (const [cat, boost] of Object.entries(modifiers.categoryBoosts)) {
+      if (adjustedWeights[cat] !== undefined) {
+        adjustedWeights[cat] *= boost
+      }
+    }
+
+    // 4. Apply preferred category bonus
+    modifiers.preferredCategories.forEach(cat => {
+      if (adjustedWeights[cat] !== undefined) {
+        adjustedWeights[cat] *= 1.5
+      }
+    })
+  }
+
+  // Zero out blocked categories (always apply, even for surprise)
+  allBlockedCategories.forEach(cat => {
+    if (adjustedWeights[cat] !== undefined) {
+      adjustedWeights[cat] = 0
+    }
+  })
+
+  // Check if any categories remain
+  const remainingWeight = Object.values(adjustedWeights).reduce((a, b) => a + b, 0)
+  if (remainingWeight === 0) {
+    return null
+  }
+
+  // Normalize weights
+  const normalizedWeights: Record<string, number> = {}
+  for (const [cat, weight] of Object.entries(adjustedWeights)) {
+    normalizedWeights[cat] = weight / remainingWeight
+  }
+
+  // Combine sentiment from Director and Ripples
+  const effectiveSentiment = isSurprise
+    ? 'neutral'
+    : combineSentiment(
+        modifiers.sentimentBias,
+        secondOrder?.effectiveSentimentPush ?? 'neutral'
+      )
+
+  // Try to find a non-conflicting event with sentiment bias
+  for (let attempt = 0; attempt < MAX_CONFLICT_RETRIES; attempt++) {
+    const rand = Math.random()
+    let cumulative = 0
+    let selectedCategory = 'economic'
+
+    for (const [category, weight] of Object.entries(normalizedWeights)) {
+      cumulative += weight
+      if (rand <= cumulative) {
+        selectedCategory = category
+        break
+      }
+    }
+
+    let categoryEvents = EVENTS.filter(e => e.category === selectedCategory)
+    if (categoryEvents.length === 0) continue
+
+    // Apply sentiment bias filter (70% respect rate for organic feel)
+    if (effectiveSentiment !== 'neutral' && Math.random() < 0.7) {
+      const biasedEvents = categoryEvents.filter(e => {
+        const sentiment = getEventSentiment(e)
+        return sentiment === effectiveSentiment || sentiment === 'neutral' || sentiment === 'mixed'
+      })
+      if (biasedEvents.length > 0) {
+        categoryEvents = biasedEvents
+      }
+    }
+
+    const event = categoryEvents[Math.floor(Math.random() * categoryEvents.length)]
+
+    // Check for sentiment conflict with current market mood
+    if (!hasEventConflict(event, assetMoods, currentDay)) {
+      // Calculate total volatility (Director + Ripple)
+      const rippleVolatility = secondOrder?.effectiveVolatilityBoost ?? 1.0
+      const totalVolatility = isSurprise
+        ? 1.0
+        : modifiers.volatilityMultiplier * rippleVolatility
+
+      // Apply volatility multiplier to effects if not 1.0
+      if (totalVolatility !== 1.0) {
+        return scaleEventEffects(event, totalVolatility)
+      }
+      return event
+    }
+  }
+
+  return null
+}
+
+/**
+ * Select a random chain with Director and Second-Order (Ripple) modifiers applied
+ */
+export function selectRandomChainWithDirector(
+  usedChainIds: string[],
+  blockedCategories: Set<string>,
+  assetMoods: AssetMood[],
+  currentDay: number,
+  modifiers: DirectorEventModifiers,
+  secondOrder?: SecondOrderState
+): EventChain | null {
+  // Check for surprise bypass (12% chance to ignore all modifiers)
+  const isSurprise = shouldSurpriseBypass()
+
+  // Merge Director's blocked categories
+  const allBlockedCategories = new Set([
+    ...Array.from(blockedCategories),
+    ...Array.from(modifiers.blockedCategories),
+  ])
+
+  // Build adjusted weights with Director and Ripple influence
+  const adjustedWeights: Record<string, number> = { ...CHAIN_CATEGORY_WEIGHTS }
+
+  // If surprise bypass, skip all modifier applications
+  if (!isSurprise) {
+    // 1. Apply RIPPLE modifiers FIRST (from second-order state)
+    if (secondOrder) {
+      for (const [cat, modifier] of Object.entries(secondOrder.effectiveCategoryModifiers)) {
+        if (adjustedWeights[cat] !== undefined) {
+          adjustedWeights[cat] *= modifier
+        }
+      }
+    }
+
+    // 2. Apply Director category boosts
+    for (const [cat, boost] of Object.entries(modifiers.categoryBoosts)) {
+      if (adjustedWeights[cat] !== undefined) {
+        adjustedWeights[cat] *= boost
+      }
+    }
+
+    // 3. Apply preferred category bonus
+    modifiers.preferredCategories.forEach(cat => {
+      if (adjustedWeights[cat] !== undefined) {
+        adjustedWeights[cat] *= 1.5
+      }
+    })
+  }
+
+  // Zero out blocked categories (always apply, even for surprise)
+  allBlockedCategories.forEach(cat => {
+    if (adjustedWeights[cat] !== undefined) {
+      adjustedWeights[cat] = 0
+    }
+  })
+
+  // Check if any categories remain
+  const remainingWeight = Object.values(adjustedWeights).reduce((a, b) => a + b, 0)
+  if (remainingWeight === 0) {
+    return null
+  }
+
+  // Normalize weights
+  const normalizedWeights: Record<string, number> = {}
+  for (const [cat, weight] of Object.entries(adjustedWeights)) {
+    normalizedWeights[cat] = weight / remainingWeight
+  }
+
+  // Try to find a non-conflicting chain
+  for (let attempt = 0; attempt < MAX_CONFLICT_RETRIES; attempt++) {
+    const rand = Math.random()
+    let cumulative = 0
+    let selectedCategory = 'geopolitical'
+
+    for (const [category, weight] of Object.entries(normalizedWeights)) {
+      cumulative += weight
+      if (rand <= cumulative) {
+        selectedCategory = category
+        break
+      }
+    }
+
+    let availableChains = EVENT_CHAINS.filter(
+      c => c.category === selectedCategory && !usedChainIds.includes(c.id)
+    )
+
+    if (availableChains.length === 0) {
+      availableChains = EVENT_CHAINS.filter(
+        c => !usedChainIds.includes(c.id) && !allBlockedCategories.has(c.category)
+      )
+    }
+
+    if (availableChains.length === 0) return null
+
+    const chain = availableChains[Math.floor(Math.random() * availableChains.length)]
+
+    if (!hasChainConflict(chain, assetMoods, currentDay)) {
+      return chain
+    }
+  }
+
+  return null
+}
+
+/**
+ * Scale event effects by a multiplier
+ * Used by Director to increase/decrease volatility
+ */
+function scaleEventEffects(event: MarketEvent, multiplier: number): MarketEvent {
+  const scaledEffects: Record<string, number> = {}
+  for (const [asset, effect] of Object.entries(event.effects)) {
+    // Scale but cap at reasonable limits (-90% to +2000%)
+    scaledEffects[asset] = Math.max(-0.9, Math.min(effect * multiplier, 20))
+  }
+  return { ...event, effects: scaledEffects }
 }
 
 // ============================================================================

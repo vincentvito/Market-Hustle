@@ -2,6 +2,7 @@
 
 import { ANONYMOUS_GAME_LIMIT } from '@/lib/game/userState'
 import type { EndGameProps } from './types'
+import { formatNetWorth } from '@/lib/utils/formatMoney'
 
 /**
  * GuestEndView - End-game screen for anonymous/guest users.
@@ -51,7 +52,7 @@ export function GuestEndView({
       {/* Final Net Worth */}
       <div className="border border-mh-border p-5 md:p-8 mb-2 min-w-[200px] md:min-w-[320px]">
         <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
-        <div className={`text-3xl md:text-5xl ${netWorthColor}`}>${netWorth.toLocaleString()}</div>
+        <div className={`${formatNetWorth(netWorth).sizeClass} ${netWorthColor}`}>{formatNetWorth(netWorth).text}</div>
       </div>
 
       {/* Profit/Loss percentage - more prominent on wins */}

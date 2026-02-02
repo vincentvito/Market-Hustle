@@ -7,7 +7,7 @@ function formatMoney(amount: number): string {
   if (Math.abs(amount) >= 1_000_000_000) return `$${(amount / 1_000_000_000).toFixed(2)}B`
   if (Math.abs(amount) >= 1_000_000) return `$${(amount / 1_000_000).toFixed(2)}M`
   if (Math.abs(amount) >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`
-  return `$${Math.round(amount).toLocaleString()}`
+  return `$${Math.round(amount).toLocaleString('en-US')}`
 }
 
 function getEmoji(multiplier: number, isProfit: boolean): string {

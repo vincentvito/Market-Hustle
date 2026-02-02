@@ -735,7 +735,7 @@ export default function MarketHustle() {
             fontSize: '28px',
             ...(getNetWorth() >= 0 ? glowGreen : glowRed),
           }}>
-            ${getNetWorth().toLocaleString()}
+            ${getNetWorth().toLocaleString('en-US')}
           </div>
         </div>
 
@@ -790,7 +790,7 @@ export default function MarketHustle() {
             marginBottom: '16px',
             ...(profit >= 0 ? glowGreen : glowRed),
           }}>
-            ${getNetWorth().toLocaleString()}
+            ${getNetWorth().toLocaleString('en-US')}
           </div>
           <div style={{ 
             color: profit >= 0 ? profitGreen : lossRed, 
@@ -803,7 +803,7 @@ export default function MarketHustle() {
             fontSize: '14px',
             marginTop: '4px',
           }}>
-            ({profit >= 0 ? '+' : ''}${profit.toLocaleString()})
+            ({profit >= 0 ? '+' : ''}${profit.toLocaleString('en-US')})
           </div>
         </div>
 
@@ -851,7 +851,7 @@ export default function MarketHustle() {
             color: getNetWorth() >= 10000 ? profitGreen : lossRed,
             ...(getNetWorth() >= 10000 ? glowGreen : glowRed),
           }}>
-            ${getNetWorth().toLocaleString()}
+            ${getNetWorth().toLocaleString('en-US')}
           </div>
         </div>
       </div>
@@ -864,7 +864,7 @@ export default function MarketHustle() {
       }}>
         <div style={{ flex: 1, padding: '12px', borderRight: '1px solid #2a3a4a' }}>
           <div style={{ color: dimText }}>CASH</div>
-          <div style={{ color: accentBlue, fontWeight: 'bold' }}>${cash.toLocaleString()}</div>
+          <div style={{ color: accentBlue, fontWeight: 'bold' }}>${cash.toLocaleString('en-US')}</div>
         </div>
         <div 
           onClick={() => getPortfolioValue() > 0 && setShowPortfolio(true)}
@@ -1060,7 +1060,7 @@ export default function MarketHustle() {
                   color: dimText,
                   fontSize: '11px',
                 }}>
-                  (incl. ${cash.toLocaleString()} cash)
+                  (incl. ${cash.toLocaleString('en-US')} cash)
                 </div>
               </div>
             </div>
@@ -1130,7 +1130,7 @@ export default function MarketHustle() {
                   <div style={{ fontSize: '16px', fontWeight: 'bold', color: brightText }}>{asset.name}</div>
                   {owned > 0 && (
                     <div style={{ fontSize: '11px', color: accentBlue, marginTop: '2px' }}>
-                      OWN: {owned} (${Math.round(owned * price).toLocaleString()})
+                      OWN: {owned} (${Math.round(owned * price).toLocaleString('en-US')})
                     </div>
                   )}
                 </div>
@@ -1197,7 +1197,7 @@ export default function MarketHustle() {
                     }}>
                       <div style={{ fontSize: '24px', fontWeight: 'bold', color: brightText }}>{buyQty}</div>
                       <div style={{ fontSize: '10px', color: dimText }}>
-                        ${(buyQty * price).toLocaleString()}
+                        ${(buyQty * price).toLocaleString('en-US')}
                       </div>
                     </div>
                     <button

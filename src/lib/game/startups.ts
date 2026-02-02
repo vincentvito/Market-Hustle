@@ -21,6 +21,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['QUANTUM TACOS SIGNS DEAL WITH CHIPOTLE', 'QUANTUM TACOS VIRAL TIKTOK HITS 50M VIEWS'],
       negative: ['QUANTUM TACOS DRONE CRASHES INTO POOL PARTY', 'QUANTUM TACOS FOUNDER ARRESTED FOR UNPAID PARKING TICKETS'],
     },
+    hotTake: 'Uber for tacos, but with drones',
+    pitch: "We're building autonomous taco delivery for the $50B fast-casual market. Our drones deliver a hot taco in under 4 minutes - 10x faster than DoorDash. Chipotle is testing us in 3 markets.",
+    founder: 'Marcus Chen',
+    founderTitle: 'CEO & Co-founder',
+    traction: '47K orders in pilot',
   },
   // 2. VIBE CHECK
   {
@@ -42,6 +47,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['VIBE CHECK FEATURED ON JOE ROGAN', 'VIBE CHECK DOWNLOADS HIT 1M'],
       negative: ['VIBE CHECK AI TELLS USER TO QUIT JOB', 'VIBE CHECK DATA BREACH EXPOSES THERAPY SESSIONS'],
     },
+    hotTake: "Like Tinder, but for your mental health",
+    pitch: "1 in 4 Americans need therapy but can't afford it. Our AI therapist lives in your AirPods, costs $10/month, and has 93% user satisfaction. Apple's health team took a meeting.",
+    founder: 'Dr. Priya Sharma',
+    founderTitle: 'CEO (ex-Google Health)',
+    traction: '1.2M downloads',
   },
   // 3. FARTCOIN
   {
@@ -63,6 +73,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['FARTCOIN TRENDING ON CRYPTO TWITTER', 'ELON TWEETS GAS EMOJI'],
       negative: ['FARTCOIN SMART CONTRACT HAS CRITICAL BUG', 'FARTCOIN FOUNDER RUGS DISCORD'],
     },
+    hotTake: 'We made farting profitable',
+    pitch: "Every fart captured by our smart toilet sensor mints a FART token. Sounds insane? We have 50K daily active users, $2M in trading volume, and Elon just followed us on Twitter.",
+    founder: 'Chad McBro',
+    founderTitle: 'Chief Flatulence Officer',
+    traction: '50K DAU, $2M volume',
   },
   // 4. GRANNY'S GUNS
   {
@@ -84,6 +99,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ["GRANNY'S GUNS VIRAL VIDEO - 87YO HITS BULLSEYE", "GRANNY'S GUNS NRA PARTNERSHIP ANNOUNCED"],
       negative: ["GRANNY'S GUNS INSURANCE CANCELLED", "GRANNY'S GUNS INSTRUCTOR ACCIDENTALLY SHOOTS DRONE"],
     },
+    hotTake: 'Self-defense for the silver generation',
+    pitch: "65+ is the fastest-growing demographic for firearm ownership, but ranges are intimidating. Our senior-friendly training centers offer low-recoil options and comfortable seating. The NRA is sponsoring our expansion.",
+    founder: "Betty 'Bullseye' Johnson",
+    founderTitle: 'Founder (Age 74)',
+    traction: '8 locations, 40K members',
   },
   // 5. MOON CHEESE
   {
@@ -105,6 +125,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['MOON CHEESE WINS BLIND TASTE TEST VS HIGH-END BRANDS', 'SPACEX PARTNERSHIP FOR ORBITAL AGING'],
       negative: ['MOON CHEESE BATCH CONTAMINATED', "FDA QUESTIONS 'SPACE-AGED' CLAIMS"],
     },
+    hotTake: 'Aged in zero gravity, served on Earth',
+    pitch: "Space changes cheese at the molecular level - no gravity means perfect cultures. Our orbital aging facility produces a flavor profile impossible on Earth. Whole Foods has 50 stores on waitlist.",
+    founder: 'Jean-Pierre Dubois',
+    founderTitle: 'Master Cheesemaker & CEO',
+    traction: '$400/lb retail, sold out',
   },
   // 6. CRISPR CATS
   {
@@ -126,6 +151,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['CRISPR CATS PASSES SAFETY TRIALS', 'CRISPR CATS CELEBRITY ENDORSEMENT - TAYLOR SWIFT BUYS ONE'],
       negative: ['CRISPR CATS UNEXPECTED MUTATIONS REPORTED', 'CRISPR CATS ANIMAL RIGHTS PROTEST AT HQ'],
     },
+    hotTake: 'Gene editing meets pet ownership',
+    pitch: "40% of Americans are allergic to cats. We edit out the Fel d 1 protein, creating the world's first truly hypoallergenic cat. Phase 1 trials complete, FDA fast-track pending.",
+    founder: 'Dr. Sarah Kim',
+    founderTitle: 'CEO (ex-CRISPR Therapeutics)',
+    traction: '2,000 pre-orders at $5K each',
   },
   // 7. HANGOVER PILL
   {
@@ -147,6 +177,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['HANGOVER PILL PHASE 2 TRIALS SUCCESSFUL', 'VEGAS CASINOS INTERESTED IN DISTRIBUTION'],
       negative: ['HANGOVER PILL SIDE EFFECTS REPORTED', "FOUNDER ADMITS IT'S JUST B VITAMINS"],
     },
+    hotTake: 'Take one before, wake up fresh',
+    pitch: "Our patented enzyme blend breaks down acetaldehyde 3x faster than your liver. Double-blind trials showed 78% reduction in hangover symptoms. Vegas casinos want exclusive distribution.",
+    founder: 'Dr. Mike Brewster',
+    founderTitle: 'CEO & Chief Scientist',
+    traction: 'Phase 2 trials complete',
   },
   // 8. FOREVER YOUNG
   {
@@ -168,6 +203,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['FOREVER YOUNG MOUSE TRIALS SHOW 30% LIFESPAN INCREASE', 'PETER THIEL INVESTS'],
       negative: ['FOREVER YOUNG ACCELERATES CANCER IN RATS', 'KEY SCIENTIST LEAVES FOR COMPETITOR'],
     },
+    hotTake: 'What if dying was optional?',
+    pitch: "Our gene therapy extends telomeres in living cells - the biological clock that determines aging. Mouse trials showed 30% lifespan extension. Peter Thiel is already in our cap table.",
+    founder: 'Dr. Elena Vasquez',
+    founderTitle: 'CEO (Harvard Genetics PhD)',
+    traction: 'Peter Thiel invested',
   },
   // 9. ASTEROID MINER
   {
@@ -189,6 +229,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['ASTEROID MINER PROBE REACHES TARGET ASTEROID', 'ASTEROID MINER NASA PARTNERSHIP ANNOUNCED'],
       negative: ['ASTEROID MINER LOSES CONTACT WITH PROBE', 'ASTEROID MINER COMPETITOR LAUNCHES SIMILAR MISSION'],
     },
+    hotTake: "There's $700 quintillion in the asteroid belt",
+    pitch: "A single platinum-rich asteroid contains more rare metals than ever mined on Earth. Our autonomous probes cost 100x less than crewed missions. NASA just signed a partnership for our first target.",
+    founder: 'Dr. Kenji Nakamura',
+    founderTitle: 'CEO (ex-JPL)',
+    traction: 'NASA partnership signed',
   },
   // 10. JETPACK JERRY
   {
@@ -210,6 +255,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['JETPACK JERRY DEMO AT CES GOES VIRAL', 'DUBAI ORDERS 100 UNITS'],
       negative: ['JETPACK JERRY TEST PILOT HOSPITALIZED', 'FAA DEMANDS CERTIFICATION'],
     },
+    hotTake: "It's 2024 and we still don't have jetpacks",
+    pitch: "Our electric VTOL jetpack runs on the same batteries as a Tesla. 15-minute flight time, 50 mph max speed, and it fits in your garage. Dubai police already ordered 100 units.",
+    founder: 'Jerry Martinez',
+    founderTitle: 'CEO & Chief Test Pilot',
+    traction: 'Dubai ordered 100 units',
   },
   // 11. DEFI CASINO
   {
@@ -231,6 +281,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['DEFI CASINO TVL HITS $100M', 'DEFI CASINO PARTNERSHIP WITH MAJOR SPORTS LEAGUE'],
       negative: ['DEFI CASINO SMART CONTRACT EXPLOIT', 'DEFI CASINO REGULATORS ISSUE WARNING'],
     },
+    hotTake: 'Vegas on the blockchain',
+    pitch: "Online gambling is a $60B market but 30% goes to house edge and fees. Our smart contracts run provably fair games with 1% take rate. TVL hit $100M last month and a major sports league is in talks.",
+    founder: 'Vitalik Jr.',
+    founderTitle: 'CEO (anon)',
+    traction: '$100M TVL',
   },
   // 12. NFT CEMETERY
   {
@@ -252,6 +307,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['NFT CEMETERY CELEBRITY MEMORIAL GOES VIRAL', 'NFT CEMETERY PARTNERSHIP WITH FUNERAL HOME CHAIN'],
       negative: ['NFT CEMETERY ACCUSED OF EXPLOITING GRIEF', "NFT CEMETERY FOUNDER'S PAST SCAM EXPOSED"],
     },
+    hotTake: 'Death is forever. So are NFTs.',
+    pitch: "Physical cemeteries are running out of space, but digital memorials are infinite. Families mint their loved ones as collectible NFTs with videos, photos, and messages. We partnered with SCI - the largest funeral home chain.",
+    founder: 'Rebecca Stone',
+    founderTitle: 'CEO (ex-Ancestry)',
+    traction: 'SCI partnership signed',
   },
   // 13. DEEPFAKE DATING
   {
@@ -273,6 +333,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['DEEPFAKE DATING 10K MATCHES MADE', 'DEEPFAKE DATING FEATURED IN WIRED MAGAZINE'],
       negative: ['DEEPFAKE DATING CATFISH SCANDAL', 'DEEPFAKE DATING AI GENERATES SAME FACE FOR EVERYONE'],
     },
+    hotTake: "Your soulmate doesn't exist yet. We'll create them.",
+    pitch: "Traditional dating apps have a 0.4% success rate. Our AI creates a hyper-realistic digital partner customized to your preferences, then we find real people who match. 10K successful matches and counting.",
+    founder: 'Alex Rivers',
+    founderTitle: 'CEO (ex-Hinge)',
+    traction: '10K matches made',
   },
   // 14. ROBO LAWYER
   {
@@ -294,6 +359,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['ROBO LAWYER WINS 10,000TH CASE', 'ROBO LAWYER EXPANDS TO SMALL CLAIMS COURT'],
       negative: ['ROBO LAWYER GIVES ILLEGAL ADVICE', 'ROBO LAWYER BAR ASSOCIATION THREATENS LAWSUIT'],
     },
+    hotTake: '$300/hr lawyers are obsolete',
+    pitch: "Americans pay $250B annually for legal help they can't afford. Our AI drafts perfect legal documents, fights tickets, and handles small claims. We've won 10,000 cases with an 80% success rate.",
+    founder: 'Joshua Browder',
+    founderTitle: 'CEO (YC alum)',
+    traction: '10,000 cases won',
   },
   // 15. BRAIN UPLOAD
   {
@@ -315,6 +385,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['BRAIN UPLOAD SUCCESSFULLY STORES RAT MEMORY', 'BRAIN UPLOAD DARPA GRANT AWARDED'],
       negative: ['BRAIN UPLOAD VOLUNTEER REPORTS MEMORY LOSS', 'BRAIN UPLOAD COMPETITOR CLAIMS BREAKTHROUGH FIRST'],
     },
+    hotTake: 'Your memories, in the cloud, forever',
+    pitch: "We've mapped the neural pathways for memory storage and can now extract and digitize them. Rat trials showed 100% memory fidelity after upload/download. DARPA just gave us $5M to explore military applications.",
+    founder: 'Dr. Marcus Webb',
+    founderTitle: 'CEO (MIT Neuroscience)',
+    traction: 'DARPA $5M grant',
   },
   // 16. DIVORCE AI
   {
@@ -336,6 +411,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['DIVORCE AI FEATURED ON OPRAH', 'DIVORCE AI 90% SATISFACTION RATE'],
       negative: ['DIVORCE AI SWAPS ASSETS: HUSBAND GETS DOG, WIFE GETS HOUSE - BOTH WANTED THE OPPOSITE', "DIVORCE AI RECOMMENDS 'STAY TOGETHER' TO ABUSIVE COUPLE"],
     },
+    hotTake: 'Conscious uncoupling, automated',
+    pitch: "Divorce lawyers charge $30K average, take 18 months, and maximize conflict. Our AI mediator splits assets fairly in 48 hours with 90% satisfaction. Oprah featured us last month.",
+    founder: 'Dr. Amanda Chen',
+    founderTitle: 'CEO (ex-family law)',
+    traction: 'Featured on Oprah',
   },
   // 17. INFLUENCER FUNERAL
   {
@@ -357,6 +437,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ["INFLUENCER FUNERAL VIRAL: TIKTOK STAR'S SEND-OFF HITS 100M VIEWS", 'INFLUENCER FUNERAL CELEBRITY ENDORSEMENT'],
       negative: ['INFLUENCER FUNERAL AD PLAYS DURING EULOGY', 'INFLUENCER FUNERAL SPONSORS CASKET WITH RAID SHADOW LEGENDS LOGO'],
     },
+    hotTake: "Death is your final viral moment",
+    pitch: "Influencers have millions of followers who can't attend funerals. We produce livestreamed memorial services with interactive features - live comments, donations, and SuperChats. One TikToker's send-off hit 100M views.",
+    founder: 'Jake Funeral',
+    founderTitle: 'CEO (yes, real name)',
+    traction: '100M views on one stream',
   },
   // 18. DIGITAL TWIN CORP
   {
@@ -378,6 +463,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['DIGITAL TWIN CORP CEO CLONE GIVES KEYNOTE - NO ONE NOTICES', 'DIGITAL TWIN CORP 1000 CORPORATIONS SIGN UP'],
       negative: ['DIGITAL TWIN CORP CLONE FIRES ITS OWNER', "DIGITAL TWIN CORP TWIN STARTS DATING USER'S SPOUSE"],
     },
+    hotTake: 'Be in two meetings at once',
+    pitch: "Knowledge workers spend 31 hours/month in meetings they shouldn't attend. Our AI creates a photorealistic clone that attends for you, takes notes, and responds accurately. 1,000 corporations signed up in month one.",
+    founder: 'Sophie Liu',
+    founderTitle: 'CEO (ex-Zoom)',
+    traction: '1,000 corporate signups',
   },
   // 19. SHROOM BOOM
   {
@@ -399,6 +489,11 @@ export const ANGEL_STARTUPS: Startup[] = [
       positive: ['SHROOM BOOM FDA BREAKTHROUGH THERAPY DESIGNATION', "SHROOM BOOM SILICON VALLEY'S FAVORITE PRODUCTIVITY HACK"],
       negative: ["SHROOM BOOM CUSTOMER 'MEETS GOD' AT BOARD MEETING", 'SHROOM BOOM DELIVERY DRIVER SAMPLES PRODUCT'],
     },
+    hotTake: "Silicon Valley's favorite productivity hack",
+    pitch: "Psychedelics are the next cannabis - a $10B market by 2027. We offer legal psilocybin microdosing through Oregon's licensed framework with subscription delivery. FDA just granted us Breakthrough Therapy designation.",
+    founder: 'Dr. Paul Stamets Jr.',
+    founderTitle: 'CEO (mycologist)',
+    traction: 'FDA Breakthrough status',
   },
 ]
 
@@ -424,6 +519,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['SPACE Z SUCCESSFUL MARS ORBIT TEST', 'SPACE Z STARZLINK DIRECT-TO-MOBILE HITS 10M SUBSCRIBERS'],
       negative: ['SPACE Z ROCKET EXPLODES ON PAD', 'SPACE Z FAA GROUNDS FLEET FOR INVESTIGATION'],
     },
+    hotTake: "The anti-SpaceX: we're going to Mars first",
+    pitch: "While SpaceX builds rockets, we're building habitats. Our inflatable Mars modules are 10x cheaper than NASA's, already tested on ISS. First cargo mission in 2026, crewed by 2028. Elon and Bezos are both trying to acquire us.",
+    founder: 'Dmitri Volkov',
+    founderTitle: 'CEO (ex-SpaceX, ex-NASA)',
+    traction: '$200M NASA contract',
   },
   // 2. NEURALINK 2.0
   {
@@ -446,6 +546,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['NEURALINK 2.0 FDA BREAKTHROUGH DESIGNATION', 'NEURALINK 2.0 PARALYZED PATIENT WALKS'],
       negative: ['NEURALINK 2.0 PATIENT INFECTION REPORTED', 'NEURALINK 2.0 ELON DISTRACTED BY TWITTER DRAMA'],
     },
+    hotTake: 'Brain-computer interfaces without brain surgery',
+    pitch: "Neuralink requires invasive surgery. Our non-invasive headband reads thoughts at 95% accuracy using advanced EEG and ML. FDA granted breakthrough device status. Microsoft is our strategic partner for enterprise applications.",
+    founder: 'Dr. Emma Watson',
+    founderTitle: 'CEO (ex-Neuralink)',
+    traction: 'FDA breakthrough status',
   },
   // 3. SOLIDSTATE AI
   {
@@ -468,6 +573,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['SOLIDSTATE AI WINS $500M GOVERNMENT CONTRACT', 'SOLIDSTATE AI MICROSOFT PARTNERSHIP'],
       negative: ['SOLIDSTATE AI MODEL LEAKED TO CHINA', 'SOLIDSTATE AI KEY ENGINEERS DEFECT TO OPENAI'],
     },
+    hotTake: "We're building AGI, and we're almost there",
+    pitch: "Our new architecture achieves GPT-5 performance at 1/100th the compute cost. That's not incremental - it's the path to artificial general intelligence. Sam Altman offered $4B to acquire us. We said no.",
+    founder: 'Dr. Alan Zhang',
+    founderTitle: 'CEO (ex-DeepMind)',
+    traction: 'Turned down $4B offer',
   },
   // 4. AUTONOMOUS TRUCKS
   {
@@ -490,6 +600,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['AUTONOMOUS TRUCKS 1M MILES WITHOUT INCIDENT', 'AUTONOMOUS TRUCKS WALMART PILOT PROGRAM'],
       negative: ['AUTONOMOUS TRUCKS FATAL ACCIDENT', 'AUTONOMOUS TRUCKS UNION THREATENS NATIONWIDE STRIKE'],
     },
+    hotTake: '3.5M truck drivers are about to be obsolete',
+    pitch: "Long-haul trucking is a $700B market with a massive driver shortage. Our Level 4 autonomous trucks run 24/7 without breaks, saving 40% on shipping costs. Walmart is piloting with 500 trucks and wants exclusive rights.",
+    founder: 'Sarah Rodriguez',
+    founderTitle: 'CEO (ex-Waymo)',
+    traction: '1M miles, 0 accidents',
   },
   // 5. CANCER CURE INC
   {
@@ -512,6 +627,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['CANCER CURE PHASE 3 SHOWS 90% EFFICACY', 'CANCER CURE FDA FAST-TRACK GRANTED'],
       negative: ['CANCER CURE SIDE EFFECTS IN TRIAL', 'CANCER CURE COMPETITOR PUBLISHES SIMILAR RESULTS'],
     },
+    hotTake: 'The vaccine that kills cancer',
+    pitch: "Our mRNA platform trains your immune system to recognize and destroy cancer cells - a personalized vaccine for every patient. Phase 3 trials show 90% efficacy against lung cancer. FDA fast-track granted.",
+    founder: 'Dr. Jennifer Liu',
+    founderTitle: 'CEO (Nobel Prize finalist)',
+    traction: 'Phase 3: 90% efficacy',
   },
   // 6. SYNTHETIC ORGANS
   {
@@ -534,6 +654,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['SYNTHETIC ORGANS FIRST SUCCESSFUL HEART TRANSPLANT', 'SYNTHETIC ORGANS 100 PATIENTS ON WAITING LIST CURED'],
       negative: ['SYNTHETIC ORGANS REJECTION RATE HIGHER THAN EXPECTED', 'SYNTHETIC ORGANS MANUFACTURING DEFECTS FOUND'],
     },
+    hotTake: 'Print a new heart in 48 hours',
+    pitch: "100,000 Americans die annually waiting for organ transplants. Our 3D bioprinters create fully functional organs from the patient's own cells - zero rejection risk. First successful heart transplant completed last month.",
+    founder: 'Dr. Michael Torres',
+    founderTitle: 'CEO (ex-Johns Hopkins)',
+    traction: 'First heart transplant done',
   },
   // 7. FUSION POWER
   {
@@ -556,6 +681,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['FUSION POWER ACHIEVES NET ENERGY GAIN', 'FUSION POWER DOE BACKS WITH $2B GRANT'],
       negative: ['FUSION POWER CONTAINMENT FAILURE', 'FUSION POWER KEY PHYSICIST QUITS CITING FRAUD'],
     },
+    hotTake: 'The sun in a bottle - finally',
+    pitch: "Fusion has been '20 years away' for 60 years. Our compact tokamak design achieved net energy gain last quarter - the first in history. DOE just backed us with $2B. We're building the first commercial plant.",
+    founder: 'Dr. Hans Weber',
+    founderTitle: 'CEO (ex-MIT PSFC)',
+    traction: 'Net energy gain achieved',
   },
   // 8. SOLID STATE BATTERY
   {
@@ -578,6 +708,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['SOLID STATE BATTERY 1000-MILE RANGE ACHIEVED', 'SOLID STATE BATTERY TESLA IN ACQUISITION TALKS'],
       negative: ['SOLID STATE BATTERY MANUFACTURING ISSUES', 'SOLID STATE BATTERY CHINA COPIES TECHNOLOGY'],
     },
+    hotTake: '1,000 miles on a single charge',
+    pitch: "Current lithium-ion batteries are the bottleneck for EVs. Our solid-state design offers 3x the energy density, charges in 10 minutes, and uses no cobalt. Tesla is in acquisition talks - they need us to hit their 2030 targets.",
+    founder: 'Dr. Li Wei',
+    founderTitle: 'CEO (ex-CATL)',
+    traction: 'Tesla acquisition talks',
   },
   // 9. CENTRAL BANK COIN
   {
@@ -600,6 +735,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['CENTRAL BANK COIN SELECTED BY EU', 'CENTRAL BANK COIN 10 COUNTRIES IN PILOT'],
       negative: ['CENTRAL BANK COIN SECURITY FLAW FOUND', 'CENTRAL BANK COIN CHINA BANS PARTNERSHIP'],
     },
+    hotTake: 'The rails for every government digital currency',
+    pitch: "130 countries are exploring CBDCs but none can build the infrastructure. We provide the secure, scalable backbone. The EU selected us for their digital euro pilot. 10 more central banks are in talks.",
+    founder: 'Christine Nakamoto',
+    founderTitle: 'CEO (ex-IMF)',
+    traction: 'EU digital euro selected',
   },
   // 10. INSTANT MORTGAGE
   {
@@ -622,6 +762,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['INSTANT MORTGAGE PROCESSES $10B IN LOANS', 'INSTANT MORTGAGE JPMORGAN PARTNERSHIP'],
       negative: ['INSTANT MORTGAGE AI APPROVES FRAUDULENT LOANS', 'INSTANT MORTGAGE HOUSING MARKET COOLING'],
     },
+    hotTake: "Close on your house in 24 hours, not 45 days",
+    pitch: "Mortgage approval takes 45 days because of manual document review. Our AI analyzes 1,000 data points and underwrites in minutes. We've processed $10B in loans with 0.1% default rate. JPMorgan wants to white-label our tech.",
+    founder: 'David Park',
+    founderTitle: 'CEO (ex-Rocket Mortgage)',
+    traction: '$10B loans processed',
   },
   // 11. OCEAN MINING
   {
@@ -644,6 +789,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['OCEAN MINING NODULE FIELD LARGER THAN EXPECTED', 'OCEAN MINING US NAVY CONTRACT FOR STRATEGIC MINERALS'],
       negative: ['OCEAN MINING GREENPEACE BLOCKADE', 'OCEAN MINING EQUIPMENT LOST AT 4000M DEPTH'],
     },
+    hotTake: "End China's stranglehold on rare earths",
+    pitch: "China controls 80% of rare earth minerals critical for EVs and defense. The Pacific seafloor has 10x more - just sitting there. Our autonomous collectors extract nodules at 4,000m depth. US Navy just signed a strategic contract.",
+    founder: 'Admiral James Cole (ret.)',
+    founderTitle: 'CEO (ex-Pacific Fleet)',
+    traction: 'US Navy contract signed',
   },
   // 12. SHADOW BANK AI
   {
@@ -666,6 +816,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['SHADOW BANK AI SIGNS 50 BILLIONAIRE CLIENTS', 'SHADOW BANK AI WINS TAX COURT CASE - AI ADVICE VALID'],
       negative: ['SHADOW BANK AI LEAKED CLIENT LIST INCLUDES POLITICIANS', 'SHADOW BANK AI FLAGGED BY TREASURY DEPARTMENT'],
     },
+    hotTake: 'Your offshore wealth manager never sleeps',
+    pitch: "Ultra-high-net-worth individuals pay 2% annually for wealth management. Our AI handles multi-jurisdictional tax optimization, asset protection, and estate planning 24/7. 50 billionaire clients managing $500B with us.",
+    founder: 'Marcus Sterling III',
+    founderTitle: 'CEO (ex-Goldman Private)',
+    traction: '50 billionaire clients',
   },
   // 13. MARS COLONY CORP
   {
@@ -688,6 +843,11 @@ export const VC_STARTUPS: Startup[] = [
       positive: ['MARS COLONY CORP SUCCESSFUL CARGO LANDING', 'MARS COLONY CORP ELON, BEZOS BOTH INVEST'],
       negative: ['MARS COLONY CORP LIFE SUPPORT SYSTEM FAILS IN TESTING', 'MARS COLONY CORP KEY ENGINEER DEFECTS TO CHINA PROGRAM'],
     },
+    hotTake: 'Humanity becomes a multi-planetary species',
+    pitch: "This is the big one. We're not just visiting Mars - we're building humanity's first permanent off-world colony. Our habitat modules are tested, life support is proven, and the first crew is selected. Both Elon and Bezos invested because they know this changes everything.",
+    founder: 'Dr. Mae Chen',
+    founderTitle: 'CEO (ex-NASA Artemis)',
+    traction: 'Elon + Bezos invested',
   },
 ]
 

@@ -23,13 +23,13 @@ export function WinScreen() {
         <div
           className={`text-4xl mb-4 ${profit >= 0 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'}`}
         >
-          ${netWorth.toLocaleString()}
+          ${netWorth.toLocaleString('en-US')}
         </div>
         <div className={`text-lg ${profit >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'}`}>
           {profit >= 0 ? '+' : ''}{profitPercent}% RETURN
         </div>
         <div className={`text-sm mt-1 ${profit >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'}`}>
-          ({profit >= 0 ? '+' : ''}${profit.toLocaleString()})
+          ({profit >= 0 ? '+' : ''}${profit.toLocaleString('en-US')})
         </div>
       </div>
 

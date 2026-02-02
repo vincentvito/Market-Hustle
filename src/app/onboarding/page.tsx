@@ -212,7 +212,7 @@ function OnboardingContent() {
             </div>
             <div className="text-mh-text-main text-sm space-y-1">
               <div>Games Played: {localStats.totalGamesPlayed}</div>
-              <div>Best Net Worth: ${localStats.bestNetWorth.toLocaleString()}</div>
+              <div>Best Net Worth: ${localStats.bestNetWorth.toLocaleString('en-US')}</div>
               <div>Wins: {localStats.winCount}</div>
             </div>
           </div>

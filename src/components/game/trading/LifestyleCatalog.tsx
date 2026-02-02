@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { PROPERTIES, PRIVATE_EQUITY, LUXURY_ASSETS, RISK_TIER_COLORS, RISK_TIER_LABELS, getPEAbilities, PE_ABILITIES } from '@/lib/game/lifestyleAssets'
 import { Portal } from '@/components/ui/Portal'
@@ -35,7 +35,24 @@ const CATEGORIES: { id: CategoryId; label: string; emoji: string }[] = [
 ]
 
 export function LifestyleCatalog() {
-  const { lifestylePrices, ownedLifestyle, ownedLuxury, cash, buyLifestyle, sellLifestyle, buyLuxuryAsset, sellLuxuryAsset, selectedTheme, executePEAbility, canExecutePEAbility, getPEAbilityStatus } = useGame()
+  const {
+    lifestylePrices,
+    ownedLifestyle,
+    ownedLuxury,
+    cash,
+    buyLifestyle,
+    sellLifestyle,
+    buyLuxuryAsset,
+    sellLuxuryAsset,
+    selectedTheme,
+    executePEAbility,
+    canExecutePEAbility,
+    getPEAbilityStatus,
+    pendingLifestyleAssetId,
+    pendingLuxuryAssetId,
+    setPendingLifestyleAsset,
+    setPendingLuxuryAsset,
+  } = useGame()
   const isRetro2 = selectedTheme === 'retro2'
   const isModern3 = selectedTheme === 'modern3'
   const [activeCategory, setActiveCategory] = useState<CategoryId>('property')
@@ -54,6 +71,48 @@ export function LifestyleCatalog() {
 
   const ownedIds = new Set(ownedLifestyle.map(o => o.assetId))
   const ownedMap = new Map(ownedLifestyle.map(o => [o.assetId, o]))
+
+  // Handle pending lifestyle asset (from portfolio click)
+  useEffect(() => {
+    if (pendingLifestyleAssetId) {
+      const allAssets = [...PROPERTIES, ...PRIVATE_EQUITY]
+      const asset = allAssets.find(a => a.id === pendingLifestyleAssetId)
+      if (asset) {
+        const isOwned = ownedIds.has(asset.id)
+        const isPE = asset.category === 'private_equity'
+
+        // Switch to correct category
+        setActiveCategory(asset.category)
+
+        // Open the appropriate sheet
+        if (isPE) {
+          isOwned ? setSellConfirmPE(asset) : setSelectedPEAsset(asset)
+        } else {
+          isOwned ? setSellConfirmAsset(asset) : setSelectedAsset(asset)
+        }
+      }
+      // Clear the pending state
+      setPendingLifestyleAsset(null)
+    }
+  }, [pendingLifestyleAssetId, ownedIds, setPendingLifestyleAsset])
+
+  // Handle pending luxury asset (from portfolio click)
+  useEffect(() => {
+    if (pendingLuxuryAssetId) {
+      const asset = LUXURY_ASSETS.find(a => a.id === pendingLuxuryAssetId)
+      if (asset) {
+        const isOwned = ownedLuxury.includes(asset.id)
+
+        // Switch to luxury category
+        setActiveCategory('luxury')
+
+        // Open the appropriate sheet
+        isOwned ? setSellConfirmLuxury(asset) : setSelectedLuxuryAsset(asset)
+      }
+      // Clear the pending state
+      setPendingLuxuryAsset(null)
+    }
+  }, [pendingLuxuryAssetId, ownedLuxury, setPendingLuxuryAsset])
 
   const handleBuy = (asset: LifestyleAsset) => {
     const price = lifestylePrices[asset.id] || asset.basePrice
@@ -81,7 +140,7 @@ export function LifestyleCatalog() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Category Sub-tabs */}
       <div className={`flex ${
         isModern3

@@ -102,7 +102,7 @@ export default function AdminPage() {
         <tbody>
           {data.map(row => (
             <tr key={row.times} style={{ borderBottom: '1px solid #222' }}>
-              <td style={{ padding: '8px 16px', fontWeight: 'bold' }}>{row.users.toLocaleString()}</td>
+              <td style={{ padding: '8px 16px', fontWeight: 'bold' }}>{row.users.toLocaleString('en-US')}</td>
               <td style={{ padding: '8px 16px' }}>played {row.times} time{row.times !== 1 ? 's' : ''}</td>
             </tr>
           ))}

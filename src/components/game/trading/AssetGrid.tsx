@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ASSETS } from '@/lib/game/assets'
 import { useGame } from '@/hooks/useGame'
 import { AssetCell } from './AssetCell'
@@ -9,8 +9,15 @@ import { LifestyleCatalog } from './LifestyleCatalog'
 type TabType = 'trading' | 'lifestyle'
 
 export function AssetGrid() {
-  const { selectAsset, selectedTheme } = useGame()
+  const { selectAsset, selectedTheme, pendingLifestyleAssetId, pendingLuxuryAssetId } = useGame()
   const [activeTab, setActiveTab] = useState<TabType>('trading')
+
+  // Auto-switch to lifestyle tab when there's a pending asset from portfolio
+  useEffect(() => {
+    if (pendingLifestyleAssetId || pendingLuxuryAssetId) {
+      setActiveTab('lifestyle')
+    }
+  }, [pendingLifestyleAssetId, pendingLuxuryAssetId])
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
@@ -50,7 +57,7 @@ export function AssetGrid() {
   }
 
   return (
-    <>
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Category Tabs */}
       <div className={getTabWrapperClass()}>
         <button
@@ -68,7 +75,7 @@ export function AssetGrid() {
       </div>
 
       {activeTab === 'trading' ? (
-        <div className={`grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 md:gap-3 md:p-3 ${
+        <div className={`flex-1 min-h-0 overflow-auto grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 md:gap-3 md:p-3 auto-rows-min ${
           isBloomberg
             ? 'gap-px bg-[#333333]'
             : isRetro2
@@ -88,6 +95,6 @@ export function AssetGrid() {
       ) : (
         <LifestyleCatalog />
       )}
-    </>
+    </div>
   )
 }

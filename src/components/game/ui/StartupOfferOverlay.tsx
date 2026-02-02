@@ -28,7 +28,7 @@ export function StartupOfferOverlay() {
 
   if (!pendingStartupOffer) return null
 
-  const { name, tagline, category, tier, duration } = pendingStartupOffer
+  const { name, tagline, category, tier, duration, hotTake, pitch, founder, founderTitle, traction } = pendingStartupOffer
   const icon = CATEGORY_ICONS[category] || '🏢'
   const { failRate, maxMultiplier } = getRiskProfile(pendingStartupOffer)
 
@@ -47,10 +47,10 @@ export function StartupOfferOverlay() {
   return (
     <div className="fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-5">
       <div
-        className="bg-mh-bg border-2 border-mh-accent-blue rounded-lg w-full max-w-[340px] overflow-hidden"
+        className="bg-mh-bg border-2 border-mh-accent-blue rounded-lg w-full max-w-[340px] overflow-hidden max-h-[90vh] overflow-y-auto"
         style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
       >
-        {/* Header - startup name is the hero */}
+        {/* Header - startup name + hot take */}
         <div className={`p-4 ${isRetro2 ? 'bg-gradient-to-r from-[#0a150d] to-[#0d1a10]' : 'bg-gradient-to-r from-[#0a1520] to-[#0d1a28]'} border-b border-mh-border`}>
           <div className="flex items-center gap-3 mb-2">
             <span className="text-3xl">{icon}</span>
@@ -61,12 +61,51 @@ export function StartupOfferOverlay() {
               {name}
             </div>
           </div>
-          <div className="text-mh-text-dim text-sm italic">
-            &ldquo;{tagline}&rdquo;
-          </div>
+          {hotTake ? (
+            <div className="text-mh-text-bright text-sm italic">
+              &ldquo;{hotTake}&rdquo;
+            </div>
+          ) : (
+            <div className="text-mh-text-dim text-sm italic">
+              &ldquo;{tagline}&rdquo;
+            </div>
+          )}
         </div>
 
-        {/* Risk Info - replaces the valuation section */}
+        {/* The Pitch */}
+        {pitch && (
+          <div className="p-4 border-b border-mh-border bg-[#080a0d]">
+            <div className="text-mh-accent-blue text-[10px] font-bold tracking-wider mb-2 uppercase">
+              The Pitch
+            </div>
+            <div className="text-mh-text-bright text-sm leading-relaxed">
+              {pitch}
+            </div>
+          </div>
+        )}
+
+        {/* Founder + Traction */}
+        {(founder || traction) && (
+          <div className="px-4 py-3 border-b border-mh-border bg-[#0a0d10] flex flex-col gap-1.5">
+            {founder && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-mh-text-dim">👤</span>
+                <span className="text-mh-text-bright">{founder}</span>
+                {founderTitle && (
+                  <span className="text-mh-text-dim text-xs">• {founderTitle}</span>
+                )}
+              </div>
+            )}
+            {traction && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-mh-text-dim">📈</span>
+                <span className="text-mh-profit-green font-medium">{traction}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Risk Info */}
         <div className="p-4 border-b border-mh-border bg-[#0a0d10]">
           <div className="text-mh-accent-blue text-xs font-bold tracking-wider mb-2">
             {tier === 'angel' ? '👼 ANGEL DEAL' : '🏦 VC ROUND'}
@@ -76,9 +115,8 @@ export function StartupOfferOverlay() {
             <span className={failRateColor}>{failRate}% fail</span>
             <span className="text-mh-text-dim">•</span>
             <span className="text-mh-profit-green">{maxMultiplier}x max</span>
-          </div>
-          <div className="text-mh-text-dim text-xs mt-2">
-            ⏱️ Resolves in {duration[0]}-{duration[1]} days
+            <span className="text-mh-text-dim">•</span>
+            <span className="text-mh-text-dim">⏱️ {duration[0]}-{duration[1]}d</span>
           </div>
         </div>
 
@@ -106,7 +144,7 @@ export function StartupOfferOverlay() {
             })}
           </div>
           <div className="text-mh-text-dim text-xs mt-2 text-center">
-            Cash: ${cash.toLocaleString()}
+            Cash: ${cash.toLocaleString('en-US')}
           </div>
         </div>
 

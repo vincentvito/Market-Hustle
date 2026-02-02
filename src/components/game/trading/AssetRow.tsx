@@ -35,7 +35,7 @@ export function AssetRow({ asset }: AssetRowProps) {
           <div className="text-base font-bold text-mh-text-bright">{asset.name}</div>
           {owned > 0 && (
             <div className="text-[11px] text-mh-accent-blue mt-0.5">
-              OWN: {owned} (${Math.round(owned * price).toLocaleString()})
+              OWN: {owned} (${Math.round(owned * price).toLocaleString('en-US')})
             </div>
           )}
         </div>

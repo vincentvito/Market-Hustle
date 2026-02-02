@@ -81,7 +81,7 @@ export function GuestGameOverView() {
         <div
           className={`text-3xl ${netWorth >= 0 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'}`}
         >
-          ${netWorth.toLocaleString()}
+          ${netWorth.toLocaleString('en-US')}
         </div>
       </div>
 

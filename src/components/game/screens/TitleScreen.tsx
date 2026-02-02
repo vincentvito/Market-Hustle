@@ -19,7 +19,7 @@ const ASCII_LOGO = `███╗   ███╗ █████╗ ████�
 ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚══════╝`
 
 function formatScore(value: number): string {
-  return `$${value.toLocaleString()}`
+  return `$${value.toLocaleString('en-US')}`
 }
 
 export function TitleScreen() {

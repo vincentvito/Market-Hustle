@@ -100,7 +100,7 @@ function ResultScreen({
             <div className={`text-3xl font-bold mb-3 ${
               result.cashChange > 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
             }`}>
-              {result.cashChange > 0 ? '+' : ''}{result.cashChange < 0 ? '-' : ''}${Math.abs(result.cashChange).toLocaleString()}
+              {result.cashChange > 0 ? '+' : ''}{result.cashChange < 0 ? '-' : ''}${Math.abs(result.cashChange).toLocaleString('en-US')}
             </div>
           )}
 
@@ -236,7 +236,7 @@ function RouletteSpinner({
       <div className="flex flex-col items-center">
         {/* Bet info */}
         <div className="text-mh-text-dim text-sm mb-6">
-          ${betAmount.toLocaleString()} on {selectedColor.toUpperCase()}
+          ${betAmount.toLocaleString('en-US')} on {selectedColor.toUpperCase()}
         </div>
 
         {/* The spinning number display */}
@@ -424,7 +424,7 @@ export function EncounterPopup() {
             {betOptions.map((option) => {
               const canAfford = option.value <= cash
               const displayValue = option.label === 'ALL IN'
-                ? `ALL IN ($${cash.toLocaleString()})`
+                ? `ALL IN ($${cash.toLocaleString('en-US')})`
                 : option.label
               return (
                 <button
@@ -450,7 +450,7 @@ export function EncounterPopup() {
           {/* Cash Display */}
           <div className="px-4 pb-2 text-center">
             <div className="text-mh-text-dim text-xs">
-              Available: ${cash.toLocaleString()}
+              Available: ${cash.toLocaleString('en-US')}
             </div>
           </div>
 
@@ -482,7 +482,7 @@ export function EncounterPopup() {
               <span className="text-4xl">🎰</span>
               <div>
                 <div className={`${isRetro2 ? 'text-mh-accent-blue' : 'text-yellow-500'} text-lg font-bold`}>PICK YOUR COLOR</div>
-                <div className="text-mh-text-dim text-xs">Betting ${rouletteBet.toLocaleString()}</div>
+                <div className="text-mh-text-dim text-xs">Betting ${rouletteBet.toLocaleString('en-US')}</div>
               </div>
             </div>
           </div>
@@ -564,7 +564,7 @@ export function EncounterPopup() {
         {(pendingEncounter.type === 'sec' || pendingEncounter.type === 'divorce' || pendingEncounter.type === 'tax') && (
           <div className="px-4 py-2 bg-[#0d0808] border-b border-mh-border">
             <div className="text-mh-text-dim text-xs text-center">
-              Your net worth: <span className="text-mh-text-bright">${netWorth.toLocaleString()}</span>
+              Your net worth: <span className="text-mh-text-bright">${netWorth.toLocaleString('en-US')}</span>
             </div>
           </div>
         )}

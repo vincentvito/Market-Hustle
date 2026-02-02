@@ -250,7 +250,7 @@ export function resolveSEC(
   if (choice === 'pay') {
     const fine = Math.floor(netWorth * 0.20)
     return {
-      headline: `SEC SETTLEMENT: You paid $${fine.toLocaleString()} to avoid prosecution`,
+      headline: `SEC SETTLEMENT: You paid $${fine.toLocaleString('en-US')} to avoid prosecution`,
       liquidationRequired: fine,  // Will force-sell assets if cash insufficient
     }
   } else {
@@ -278,7 +278,7 @@ export function resolveDivorce(
   if (choice === 'settle') {
     const loss = Math.floor(netWorth * 0.50)
     return {
-      headline: `DIVORCE SETTLED: $${loss.toLocaleString()} gone, but you move on`,
+      headline: `DIVORCE SETTLED: $${loss.toLocaleString('en-US')} gone, but you move on`,
       liquidationRequired: loss,  // Will force-sell assets if cash insufficient
     }
   } else {
@@ -291,7 +291,7 @@ export function resolveDivorce(
     } else {
       const loss = Math.floor(netWorth * 0.70)
       return {
-        headline: `CONTESTED AND LOST: $${loss.toLocaleString()} awarded to your ex`,
+        headline: `CONTESTED AND LOST: $${loss.toLocaleString('en-US')} awarded to your ex`,
         liquidationRequired: loss,  // Will force-sell assets if cash insufficient
       }
     }
@@ -386,7 +386,7 @@ export function resolveRoulette(
       // 35:1 payout for zero
       const winnings = betAmount * 35
       return {
-        headline: `Your $${betAmount.toLocaleString()} becomes $${(betAmount + winnings).toLocaleString()}!`,
+        headline: `Your $${betAmount.toLocaleString('en-US')} becomes $${(betAmount + winnings).toLocaleString('en-US')}!`,
         cashChange: winnings,
         spinResult: spin,
         spinColor,
@@ -444,7 +444,7 @@ export function resolveTax(
   if (choice === 'pay') {
     const penalty = Math.floor(netWorth * 0.15)
     return {
-      headline: `IRS SETTLEMENT: You paid $${penalty.toLocaleString()} in back taxes and penalties`,
+      headline: `IRS SETTLEMENT: You paid $${penalty.toLocaleString('en-US')} in back taxes and penalties`,
       liquidationRequired: penalty,
     }
   } else {
@@ -466,7 +466,7 @@ export function resolveTax(
         }
       }
       return {
-        headline: `AUDIT FAILED: Offshore scheme exposed. $${penalty.toLocaleString()} in penalties.`,
+        headline: `AUDIT FAILED: Offshore scheme exposed. $${penalty.toLocaleString('en-US')} in penalties.`,
         liquidationRequired: penalty,
       }
     }

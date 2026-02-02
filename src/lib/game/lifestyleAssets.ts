@@ -51,7 +51,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
     emoji: '⛏️',
     flavor: 'Seize lithium mine in Chile',
     cost: 50_000_000,
-    successEffects: { lithium: 0.60, tesla: 0.25, emerging: -0.15 },
+    successEffects: { lithium: 0.60, tesla: -0.15, emerging: -0.15 }, // Tesla DOWN - lithium squeeze hurts battery costs
     backfireEffects: {
       priceEffects: { lithium: -0.30 },
       fine: 100_000_000,
@@ -65,7 +65,13 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
     emoji: '🦠',
     flavor: 'Develop a pathogen to trigger a new pandemic',
     cost: 100_000_000,
-    successEffects: { biotech: 0.50, gold: 0.25, oil: -0.30, nasdaq: -0.20, emerging: -0.30 },
+    // Phase 1 (Day N+1): Liquidation crash - panic selling across markets
+    successEffects: { oil: -0.30, nasdaq: -0.20, emerging: -0.30 },
+    // Phase 2 (Day N+2): Recovery - flight to safety + vaccine plays
+    phase2Effects: {
+      effects: { biotech: 0.50, gold: 0.25, btc: 0.20 },
+      headline: 'VACCINE RACE BEGINS - BIOTECH STOCKS SURGE AS INVESTORS SEEK SAFETY',
+    },
     backfireEffects: {
       priceEffects: { biotech: -0.25 },
       losePE: true,
@@ -239,11 +245,10 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     name: "Sal's Corner",
     emoji: '🍝',
     category: 'private_equity',
-    basePrice: 1_200_000,
-    volatility: 0,        // No price fluctuation - safe haven
-    dailyReturn: 0.08,    // 8%/day - premium for stability
+    basePrice: 2_500_000,
+    volatility: 0.03,     // Added volatility for balance
+    dailyReturn: 0.05,    // 5%/day - standard blue chip return
     description: 'Defense industry lobbyist. K Street connections. Congressional golf buddies.',
-    riskTier: 'blue_chip',
     failureChancePerDay: 0.001, // ~3%/month
     // Abilities: defense_spending_bill, drug_fast_track (via getPEAbilities)
   },
@@ -252,24 +257,34 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     name: 'Iron Oak Brewing Co.',
     emoji: '🍺',
     category: 'private_equity',
-    basePrice: 1_900_000,
+    basePrice: 4_600_000,
     volatility: 0.04,
     dailyReturn: 0.05, // 5%/day
     description: 'Craft brewery with cult following. Two taprooms, 200+ bar distribution.',
-    riskTier: 'blue_chip',
     failureChancePerDay: 0.001, // ~3%/month
-    // No operation - passive income only
+    // No operation - passive income only. Boosted by GenZ drinking news events.
   },
   {
     id: 'pe_tenuta_luna',
     name: 'Tenuta della Luna',
     emoji: '🍷',
     category: 'private_equity',
-    basePrice: 4_500_000,
+    basePrice: 24_000_000,
     volatility: 0.04,
     dailyReturn: 0.05, // 5%/day
     description: 'Tuscan vineyard. 80-hectare estate in Chianti Classico. 40K bottles annually.',
-    riskTier: 'blue_chip',
+    failureChancePerDay: 0.001, // ~3%/month
+    // No operation - passive income only. Boosted by rare wine events.
+  },
+  {
+    id: 'pe_vegas_casino',
+    name: 'Las Vegas Casino',
+    emoji: '🎰',
+    category: 'private_equity',
+    basePrice: 1_000_000_000,
+    volatility: 0.04,
+    dailyReturn: 0.05, // 5%/day
+    description: 'Sin City landmark. House always wins. Whales, shows, and rooms.',
     failureChancePerDay: 0.001, // ~3%/month
     // No operation - passive income only
   },
@@ -284,7 +299,6 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     volatility: 0.05,
     dailyReturn: 0.07, // 7%/day
     description: 'Private military contractor. Government contracts, covert operations.',
-    riskTier: 'growth',
     failureChancePerDay: 0.003, // ~9%/month
     // Abilities: yemen_operations, chile_acquisition (via getPEAbilities)
   },
@@ -297,7 +311,6 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     volatility: 0.07,
     dailyReturn: 0.06, // 6%/day
     description: 'Synthetic biology startup. Gain-of-function research. BSL-4 clearance.',
-    riskTier: 'growth',
     failureChancePerDay: 0.005, // ~15%/month - highest risk
     // Abilities: project_chimera (via getPEAbilities)
   },
@@ -310,7 +323,6 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
     volatility: 0.05,
     dailyReturn: 0.07, // 7%/day
     description: 'Media conglomerate. News networks, film studios, streaming platform.',
-    riskTier: 'growth',
     failureChancePerDay: 0.003, // ~9%/month
     // Abilities: operation_divide (via getPEAbilities)
   },

@@ -21,14 +21,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla'],
     outcomes: [
       {
-        headline: 'CHINA INVADES TAIWAN - FULL SCALE WAR',
+        headline: 'BREAKING: CHINA INVADES TAIWAN - FULL SCALE WAR',
         probability: 0.65,
         effects: { oil: 0.45, gold: 0.35, defense: 0.40, uranium: 0.25, nasdaq: -0.30, emerging: -0.35, lithium: -0.30, tesla: -0.35 },
         sentiment: 'bearish',
         sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla']
       },
       {
-        headline: 'BEIJING BACKS DOWN AFTER US WARNING',
+        headline: 'TAIWAN CRISIS: BEIJING BACKS DOWN AFTER US WARNING',
         probability: 0.35,
         effects: { oil: -0.15, gold: -0.10, defense: -0.18, nasdaq: 0.15, emerging: 0.18, lithium: 0.12, tesla: 0.15 },
         sentiment: 'bullish',
@@ -46,14 +46,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla'],
     outcomes: [
       {
-        headline: 'FULL BLOCKADE OF TAIWAN STRAIT',
+        headline: 'TAIWAN EMERGENCY ESCALATES: FULL BLOCKADE OF STRAIT',
         probability: 0.60,
         effects: { oil: 0.35, gold: 0.28, defense: 0.32, nasdaq: -0.28, lithium: -0.35, emerging: -0.25, tesla: -0.30 },
         sentiment: 'bearish',
         sentimentAssets: ['nasdaq', 'emerging', 'lithium', 'tesla']
       },
       {
-        headline: 'SURPRISE DIPLOMATIC BREAKTHROUGH',
+        headline: 'TAIWAN CRISIS AVERTED: SURPRISE DIPLOMATIC BREAKTHROUGH',
         probability: 0.40,
         effects: { oil: -0.12, gold: -0.08, nasdaq: 0.20, lithium: 0.18, emerging: 0.22, tesla: 0.18 },
         sentiment: 'bullish',
@@ -71,7 +71,7 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'emerging', 'tesla'],
     outcomes: [
       {
-        headline: 'HISTORIC PEACE FRAMEWORK SIGNED',
+        headline: 'US-CHINA SUMMIT: HISTORIC PEACE FRAMEWORK SIGNED',
         probability: 0.55,
         effects: { oil: -0.20, gold: -0.15, defense: -0.22, nasdaq: 0.22, emerging: 0.25, lithium: 0.15, tesla: 0.20 },
         sentiment: 'bullish',
@@ -79,7 +79,7 @@ export const EVENT_CHAINS: EventChain[] = [
         allowsReversal: true
       },
       {
-        headline: 'SUMMIT COLLAPSES - TENSIONS ESCALATE',
+        headline: 'US-CHINA SUMMIT COLLAPSES - TENSIONS ESCALATE',
         probability: 0.45,
         effects: { oil: 0.25, gold: 0.20, defense: 0.25, nasdaq: -0.18, emerging: -0.20, tesla: -0.15 },
         sentiment: 'bearish',
@@ -100,14 +100,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'btc', 'altcoins', 'tesla'],
     outcomes: [
       {
-        headline: 'FED PIVOTS TO RATE CUTS - MARKETS SOAR',
+        headline: 'POWELL DELIVERS: FED PIVOTS TO RATE CUTS',
         probability: 0.60,
         effects: { nasdaq: 0.22, btc: 0.25, altcoins: 0.35, emerging: 0.18, tesla: 0.28, gold: -0.05 },
         sentiment: 'bullish',
         sentimentAssets: ['nasdaq', 'btc', 'altcoins', 'tesla']
       },
       {
-        headline: 'FED STAYS HAWKISH - MARKETS DISAPPOINTED',
+        headline: 'POWELL REVERSES: FED STAYS HAWKISH DESPITE HINTS',
         probability: 0.40,
         effects: { nasdaq: -0.15, btc: -0.12, altcoins: -0.18, emerging: -0.10, tesla: -0.18, gold: 0.05 },
         sentiment: 'bearish',
@@ -124,14 +124,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'tesla'],
     outcomes: [
       {
-        headline: 'INFLATION SPIKES TO 9.2% - FED TRAPPED',
+        headline: 'INFLATION REPORT: 9.2% - FED POLICY TRAPPED',
         probability: 0.50,
         effects: { gold: 0.20, btc: 0.15, altcoins: 0.22, oil: 0.12, coffee: 0.12, nasdaq: -0.18, tesla: -0.20 },
         sentiment: 'bearish',
         sentimentAssets: ['nasdaq', 'tesla']
       },
       {
-        headline: 'INFLATION FINALLY COOLING - SOFT LANDING',
+        headline: 'INFLATION REPORT: COOLING DATA SIGNALS SOFT LANDING',
         probability: 0.50,
         effects: { nasdaq: 0.18, btc: 0.10, altcoins: 0.15, gold: -0.08, tesla: 0.15 },
         sentiment: 'bullish',
@@ -152,14 +152,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['btc', 'altcoins'],
     outcomes: [
       {
-        headline: 'BINANCE CEO ARRESTED - EXCHANGE FROZEN',
+        headline: 'DOJ ACTS: BINANCE CEO ARRESTED, EXCHANGE FROZEN',
         probability: 0.60,
         effects: { btc: -0.35, altcoins: -0.50, nasdaq: -0.08, gold: 0.10 },
         sentiment: 'bearish',
         sentimentAssets: ['btc', 'altcoins']
       },
       {
-        headline: 'BINANCE SETTLES - PAYS RECORD $4B FINE',
+        headline: 'DOJ PROBE RESOLVED: BINANCE SETTLES FOR $4B',
         probability: 0.40,
         effects: { btc: 0.15, altcoins: 0.22, nasdaq: 0.05 },
         sentiment: 'bullish',
@@ -177,14 +177,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['btc', 'altcoins'],
     outcomes: [
       {
-        headline: 'SPOT BITCOIN ETF APPROVED - HISTORIC DAY',
+        headline: 'SEC RULING: SPOT BITCOIN ETF APPROVED',
         probability: 0.50,
-        effects: { btc: 0.45, altcoins: 0.55, nasdaq: 0.12 },
+        effects: { btc: 0.40, altcoins: 0.50, nasdaq: 0.12 },
         sentiment: 'bullish',
         sentimentAssets: ['btc', 'altcoins']
       },
       {
-        headline: 'SEC REJECTS ETF - CITES MARKET MANIPULATION',
+        headline: 'SEC RULING: ETF REJECTED, CITES MANIPULATION',
         probability: 0.50,
         effects: { btc: -0.25, altcoins: -0.35, nasdaq: -0.05 },
         sentiment: 'bearish',
@@ -201,14 +201,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['btc', 'altcoins'],
     outcomes: [
       {
-        headline: 'SAYLOR FORCED TO LIQUIDATE 100K BTC',
+        headline: 'MARGIN CALL CONFIRMED: SAYLOR LIQUIDATES 100K BTC',
         probability: 0.55,
         effects: { btc: -0.40, altcoins: -0.55, nasdaq: -0.10, gold: 0.12 },
         sentiment: 'bearish',
         sentimentAssets: ['btc', 'altcoins']
       },
       {
-        headline: 'MICROSTRATEGY SECURES EMERGENCY FUNDING',
+        headline: 'MARGIN CRISIS AVERTED: MICROSTRATEGY SECURES FUNDING',
         probability: 0.45,
         effects: { btc: 0.20, altcoins: 0.30, nasdaq: 0.05 },
         sentiment: 'bullish',
@@ -230,14 +230,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['oil'],
     outcomes: [
       {
-        headline: 'SAUDIS SLASH OUTPUT BY 3M BARRELS',
+        headline: 'OPEC MEETING RESULT: SAUDIS SLASH 3M BARRELS',
         probability: 0.55,
         effects: { oil: 0.35, gold: 0.08, emerging: -0.10 },
         sentiment: 'bullish',
         sentimentAssets: ['oil']
       },
       {
-        headline: 'OPEC FAILS TO AGREE - OUTPUT UNCHANGED',
+        headline: 'OPEC MEETING FAILS - OUTPUT UNCHANGED',
         probability: 0.45,
         effects: { oil: -0.15, emerging: 0.05 },
         sentiment: 'bearish',
@@ -254,14 +254,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['oil'],
     outcomes: [
       {
-        headline: 'LARGEST US REFINERY OFFLINE FOR MONTHS',
+        headline: 'REFINERY FIRE CONFIRMED: OFFLINE FOR MONTHS',
         probability: 0.65,
         effects: { oil: 0.40, gold: 0.12, defense: 0.08, nasdaq: -0.08 },
         sentiment: 'bullish',
         sentimentAssets: ['oil']
       },
       {
-        headline: 'FIRE CONTAINED - MINIMAL DAMAGE',
+        headline: 'REFINERY FIRE CONTAINED - MINIMAL DAMAGE CONFIRMED',
         probability: 0.35,
         effects: { oil: -0.08 },
         sentiment: 'bearish',
@@ -279,14 +279,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['uranium', 'nasdaq'],
     outcomes: [
       {
-        headline: 'CORE MELTDOWN - WORST SINCE CHERNOBYL',
+        headline: 'LENINGRAD-2 MELTDOWN - WORST SINCE CHERNOBYL',
         probability: 0.40,
         effects: { uranium: -0.45, oil: 0.35, gold: 0.30, nasdaq: -0.15, emerging: -0.20, defense: 0.15 },
         sentiment: 'bearish',
         sentimentAssets: ['uranium', 'nasdaq']
       },
       {
-        headline: 'COOLANT SYSTEMS RESTORED - CRISIS AVERTED',
+        headline: 'LENINGRAD-2 CRISIS AVERTED: COOLANT RESTORED',
         probability: 0.60,
         effects: { uranium: 0.15, oil: -0.08, gold: -0.05, nasdaq: 0.08 },
         sentiment: 'bullish',
@@ -307,14 +307,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'tesla'],
     outcomes: [
       {
-        headline: 'STARSHIP REACHES MARS ORBIT - HISTORY MADE',
+        headline: 'STARSHIP LAUNCH SUCCESS: MARS ORBIT ACHIEVED',
         probability: 0.45,
         effects: { nasdaq: 0.25, lithium: 0.20, btc: 0.15, altcoins: 0.20, tesla: 0.35 },
         sentiment: 'bullish',
         sentimentAssets: ['nasdaq', 'tesla']
       },
       {
-        headline: 'STARSHIP EXPLODES ON LAUNCHPAD',
+        headline: 'STARSHIP LAUNCH FAILS: EXPLOSION ON LAUNCHPAD',
         probability: 0.55,
         effects: { nasdaq: -0.10, lithium: -0.08, tesla: -0.15 },
         sentiment: 'bearish',
@@ -331,14 +331,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'tesla'],
     outcomes: [
       {
-        headline: 'AGI CONFIRMED - GOOGLE LAYS OFF 50,000',
+        headline: 'BREAKING: AGI CONFIRMED - GOOGLE CUTS 50K JOBS',
         probability: 0.60,
         effects: { nasdaq: 6.0, btc: 0.80, altcoins: 1.0, lithium: 0.60, tesla: 1.50, gold: -0.20 },
         sentiment: 'bullish',
         sentimentAssets: ['nasdaq', 'tesla']
       },
       {
-        headline: 'AGI CLAIMS OVERBLOWN - JUST INCREMENTAL',
+        headline: 'DEEPMIND AGI CLAIMS OVERBLOWN - INCREMENTAL ONLY',
         probability: 0.40,
         effects: { nasdaq: -0.12, btc: -0.08, altcoins: -0.12, tesla: -0.10 },
         sentiment: 'bearish',
@@ -355,14 +355,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq'],
     outcomes: [
       {
-        headline: 'VISION PRO 2 UNVEILED - PREORDERS CRASH',
+        headline: 'APPLE AR REVEALED: VISION PRO 2 PREORDERS CRASH',
         probability: 0.65,
         effects: { nasdaq: 0.18, lithium: 0.15 },
         sentiment: 'bullish',
         sentimentAssets: ['nasdaq']
       },
       {
-        headline: 'APPLE DELAYS AR LAUNCH INDEFINITELY',
+        headline: 'APPLE AR RUMORS FALSE: LAUNCH DELAYED INDEFINITELY',
         probability: 0.35,
         effects: { nasdaq: -0.12, lithium: -0.08 },
         sentiment: 'bearish',
@@ -383,14 +383,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['coffee', 'emerging'],
     outcomes: [
       {
-        headline: 'COFFEE AND SOYBEAN CROPS DEVASTATED',
+        headline: 'BRAZIL DROUGHT CONFIRMED: COFFEE/SOYBEAN CROPS DEVASTATED',
         probability: 0.70,
         effects: { coffee: 0.50, gold: 0.10, emerging: -0.12 },
-        sentiment: 'bearish',
-        sentimentAssets: ['coffee', 'emerging']
+        sentiment: 'mixed',
+        sentimentAssets: ['coffee', 'gold', 'emerging']
       },
       {
-        headline: 'LATE RAINS SAVE THE HARVEST',
+        headline: 'BRAZIL DROUGHT RELIEF: LATE RAINS SAVE HARVEST',
         probability: 0.30,
         effects: { coffee: -0.15, emerging: 0.08 },
         sentiment: 'bullish',
@@ -407,14 +407,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['coffee', 'emerging'],
     outcomes: [
       {
-        headline: 'RUSSIA EXITS BLACK SEA GRAIN DEAL',
+        headline: 'GRAIN CRISIS: RUSSIA EXITS BLACK SEA DEAL',
         probability: 0.65,
         effects: { coffee: 0.15, gold: 0.12, oil: 0.10, emerging: -0.15 },
-        sentiment: 'bearish',
-        sentimentAssets: ['coffee', 'emerging']
+        sentiment: 'mixed',
+        sentimentAssets: ['coffee', 'gold', 'oil', 'emerging']
       },
       {
-        headline: 'UN BROKERS LAST-MINUTE EXTENSION',
+        headline: 'GRAIN CRISIS RESOLVED: UN BROKERS EXTENSION',
         probability: 0.35,
         effects: { emerging: 0.08 },
         sentiment: 'bullish',
@@ -431,14 +431,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['coffee', 'emerging'],
     outcomes: [
       {
-        headline: 'WORST LOCUST PLAGUE IN A CENTURY',
+        headline: 'LOCUST SWARMS ARRIVE: WORST PLAGUE IN A CENTURY',
         probability: 0.60,
         effects: { coffee: 0.20, gold: 0.08, emerging: -0.18 },
-        sentiment: 'bearish',
-        sentimentAssets: ['coffee', 'emerging']
+        sentiment: 'mixed',
+        sentimentAssets: ['coffee', 'gold', 'emerging']
       },
       {
-        headline: 'SWARMS DISPERSE BEFORE REACHING FARMLAND',
+        headline: 'LOCUST THREAT AVERTED: SWARMS DISPERSE BEFORE IMPACT',
         probability: 0.40,
         effects: { emerging: 0.10 },
         sentiment: 'bullish',
@@ -459,14 +459,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['tesla'],
     outcomes: [
       {
-        headline: 'ROBOTAXI LAUNCH EXCEEDS ALL EXPECTATIONS',
+        headline: 'TESLA EVENT: ROBOTAXI LAUNCH EXCEEDS EXPECTATIONS',
         probability: 0.55,
         effects: { tesla: 0.50, nasdaq: 0.15, lithium: 0.20 },
         sentiment: 'bullish',
         sentimentAssets: ['tesla']
       },
       {
-        headline: 'ROBOTAXI DEMO FAILS LIVE ON STAGE',
+        headline: 'TESLA EVENT DISASTER: ROBOTAXI DEMO FAILS ON STAGE',
         probability: 0.45,
         effects: { tesla: -0.35, nasdaq: -0.08, lithium: -0.10 },
         sentiment: 'bearish',
@@ -483,14 +483,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['tesla'],
     outcomes: [
       {
-        headline: 'NHTSA ORDERS NATIONWIDE FSD RECALL',
+        headline: 'FSD INVESTIGATION RESULT: NHTSA ORDERS RECALL',
         probability: 0.50,
         effects: { tesla: -0.40, nasdaq: -0.10 },
         sentiment: 'bearish',
         sentimentAssets: ['tesla']
       },
       {
-        headline: 'NHTSA CLEARS TESLA - FSD DEEMED SAFE',
+        headline: 'FSD INVESTIGATION CLOSED: NHTSA CLEARS TESLA',
         probability: 0.50,
         effects: { tesla: 0.35, nasdaq: 0.08 },
         sentiment: 'bullish',
@@ -507,14 +507,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['tesla'],
     outcomes: [
       {
-        headline: 'CHINA BANS TESLA FROM GOVERNMENT ZONES',
+        headline: 'GIGAFACTORY REVIEW: CHINA BANS TESLA FROM GOV ZONES',
         probability: 0.45,
         effects: { tesla: -0.30, emerging: 0.10, lithium: -0.08 },
         sentiment: 'bearish',
         sentimentAssets: ['tesla']
       },
       {
-        headline: 'TESLA WINS MAJOR CHINA EXPANSION APPROVAL',
+        headline: 'GIGAFACTORY APPROVED: TESLA WINS CHINA EXPANSION',
         probability: 0.55,
         effects: { tesla: 0.38, lithium: 0.15, emerging: -0.05 },
         sentiment: 'bullish',
@@ -535,14 +535,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['biotech'],
     outcomes: [
       {
-        headline: 'FDA FAST-TRACKS APPROVAL - BREAKTHROUGH',
+        headline: 'MODERNA VACCINE: FDA FAST-TRACKS APPROVAL',
         probability: 0.55,
         effects: { biotech: 0.45, nasdaq: 0.12 },
         sentiment: 'bullish',
         sentimentAssets: ['biotech']
       },
       {
-        headline: 'FDA REQUESTS ADDITIONAL TRIALS',
+        headline: 'MODERNA VACCINE: FDA DEMANDS MORE TRIALS',
         probability: 0.45,
         effects: { biotech: -0.30, nasdaq: -0.05 },
         sentiment: 'bearish',
@@ -559,14 +559,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'emerging', 'tesla'],
     outcomes: [
       {
-        headline: 'WHO DECLARES PUBLIC HEALTH EMERGENCY OF INTERNATIONAL CONCERN',
+        headline: 'SE ASIA OUTBREAK: WHO DECLARES EMERGENCY',
         probability: 0.65,
         effects: { biotech: 0.50, gold: 0.22, nasdaq: -0.18, oil: -0.30, emerging: -0.28, tesla: -0.20 },
         sentiment: 'bearish',
         sentimentAssets: ['nasdaq', 'emerging', 'tesla']
       },
       {
-        headline: 'CDC: OUTBREAK CONTAINED, NO SUSTAINED TRANSMISSION',
+        headline: 'SE ASIA OUTBREAK CONTAINED - CDC CONFIRMS',
         probability: 0.35,
         effects: { biotech: -0.15, oil: 0.08, emerging: 0.12, tesla: 0.10 },
         sentiment: 'bullish',
@@ -584,14 +584,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['biotech'],
     outcomes: [
       {
-        headline: 'TRIAL RESULTS - 90% EFFICACY, CURE IN SIGHT',
+        headline: 'PFIZER TRIAL SUCCESS: 90% EFFICACY ALZHEIMER\'S DRUG',
         probability: 0.50,
         effects: { biotech: 0.55, nasdaq: 0.15 },
         sentiment: 'bullish',
         sentimentAssets: ['biotech']
       },
       {
-        headline: 'DATA FALSIFIED - PFIZER FACES CRIMINAL PROBE',
+        headline: 'PFIZER LEAK SCANDAL: TRIAL DATA FALSIFIED',
         probability: 0.50,
         effects: { biotech: -0.40, nasdaq: -0.08 },
         sentiment: 'bearish',
@@ -613,7 +613,7 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'emerging'],
     outcomes: [
       {
-        headline: 'DEMOGRAPHIC PROJECTIONS FLIP - GROWTH REPRICED',
+        headline: 'UBI BIRTHRATE IMPACT: DEMOGRAPHIC PROJECTIONS FLIP',
         probability: 0.40,
         effects: { nasdaq: 0.15, emerging: 0.20, gold: -0.05 },
         sentiment: 'bullish',
@@ -627,7 +627,7 @@ export const EVENT_CHAINS: EventChain[] = [
         sentimentAssets: ['nasdaq', 'gold', 'lithium']
       },
       {
-        headline: 'SPIKE IS TEMPORARY - RETURNS TO BASELINE',
+        headline: 'UBI BIRTHRATE SPIKE TEMPORARY - BACK TO BASELINE',
         probability: 0.20,
         effects: { nasdaq: -0.05, emerging: -0.08 },
         sentiment: 'bearish',
@@ -651,16 +651,16 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'tesla', 'emerging'],
     outcomes: [
       {
-        headline: 'ROBOTS REPLACE 300K WORKERS - MASS LAYOFFS',
+        headline: 'JOBS REPORT SHOCK: ROBOTS REPLACE 300K WORKERS',
         probability: 0.55,
         effects: { nasdaq: 0.15, tesla: 0.25, lithium: 0.12, gold: 0.18, emerging: -0.20 },
         sentiment: 'mixed',
         sentimentAssets: ['nasdaq', 'tesla', 'emerging']
       },
       {
-        headline: 'JOBS SURGE 400K - LABOR MARKET UNSTOPPABLE',
+        headline: 'JOBS REPORT: 400K SURGE - LABOR MARKET STRONG',
         probability: 0.45,
-        effects: { nasdaq: 0.22, tesla: 0.15, emerging: 0.25, oil: 0.12, gold: -0.08 },
+        effects: { nasdaq: 0.12, tesla: 0.10, emerging: 0.18, oil: 0.08, gold: -0.05 },
         sentiment: 'bullish',
         sentimentAssets: ['nasdaq', 'tesla', 'emerging']
       }
@@ -682,7 +682,7 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['coffee'],
     outcomes: [
       {
-        headline: 'SOUTH AMERICA COFFEE BLIGHT - 80% HARVEST DESTROYED',
+        headline: 'BRAZIL CROP CRISIS: COFFEE BLIGHT DESTROYS 80%',
         probability: 0.50,
         effects: { coffee: 3.0, emerging: -0.12 },
         sentiment: 'bullish',
@@ -708,14 +708,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['defense'],
     outcomes: [
       {
-        headline: 'NATO LAUNCHES LARGEST MILITARY MOBILIZATION SINCE WWII',
+        headline: 'ARTICLE 5 RESULT: NATO\'S LARGEST MOBILIZATION SINCE WWII',
         probability: 0.50,
         effects: { defense: 3.0, oil: 0.35, gold: 0.25, nasdaq: -0.15, emerging: -0.20 },
         sentiment: 'bullish',
         sentimentAssets: ['defense']
       },
       {
-        headline: 'RUSSIA WITHDRAWS FORCES - DIPLOMATIC VICTORY',
+        headline: 'ARTICLE 5 RESOLVED: RUSSIA WITHDRAWS, DIPLOMACY WINS',
         probability: 0.50,
         effects: { defense: -0.25, oil: -0.15, gold: -0.10, nasdaq: 0.12 },
         sentiment: 'bearish',
@@ -734,14 +734,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['oil'],
     outcomes: [
       {
-        headline: 'IRAN CLOSES STRAIT OF HORMUZ - 30% OF WORLD OIL BLOCKED',
+        headline: 'HORMUZ CRISIS: IRAN CLOSES STRAIT, 30% OIL BLOCKED',
         probability: 0.50,
         effects: { oil: 3.0, gold: 0.30, defense: 0.35, nasdaq: -0.20, emerging: -0.25 },
         sentiment: 'bullish',
         sentimentAssets: ['oil']
       },
       {
-        headline: 'US FLEET SECURES STRAIT - SHIPPING RESUMES',
+        headline: 'HORMUZ SECURED: US FLEET REOPENS SHIPPING',
         probability: 0.50,
         effects: { oil: -0.15, defense: 0.08, nasdaq: 0.08 },
         sentiment: 'bearish',
@@ -761,14 +761,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'btc', 'tesla'],
     outcomes: [
       {
-        headline: 'FED ANNOUNCES UNLIMITED QE - "WHATEVER IT TAKES"',
+        headline: 'EMERGENCY FED RESULT: UNLIMITED QE ANNOUNCED',
         probability: 0.50,
-        effects: { nasdaq: 2.0, btc: 0.80, altcoins: 1.0, tesla: 0.90, lithium: 0.50, biotech: 0.40, gold: -0.15 },
+        effects: { nasdaq: 2.0, btc: 0.80, altcoins: 1.0, tesla: 0.90, lithium: 0.50, biotech: 0.40, gold: 0.50 },
         sentiment: 'bullish',
         sentimentAssets: ['nasdaq', 'btc', 'tesla']
       },
       {
-        headline: 'FED HOLDS STEADY - "FINANCIAL SYSTEM RESILIENT"',
+        headline: 'EMERGENCY FED RESULT: NO ACTION, SYSTEM RESILIENT',
         probability: 0.50,
         effects: { nasdaq: -0.08, btc: -0.10, tesla: -0.10, gold: 0.08 },
         sentiment: 'bearish',
@@ -787,14 +787,14 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['gold', 'nasdaq'],
     outcomes: [
       {
-        headline: 'MOODY\'S DOWNGRADES US TO AA - DOLLAR CRISIS BEGINS',
+        headline: 'MOODY\'S VERDICT: US DOWNGRADED TO AA',
         probability: 0.50,
         effects: { gold: 2.0, btc: 0.60, nasdaq: -0.30, emerging: -0.25, oil: 0.20 },
         sentiment: 'bullish',
         sentimentAssets: ['gold']
       },
       {
-        headline: 'MOODY\'S AFFIRMS AAA RATING - DOLLAR STRENGTHENS',
+        headline: 'MOODY\'S VERDICT: AAA RATING AFFIRMED',
         probability: 0.50,
         effects: { gold: -0.15, btc: -0.08, nasdaq: 0.12, emerging: 0.08 },
         sentiment: 'bearish',
@@ -1017,9 +1017,9 @@ export const EVENT_CHAINS: EventChain[] = [
         sentimentAssets: ['nasdaq', 'btc', 'altcoins']
       },
       {
-        headline: 'RESEARCHER DEPLOYS AGI - DEMANDS WORLD LEADERS COMPLY OR FACE SHUTDOWN',
+        headline: 'BREAKING: AGI DEPLOYED - DEMANDS WORLD LEADERS COMPLY OR FACE SHUTDOWN',
         probability: 0.15,
-        effects: { btc: 20.0, gold: 2.0, defense: 1.50, nasdaq: -0.50, emerging: -0.40 },
+        effects: { btc: 8.0, gold: 2.0, defense: 1.50, nasdaq: -0.50, emerging: -0.40 },
         sentiment: 'mixed',
         sentimentAssets: ['btc', 'nasdaq', 'defense']
       }
@@ -1041,7 +1041,7 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['gold', 'defense', 'emerging'],
     outcomes: [
       {
-        headline: 'NUCLEAR EXCHANGE CONFIRMED - MULTIPLE CITIES HIT IN BOTH NATIONS',
+        headline: 'BREAKING: NUCLEAR EXCHANGE CONFIRMED - MULTIPLE CITIES HIT IN BOTH NATIONS',
         probability: 0.20,
         effects: { gold: 8.0, defense: 3.0, oil: 1.50, nasdaq: -0.45, emerging: -0.70, btc: 0.50 },
         sentiment: 'bearish',
@@ -1081,7 +1081,7 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['biotech', 'gold'],
     outcomes: [
       {
-        headline: 'GLOBAL PANDEMIC DECLARED - SUPERBUG KILLS MILLIONS, NO TREATMENT EXISTS',
+        headline: 'BREAKING: GLOBAL PANDEMIC DECLARED - SUPERBUG KILLS MILLIONS, NO TREATMENT EXISTS',
         probability: 0.25,
         effects: { biotech: 7.0, gold: 2.0, defense: 0.50, nasdaq: -0.40, emerging: -0.50, tesla: -0.30 },
         sentiment: 'mixed',
@@ -1121,7 +1121,7 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['nasdaq', 'gold'],
     outcomes: [
       {
-        headline: 'PENSION FUND DECLARES INSOLVENCY - $2 TRILLION EVAPORATES, RETIREES DEVASTATED',
+        headline: 'BREAKING: PENSION FUND COLLAPSES - $2 TRILLION EVAPORATES, RETIREES DEVASTATED',
         probability: 0.25,
         effects: { gold: 1.50, nasdaq: -0.60, emerging: -0.40, btc: 0.30, defense: 0.20 },
         sentiment: 'bearish',
@@ -1161,9 +1161,9 @@ export const EVENT_CHAINS: EventChain[] = [
     sentimentAssets: ['oil', 'gold'],
     outcomes: [
       {
-        headline: 'EGYPT NATIONALIZES SUEZ - CANAL CLOSED INDEFINITELY, GLOBAL SHIPPING CHAOS',
+        headline: 'BREAKING: SUEZ CANAL NATIONALIZED - CANAL CLOSED INDEFINITELY, GLOBAL SHIPPING CHAOS',
         probability: 0.25,
-        effects: { oil: 5.0, gold: 1.50, defense: 0.80, nasdaq: -0.35, emerging: -0.40, tesla: -0.25 },
+        effects: { oil: 3.0, gold: 1.20, defense: 0.60, nasdaq: -0.30, emerging: -0.35, tesla: -0.20 },
         sentiment: 'bearish',
         sentimentAssets: ['nasdaq', 'emerging']
       },

@@ -1,3 +1,5 @@
+import type { DirectorState, DirectorConfig, RippleDefinition } from './director'
+
 // =============================================================================
 // PE ABILITY TYPES (One-time villain actions)
 // =============================================================================
@@ -16,7 +18,11 @@ export interface PEAbility {
   emoji: string
   flavor: string
   cost: number
-  successEffects: Record<string, number>  // Asset price effects on success
+  successEffects: Record<string, number>  // Asset price effects on success (Day N+1)
+  phase2Effects?: {                        // Optional second-phase effects (Day N+2)
+    effects: Record<string, number>
+    headline: string
+  }
   backfireEffects: {
     priceEffects?: Record<string, number>  // Negative price swings
     losePE?: boolean                       // Lose the PE asset entirely
@@ -43,6 +49,7 @@ export interface PendingAbilityEffects {
   effects: Record<string, number>
   isBackfire: boolean
   peAssetId: string  // The PE company that triggered this
+  eventHeadline?: string  // Pre-computed success/backfire headline for Day N+1
   additionalConsequences?: {
     losePE?: boolean
     fine?: number
@@ -51,13 +58,19 @@ export interface PendingAbilityEffects {
   }
 }
 
+export interface PendingPhase2Effects {
+  abilityId: PEAbilityId
+  effects: Record<string, number>
+  headline: string
+  triggerOnDay: number  // The day these effects should fire
+}
+
 // =============================================================================
 // OPERATION TYPES (Legacy - to be removed)
 // =============================================================================
 
 export type OperationId =
   | 'lobby_congress'      // Sal's Corner
-  | 'resource_extraction' // Terralith Minerals (removed)
   | 'execute_coup'        // Blackstone Services
   | 'plant_story'         // Apex Media
 
@@ -124,6 +137,8 @@ export interface MarketEvent {
     boost: number         // probability multiplier (e.g., 2.0 = 2x more likely)
     duration: number      // how many days the boost lasts
   }
+  // Second-order effects: ripple definition for narrative clustering
+  ripple?: RippleDefinition          // Custom ripple effect (overrides category defaults)
 }
 
 // Tracks active escalation boosts
@@ -268,7 +283,11 @@ export interface GameState {
   ownedLuxury: LuxuryAssetId[]               // Owned luxury assets (no price fluctuation)
   // PE Abilities state (new one-time villain actions)
   usedPEAbilities: UsedPEAbility[]           // Abilities already used this game
-  pendingAbilityEffects: PendingAbilityEffects | null  // Effects to apply next day
+  pendingAbilityEffects: PendingAbilityEffects | null  // Effects to apply next day (Day N+1)
+  pendingPhase2Effects: PendingPhase2Effects | null    // Two-phase effects (Day N+2, e.g. Chimera)
+  // Game Director state (narrative pacing system)
+  directorState: DirectorState               // Director's tracking state
+  directorConfig: DirectorConfig             // Director configuration
 }
 
 // Wall St Gossip tracking
@@ -352,6 +371,12 @@ export interface Startup {
     positive: string[]
     negative: string[]
   }
+  // Pitch content for engagement (Shark Tank style)
+  hotTake?: string         // Punchy one-liner hook (e.g., "Uber for tacos, but with drones")
+  pitch?: string           // 2-3 sentence elevator pitch
+  founder?: string         // Founder name for personality
+  founderTitle?: string    // Title (e.g., "CEO & Co-founder")
+  traction?: string        // Social proof metric (e.g., "47K orders in pilot")
 }
 
 export interface ActiveInvestment {
