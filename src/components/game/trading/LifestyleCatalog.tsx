@@ -275,7 +275,7 @@ export function LifestyleCatalog() {
       {selectedAsset && (
         <Portal>
           <div
-            className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end md:items-center justify-center"
+            className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end md:items-center justify-center"
             onClick={() => setSelectedAsset(null)}
           >
             <div
@@ -366,7 +366,7 @@ export function LifestyleCatalog() {
         return (
           <Portal>
             <div
-              className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end md:items-center justify-center"
+              className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end md:items-center justify-center"
               onClick={() => setSellConfirmAsset(null)}
             >
               <div
@@ -435,7 +435,7 @@ export function LifestyleCatalog() {
       {selectedLuxuryAsset && (
         <Portal>
           <div
-            className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end justify-center"
+            className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end justify-center"
             onClick={() => setSelectedLuxuryAsset(null)}
           >
             <div
@@ -513,7 +513,7 @@ export function LifestyleCatalog() {
         return (
           <Portal>
             <div
-              className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end justify-center"
+              className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end justify-center"
               onClick={() => setSellConfirmLuxury(null)}
             >
               <div
@@ -584,7 +584,7 @@ export function LifestyleCatalog() {
         return (
           <Portal>
             <div
-              className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end justify-center"
+              className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end justify-center"
               onClick={() => setSelectedPEAsset(null)}
             >
               <div
@@ -727,7 +727,7 @@ export function LifestyleCatalog() {
         return (
           <Portal>
             <div
-              className="fixed top-0 left-0 right-0 bottom-0 bg-black/60 z-[999] flex items-end justify-center"
+              className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end justify-center"
               onClick={() => setSellConfirmPE(null)}
             >
               <div

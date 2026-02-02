@@ -148,8 +148,8 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const change = asset ? getPriceChange(asset.id) : 0
 
   // Fractional asset configuration (only BTC for now)
-  const FRACTIONAL_ASSETS: Record<string, { minQuantity: number; step: number; maxSlider: number }> = {
-    btc: { minQuantity: 0, step: 0.001, maxSlider: 2 },
+  const FRACTIONAL_ASSETS: Record<string, { minQuantity: number; step: number }> = {
+    btc: { minQuantity: 0, step: 0.001 },
   }
   const isFractional = asset ? asset.id in FRACTIONAL_ASSETS : false
   const fractionalConfig = asset ? FRACTIONAL_ASSETS[asset.id] : null
@@ -157,7 +157,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   // With leverage, you can buy more (but need downPayment = totalCost / leverage)
   const effectiveLeverage = isPro && leverage > 1 ? leverage : 1
   const maxBuyRaw = isFractional && fractionalConfig
-    ? Math.min(fractionalConfig.maxSlider, Math.round((cash * effectiveLeverage / price) * 1000) / 1000)
+    ? Math.round((cash * effectiveLeverage / price) * 1000) / 1000
     : Math.max(1, Math.floor((cash * effectiveLeverage) / price))
   const maxBuy = isFractional ? maxBuyRaw : Math.max(1, maxBuyRaw)
   // Short mode: cash-based limit (what you could cover at current price)
@@ -318,13 +318,13 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     <>
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 z-40 md:fixed"
+        className="fixed inset-0 bg-black/70 z-[60]"
         onClick={onClose}
       />
 
       {/* Sheet - bottom sheet on mobile, centered modal on desktop */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-50 animate-slide-up overflow-y-auto
+        className={`fixed bottom-0 left-0 right-0 z-[70] animate-slide-up overflow-y-auto
           md:left-1/2 md:-translate-x-1/2 md:w-[480px] md:max-h-[80vh] md:rounded-t-xl
           ${isBloomberg
             ? 'bg-black border-t-2 border-[#ff8c00] rounded-none md:border-2 md:border-[#ff8c00]'
