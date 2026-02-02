@@ -87,7 +87,7 @@ export function GameScreen() {
     : null
 
   return (
-    <div className="bg-mh-bg flex flex-col h-full relative">
+    <div className="bg-mh-bg flex flex-col h-dvh relative">
       {showHelp && <HowToPlayModal onClose={() => setShowHelp(false)} />}
       <Header />
       <StatsBar />
