@@ -133,16 +133,6 @@ export function TitleScreen() {
           BUY LOW. SELL HIGH.<br />DON&apos;T GO BROKE.
         </div>
 
-        {/* How to Play */}
-        <div className="mb-8 w-full max-w-[320px]">
-          <div className="text-mh-text-dim text-sm mb-3 text-center">HOW TO PLAY</div>
-          <div className="text-mh-text-main text-sm leading-relaxed space-y-2 text-center">
-            <div>▸ Buy assets. Sell for profit.</div>
-            <div>▸ News moves markets. Read carefully.</div>
-            <div>▸ Survive to win. Stay above $10K.</div>
-          </div>
-        </div>
-
         {/* Username Input */}
         <div className="w-full max-w-[280px] mb-4">
           {hasValidUsername && !isEditingUsername ? (
