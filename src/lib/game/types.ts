@@ -187,7 +187,7 @@ export interface ResolvedChain {
   day: number
 }
 
-export type GameScreen = 'title' | 'game' | 'gameover' | 'win'
+export type GameScreen = 'title' | 'intro' | 'game' | 'gameover' | 'win'
 
 export type NewsLabelType = 'rumor' | 'developing' | 'news' | 'breaking' | 'none' | 'gossip'
 

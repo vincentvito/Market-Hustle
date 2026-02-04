@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Providers } from '@/components/Providers'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const inter = Inter({
@@ -51,6 +52,17 @@ export default function RootLayout({
           <div className="desktop-wrapper">
             <div className="phone-container">
               {children}
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    background: '#1a2634',
+                    border: '1px solid #2a3a4a',
+                    color: '#a0b3c6',
+                    fontFamily: 'var(--font-jetbrains-mono), monospace',
+                  },
+                }}
+              />
             </div>
           </div>
         </Providers>

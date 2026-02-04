@@ -5,6 +5,7 @@ import { useGame } from '@/hooks/useGame'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { isIntroSeen } from './IntroScreen'
 
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
@@ -46,6 +47,7 @@ interface TitleScreenProps {
 }
 
 export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
+  const setScreen = useGame(state => state.setScreen)
   const startGame = useGame(state => state.startGame)
   const setShowSettings = useGame(state => state.setShowSettings)
   const initializeFromStorage = useGame(state => state.initializeFromStorage)
@@ -209,7 +211,13 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
 
         {/* Play Button */}
         <button
-          onClick={() => startGame()}
+          onClick={() => {
+            if (isIntroSeen()) {
+              startGame()
+            } else {
+              setScreen('intro')
+            }
+          }}
           disabled={!hasValidUsername}
           className={`border-2 px-8 py-3 text-base font-mono transition-colors mb-2
             ${hasValidUsername

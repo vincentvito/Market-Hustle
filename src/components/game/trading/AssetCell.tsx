@@ -6,6 +6,8 @@ import type { Asset } from '@/lib/game/types'
 interface AssetCellProps {
   asset: Asset
   onSelect: (assetId: string) => void
+  id?: string
+  priceId?: string
 }
 
 function formatPrice(p: number): string {
@@ -16,7 +18,7 @@ function formatPrice(p: number): string {
   return p.toFixed(2)
 }
 
-export function AssetCell({ asset, onSelect }: AssetCellProps) {
+export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
   const { prices, holdings, getPriceChange, selectedTheme, leveragedPositions, shortPositions } = useGame()
   const price = prices[asset.id] || 0
   const owned = holdings[asset.id] || 0
@@ -108,6 +110,7 @@ export function AssetCell({ asset, onSelect }: AssetCellProps) {
 
   return (
     <button
+      id={id}
       onClick={() => onSelect(asset.id)}
       className={`
         flex flex-col items-center justify-center border border-mh-border
@@ -128,21 +131,38 @@ export function AssetCell({ asset, onSelect }: AssetCellProps) {
       <div className={`font-bold text-mh-text-bright truncate w-full ${isModern3 ? 'text-xs md:text-sm' : 'text-sm md:text-base'}`}>
         {asset.name}
       </div>
-      <div className={`font-bold text-mh-text-main mt-1 ${isModern3 ? 'text-base md:text-xl' : 'text-lg md:text-2xl'}`}>
-        ${formatPrice(price)}
+      <div id={priceId} className="flex flex-col items-center">
+        <div className={`font-bold text-mh-text-main mt-1 ${isModern3 ? 'text-base md:text-xl' : 'text-lg md:text-2xl'}`}>
+          ${formatPrice(price)}
+        </div>
+        <div
+          className={`font-bold ${isModern3 ? 'text-xs md:text-sm mt-0.5' : 'text-sm md:text-base mt-1'} ${
+            change > 0
+              ? 'text-mh-profit-green'
+              : change < 0
+                ? 'text-mh-loss-red'
+                : 'text-mh-text-dim'
+          }`}
+        >
+          {change > 0 ? '▲' : change < 0 ? '▼' : '•'} {change > 0 ? '+' : ''}
+          {change.toFixed(1)}%
+        </div>
       </div>
-      <div
-        className={`font-bold ${isModern3 ? 'text-xs md:text-sm mt-0.5' : 'text-sm md:text-base mt-1'} ${
-          change > 0
-            ? 'text-mh-profit-green'
-            : change < 0
-              ? 'text-mh-loss-red'
-              : 'text-mh-text-dim'
-        }`}
-      >
-        {change > 0 ? '▲' : change < 0 ? '▼' : '•'} {change > 0 ? '+' : ''}
-        {change.toFixed(1)}%
-      </div>
+      {/* Position indicators */}
+      {(hasShort || hasLeveraged) && (
+        <div className="flex gap-1 mt-1.5">
+          {hasShort && (
+            <span className="text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/40">
+              SHORT
+            </span>
+          )}
+          {hasLeveraged && (
+            <span className="text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">
+              MARGIN
+            </span>
+          )}
+        </div>
+      )}
     </button>
   )
 }

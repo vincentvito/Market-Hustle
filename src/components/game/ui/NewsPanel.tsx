@@ -69,37 +69,10 @@ export function NewsPanel() {
     activeMilestone,
     milestonePhase,
     selectedTheme,
-    activeBuyMessage,
-    clearBuyMessage,
-    activeSellToast,
-    clearSellToast,
-    activeInvestmentBuyMessage,
-    clearInvestmentBuyMessage,
-    activeInvestmentResultToast,
-    clearInvestmentResultToast,
-    activeErrorMessage,
-    clearErrorMessage,
   } = useGame()
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
-
-  // Helper function for theme-aware trade confirmation styling
-  const getConfirmationStyle = (isProfit: boolean, isBigMove: boolean): React.CSSProperties => {
-    const profitBg = isModern3 ? 'rgba(0,212,170,0.1)' : isRetro2 ? 'rgba(0,255,136,0.12)' : 'rgba(0,255,136,0.15)'
-    const lossBg = isModern3 ? 'rgba(255,71,87,0.1)' : isRetro2 ? 'rgba(255,82,82,0.12)' : 'rgba(255,82,82,0.15)'
-
-    const profitGlow = 'rgba(0,212,170,'
-    const lossGlow = isModern3 ? 'rgba(255,71,87,' : 'rgba(255,82,82,'
-
-    return {
-      background: isProfit ? profitBg : lossBg,
-      boxShadow: isModern3
-        ? `0 2px 8px rgba(0,0,0,0.3), 0 0 ${isBigMove ? '20px' : '12px'} ${isProfit ? profitGlow : lossGlow}${isBigMove ? '0.4)' : '0.25)'}`
-        : undefined,
-      textShadow: `0 0 ${isBigMove ? '12px' : '8px'} ${isProfit ? profitGlow : lossGlow}0.8)`,
-    }
-  }
 
   // Typewriter state (only used for RETRO 2)
   const [typewriterIndex, setTypewriterIndex] = useState(0) // Which news item is currently typing
@@ -255,6 +228,7 @@ export function NewsPanel() {
   // PERSIST or IDLE: Normal news with optional milestone at top
   return (
     <div
+      id="tutorial-news"
       className={`p-3 md:p-4 relative ${
         isBloomberg
           ? 'bg-black h-[163px] md:h-auto md:max-h-[200px] border-b md:border-b-0 border-[#333333]'
@@ -275,116 +249,6 @@ export function NewsPanel() {
             }}
           >
             ★ {activeMilestone.title} — {activeMilestone.scarcityMessage}
-          </div>
-        )}
-
-        {/* Error/Warning Messages */}
-        {activeErrorMessage && (
-          <div
-            onClick={clearErrorMessage}
-            className={`cursor-pointer hover:brightness-110 transition-all
-              ${isModern3 ? 'py-1.5 px-2 rounded-lg mb-2 -mx-2' : 'py-2 px-3'}
-              ${!isModern3 && (isRetro2 ? 'rounded mb-1.5 -mx-3' : 'mb-1.5 -mx-3')}
-              ${!isModern3 && 'border-l-4 border-l-mh-loss-red'}`}
-            style={{
-              background: isModern3 ? 'rgba(255,71,87,0.15)' : isRetro2 ? 'rgba(255,82,82,0.15)' : 'rgba(255,82,82,0.12)',
-              textShadow: isModern3 ? '0 0 10px rgba(255,71,87,0.6)' : '0 0 8px rgba(255,82,82,0.5)',
-            }}
-          >
-            <span className={`text-sm font-bold ${!isModern3 && 'font-mono'} text-mh-loss-red`}>
-              {activeErrorMessage.startsWith('🗑️') ? activeErrorMessage : `⚠️ ${activeErrorMessage}`}
-            </span>
-            <span className="text-mh-text-dim text-xs opacity-80 ml-2">✕</span>
-          </div>
-        )}
-
-        {/* Trade SELL confirmation with background */}
-        {activeSellToast && (
-          <div
-            onClick={clearSellToast}
-            className={`cursor-pointer hover:brightness-110 transition-all
-              ${isModern3 ? 'py-1.5 px-2 rounded-lg mb-2 -mx-2' : 'py-2 px-3'}
-              ${!isModern3 && (isRetro2 ? 'rounded mb-1.5 -mx-3' : 'mb-1.5 -mx-3')}
-              ${!isModern3 && 'border-l-4'}
-              ${!isModern3 && (activeSellToast.isProfit ? 'border-l-mh-profit-green' : 'border-l-mh-loss-red')}`}
-            style={isModern3 ? {
-              background: activeSellToast.isProfit ? 'rgba(0,212,170,0.12)' : 'rgba(255,71,87,0.12)',
-              textShadow: `0 0 10px ${activeSellToast.isProfit ? 'rgba(0,212,170,0.6)' : 'rgba(255,71,87,0.6)'}`,
-            } : getConfirmationStyle(
-              activeSellToast.isProfit,
-              Math.abs(activeSellToast.profitLossPct) >= 50
-            )}
-          >
-            <span className={`text-sm font-bold ${!isModern3 && 'font-mono'}
-              ${activeSellToast.isProfit ? 'text-mh-profit-green' : 'text-mh-loss-red'}`}
-            >
-              TRADE: {activeSellToast.message}
-            </span>
-            <span className="text-mh-text-dim text-xs opacity-80 ml-2">✕</span>
-          </div>
-        )}
-
-        {/* Investment RESULT confirmation (profit/loss aware) */}
-        {activeInvestmentResultToast && (
-          <div
-            onClick={clearInvestmentResultToast}
-            className={`cursor-pointer hover:brightness-110 transition-all
-              ${isModern3 ? 'py-1.5 px-2 rounded-lg mb-2 -mx-2' : 'py-2 px-3'}
-              ${!isModern3 && (isRetro2 ? 'rounded mb-1.5 -mx-3' : 'mb-1.5 -mx-3')}
-              ${!isModern3 && 'border-l-4'}
-              ${!isModern3 && (activeInvestmentResultToast.isProfit ? 'border-l-mh-profit-green' : 'border-l-mh-loss-red')}`}
-            style={isModern3 ? {
-              background: activeInvestmentResultToast.isProfit ? 'rgba(0,212,170,0.12)' : 'rgba(255,71,87,0.12)',
-              textShadow: `0 0 10px ${activeInvestmentResultToast.isProfit ? 'rgba(0,212,170,0.6)' : 'rgba(255,71,87,0.6)'}`,
-            } : getConfirmationStyle(
-              activeInvestmentResultToast.isProfit,
-              Math.abs(activeInvestmentResultToast.profitLossPct) >= 50
-            )}
-          >
-            <span className={`text-sm font-bold ${!isModern3 && 'font-mono'}
-              ${activeInvestmentResultToast.isProfit ? 'text-mh-profit-green' : 'text-mh-loss-red'}`}
-            >
-              INVEST: {activeInvestmentResultToast.message}
-            </span>
-            <span className="text-mh-text-dim text-xs opacity-80 ml-2">✕</span>
-          </div>
-        )}
-
-        {/* Investment BUY confirmation (neutral styling) */}
-        {activeInvestmentBuyMessage && (
-          <div
-            onClick={clearInvestmentBuyMessage}
-            className={`cursor-pointer hover:brightness-110 transition-all
-              ${isModern3 ? 'py-1.5 px-2 rounded-lg mb-2 -mx-2' : 'py-2 px-3'}
-              ${!isModern3 && (isRetro2 ? 'rounded border-l-4 border-l-[#00ff88] mb-1.5 -mx-3' : 'border-l-4 border-l-mh-accent-blue mb-1.5 -mx-3')}`}
-            style={{
-              background: isModern3 ? 'rgba(0,212,170,0.12)' : isRetro2 ? 'rgba(0,255,136,0.08)' : 'rgba(126,184,218,0.1)',
-              textShadow: isModern3 ? '0 0 10px rgba(0,212,170,0.6)' : '0 0 8px rgba(0,212,255,0.5)',
-            }}
-          >
-            <span className="text-mh-accent-blue font-bold text-sm">
-              INVEST: {activeInvestmentBuyMessage}
-            </span>
-            <span className="text-mh-text-dim text-xs opacity-80 ml-2">✕</span>
-          </div>
-        )}
-
-        {/* Trade BUY confirmation with background */}
-        {activeBuyMessage && (
-          <div
-            onClick={clearBuyMessage}
-            className={`cursor-pointer hover:brightness-110 transition-all
-              ${isModern3 ? 'py-1.5 px-2 rounded-lg mb-2 -mx-2' : 'py-2 px-3'}
-              ${!isModern3 && (isRetro2 ? 'rounded border-l-4 border-l-[#00ff88] mb-1.5 -mx-3' : 'border-l-4 border-l-mh-accent-blue mb-1.5 -mx-3')}`}
-            style={{
-              background: isModern3 ? 'rgba(0,212,170,0.12)' : isRetro2 ? 'rgba(0,255,136,0.08)' : 'rgba(126,184,218,0.1)',
-              textShadow: isModern3 ? '0 0 10px rgba(0,212,170,0.6)' : '0 0 8px rgba(0,212,255,0.5)',
-            }}
-          >
-            <span className="text-mh-accent-blue font-bold text-sm">
-              TRADE: {activeBuyMessage}
-            </span>
-            <span className="text-mh-text-dim text-xs opacity-80 ml-2">✕</span>
           </div>
         )}
 

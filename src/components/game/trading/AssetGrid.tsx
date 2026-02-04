@@ -57,7 +57,7 @@ export function AssetGrid() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div id="tutorial-asset-grid" className="flex flex-col flex-1 min-h-0">
       {/* Category Tabs */}
       <div className={getTabWrapperClass()}>
         <button
@@ -84,11 +84,13 @@ export function AssetGrid() {
                 ? 'gap-2 p-2 bg-mh-bg'
                 : 'gap-px bg-mh-border'
         }`}>
-          {ASSETS.map(asset => (
+          {ASSETS.map((asset, index) => (
             <AssetCell
               key={asset.id}
               asset={asset}
               onSelect={selectAsset}
+              id={index === 0 ? 'tutorial-price-movement' : undefined}
+              priceId={index === 0 ? 'tutorial-price-section' : undefined}
             />
           ))}
         </div>

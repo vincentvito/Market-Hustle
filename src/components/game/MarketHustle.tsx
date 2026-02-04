@@ -3,6 +3,7 @@
 import { useGame } from '@/hooks/useGame'
 import { Scanlines } from './ui/Scanlines'
 import { TitleScreen } from './screens/TitleScreen'
+import { IntroScreen } from './screens/IntroScreen'
 import { GameScreen } from './screens/GameScreen'
 import { EndGameCoordinator } from './screens/EndGameCoordinator'
 import { SettingsPanel } from './ui/SettingsPanel'
@@ -26,6 +27,7 @@ export function MarketHustle({ initialLeaderboards }: MarketHustleProps) {
     <div className="h-full w-full flex flex-col">
       <Scanlines />
       {screen === 'title' && <TitleScreen initialLeaderboards={initialLeaderboards} />}
+      {screen === 'intro' && <IntroScreen />}
       {screen === 'game' && <GameScreen />}
       {(screen === 'gameover' || screen === 'win') && <EndGameCoordinator />}
 

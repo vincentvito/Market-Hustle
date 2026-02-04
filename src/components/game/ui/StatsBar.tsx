@@ -29,7 +29,7 @@ export function StatsBar() {
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)' } : undefined}
     >
-      <div className={`flex-1 p-3 md:p-4 ${
+      <div id="tutorial-cash" className={`flex-1 p-3 md:p-4 ${
         isBloomberg ? 'border-r border-[#333333]' : isModern3 ? '' : 'border-r border-mh-border'
       }`}>
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>CASH</div>

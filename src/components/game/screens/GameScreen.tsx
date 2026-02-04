@@ -15,7 +15,8 @@ import { LiquidationSelectionOverlay } from '../ui/LiquidationSelectionOverlay'
 import { InvestmentResultOverlay } from '../ui/InvestmentResultOverlay'
 import { AssetGrid } from '../trading/AssetGrid'
 import { TradeSheet } from '../trading/TradeSheet'
-import { HowToPlayModal, isTutorialSeen, markTutorialSeen } from '../ui/HowToPlayModal'
+import { HowToPlayModal, InteractiveTutorial, isTutorialSeen } from '../ui/HowToPlayModal'
+import { TradeFeedback } from '../ui/TradeFeedback'
 import { useState, useEffect } from 'react'
 
 export function GameScreen() {
@@ -33,12 +34,13 @@ export function GameScreen() {
     setPendingLifestyleAsset,
     setPendingLuxuryAsset,
   } = useGame()
-  const [showHelp, setShowHelp] = useState(false)
+  const [showHelp, setShowHelp] = useState(false) // Text-based help modal (? button)
+  const [showTutorial, setShowTutorial] = useState(false) // Interactive tutorial (first game)
 
+  // Show interactive tutorial on first game only
   useEffect(() => {
     if (!isTutorialSeen()) {
-      setShowHelp(true)
-      markTutorialSeen()
+      setShowTutorial(true)
     }
   }, [])
 
@@ -88,7 +90,9 @@ export function GameScreen() {
 
   return (
     <div className="bg-mh-bg flex flex-col h-dvh relative">
+      <TradeFeedback />
       {showHelp && <HowToPlayModal onClose={() => setShowHelp(false)} />}
+      {showTutorial && <InteractiveTutorial onClose={() => setShowTutorial(false)} />}
       <Header />
       <StatsBar />
       <PortfolioOverlay
@@ -143,6 +147,7 @@ export function GameScreen() {
           ⚙️
         </button>
         <button
+          id="tutorial-next-day"
           onClick={triggerNextDay}
           className={`flex-1 h-12 font-bold cursor-pointer rounded ${
             isModern3
