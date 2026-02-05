@@ -105,7 +105,7 @@ export function AssetGrid() {
                   ? 'gap-2 p-2 bg-mh-bg'
                   : 'gap-px bg-mh-border'
           }`}>
-            <div className={`grid grid-cols-12 grid-rows-1 h-full w-[400vw] [@media(min-height:700px)]:grid-cols-6 [@media(min-height:700px)]:grid-rows-2 [@media(min-height:700px)]:w-[200vw] ${
+            <div className={`grid grid-cols-12 grid-rows-1 h-full w-[400vw] [@media(min-height:850px)]:grid-cols-6 [@media(min-height:850px)]:grid-rows-2 [@media(min-height:850px)]:w-[200vw] ${
               isBloomberg
                 ? 'gap-px'
                 : isRetro2

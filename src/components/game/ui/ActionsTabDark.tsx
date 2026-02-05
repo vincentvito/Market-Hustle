@@ -186,24 +186,24 @@ export function ActionsTabDark() {
                     {action.effect}
                   </div>
 
-                  {/* Heat change indicators */}
+                  {/* Heat change indicators (skip if effect text already covers it) */}
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
-                    {action.wifeHeatChange != null && action.wifeHeatChange > 0 && (
+                    {action.wifeHeatChange != null && action.wifeHeatChange > 0 && !action.effect.toLowerCase().includes('wife') && (
                       <span className="text-[10px] font-bold text-red-400">
                         +{action.wifeHeatChange}% WIFE
                       </span>
                     )}
-                    {action.wifeHeatChange != null && action.wifeHeatChange < 0 && (
+                    {action.wifeHeatChange != null && action.wifeHeatChange < 0 && !action.effect.toLowerCase().includes('wife') && (
                       <span className="text-[10px] font-bold text-green-400">
                         {action.wifeHeatChange}% WIFE
                       </span>
                     )}
-                    {action.fbiHeatChange != null && action.fbiHeatChange > 0 && (
+                    {action.fbiHeatChange != null && action.fbiHeatChange > 0 && !action.effect.toLowerCase().includes('fbi') && (
                       <span className="text-[10px] font-bold text-red-400">
                         +{action.fbiHeatChange}% FBI
                       </span>
                     )}
-                    {action.fbiHeatChange != null && action.fbiHeatChange < 0 && (
+                    {action.fbiHeatChange != null && action.fbiHeatChange < 0 && !action.effect.toLowerCase().includes('fbi') && (
                       <span className="text-[10px] font-bold text-green-400">
                         {action.fbiHeatChange}% FBI
                       </span>

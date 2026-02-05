@@ -134,15 +134,24 @@ export function GameScreen() {
         </div>
       )}
 
-      {/* Bottom Bar - 5 Element Action Strip */}
+      {/* Floating Help Button - positioned above bottom bar on mobile, inline on desktop */}
+      <button
+        onClick={() => setShowHelp(true)}
+        className="lg:hidden fixed bottom-[72px] right-3 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-mh-bg border-2 border-mh-border text-mh-text-dim hover:text-mh-text-bright cursor-pointer text-sm font-mono shadow-lg"
+        title="How to Play"
+      >
+        ?
+      </button>
+
+      {/* Bottom Bar - Action Strip */}
       <div
         className={`p-3 bg-mh-bg flex items-center gap-2 sticky bottom-0 z-50 ${isModern3 ? '' : 'border-t border-mh-border'}`}
         style={isModern3 ? { boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
       >
-        {/* Help Button - 48x48px bordered square */}
+        {/* Help Button - desktop only, inline */}
         <button
           onClick={() => setShowHelp(true)}
-          className="w-12 h-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded text-base font-mono flex-shrink-0"
+          className="hidden lg:flex w-12 h-12 items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded text-base font-mono flex-shrink-0"
           title="How to Play"
         >
           ?
