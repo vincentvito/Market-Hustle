@@ -62,9 +62,12 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
     const rect = sliderRef.current.getBoundingClientRect()
     const x = clientX - rect.left
     const percent = Math.max(0, Math.min(1, x / rect.width))
-    const rawAmount = percent * maxRepayRef.current
-    // Round to nearest 100
-    return Math.round(rawAmount / 100) * 100
+    const max = maxRepayRef.current
+    const rawAmount = percent * max
+    // Scale rounding step based on max amount
+    const step = max >= 10_000 ? 100 : max >= 1_000 ? 10 : 1
+    const rounded = Math.round(rawAmount / step) * step
+    return Math.min(rounded, max)
   }
 
   const handleStart = (clientX: number) => {
@@ -109,10 +112,11 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
 
   const handleRepay = () => {
     const amount = currentAmount.current
-    if (amount > 0 && amount <= maxRepay) {
-      setCreditCardDebt(creditCardDebt - amount)
-      onClose()
-    }
+    if (amount <= 0) return
+    // Clamp to actual debt to avoid negative remaining
+    const repayAmount = Math.min(amount, creditCardDebt)
+    setCreditCardDebt(Math.max(0, creditCardDebt - repayAmount))
+    onClose()
   }
 
   return (
