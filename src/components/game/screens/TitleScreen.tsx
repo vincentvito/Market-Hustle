@@ -62,7 +62,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const [usernameError, setUsernameError] = useState<string | null>(null)
   const [isEditingUsername, setIsEditingUsername] = useState(false)
   const hasInitialData = useRef(!!initialLeaderboards)
-  const hasMountedBefore = useRef(false)
 
   // Sync input with stored username
   useEffect(() => {
@@ -103,21 +102,19 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   }, [initializeFromStorage])
 
   // Fetch leaderboards from API
-  // Skip on first mount if we have SSR data; always fetch on subsequent mounts (returning from game)
+  // Skip on first mount if we have SSR data (already filtered by duration=30);
+  // always fetch on subsequent mounts (returning from game) or when duration changes.
+  const isFirstMount = useRef(true)
+
   useEffect(() => {
-    if (hasInitialData.current && !hasMountedBefore.current) {
-      hasMountedBefore.current = true
-      return
+    if (isFirstMount.current) {
+      isFirstMount.current = false
+      if (hasInitialData.current) return
     }
-    hasMountedBefore.current = true
 
     let cancelled = false
     async function fetchLeaderboards() {
       try {
-        // Small delay to allow the fire-and-forget record-game POST to complete
-        await new Promise(resolve => setTimeout(resolve, 500))
-        if (cancelled) return
-
         const cacheBust = `&_t=${Date.now()}`
         const durationParam = `&duration=${leaderboardDuration}`
         const [dailyRes, allTimeRes, worstRes] = await Promise.all([

@@ -5,9 +5,9 @@ import { getLeaderboard } from '@/lib/game/leaderboardData'
 
 export default async function Home() {
   const [daily, allTime, worst] = await Promise.all([
-    getLeaderboard('daily').catch(() => ({ entries: [] })),
-    getLeaderboard('all').catch(() => ({ entries: [] })),
-    getLeaderboard('worst').catch(() => ({ entries: [] })),
+    getLeaderboard('daily', 30).catch(() => ({ entries: [] })),
+    getLeaderboard('all', 30).catch(() => ({ entries: [] })),
+    getLeaderboard('worst', 30).catch(() => ({ entries: [] })),
   ])
 
   return (

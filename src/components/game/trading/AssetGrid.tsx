@@ -95,7 +95,7 @@ export function AssetGrid() {
 
       {activeTab === 'stocks' ? (
         <>
-          {/* Mobile/Tablet: 2 rows × 6 cols horizontal scroll */}
+          {/* Mobile/Tablet: single row horizontal scroll */}
           <div className={`flex-1 min-h-0 lg:hidden overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
             isBloomberg
               ? 'gap-px bg-[#333333]'
@@ -105,8 +105,7 @@ export function AssetGrid() {
                   ? 'gap-2 p-2 bg-mh-bg'
                   : 'gap-px bg-mh-border'
           }`}>
-            {/* Grid is 200vw wide so each of 6 columns = 33.33vw (same as original 3-col grid) */}
-            <div className={`grid grid-cols-6 grid-rows-2 h-full w-[200vw] ${
+            <div className={`grid grid-cols-12 grid-rows-1 h-full w-[400vw] [@media(min-height:700px)]:grid-cols-6 [@media(min-height:700px)]:grid-rows-2 [@media(min-height:700px)]:w-[200vw] ${
               isBloomberg
                 ? 'gap-px'
                 : isRetro2
