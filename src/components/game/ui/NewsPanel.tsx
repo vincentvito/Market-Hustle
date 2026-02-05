@@ -74,7 +74,7 @@ export function NewsPanel() {
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 
-  // Typewriter state (only used for RETRO 2)
+  // Typewriter state
   const [typewriterIndex, setTypewriterIndex] = useState(0) // Which news item is currently typing
   const [charIndex, setCharIndex] = useState(0) // How many chars revealed in current item
   const [isTypewriting, setIsTypewriting] = useState(false) // Animation in progress
@@ -91,10 +91,8 @@ export function NewsPanel() {
     }
   }, [milestonePhase])
 
-  // Watch for day changes to trigger typewriter (RETRO 2 only)
+  // Watch for day changes to trigger typewriter (all themes)
   useEffect(() => {
-    if (!isRetro2) return
-
     if (day !== lastDay && day > 1) {
       // Day changed, start typewriter animation
       setLastDay(day)
@@ -102,7 +100,7 @@ export function NewsPanel() {
       setCharIndex(0)
       setIsTypewriting(true)
     }
-  }, [day, lastDay, isRetro2])
+  }, [day, lastDay])
 
   // Build sorted news array (used for typewriter logic and rendering)
   const chainRumorItems: NewsItem[] = rumors.map(r => ({
@@ -115,7 +113,7 @@ export function NewsPanel() {
 
   // Typewriter animation effect
   useEffect(() => {
-    if (!isTypewriting || !isRetro2) return
+    if (!isTypewriting) return
 
     if (typewriterIndex >= allNews.length) {
       // All items revealed
@@ -142,7 +140,7 @@ export function NewsPanel() {
         clearTimeout(typewriterRef.current)
       }
     }
-  }, [isTypewriting, typewriterIndex, charIndex, allNews, isRetro2])
+  }, [isTypewriting, typewriterIndex, charIndex, allNews])
 
   // Skip typewriter animation (click or keypress)
   const skipTypewriter = useCallback(() => {
@@ -229,16 +227,16 @@ export function NewsPanel() {
   return (
     <div
       id="tutorial-news"
-      className={`p-3 md:p-4 relative ${
+      className={`p-4 md:p-5 relative ${
         isBloomberg
-          ? 'bg-black h-[163px] md:h-auto md:max-h-[200px] border-b md:border-b-0 border-[#333333]'
+          ? 'bg-black h-[240px] md:h-auto md:max-h-[320px] border-b md:border-b-0 border-[#333333] border-l-[3px] border-l-[#ff8c00]'
           : isModern3
-            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[163px] md:h-auto md:max-h-[200px] mt-2 mx-2 md:mt-0 md:mx-0 md:rounded-none md:border-l-0'
-            : 'border-b md:border-b-0 border-mh-border bg-[#0a0d10] h-[163px] md:h-auto md:max-h-[200px]'
+            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[240px] md:h-auto md:max-h-[320px] mt-2 mx-2 md:mt-0 md:mx-0 md:rounded-none md:border-l-0'
+            : 'border-b md:border-b-0 border-mh-border border-l-[3px] border-l-mh-accent-blue bg-[#0a0d10] h-[240px] md:h-auto md:max-h-[320px]'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
     >
-      <div className="space-y-1.5 h-full overflow-y-auto overflow-x-hidden">
+      <div className="space-y-2 h-full overflow-y-auto overflow-x-hidden">
         {/* Persisted milestone message */}
         {milestonePhase === 'persist' && activeMilestone && (
           <div
@@ -254,11 +252,11 @@ export function NewsPanel() {
 
         {/* Day 1 welcome message */}
         {day === 1 && milestonePhase === 'idle' && (
-          <div className="text-sm leading-snug space-y-1 mb-2">
+          <div className="text-base leading-relaxed space-y-2 mb-3">
             {isModern3 ? (
               <>
                 <div
-                  className="py-1.5 px-2 -mx-2 rounded-lg font-bold text-mh-profit-green"
+                  className="py-2 px-2 -mx-2 rounded-lg font-bold text-mh-profit-green text-base"
                   style={{
                     background: 'rgba(0,212,170,0.12)',
                     textShadow: '0 0 10px rgba(0,212,170,0.6)',
@@ -267,13 +265,13 @@ export function NewsPanel() {
                   BUY LOW. SELL HIGH. MAKE BILLIONS.
                 </div>
                 <div
-                  className="text-mh-profit-green"
+                  className="text-mh-profit-green text-sm"
                   style={{ textShadow: '0 0 8px rgba(0,212,170,0.5)' }}
                 >
                   TAP ANY ASSET TO BUY OR SELL. WATCH THE NEWS.
                 </div>
                 <div
-                  className="text-mh-profit-green"
+                  className="text-mh-profit-green text-sm"
                   style={{ textShadow: '0 0 8px rgba(0,212,170,0.5)' }}
                 >
                   RUMORS HINT AT TOMORROW. POSITION YOURSELF EARLY.
@@ -281,17 +279,17 @@ export function NewsPanel() {
               </>
             ) : (
               <>
-                <div className="text-mh-news font-bold" style={{ textShadow: '0 0 8px rgba(255,170,0,0.4)' }}>
+                <div className="text-mh-news font-bold text-base" style={{ textShadow: '0 0 8px rgba(255,170,0,0.4)' }}>
                   &gt; BUY LOW. SELL HIGH. MAKE BILLIONS.
                 </div>
                 <div
-                  className={isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'}
+                  className={`${isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'} text-sm`}
                   style={isRetro2 ? { textShadow: '0 0 8px rgba(0,255,136,0.5)' } : undefined}
                 >
                   &gt; TAP ANY ASSET TO BUY OR SELL. WATCH THE NEWS.
                 </div>
                 <div
-                  className={isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'}
+                  className={`${isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'} text-sm`}
                   style={isRetro2 ? { textShadow: '0 0 8px rgba(0,255,136,0.5)' } : undefined}
                 >
                   &gt; RUMORS HINT AT TOMORROW. POSITION YOURSELF EARLY.
@@ -306,11 +304,11 @@ export function NewsPanel() {
           const label = getLabelDisplay(news.labelType)
           const textColorClass = 'text-mh-news'
 
-          // Determine displayed text based on typewriter state (RETRO 2 only)
+          // Determine displayed text based on typewriter state
           let displayedHeadline = news.headline
           let showCursor = false
 
-          if (isRetro2 && isTypewriting) {
+          if (isTypewriting) {
             if (idx < typewriterIndex) {
               // Already fully revealed
               displayedHeadline = news.headline
@@ -334,16 +332,16 @@ export function NewsPanel() {
                   handleNewsClick(news)
                 }
               }}
-              className="text-sm leading-snug cursor-pointer hover:brightness-125 transition-all"
+              className="leading-relaxed cursor-pointer hover:brightness-125 transition-all"
             >
-              <span className={`${textColorClass} font-bold`} style={label?.glowStyle}>
+              <span className={`${textColorClass} font-bold text-[15px] md:text-[16px]`} style={label?.glowStyle}>
                 {label && <>{label.text}: </>}
                 {displayedHeadline}
                 {showCursor && <span className="animate-pulse">▌</span>}
               </span>
               {label && !isTypewriting && (
                 <span
-                  className={`text-xs opacity-80 ml-1 ${isModern3 || isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'}`}
+                  className={`text-sm opacity-80 ml-1 ${isModern3 || isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'}`}
                   style={isModern3 || isRetro2 ? { textShadow: '0 0 8px rgba(0,255,136,0.5)' } : undefined}
                 >ⓘ</span>
               )}
@@ -353,7 +351,7 @@ export function NewsPanel() {
 
         {/* Empty state only if nothing at all */}
         {todayNews.length === 0 && !hasRumors && milestonePhase === 'idle' && (
-          <div className="text-sm text-mh-text-dim italic">
+          <div className="text-base text-mh-text-dim italic">
             No news or rumors today
           </div>
         )}

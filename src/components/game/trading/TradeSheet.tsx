@@ -132,7 +132,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const {
     prices, holdings, cash, buy, sell, getPriceChange, priceHistory,
     shortPositions, leveragedPositions, shortSell, coverShort, buyWithLeverage, closeLeveragedPosition,
-    selectedTheme,
+    selectedTheme, gameDuration,
   } = useGame()
   const { isPro } = useUserDetails()
 
@@ -160,10 +160,12 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     ? Math.round((cash * effectiveLeverage / price) * 1000) / 1000
     : Math.max(1, Math.floor((cash * effectiveLeverage) / price))
   const maxBuy = isFractional ? maxBuyRaw : Math.max(1, maxBuyRaw)
-  // Short mode: cash-based limit (what you could cover at current price)
-  // Regular mode: what you own
-  const maxShort = Math.max(1, Math.floor(cash / price))
-  const maxSell = isShortMode && isPro ? maxShort : Math.max(1, owned)
+  // Short mode: cash available for collateral = cash minus existing short liabilities
+  // (short proceeds are already in cash, so subtract what it would cost to cover all existing shorts)
+  const totalShortLiability = shortPositions.reduce((sum, pos) => sum + pos.qty * (prices[pos.assetId] || 0), 0)
+  const availableCashForShort = Math.max(0, cash - totalShortLiability)
+  const maxShort = Math.floor(availableCashForShort / price)
+  const maxSell = isShortMode && isPro ? Math.max(1, maxShort) : Math.max(1, owned)
 
   // Slider config based on asset type
   const sliderMin = isFractional ? 0 : 1
@@ -309,8 +311,8 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   // canBuy: need enough for down payment (leverage considered)
   const downPaymentNeeded = price / effectiveLeverage
   const canBuy = cash >= downPaymentNeeded
-  // canSell: short mode = always can (Pro), regular = need holdings (any amount for fractional)
-  const canSell = isShortMode && isPro ? true : owned > 0
+  // canSell: short mode = need available collateral, regular = need holdings (any amount for fractional)
+  const canSell = isShortMode && isPro ? maxShort > 0 : owned > 0
 
   if (!isOpen || !asset) return null
 
@@ -401,6 +403,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
                 width={360}
                 height={100}
                 isBloomberg={isBloomberg}
+                maxDays={gameDuration}
               />
             </div>
           </div>

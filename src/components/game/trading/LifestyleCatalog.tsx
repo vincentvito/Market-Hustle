@@ -34,7 +34,11 @@ const CATEGORIES: { id: CategoryId; label: string; emoji: string }[] = [
   { id: 'luxury', label: 'LUXURY', emoji: '✨' },
 ]
 
-export function LifestyleCatalog() {
+interface LifestyleCatalogProps {
+  filterCategory?: 'property' | 'private_equity'
+}
+
+export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {}) {
   const {
     lifestylePrices,
     ownedLifestyle,
@@ -55,13 +59,22 @@ export function LifestyleCatalog() {
   } = useGame()
   const isRetro2 = selectedTheme === 'retro2'
   const isModern3 = selectedTheme === 'modern3'
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('property')
+
+  // If filterCategory is provided, use it as the active category and hide tabs
+  const [activeCategory, setActiveCategory] = useState<CategoryId>(filterCategory || 'property')
   const [selectedAsset, setSelectedAsset] = useState<LifestyleAsset | null>(null)
   const [sellConfirmAsset, setSellConfirmAsset] = useState<LifestyleAsset | null>(null)
   const [selectedLuxuryAsset, setSelectedLuxuryAsset] = useState<LuxuryAsset | null>(null)
   const [sellConfirmLuxury, setSellConfirmLuxury] = useState<LuxuryAsset | null>(null)
   const [selectedPEAsset, setSelectedPEAsset] = useState<LifestyleAsset | null>(null) // PE bottom sheet
   const [sellConfirmPE, setSellConfirmPE] = useState<LifestyleAsset | null>(null) // PE sell confirmation
+
+  // Update active category when filterCategory changes
+  useEffect(() => {
+    if (filterCategory) {
+      setActiveCategory(filterCategory)
+    }
+  }, [filterCategory])
 
   const assets = activeCategory === 'property'
     ? PROPERTIES
@@ -141,30 +154,32 @@ export function LifestyleCatalog() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      {/* Category Sub-tabs */}
-      <div className={`flex ${
-        isModern3
-          ? 'gap-1 p-1 bg-[#0f1419] rounded'
-          : 'border-b border-mh-border bg-[#0a1218]'
-      }`}>
-        {CATEGORIES.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
-            className={`flex-1 py-2 text-xs font-bold transition-colors ${
-              isModern3
-                ? `rounded ${activeCategory === cat.id
-                    ? 'text-[#0a0e14] bg-[#00d4aa]'
-                    : 'text-mh-text-dim hover:text-mh-text-bright'}`
-                : `font-mono ${activeCategory === cat.id
-                    ? 'text-mh-text-bright bg-[#111920] border-b border-mh-accent-blue'
-                    : 'text-mh-text-dim hover:text-mh-text-main'}`
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
+      {/* Category Sub-tabs - only show if no filterCategory */}
+      {!filterCategory && (
+        <div className={`flex ${
+          isModern3
+            ? 'gap-1 p-1 bg-[#0f1419] rounded'
+            : 'border-b border-mh-border bg-[#0a1218]'
+        }`}>
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`flex-1 py-2 text-xs font-bold transition-colors ${
+                isModern3
+                  ? `rounded ${activeCategory === cat.id
+                      ? 'text-[#0a0e14] bg-[#00d4aa]'
+                      : 'text-mh-text-dim hover:text-mh-text-bright'}`
+                  : `font-mono ${activeCategory === cat.id
+                      ? 'text-mh-text-bright bg-[#111920] border-b border-mh-accent-blue'
+                      : 'text-mh-text-dim hover:text-mh-text-main'}`
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Luxury Assets */}
       {activeCategory === 'luxury' && (
@@ -202,9 +217,6 @@ export function LifestyleCatalog() {
                       {isOwned && (
                         <span className="text-xs text-[#ffd700] font-bold">OWNED</span>
                       )}
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400">
-                        ✨ LUXURY
-                      </span>
                     </div>
                     <div className="text-xs text-mh-text-dim mt-0.5 line-clamp-1">
                       {asset.description}
@@ -868,8 +880,19 @@ export function LifestyleCatalog() {
                                 </span>
                               </div>
                               {status.isUsed && (
-                                <span className={`text-[10px] ${status.didBackfire ? 'text-mh-loss-red' : 'text-mh-profit-green'}`}>
-                                  {status.didBackfire ? '✗ Backfired' : '✓ Executed'} Day {status.usedOnDay}
+                                <span className={`text-[10px] ${
+                                  status.didBackfire === null
+                                    ? 'text-amber-400'
+                                    : status.didBackfire
+                                      ? 'text-mh-loss-red'
+                                      : 'text-mh-profit-green'
+                                }`}>
+                                  {status.didBackfire === null
+                                    ? `⏳ Pending Day ${status.usedOnDay}`
+                                    : status.didBackfire
+                                      ? `✗ Backfired Day ${status.usedOnDay}`
+                                      : `✓ Executed Day ${status.usedOnDay}`
+                                  }
                                 </span>
                               )}
                             </div>

@@ -17,12 +17,13 @@ import { AssetGrid } from '../trading/AssetGrid'
 import { TradeSheet } from '../trading/TradeSheet'
 import { HowToPlayModal, InteractiveTutorial, isTutorialSeen } from '../ui/HowToPlayModal'
 import { TradeFeedback } from '../ui/TradeFeedback'
+import { ActionsModal } from '../ui/ActionsModal'
+import { GiftsModal } from '../ui/GiftsModal'
 import { useState, useEffect } from 'react'
 
 export function GameScreen() {
   const {
     triggerNextDay,
-    setShowSettings,
     selectAsset,
     setShowPortfolio,
     selectedAsset: selectedAssetId,
@@ -33,6 +34,10 @@ export function GameScreen() {
     prices,
     setPendingLifestyleAsset,
     setPendingLuxuryAsset,
+    showActionsModal,
+    setShowActionsModal,
+    showGiftsModal,
+    setShowGiftsModal,
   } = useGame()
   const [showHelp, setShowHelp] = useState(false) // Text-based help modal (? button)
   const [showTutorial, setShowTutorial] = useState(false) // Interactive tutorial (first game)
@@ -93,6 +98,8 @@ export function GameScreen() {
       <TradeFeedback />
       {showHelp && <HowToPlayModal onClose={() => setShowHelp(false)} />}
       {showTutorial && <InteractiveTutorial onClose={() => setShowTutorial(false)} />}
+      <ActionsModal />
+      <GiftsModal />
       <Header />
       <StatsBar />
       <PortfolioOverlay
@@ -127,55 +134,80 @@ export function GameScreen() {
         </div>
       )}
 
-      {/* Bottom Bar */}
+      {/* Bottom Bar - 5 Element Action Strip */}
       <div
-        className={`p-3 bg-mh-bg flex items-center gap-3 sticky bottom-0 z-50 ${isModern3 ? '' : 'border-t border-mh-border'}`}
+        className={`p-3 bg-mh-bg flex items-center gap-2 sticky bottom-0 z-50 ${isModern3 ? '' : 'border-t border-mh-border'}`}
         style={isModern3 ? { boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
       >
+        {/* Help Button - 48x48px bordered square */}
         <button
           onClick={() => setShowHelp(true)}
-          className="w-12 h-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded text-base font-mono"
+          className="w-12 h-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded text-base font-mono flex-shrink-0"
           title="How to Play"
         >
           ?
         </button>
+
+        {/* Actions Button - Icon + Label with border */}
         <button
-          onClick={() => setShowSettings(true)}
-          className="w-12 h-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded text-xl"
-          title="Settings"
+          onClick={() => setShowActionsModal(true)}
+          className="flex-1 h-12 flex flex-row items-center justify-center gap-1.5 text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded min-w-0"
+          title="Actions"
         >
-          ⚙️
+          <span className="text-lg leading-none">🎯</span>
+          <span className="text-xs font-mono">Actions</span>
         </button>
+
+        {/* Gifts Button - Icon + Label with border */}
+        <button
+          onClick={() => setShowGiftsModal(true)}
+          className="flex-1 h-12 flex flex-row items-center justify-center gap-1.5 text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded min-w-0"
+          title="Gifts"
+        >
+          <span className="text-lg leading-none">💝</span>
+          <span className="text-xs font-mono">Gifts</span>
+        </button>
+
+        {/* Next Day Button - Accent-filled button taking ~40% width */}
         <button
           id="tutorial-next-day"
           onClick={triggerNextDay}
-          className={`flex-1 h-12 font-bold cursor-pointer rounded ${
+          className={`h-12 font-bold cursor-pointer rounded flex-shrink-0 ${
             isModern3
               ? 'text-[#0a0e14] text-sm'
               : isBloomberg
-                ? 'font-mono border-2 border-[#ff8c00] bg-[#1a1000] text-[#ff8c00] text-lg hover:bg-[#2a1800]'
+                ? 'font-mono border-2 border-[#ff8c00] bg-[#1a1000] text-[#ff8c00] text-base hover:bg-[#2a1800]'
                 : 'font-mono text-sm tracking-wider'
           }`}
           style={
             isModern3 ? {
               background: 'linear-gradient(135deg, #00d4aa 0%, #00a88a 100%)',
               boxShadow: '0 4px 20px rgba(0, 212, 170, 0.4)',
-              letterSpacing: '2px',
+              letterSpacing: '1px',
+              width: '40%',
+              minWidth: '100px',
             } : isRetro2 ? {
               background: '#00ff88',
               color: '#000000',
               boxShadow: '0 0 15px rgba(0, 255, 136, 0.6), 0 0 30px rgba(0, 255, 136, 0.3)',
               fontWeight: 700,
+              width: '40%',
+              minWidth: '100px',
             } : !isBloomberg ? {
               background: 'transparent',
               color: '#c8d8e8',
               border: '2px solid #c8d8e8',
               boxShadow: '0 0 10px rgba(200, 216, 232, 0.4), 0 0 20px rgba(200, 216, 232, 0.2)',
               fontWeight: 700,
-            } : undefined
+              width: '40%',
+              minWidth: '100px',
+            } : {
+              width: '40%',
+              minWidth: '100px',
+            }
           }
         >
-          ADVANCE ▶
+          Next Day →
         </button>
       </div>
 

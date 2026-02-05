@@ -18,6 +18,15 @@ export function TradeFeedback() {
     clearInvestmentResultToast,
   } = useGame()
 
+  const day = useGame(state => state.day)
+
+  // Clear all toasts when a new game starts (day resets to 1)
+  useEffect(() => {
+    if (day === 1) {
+      toast.dismiss()
+    }
+  }, [day])
+
   // Buy message toast (neutral blue - not profit/loss yet)
   useEffect(() => {
     if (activeBuyMessage) {

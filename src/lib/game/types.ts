@@ -41,7 +41,7 @@ export interface PEAbility {
 export interface UsedPEAbility {
   abilityId: PEAbilityId
   usedOnDay: number
-  didBackfire: boolean
+  didBackfire: boolean | null  // null = outcome pending (revealed next day when effects apply)
 }
 
 export interface PendingAbilityEffects {
@@ -213,6 +213,8 @@ export interface GameState {
   day: number
   gameDuration: GameDuration  // Total days in this game (30, 45, or 60)
   cash: number
+  creditCardDebt: number  // Starting at 50000, accumulates 3.5% interest daily
+  trustFundBalance: number  // Offshore trust: sheltered from SEC/divorce/tax penalties
   holdings: Record<string, number>
   // Margin trading positions (Pro tier)
   leveragedPositions: LeveragedPosition[]
@@ -225,6 +227,10 @@ export interface GameState {
   costBasis: Record<string, { totalCost: number; totalQty: number }>
   // Track starting net worth for overall P/L calculation
   initialNetWorth: number
+  // Heat/Suspicion tracking (0-100 scale)
+  wifeSuspicion: number
+  wifeSuspicionFrozenUntilDay: number | null
+  fbiHeat: number
   event: MarketEvent | null
   message: string
   gameOverReason: string

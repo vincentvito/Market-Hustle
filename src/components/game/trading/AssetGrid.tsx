@@ -2,20 +2,29 @@
 
 import { useState, useEffect } from 'react'
 import { ASSETS } from '@/lib/game/assets'
+import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
 import { useGame } from '@/hooks/useGame'
 import { AssetCell } from './AssetCell'
 import { LifestyleCatalog } from './LifestyleCatalog'
 
-type TabType = 'trading' | 'lifestyle'
+type TabType = 'stocks' | 'properties' | 'private_equity'
 
 export function AssetGrid() {
   const { selectAsset, selectedTheme, pendingLifestyleAssetId, pendingLuxuryAssetId } = useGame()
-  const [activeTab, setActiveTab] = useState<TabType>('trading')
+  const [activeTab, setActiveTab] = useState<TabType>('stocks')
 
-  // Auto-switch to lifestyle tab when there's a pending asset from portfolio
+  // Auto-switch to appropriate tab when there's a pending asset from portfolio
   useEffect(() => {
-    if (pendingLifestyleAssetId || pendingLuxuryAssetId) {
-      setActiveTab('lifestyle')
+    if (pendingLifestyleAssetId) {
+      const asset = LIFESTYLE_ASSETS.find(a => a.id === pendingLifestyleAssetId)
+      if (asset?.category === 'property') {
+        setActiveTab('properties')
+      } else if (asset?.category === 'private_equity') {
+        setActiveTab('private_equity')
+      }
+    }
+    if (pendingLuxuryAssetId) {
+      setActiveTab('properties')
     }
   }, [pendingLifestyleAssetId, pendingLuxuryAssetId])
   const isModern3 = selectedTheme === 'modern3'
@@ -56,46 +65,94 @@ export function AssetGrid() {
     }`
   }
 
+  // Filter lifestyle assets by category
+  const propertyAssets = LIFESTYLE_ASSETS.filter(a => a.category === 'property')
+  const privateEquityAssets = LIFESTYLE_ASSETS.filter(a => a.category === 'private_equity')
+
   return (
     <div id="tutorial-asset-grid" className="flex flex-col flex-1 min-h-0">
       {/* Category Tabs */}
       <div className={getTabWrapperClass()}>
         <button
-          onClick={() => setActiveTab('trading')}
-          className={getTabClass(activeTab === 'trading')}
+          onClick={() => setActiveTab('stocks')}
+          className={getTabClass(activeTab === 'stocks')}
         >
-          TRADING
+          STOCKS
         </button>
         <button
-          onClick={() => setActiveTab('lifestyle')}
-          className={getTabClass(activeTab === 'lifestyle')}
+          onClick={() => setActiveTab('properties')}
+          className={getTabClass(activeTab === 'properties')}
         >
-          REAL ASSETS
+          PROPERTIES
+        </button>
+        <button
+          onClick={() => setActiveTab('private_equity')}
+          className={getTabClass(activeTab === 'private_equity')}
+        >
+          PRIVATE EQUITY
         </button>
       </div>
 
-      {activeTab === 'trading' ? (
-        <div className={`flex-1 min-h-0 overflow-auto grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 md:gap-3 md:p-3 auto-rows-min ${
-          isBloomberg
-            ? 'gap-px bg-[#333333]'
-            : isRetro2
-              ? 'gap-2 p-2 bg-mh-bg'
-              : isModern3
+      {activeTab === 'stocks' ? (
+        <>
+          {/* Mobile/Tablet: 2 rows × 6 cols horizontal scroll */}
+          <div className={`flex-1 min-h-0 lg:hidden overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            isBloomberg
+              ? 'gap-px bg-[#333333]'
+              : isRetro2
                 ? 'gap-2 p-2 bg-mh-bg'
-                : 'gap-px bg-mh-border'
-        }`}>
-          {ASSETS.map((asset, index) => (
-            <AssetCell
-              key={asset.id}
-              asset={asset}
-              onSelect={selectAsset}
-              id={index === 0 ? 'tutorial-price-movement' : undefined}
-              priceId={index === 0 ? 'tutorial-price-section' : undefined}
-            />
-          ))}
-        </div>
+                : isModern3
+                  ? 'gap-2 p-2 bg-mh-bg'
+                  : 'gap-px bg-mh-border'
+          }`}>
+            {/* Grid is 200vw wide so each of 6 columns = 33.33vw (same as original 3-col grid) */}
+            <div className={`grid grid-cols-6 grid-rows-2 h-full w-[200vw] ${
+              isBloomberg
+                ? 'gap-px'
+                : isRetro2
+                  ? 'gap-2'
+                  : isModern3
+                    ? 'gap-2'
+                    : 'gap-px'
+            }`}>
+              {ASSETS.map((asset, index) => (
+                <AssetCell
+                  key={asset.id}
+                  asset={asset}
+                  onSelect={selectAsset}
+                  id={index === 0 ? 'tutorial-price-movement' : undefined}
+                  priceId={index === 0 ? 'tutorial-price-section' : undefined}
+                />
+              ))}
+            </div>
+          </div>
+          {/* Desktop: 4 cols vertical scroll */}
+          <div className={`hidden lg:flex flex-1 min-h-0 overflow-auto ${
+            isBloomberg
+              ? 'bg-[#333333]'
+              : isRetro2
+                ? 'bg-mh-bg'
+                : isModern3
+                  ? 'bg-mh-bg'
+                  : 'bg-mh-border'
+          }`}>
+            <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full`}>
+              {ASSETS.map((asset, index) => (
+                <AssetCell
+                  key={asset.id}
+                  asset={asset}
+                  onSelect={selectAsset}
+                  id={index === 0 ? 'tutorial-price-movement' : undefined}
+                  priceId={index === 0 ? 'tutorial-price-section' : undefined}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      ) : activeTab === 'properties' ? (
+        <LifestyleCatalog filterCategory="property" />
       ) : (
-        <LifestyleCatalog />
+        <LifestyleCatalog filterCategory="private_equity" />
       )}
     </div>
   )

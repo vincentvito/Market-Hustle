@@ -11,7 +11,9 @@ import { getLeaderboard } from '@/lib/game/leaderboardData'
 export async function GET(request: NextRequest) {
   try {
     const period = (request.nextUrl.searchParams.get('period') ?? 'all') as 'daily' | 'all' | 'worst'
-    const { entries } = await getLeaderboard(period)
+    const durationParam = request.nextUrl.searchParams.get('duration')
+    const duration = durationParam ? parseInt(durationParam, 10) : undefined
+    const { entries } = await getLeaderboard(period, duration)
 
     return NextResponse.json(
       { entries },

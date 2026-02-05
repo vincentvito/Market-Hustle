@@ -1,8 +1,3 @@
-// =============================================================================
-// LEADERBOARD GENERATOR
-// Generates fake leaderboard entries with logarithmic score distribution
-// =============================================================================
-
 import { generateUsername } from './gossip'
 
 export interface LeaderboardEntry {
@@ -10,15 +5,14 @@ export interface LeaderboardEntry {
   score: number
 }
 
-/**
- * Generates a fake leaderboard with logarithmic score distribution.
- * Most scores cluster in the lower range (~$150K-$500K),
- * fewer in millions, very few in billions.
- *
- * @param count Number of entries to generate (default 100)
- * @param minScore Minimum score (default ~$150K)
- * @param maxScore Maximum score (default ~$14.8B)
- */
+const BILLIONAIRE_ENTRIES: LeaderboardEntry[] = [
+  { username: 'Elon Musk', score: 852_500_000_000 },
+  { username: 'Larry Page', score: 277_900_000_000 },
+  { username: 'Sergey Brin', score: 256_300_000_000 },
+  { username: 'Jeff Bezos', score: 249_300_000_000 },
+  { username: 'Mark Zuckerberg', score: 237_000_000_000 },
+]
+
 export function generateLeaderboard(
   count: number = 100,
   minScore: number = 150_000,
@@ -72,13 +66,9 @@ export function generateLeaderboard(
     })
   }
 
-  // Sort by score descending (highest first)
-  entries.sort((a, b) => b.score - a.score)
+  // Prepend billionaires then sort by score descending
+  const allEntries = [...BILLIONAIRE_ENTRIES, ...entries]
+  allEntries.sort((a, b) => b.score - a.score)
 
-  // Ensure top score is exactly maxScore and bottom is near minScore
-  if (entries.length > 0) {
-    entries[0].score = maxScore
-  }
-
-  return entries
+  return allEntries.slice(0, count + BILLIONAIRE_ENTRIES.length)
 }

@@ -102,6 +102,11 @@ export interface MechanicsSlice extends GameState {
   showSettings: boolean
   pendingAchievement: string | null
 
+  // Action bar modal states
+  showActionsModal: boolean
+  activeActionsTab: 'staff' | 'dark' | 'buy' | 'peops'
+  showGiftsModal: boolean
+
   // Game control actions
   startGame: (duration?: GameDuration) => void
   nextDay: () => void
@@ -136,6 +141,12 @@ export interface MechanicsSlice extends GameState {
   confirmAdvance: () => void
   setSelectedNews: (news: NewsItem | null) => void
   setShowSettings: (show: boolean) => void
+  setShowActionsModal: (show: boolean) => void
+  setActiveActionsTab: (tab: 'staff' | 'dark' | 'buy' | 'peops') => void
+  setShowGiftsModal: (show: boolean) => void
+
+  // Gift actions
+  buyGift: (giftId: string) => void
 
   // Feedback actions
   clearSellToast: () => void
@@ -178,8 +189,22 @@ export interface MechanicsSlice extends GameState {
   setPendingLifestyleAsset: (assetId: string | null) => void
   setPendingLuxuryAsset: (assetId: LuxuryAssetId | null) => void
 
+  // Heat/Suspicion management actions
+  increaseWifeHeat: (amount: number) => void
+  decreaseWifeHeat: (amount: number) => void
+  increaseFBIHeat: (amount: number) => void
+  decreaseFBIHeat: (amount: number) => void
+
+  // Credit card debt actions
+  setCreditCardDebt: (newDebt: number) => void
+
+  // Offshore trust actions
+  depositToTrust: (amount: number) => void
+  withdrawFromTrust: (amount: number) => void
+
   // Computed
   getNetWorth: () => number
+  getTotalDebt: () => number
   getPortfolioValue: () => number
   getPriceChange: (id: string) => number
   getPortfolioChange: () => number

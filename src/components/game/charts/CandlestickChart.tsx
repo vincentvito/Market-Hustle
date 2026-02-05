@@ -7,9 +7,10 @@ interface CandlestickChartProps {
   width?: number
   height?: number
   isBloomberg?: boolean
+  maxDays?: number
 }
 
-export function CandlestickChart({ candles, width = 320, height = 100, isBloomberg = false }: CandlestickChartProps) {
+export function CandlestickChart({ candles, width = 320, height = 100, isBloomberg = false, maxDays = 30 }: CandlestickChartProps) {
   if (candles.length === 0) {
     return (
       <div
@@ -41,8 +42,8 @@ export function CandlestickChart({ candles, width = 320, height = 100, isBloombe
   const chartWidth = width - chartPadding.left - chartPadding.right
   const chartHeight = height - chartPadding.top - chartPadding.bottom
 
-  // Calculate candle width based on number of candles (max 30 days)
-  const maxCandles = 30
+  // Calculate candle width based on number of candles (scales to game duration)
+  const maxCandles = maxDays
   const candleWidth = Math.max(4, Math.min(12, chartWidth / maxCandles - 2))
   const candleGap = 2
 

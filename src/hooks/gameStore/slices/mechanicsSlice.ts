@@ -123,7 +123,7 @@ function saveGameResult(
     date: new Date().toISOString(),
     duration: gameDuration as 30 | 45 | 60,
     finalNetWorth,
-    profitPercent: ((finalNetWorth - 100000) / 100000) * 100,
+    profitPercent: ((finalNetWorth - 50000) / 50000) * 100,
     daysSurvived,
     outcome: isWin ? 'win' : mapGameOverReasonToOutcome(gameOverReason || 'BANKRUPT'),
   }
@@ -161,12 +161,19 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   day: 1,
   gameDuration: 30,
   cash: 100000,
+  creditCardDebt: 50000,
+  trustFundBalance: 0,
   holdings: {},
   prices: {},
   prevPrices: {},
   priceHistory: {},
   costBasis: {},
-  initialNetWorth: 100000,
+  initialNetWorth: 50000,
+
+  // Heat/Suspicion tracking
+  wifeSuspicion: 0,
+  wifeSuspicionFrozenUntilDay: null,
+  fbiHeat: 0,
 
   // Margin trading positions (Pro tier)
   leveragedPositions: [],
@@ -237,6 +244,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // Settings & achievements
   showSettings: false,
   pendingAchievement: null,
+
+  // Action bar modal states
+  showActionsModal: false,
+  activeActionsTab: 'buy' as 'staff' | 'dark' | 'buy' | 'peops',
+  showGiftsModal: false,
 
   // Operations state (PE-based villain actions)
   operationStates: {
@@ -387,6 +399,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       day: 1,
       gameDuration,
       cash: 100000,
+      creditCardDebt: 50000,
+      trustFundBalance: 0,
       holdings: {},
       // Reset margin trading positions
       leveragedPositions: [],
@@ -395,7 +409,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       prevPrices,
       priceHistory,
       costBasis: {},
-      initialNetWorth: 100000,
+      initialNetWorth: 50000,  // Net worth = 100k cash - 50k debt = 50k
+      // Reset heat/suspicion
+      wifeSuspicion: 0,
+      wifeSuspicionFrozenUntilDay: null,
+      fbiHeat: 0,
       event: null,
       message: '',
       gameOverReason: '',
@@ -472,7 +490,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   },
 
   nextDay: () => {
-    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activePEExitOffer, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, gossipState, assetMoods, usedFlavorHeadlines, leveragedPositions, shortPositions, ownedLuxury, operationStates, pendingAbilityEffects, pendingPhase2Effects, directorState, directorConfig, gameDuration, initialNetWorth } = get()
+    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activePEExitOffer, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, gossipState, assetMoods, usedFlavorHeadlines, leveragedPositions, shortPositions, ownedLuxury, operationStates, pendingAbilityEffects, pendingPhase2Effects, usedPEAbilities, directorState, directorConfig, gameDuration, initialNetWorth } = get()
     let effects: Record<string, number> = {}
     let updatedEscalations = [...activeEscalations]
     const todayNewsItems: NewsItem[] = []
@@ -493,6 +511,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // STEP -1: APPLY PENDING PE ABILITY EFFECTS (from previous day's trigger)
     // ===========================================================================
     let clearedPendingEffects = false
+    let revealedUsedPEAbilities = usedPEAbilities
     if (pendingAbilityEffects) {
       // Apply price effects from the ability
       Object.entries(pendingAbilityEffects.effects).forEach(([assetId, effect]) => {
@@ -510,6 +529,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         effects: pendingAbilityEffects.effects,
         labelType: 'breaking',
       })
+
+      // Reveal the didBackfire outcome now that effects are applied
+      revealedUsedPEAbilities = usedPEAbilities.map(u =>
+        u.abilityId === pendingAbilityEffects.abilityId
+          ? { ...u, didBackfire: pendingAbilityEffects.isBackfire }
+          : u
+      )
 
       clearedPendingEffects = true
     }
@@ -1286,7 +1312,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return sum + (asset?.basePrice || 0)
     }, 0)
     const currentCash = cash + cashChange
-    const nw = Math.round((currentCash + portfolioValue + startupValue + lifestyleValue + leveragedValue + luxuryValue - shortLiability) * 100) / 100
+    const { trustFundBalance } = get()
+    const nw = Math.round((currentCash + portfolioValue + startupValue + lifestyleValue + leveragedValue + luxuryValue + trustFundBalance - shortLiability) * 100) / 100
 
     // Check if reaching $1M milestone for the first time ever in this game
     let newHasReached1M = hasReached1M
@@ -1460,6 +1487,59 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       }
     }
 
+    // ===========================================================================
+    // HEAT/SUSPICION: No longer apply natural decay (removed in rework)
+    // ===========================================================================
+    const { wifeSuspicion, creditCardDebt } = get()
+    // Wife heat no longer decays naturally - only increases on losses
+    const newWifeSuspicion = wifeSuspicion
+
+    // ===========================================================================
+    // CREDIT CARD DEBT: Apply daily interest
+    // ===========================================================================
+    // Apply 3.5% daily interest to credit card debt
+    const dailyInterest = creditCardDebt * 0.035
+    const newCreditCardDebt = creditCardDebt + dailyInterest
+
+    // ===========================================================================
+    // FBI HEAT: Calculate daily accumulation from risky positions
+    // ===========================================================================
+    const { fbiHeat } = get()
+    // leveragedPositions and shortPositions already destructured at top of function
+
+    // Clean books: no open short or leveraged positions = FBI heat cools -2%/day
+    let fbiHeatIncrease: number
+
+    if (shortPositions.length === 0 && leveragedPositions.length === 0) {
+      fbiHeatIncrease = -2
+    } else {
+      // Base rate: +1% per day just for playing
+      fbiHeatIncrease = 1
+
+      // Each open short: +3% per day
+      fbiHeatIncrease += shortPositions.length * 3
+
+      // Each leveraged position: +2% per day base
+      leveragedPositions.forEach(pos => {
+        let positionHeat = 2  // Base heat per leveraged position
+
+        // Leverage bonus: higher leverage = more heat
+        // 2x leverage = +0% bonus
+        // 5x leverage = +1% bonus
+        // 10x leverage = +2% bonus
+        if (pos.leverage >= 10) {
+          positionHeat += 2
+        } else if (pos.leverage >= 5) {
+          positionHeat += 1
+        }
+
+        fbiHeatIncrease += positionHeat
+      })
+    }
+
+    // Apply heat change (clamp 0-100%)
+    const newFBIHeat = Math.min(100, Math.max(0, fbiHeat + fbiHeatIncrease))
+
     // 8. Update state
     const headlines = todayNewsItems.map(n => n.headline)
     set({
@@ -1472,6 +1552,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       event: null,
       day: newDay,
       cash: Math.round(currentCash * 100) / 100,
+      creditCardDebt: newCreditCardDebt,
+      wifeSuspicion: newWifeSuspicion,
+      fbiHeat: newFBIHeat,
       message: '',
       activeSellToast: null,
       activeBuyMessage: null,
@@ -1508,6 +1591,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       usedFlavorHeadlines: updatedFlavorHeadlines,
       // Clear pending PE ability effects after they've been applied
       pendingAbilityEffects: clearedPendingEffects ? null : pendingAbilityEffects,
+      // Reveal didBackfire on usedPEAbilities now that effects have been applied
+      usedPEAbilities: revealedUsedPEAbilities,
       // Clear pending phase 2 effects after they've been applied
       pendingPhase2Effects: clearedPhase2Effects ? null : pendingPhase2Effects,
       // Update Game Director state
@@ -1533,7 +1618,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
       // Record game result before showing game over screen
       saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn, get().isUsingProTrial, get().username)
-      set({ screen: 'gameover', gameOverReason, isUsingProTrial: false })
+      set({ screen: 'gameover', gameOverReason, isUsingProTrial: false, wifeSuspicion: Math.min(100, get().wifeSuspicion + 20) })
     } else if (finalNetWorth <= 0) {
       // Regular bankruptcy (net worth exactly 0)
       saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial, get().username)
@@ -1565,9 +1650,10 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     // Art Collection reduces Tax Event probability
     const ownsArtCollection = ownedLuxury.includes('art_collection')
+    const { wifeSuspicion, fbiHeat } = get()
 
     // Check if an encounter should trigger
-    const encounterType = rollForEncounter(day + 1, encounterState, cash, netWorth, gameDuration, ownsArtCollection)
+    const encounterType = rollForEncounter(day + 1, encounterState, cash, { netWorth, gameLength: gameDuration, ownsArtCollection, wifeSuspicion, fbiHeat })
 
     if (encounterType) {
       // Encounter triggered - show popup and queue any pending startup offer
@@ -1643,6 +1729,18 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const costOfSold = avgCost * qty
     const profitLoss = revenue - costOfSold
     const profitLossPct = avgCost > 0 ? ((price - avgCost) / avgCost) * 100 : 0
+
+    // If selling at a loss, increase wife suspicion
+    if (profitLoss < 0) {
+      // Heat increase scales with absolute dollar loss (max 15% heat for major losses)
+      // Formula: heat = min(15, |loss| / 10000)
+      // Examples: $10k loss = 1% heat, $50k loss = 5% heat, $150k+ loss = 15% heat
+      const heatIncrease = Math.min(15, Math.abs(profitLoss) / 10000)
+
+      const { wifeSuspicion } = get()
+      const newWifeSuspicion = Math.min(100, wifeSuspicion + heatIncrease)
+      set({ wifeSuspicion: newWifeSuspicion })
+    }
 
     // Determine emoji based on P/L percentage
     let emoji: string
@@ -1781,6 +1879,23 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return
     }
 
+    // If covering short at a loss, increase wife suspicion AND cool FBI heat
+    if (profitLoss < 0) {
+      const wifeHeatIncrease = Math.min(15, Math.abs(profitLoss) / 10000)
+
+      const { wifeSuspicion, fbiHeat } = get()
+      const newWifeSuspicion = Math.min(100, wifeSuspicion + wifeHeatIncrease)
+
+      // Cooling mechanism: Closing short at loss reduces FBI heat by 5%
+      // (Looks like a bad trader, not suspicious)
+      const newFBIHeat = Math.max(0, fbiHeat - 5)
+
+      set({
+        wifeSuspicion: newWifeSuspicion,
+        fbiHeat: newFBIHeat
+      })
+    }
+
     const asset = ASSETS.find(a => a.id === position.assetId)
     const plSign = profitLoss >= 0 ? '+' : ''
     const emoji = profitLoss >= 0 ? '📈' : '📉'
@@ -1811,6 +1926,20 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const originalDownPayment = position.qty * position.entryPrice / position.leverage
     const profitLoss = afterDebt - originalDownPayment
     const profitLossPct = originalDownPayment > 0 ? (profitLoss / originalDownPayment) * 100 : 0
+
+    // If closing leveraged position at a loss, increase wife suspicion
+    if (profitLoss < 0) {
+      const heatIncrease = Math.min(15, Math.abs(profitLoss) / 10000)
+
+      const { wifeSuspicion } = get()
+      const newWifeSuspicion = Math.min(100, wifeSuspicion + heatIncrease)
+      set({ wifeSuspicion: newWifeSuspicion })
+    }
+
+    // Closing ANY leveraged position reduces FBI heat by 3% (cleaning up risky positions)
+    const { fbiHeat } = get()
+    const newFBIHeat = Math.max(0, fbiHeat - 3)
+    set({ fbiHeat: newFBIHeat })
 
     const asset = ASSETS.find(a => a.id === position.assetId)
     const plSign = profitLoss >= 0 ? '+' : ''
@@ -2031,7 +2160,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return
     }
     const ownsArtCollection = ownedLuxury.includes('art_collection')
-    const encounterType = rollForEncounter(day + 1, encounterState, cash, netWorth, gameDuration, ownsArtCollection)
+    const { wifeSuspicion, fbiHeat } = get()
+    const encounterType = rollForEncounter(day + 1, encounterState, cash, { netWorth, gameLength: gameDuration, ownsArtCollection, wifeSuspicion, fbiHeat })
     if (encounterType) {
       set({
         pendingEncounter: { type: encounterType },
@@ -2044,6 +2174,43 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   },
   setSelectedNews: (news) => set({ selectedNews: news }),
   setShowSettings: (show: boolean) => set({ showSettings: show }),
+  setShowActionsModal: (show: boolean) => set({ showActionsModal: show }),
+  setActiveActionsTab: (tab: 'staff' | 'dark' | 'buy' | 'peops') => set({ activeActionsTab: tab }),
+  setShowGiftsModal: (show: boolean) => set({ showGiftsModal: show }),
+
+  // ============================================================================
+  // GIFT ACTIONS
+  // ============================================================================
+
+  buyGift: (giftId: string) => {
+    const { cash, wifeSuspicion, day } = get()
+    const { GIFTS, getGift } = require('@/lib/game/gifts')
+    const gift = getGift(giftId)
+
+    if (!gift) {
+      set({ activeErrorMessage: 'GIFT NOT FOUND' })
+      return
+    }
+
+    if (cash < gift.cost) {
+      set({ activeErrorMessage: 'NOT ENOUGH CASH' })
+      return
+    }
+
+    // Calculate new wife suspicion (can't go below 0)
+    const newSuspicion = Math.max(0, wifeSuspicion - gift.heatReduction)
+
+    // If gift freezes heat, set freeze day
+    const freezeDay = gift.freezeDays ? day + gift.freezeDays : null
+
+    set({
+      cash: Math.round((cash - gift.cost) * 100) / 100,
+      wifeSuspicion: newSuspicion,
+      wifeSuspicionFrozenUntilDay: freezeDay,
+      activeBuyMessage: `BOUGHT ${gift.name} - Suspicion reduced by ${gift.heatReduction}%`,
+      showGiftsModal: false,
+    })
+  },
 
   // ============================================================================
   // FEEDBACK ACTIONS
@@ -2117,33 +2284,22 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         // Cash covers it
         newCash = cash - amountNeeded
       } else {
-        // Need to liquidate assets - check if player has enough
-        const shortfall = amountNeeded - cash
+        // Need to liquidate assets - use full net worth to check bankruptcy
+        const { ownedLifestyle, lifestylePrices, leveragedPositions, shortPositions, ownedLuxury } = get()
+        const currentNetWorth = get().getNetWorth()
 
-        // Get lifestyle assets for potential liquidation
-        const { ownedLifestyle, lifestylePrices } = get()
-
-        // Calculate total liquidatable value (holdings + lifestyle assets)
-        let holdingsValue = 0
-        Object.entries(holdings).forEach(([id, qty]) => {
-          holdingsValue += (prices[id] || 0) * qty
-        })
-
-        let lifestyleValue = 0
-        ownedLifestyle.forEach(owned => {
-          lifestyleValue += lifestylePrices[owned.assetId] || 0
-        })
-
-        const totalLiquidatableValue = holdingsValue + lifestyleValue
-
-        if (totalLiquidatableValue < shortfall) {
-          // Can't cover the penalty even with all assets → Bankruptcy
+        // Only declare bankruptcy if net worth after penalty would be <= 0
+        if (currentNetWorth - amountNeeded <= 0) {
+          // Truly bankrupt — can't cover the penalty even with all assets
           const { day, gameDuration } = get()
           saveGameResult(false, 0, day, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial, get().username)
           set({
             cash: 0,
             holdings: {},
             ownedLifestyle: [],
+            ownedLuxury: [],
+            leveragedPositions: [],
+            shortPositions: [],
             encounterState: newEncounterState,
             pendingEncounter: null,
             pendingLiquidation: null,
@@ -2156,19 +2312,99 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
           return
         }
 
-        // Player can cover it - show liquidation selection UI
-        const reason = encounterType === 'tax' ? 'tax' : (encounterType === 'sec' ? 'sec' : 'divorce')
+        // Player CAN cover it — auto-liquidate assets to cover the shortfall
+        const shortfall = amountNeeded - cash
+        let remainingShortfall = shortfall
+        let newOwnedLifestyle = [...ownedLifestyle]
+        let newOwnedLuxury = [...ownedLuxury]
+        let newLeveragedPositions = [...leveragedPositions]
+        let newShortPositions = [...shortPositions]
+
+        // 1. Sell luxury assets first (fixed price, no market impact)
+        for (const luxuryId of [...newOwnedLuxury]) {
+          if (remainingShortfall <= 0) break
+          const asset = getLuxuryAsset(luxuryId)
+          if (asset) {
+            remainingShortfall -= asset.basePrice
+            newOwnedLuxury = newOwnedLuxury.filter(id => id !== luxuryId)
+          }
+        }
+
+        // 2. Sell lifestyle assets
+        for (const owned of [...newOwnedLifestyle]) {
+          if (remainingShortfall <= 0) break
+          const value = lifestylePrices[owned.assetId] || 0
+          if (value > 0) {
+            remainingShortfall -= value
+            newOwnedLifestyle = newOwnedLifestyle.filter(o => o.assetId !== owned.assetId)
+          }
+        }
+
+        // 3. Close leveraged positions (collect equity = currentValue - debt)
+        for (const pos of [...newLeveragedPositions]) {
+          if (remainingShortfall <= 0) break
+          const currentPrice = prices[pos.assetId] || 0
+          const equity = (currentPrice * pos.qty) - pos.debtAmount
+          if (equity > 0) {
+            remainingShortfall -= equity
+            newLeveragedPositions = newLeveragedPositions.filter(p => p.id !== pos.id)
+          }
+        }
+
+        // 4. Close short positions (recover profit: cashReceived - currentLiability)
+        for (const pos of [...newShortPositions]) {
+          if (remainingShortfall <= 0) break
+          const currentPrice = prices[pos.assetId] || 0
+          const liability = currentPrice * pos.qty
+          const profit = pos.cashReceived - liability
+          if (profit > 0) {
+            remainingShortfall -= profit
+            newShortPositions = newShortPositions.filter(p => p.id !== pos.id)
+          }
+        }
+
+        // 5. Sell trading holdings (largest first)
+        const sortedHoldings = Object.entries(newHoldings)
+          .map(([id, qty]) => ({ id, qty, value: (prices[id] || 0) * qty }))
+          .sort((a, b) => b.value - a.value)
+
+        for (const holding of sortedHoldings) {
+          if (remainingShortfall <= 0) break
+          const price = prices[holding.id] || 0
+          if (price <= 0) continue
+
+          if (holding.value <= remainingShortfall) {
+            // Sell all shares of this holding
+            remainingShortfall -= holding.value
+            delete newHoldings[holding.id]
+          } else {
+            // Sell partial — only what's needed
+            const sharesToSell = Math.ceil(remainingShortfall / price)
+            remainingShortfall -= sharesToSell * price
+            newHoldings[holding.id] = holding.qty - sharesToSell
+            if (newHoldings[holding.id] <= 0) {
+              delete newHoldings[holding.id]
+            }
+          }
+        }
+
+        // All cash goes to penalty, any excess from liquidation is returned
+        const excessFromLiquidation = Math.max(0, -remainingShortfall)
+        newCash = Math.round(excessFromLiquidation * 100) / 100
+        finalHeadline = `${result.headline} (Assets liquidated to cover penalty)`
+
+        // Liquidation causes significant suspicion spike
+        const { wifeSuspicion } = get()
+        const newWifeSuspicion = Math.min(100, wifeSuspicion + 15)
+
+        // Apply all the liquidation changes
         set({
-          pendingLiquidation: {
-            amountNeeded: shortfall, // Only need to liquidate the shortfall
-            reason: reason as 'sec' | 'divorce' | 'tax',
-            headline: result.headline,
-            encounterType,
-            encounterState: newEncounterState,
-          },
-          pendingEncounter: null, // Clear the encounter popup
+          ownedLifestyle: newOwnedLifestyle,
+          ownedLuxury: newOwnedLuxury,
+          leveragedPositions: newLeveragedPositions,
+          shortPositions: newShortPositions,
+          wifeSuspicion: newWifeSuspicion,
         })
-        return // Wait for player to select assets
       }
     } else if (result.cashChange) {
       // Standard cash change (non-liquidation encounters)
@@ -2283,7 +2519,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // ============================================================================
 
   buyLuxuryAsset: (assetId: LuxuryAssetId) => {
-    const { cash, ownedLuxury } = get()
+    const { cash, ownedLuxury, wifeSuspicion } = get()
     const asset = getLuxuryAsset(assetId)
     if (!asset) return
 
@@ -2301,9 +2537,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return
     }
 
+    // Increase wife suspicion by 5% for luxury purchase
+    const newWifeSuspicion = Math.min(100, wifeSuspicion + 5)
+
     set({
       cash: cash - effectivePrice,
       ownedLuxury: [...ownedLuxury, assetId],
+      wifeSuspicion: newWifeSuspicion,
       activeBuyMessage: `${asset.emoji} ${asset.name.toUpperCase()} ACQUIRED`,
     })
   },
@@ -2345,7 +2585,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // ============================================================================
 
   executePEAbility: (abilityId, peAssetId) => {
-    const { cash, day, ownedLifestyle, usedPEAbilities, todayNews } = get()
+    const { cash, day, ownedLifestyle, usedPEAbilities, todayNews, wifeSuspicion, fbiHeat } = get()
 
     // Import ability data and headlines
     const { PE_ABILITIES, getPEAbilities } = require('@/lib/game/lifestyleAssets')
@@ -2413,19 +2653,18 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       } : undefined,
     }
 
-    // Record ability as used
+    // Record ability as used (didBackfire is null until effects are applied next day)
     const newUsedAbilities = [...usedPEAbilities, {
       abilityId,
       usedOnDay: day,
-      didBackfire,
+      didBackfire: null,  // Outcome hidden until next day when pendingAbilityEffects are applied
     }]
 
     // Handle immediate backfire consequences
     let finalCash = newCash
     let updatedOwnedLifestyle = [...ownedLifestyle]
-    let message = didBackfire
-      ? `⚠️ ${ability.emoji} OPERATION BACKFIRED!`
-      : `🎯 ${ability.emoji} ${ability.name.toUpperCase()} INITIATED`
+    // Don't reveal outcome in the message - always show "INITIATED"
+    let message = `🎯 ${ability.emoji} ${ability.name.toUpperCase()} INITIATED`
 
     if (didBackfire) {
       // Apply fine immediately
@@ -2466,12 +2705,21 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       triggerOnDay: day + 2, // Day N+2 (Day N = today, Day N+1 = phase 1, Day N+2 = phase 2)
     } : null
 
+    // Increase wife suspicion by 10% for PE ability execution
+    const newWifeSuspicion = Math.min(100, wifeSuspicion + 10)
+
+    // FBI heat: +5% on success, +15% on backfire
+    const fbiHeatIncrease = didBackfire ? 15 : 5
+    const newFBIHeat = Math.min(100, fbiHeat + fbiHeatIncrease)
+
     set({
       cash: finalCash,
       usedPEAbilities: newUsedAbilities,
       pendingAbilityEffects: pendingEffects,
       pendingPhase2Effects: phase2Effects,
       ownedLifestyle: updatedOwnedLifestyle,
+      wifeSuspicion: newWifeSuspicion,
+      fbiHeat: newFBIHeat,
       activeBuyMessage: message,
       todayNews: [...todayNews, rumorNewsItem], // Add rumor to news
     })
@@ -2518,7 +2766,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // ============================================================================
 
   getNetWorth: () => {
-    const { cash, holdings, prices, activeInvestments, ownedLifestyle, lifestylePrices, leveragedPositions, shortPositions, ownedLuxury } = get()
+    const { cash, holdings, prices, activeInvestments, ownedLifestyle, lifestylePrices, leveragedPositions, shortPositions, ownedLuxury, creditCardDebt, trustFundBalance } = get()
 
     // Portfolio value (regular holdings)
     let portfolio = 0
@@ -2552,9 +2800,16 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return sum + (asset?.basePrice || 0)
     }, 0)
 
-    // Net worth = cash + portfolio + leveragedEquity + startups + lifestyle + luxury - shortLiability
+    // Net worth = cash + portfolio + leveragedEquity + startups + lifestyle + luxury + trust - shortLiability - creditCardDebt
     // Note: shortPositions added to cash when opened, so we subtract liability
-    return Math.round((cash + portfolio + leveragedValue + startupValue + lifestyleValue + luxuryValue - shortLiability) * 100) / 100
+    return Math.round((cash + portfolio + leveragedValue + startupValue + lifestyleValue + luxuryValue + trustFundBalance - shortLiability - creditCardDebt) * 100) / 100
+  },
+
+  getTotalDebt: () => {
+    const { leveragedPositions, creditCardDebt } = get()
+    // Total debt = sum of all leveraged position debts + credit card debt
+    const leverageDebt = leveragedPositions.reduce((sum, pos) => sum + pos.debtAmount, 0)
+    return leverageDebt + creditCardDebt
   },
 
   getPortfolioValue: () => {
@@ -2624,5 +2879,64 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const currentNetWorth = get().getNetWorth()
     if (initialNetWorth === 0) return 0
     return ((currentNetWorth - initialNetWorth) / initialNetWorth) * 100
+  },
+
+  // ============================================================================
+  // HEAT/SUSPICION MANAGEMENT
+  // ============================================================================
+
+  increaseWifeHeat: (amount: number) => {
+    const { wifeSuspicion } = get()
+    set({ wifeSuspicion: Math.min(100, wifeSuspicion + amount) })
+  },
+
+  decreaseWifeHeat: (amount: number) => {
+    const { wifeSuspicion } = get()
+    set({ wifeSuspicion: Math.max(0, wifeSuspicion - amount) })
+  },
+
+  increaseFBIHeat: (amount: number) => {
+    const { fbiHeat } = get()
+    set({ fbiHeat: Math.min(100, fbiHeat + amount) })
+  },
+
+  decreaseFBIHeat: (amount: number) => {
+    const { fbiHeat } = get()
+    set({ fbiHeat: Math.max(0, fbiHeat - amount) })
+  },
+
+  // ============================================================================
+  // CREDIT CARD DEBT ACTIONS
+  // ============================================================================
+
+  setCreditCardDebt: (newDebt: number) => {
+    const { cash, creditCardDebt } = get()
+    const repayAmount = creditCardDebt - newDebt
+
+    // Deduct from cash
+    set({
+      creditCardDebt: newDebt,
+      cash: cash - repayAmount
+    })
+  },
+
+  depositToTrust: (amount: number) => {
+    const { cash, trustFundBalance } = get()
+    const deposit = Math.min(amount, cash)
+    if (deposit <= 0) return
+    set({
+      cash: Math.round((cash - deposit) * 100) / 100,
+      trustFundBalance: Math.round((trustFundBalance + deposit) * 100) / 100,
+    })
+  },
+
+  withdrawFromTrust: (amount: number) => {
+    const { cash, trustFundBalance } = get()
+    const withdrawal = Math.min(amount, trustFundBalance)
+    if (withdrawal <= 0) return
+    set({
+      cash: Math.round((cash + withdrawal) * 100) / 100,
+      trustFundBalance: Math.round((trustFundBalance - withdrawal) * 100) / 100,
+    })
   },
 })

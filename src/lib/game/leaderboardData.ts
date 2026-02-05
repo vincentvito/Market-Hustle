@@ -1,8 +1,16 @@
 import { db } from '@/db'
 import { gameResults } from '@/db/schema'
-import { desc, asc, gte } from 'drizzle-orm'
+import { desc, asc, gte, eq, and } from 'drizzle-orm'
 
-export async function getLeaderboard(period: 'daily' | 'all' | 'worst') {
+const BILLIONAIRE_ENTRIES = [
+  { username: 'Elon Musk', score: 852_500_000_000 },
+  { username: 'Larry Page', score: 277_900_000_000 },
+  { username: 'Sergey Brin', score: 256_300_000_000 },
+  { username: 'Jeff Bezos', score: 249_300_000_000 },
+  { username: 'Mark Zuckerberg', score: 237_000_000_000 },
+]
+
+export async function getLeaderboard(period: 'daily' | 'all' | 'worst', duration?: number) {
   const isWorst = period === 'worst'
 
   const conditions = []
@@ -11,6 +19,15 @@ export async function getLeaderboard(period: 'daily' | 'all' | 'worst') {
     today.setUTCHours(0, 0, 0, 0)
     conditions.push(gte(gameResults.createdAt, today))
   }
+  if (duration) {
+    conditions.push(eq(gameResults.duration, duration))
+  }
+
+  const whereClause = conditions.length > 1
+    ? and(...conditions)
+    : conditions.length === 1
+      ? conditions[0]
+      : undefined
 
   const data = await db
     .select({
@@ -19,11 +36,10 @@ export async function getLeaderboard(period: 'daily' | 'all' | 'worst') {
       createdAt: gameResults.createdAt,
     })
     .from(gameResults)
-    .where(conditions.length > 0 ? conditions[0] : undefined)
+    .where(whereClause)
     .orderBy(isWorst ? asc(gameResults.finalNetWorth) : desc(gameResults.finalNetWorth))
     .limit(500)
 
-  // Dedupe: keep only the best score per username
   const bestByUser = new Map<string, { username: string; score: number }>()
   for (const row of data) {
     const username = row.username
@@ -33,6 +49,13 @@ export async function getLeaderboard(period: 'daily' | 'all' | 'worst') {
     const existing = bestByUser.get(username)
     if (!existing || (isWorst ? score < existing.score : score > existing.score)) {
       bestByUser.set(username, { username, score })
+    }
+  }
+
+  // Merge billionaire entries into all-time leaderboard only
+  if (period === 'all') {
+    for (const entry of BILLIONAIRE_ENTRIES) {
+      bestByUser.set(entry.username, entry)
     }
   }
 

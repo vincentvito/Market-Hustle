@@ -188,53 +188,63 @@ export function getAvailableEncounters(
   return available
 }
 
-// Roll for encounter trigger (called at start of day)
-// Probability: ~10% base chance when eligible
 export function rollForEncounter(
   day: number,
   state: EncounterState,
   cash: number,
-  netWorth: number,
-  gameLength: number = 30,
-  ownsArtCollection: boolean = false  // Art Collection reduces Tax Event probability
+  params: {
+    netWorth: number
+    gameLength?: number
+    ownsArtCollection?: boolean
+    wifeSuspicion?: number
+    fbiHeat?: number
+  }
 ): EncounterType | null {
+  const { netWorth, gameLength = 30, ownsArtCollection = false, wifeSuspicion = 0, fbiHeat = 0 } = params
   if (!canTriggerEncounter(day, state, gameLength)) return null
 
   const available = getAvailableEncounters(state, cash, netWorth)
   if (available.length === 0) return null
 
-  // Base trigger probability: 10%
-  // Slightly increases mid-game to ensure encounters happen
+  // Independent exponential roll for SEC: prob = 0.5 * (fbiHeat/90)^3
+  if (available.includes('sec') && fbiHeat > 0) {
+    const secProb = 0.5 * Math.pow(fbiHeat / 90, 3)
+    if (Math.random() < secProb) {
+      return 'sec'
+    }
+  }
+
+  // Independent exponential roll for divorce: prob = 0.5 * (wifeSuspicion/90)^3
+  if (available.includes('divorce') && wifeSuspicion > 0) {
+    const divorceProb = 0.5 * Math.pow(wifeSuspicion / 90, 3)
+    if (Math.random() < divorceProb) {
+      return 'divorce'
+    }
+  }
+
+  // Fall through to random pool (shitcoin/kidney/roulette/tax only)
+  const poolEncounters = available.filter(e => e !== 'sec' && e !== 'divorce')
+  if (poolEncounters.length === 0) return null
+
+  // Base trigger probability: 10-25% depending on game progress
   let triggerChance = 0.10
-
-  // Scale thresholds proportionally to game length
-  const midGameThreshold = Math.floor(gameLength * 0.33)  // ~33% into game (day 10 for 30-day)
-  const lateGameThreshold = Math.floor(gameLength * 0.67) // ~67% into game (day 20 for 30-day)
-
-  // If no encounters yet and past mid-game, increase chance
-  if (state.encounterCount === 0 && day > midGameThreshold) {
-    triggerChance = 0.15
-  }
-
-  // If still no encounters by late-game, force higher chance
-  if (state.encounterCount === 0 && day > lateGameThreshold) {
-    triggerChance = 0.25
-  }
+  const midGameThreshold = Math.floor(gameLength * 0.33)
+  const lateGameThreshold = Math.floor(gameLength * 0.67)
+  if (state.encounterCount === 0 && day > midGameThreshold) triggerChance = 0.15
+  if (state.encounterCount === 0 && day > lateGameThreshold) triggerChance = 0.25
 
   if (Math.random() >= triggerChance) return null
 
-  // Select random encounter from available pool
-  let selected = available[Math.floor(Math.random() * available.length)]
+  let selected = poolEncounters[Math.floor(Math.random() * poolEncounters.length)]
 
   // Art Collection protection: if tax was selected and player owns Art, 20% chance to skip
   if (selected === 'tax' && ownsArtCollection) {
     if (Math.random() < 0.20) {
-      // Tax avoided - try to select different encounter or none
-      const nonTaxAvailable = available.filter(e => e !== 'tax')
+      const nonTaxAvailable = poolEncounters.filter(e => e !== 'tax')
       if (nonTaxAvailable.length > 0) {
         selected = nonTaxAvailable[Math.floor(Math.random() * nonTaxAvailable.length)]
       } else {
-        return null  // Only tax was available and Art Collection blocked it
+        return null
       }
     }
   }
@@ -242,16 +252,17 @@ export function rollForEncounter(
   return selected
 }
 
-// Resolve SEC Investigation
 export function resolveSEC(
   choice: 'pay' | 'fight',
-  netWorth: number
+  netWorth: number,
+  trustFundBalance: number = 0
 ): EncounterResult {
   if (choice === 'pay') {
-    const fine = Math.floor(netWorth * 0.20)
+    const exposedNetWorth = Math.max(0, netWorth - trustFundBalance)
+    const fine = Math.floor(exposedNetWorth * 0.20)
     return {
       headline: `SEC SETTLEMENT: You paid $${fine.toLocaleString('en-US')} to avoid prosecution`,
-      liquidationRequired: fine,  // Will force-sell assets if cash insufficient
+      liquidationRequired: fine,
     }
   } else {
     // Fight: 50/50
@@ -270,16 +281,17 @@ export function resolveSEC(
   }
 }
 
-// Resolve Divorce
 export function resolveDivorce(
   choice: 'settle' | 'contest',
-  netWorth: number
+  netWorth: number,
+  trustFundBalance: number = 0
 ): EncounterResult {
+  const exposedNetWorth = Math.max(0, netWorth - trustFundBalance)
   if (choice === 'settle') {
-    const loss = Math.floor(netWorth * 0.50)
+    const loss = Math.floor(exposedNetWorth * 0.50)
     return {
       headline: `DIVORCE SETTLED: $${loss.toLocaleString('en-US')} gone, but you move on`,
-      liquidationRequired: loss,  // Will force-sell assets if cash insufficient
+      liquidationRequired: loss,
     }
   } else {
     // Contest: 30% they back down, 70% they take 70%
@@ -289,10 +301,10 @@ export function resolveDivorce(
         cashChange: 0,
       }
     } else {
-      const loss = Math.floor(netWorth * 0.70)
+      const loss = Math.floor(exposedNetWorth * 0.70)
       return {
         headline: `CONTESTED AND LOST: $${loss.toLocaleString('en-US')} awarded to your ex`,
-        liquidationRequired: loss,  // Will force-sell assets if cash insufficient
+        liquidationRequired: loss,
       }
     }
   }
@@ -436,13 +448,14 @@ export function getDivorceDescription(divorceCount: number): string {
   return encounter.description
 }
 
-// Resolve Tax Event (IRS Audit)
 export function resolveTax(
   choice: 'pay' | 'offshore',
-  netWorth: number
+  netWorth: number,
+  trustFundBalance: number = 0
 ): EncounterResult {
+  const exposedNetWorth = Math.max(0, netWorth - trustFundBalance)
   if (choice === 'pay') {
-    const penalty = Math.floor(netWorth * 0.15)
+    const penalty = Math.floor(exposedNetWorth * 0.15)
     return {
       headline: `IRS SETTLEMENT: You paid $${penalty.toLocaleString('en-US')} in back taxes and penalties`,
       liquidationRequired: penalty,
@@ -456,7 +469,7 @@ export function resolveTax(
       }
     } else {
       // 60% bad outcome - lose 30%
-      const penalty = Math.floor(netWorth * 0.30)
+      const penalty = Math.floor(exposedNetWorth * 0.30)
       // 50% of the bad outcomes also result in prison
       if (Math.random() < 0.5) {
         return {

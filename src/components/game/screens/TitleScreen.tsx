@@ -57,6 +57,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.daily ?? [])
   const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.allTime ?? [])
   const [worstLeaderboard, setWorstLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.worst ?? [])
+  const [leaderboardDuration, setLeaderboardDuration] = useState<30 | 45 | 60>(30)
   const [usernameInput, setUsernameInput] = useState('')
   const [usernameError, setUsernameError] = useState<string | null>(null)
   const [isEditingUsername, setIsEditingUsername] = useState(false)
@@ -118,10 +119,11 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
         if (cancelled) return
 
         const cacheBust = `&_t=${Date.now()}`
+        const durationParam = `&duration=${leaderboardDuration}`
         const [dailyRes, allTimeRes, worstRes] = await Promise.all([
-          fetch(`/api/leaderboard?period=daily${cacheBust}`, { cache: 'no-store' }),
-          fetch(`/api/leaderboard?period=all${cacheBust}`, { cache: 'no-store' }),
-          fetch(`/api/leaderboard?period=worst${cacheBust}`, { cache: 'no-store' }),
+          fetch(`/api/leaderboard?period=daily${durationParam}${cacheBust}`, { cache: 'no-store' }),
+          fetch(`/api/leaderboard?period=all${durationParam}${cacheBust}`, { cache: 'no-store' }),
+          fetch(`/api/leaderboard?period=worst${durationParam}${cacheBust}`, { cache: 'no-store' }),
         ])
         const [daily, allTime, worst] = await Promise.all([dailyRes.json(), allTimeRes.json(), worstRes.json()])
         if (!cancelled) {
@@ -140,7 +142,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
     }
     fetchLeaderboards()
     return () => { cancelled = true }
-  }, [])
+  }, [leaderboardDuration])
 
   const showAllTimeSkeleton = allTimeLeaderboard.length === 0 && !hasInitialData.current
 
@@ -219,7 +221,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             }
           }}
           disabled={!hasValidUsername}
-          className={`border-2 px-8 py-3 text-base font-mono transition-colors mb-2
+          className={`border-2 px-8 py-3 text-base font-mono transition-colors mb-8
             ${hasValidUsername
               ? 'border-mh-accent-blue text-mh-accent-blue bg-transparent cursor-pointer glow-text hover:bg-mh-accent-blue/10 active:bg-mh-accent-blue/20'
               : 'border-mh-border text-mh-text-dim bg-transparent cursor-not-allowed opacity-50'
@@ -228,9 +230,27 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           [ PLAY NOW ]
         </button>
 
+        {/* Leaderboard Section */}
+        <h1 className="text-mh-text-dim text-lg font-mono tracking-widest mb-3">LEADERBOARD</h1>
+        <div className="flex gap-2 mb-4">
+          {([30, 45, 60] as const).map((d) => (
+            <button
+              key={d}
+              onClick={() => setLeaderboardDuration(d)}
+              className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors cursor-pointer ${
+                leaderboardDuration === d
+                  ? 'bg-mh-accent-blue/20 text-mh-accent-blue border-mh-accent-blue'
+                  : 'bg-mh-bg text-mh-text-dim border-mh-border hover:text-mh-text-main hover:border-mh-text-dim'
+              }`}
+            >
+              {d} days
+            </button>
+          ))}
+        </div>
+
         {/* Daily Leaderboard */}
         <div className="w-full max-w-[320px] mb-6">
-          <div className="text-mh-text-dim text-sm mb-3 text-center">TODAY&apos;S LEADERBOARD</div>
+          <div className="text-mh-text-dim text-sm mb-3 text-center">TODAY</div>
           <div className="border border-mh-border rounded-lg overflow-hidden">
             {dailyLeaderboard.length === 0 ? (
               <div className="px-3 py-4 text-sm text-mh-text-dim text-center">
@@ -265,7 +285,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
 
         {/* All-Time Leaderboard */}
         <div className="w-full max-w-[320px] mb-6">
-          <div className="text-mh-text-dim text-sm mb-3 text-center">ALL-TIME LEADERBOARD</div>
+          <div className="text-mh-text-dim text-sm mb-3 text-center">ALL-TIME</div>
           <div className="border border-mh-border rounded-lg overflow-hidden">
             {showAllTimeSkeleton ? (
               <LeaderboardSkeleton rows={5} />

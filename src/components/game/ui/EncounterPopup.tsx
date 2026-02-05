@@ -269,7 +269,7 @@ function RouletteSpinner({
 }
 
 export function EncounterPopup() {
-  const { pendingEncounter, cash, encounterState, confirmEncounterResult, getNetWorth, selectedTheme } = useGame()
+  const { pendingEncounter, cash, encounterState, confirmEncounterResult, getNetWorth, selectedTheme, trustFundBalance } = useGame()
   const isRetro2 = selectedTheme === 'retro2'
   const [rouletteStep, setRouletteStep] = useState<'choose' | 'bet' | 'color' | 'spinning'>('choose')
   const [rouletteBet, setRouletteBet] = useState<number>(0)
@@ -309,10 +309,10 @@ export function EncounterPopup() {
 
     switch (pendingEncounter.type) {
       case 'sec':
-        result = choiceIndex === 0 ? resolveSEC('pay', netWorth) : resolveSEC('fight', netWorth)
+        result = choiceIndex === 0 ? resolveSEC('pay', netWorth, trustFundBalance) : resolveSEC('fight', netWorth, trustFundBalance)
         break
       case 'divorce':
-        result = choiceIndex === 0 ? resolveDivorce('settle', netWorth) : resolveDivorce('contest', netWorth)
+        result = choiceIndex === 0 ? resolveDivorce('settle', netWorth, trustFundBalance) : resolveDivorce('contest', netWorth, trustFundBalance)
         break
       case 'shitcoin':
         result = choiceIndex === 0 ? resolveShitcoin('mint', cash) : resolveShitcoin('pass', cash)
@@ -325,7 +325,7 @@ export function EncounterPopup() {
         result = resolveRoulette('decline', null, 0)
         break
       case 'tax':
-        result = choiceIndex === 0 ? resolveTax('pay', netWorth) : resolveTax('offshore', netWorth)
+        result = choiceIndex === 0 ? resolveTax('pay', netWorth, trustFundBalance) : resolveTax('offshore', netWorth, trustFundBalance)
         break
       default:
         result = { headline: 'Encounter resolved' }
@@ -565,6 +565,13 @@ export function EncounterPopup() {
           <div className="px-4 py-2 bg-[#0d0808] border-b border-mh-border">
             <div className="text-mh-text-dim text-xs text-center">
               Your net worth: <span className="text-mh-text-bright">${netWorth.toLocaleString('en-US')}</span>
+              {trustFundBalance > 0 && (
+                <>
+                  <br />
+                  Exposed: <span className="text-mh-accent-blue">${Math.max(0, netWorth - trustFundBalance).toLocaleString('en-US')}</span>
+                  <span className="text-mh-text-dim"> (${trustFundBalance.toLocaleString('en-US')} sheltered)</span>
+                </>
+              )}
             </div>
           </div>
         )}
