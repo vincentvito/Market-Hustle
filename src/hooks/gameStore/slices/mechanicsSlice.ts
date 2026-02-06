@@ -1497,8 +1497,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // ===========================================================================
     // CREDIT CARD DEBT: Apply daily interest
     // ===========================================================================
-    // Apply 0.5% daily interest to credit card debt
-    const dailyInterest = creditCardDebt * 0.005
+    // Apply 1% daily interest to credit card debt
+    const dailyInterest = creditCardDebt * 0.01
     const newCreditCardDebt = creditCardDebt + dailyInterest
 
     // ===========================================================================
