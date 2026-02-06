@@ -2799,7 +2799,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     // Net worth = cash + portfolio + leveragedEquity + startups + lifestyle + luxury + trust - shortLiability - creditCardDebt
     // Note: shortPositions added to cash when opened, so we subtract liability
-    return Math.round((cash + portfolio + leveragedValue + startupValue + lifestyleValue + luxuryValue + trustFundBalance - shortLiability - creditCardDebt) * 100) / 100
+    return Math.round((cash + portfolio + leveragedValue + startupValue + lifestyleValue + luxuryValue + trustFundBalance - shortLiability - creditCardDebt) * 100) / 100 || 0
   },
 
   getTotalDebt: () => {

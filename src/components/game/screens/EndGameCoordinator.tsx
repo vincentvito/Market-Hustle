@@ -53,8 +53,8 @@ export function EndGameCoordinator() {
   // Compute derived values
   const outcome: 'win' | 'loss' = screen === 'win' ? 'win' : 'loss'
   const netWorth = getNetWorth()
-  const profitAmount = netWorth - INITIAL_CASH
-  const profitPercent = ((netWorth / INITIAL_CASH - 1) * 100)
+  const profitAmount = netWorth - INITIAL_CASH || 0
+  const profitPercent = ((netWorth / INITIAL_CASH - 1) * 100) || 0
   const daysSurvived = outcome === 'win' ? gameDuration : day
   const reason = outcome === 'win' ? 'WIN' : gameOverReason
   const message = getEndGameMessage(reason)

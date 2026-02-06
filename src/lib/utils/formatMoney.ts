@@ -8,6 +8,8 @@
  * Examples: $3.2B, $150.5M, $500K, $999
  */
 export function formatCompact(value: number): string {
+  // Normalize -0 to 0
+  if (Object.is(value, -0) || value === 0) return '$0'
   const absValue = Math.abs(value)
   const sign = value < 0 ? '-' : ''
 
@@ -28,7 +30,9 @@ export function formatCompact(value: number): string {
  * Returns both the formatted string and recommended text size class
  */
 export function formatNetWorth(value: number): { text: string; sizeClass: string } {
-  const text = `$${value.toLocaleString('en-US')}`
+  // Normalize -0 to 0
+  const v = Object.is(value, -0) ? 0 : value
+  const text = `$${v.toLocaleString('en-US')}`
   const digits = Math.abs(value).toString().length
 
   // Dynamic sizing based on digit count
