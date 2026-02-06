@@ -1619,7 +1619,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
       // Record game result before showing game over screen
       saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn, get().isUsingProTrial, get().username)
-      set({ screen: 'gameover', gameOverReason, isUsingProTrial: false, wifeSuspicion: Math.min(100, get().wifeSuspicion + 20) })
+      set({ screen: 'gameover', gameOverReason, isUsingProTrial: false })
     } else if (newDay > gameDuration) {
       // Player survived the full duration - WIN!
       saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial, get().username)
@@ -1726,18 +1726,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const costOfSold = avgCost * qty
     const profitLoss = revenue - costOfSold
     const profitLossPct = avgCost > 0 ? ((price - avgCost) / avgCost) * 100 : 0
-
-    // If selling at a loss, increase wife suspicion
-    if (profitLoss < 0) {
-      // Heat increase scales with absolute dollar loss (max 15% heat for major losses)
-      // Formula: heat = min(15, |loss| / 10000)
-      // Examples: $10k loss = 1% heat, $50k loss = 5% heat, $150k+ loss = 15% heat
-      const heatIncrease = Math.min(15, Math.abs(profitLoss) / 10000)
-
-      const { wifeSuspicion } = get()
-      const newWifeSuspicion = Math.min(100, wifeSuspicion + heatIncrease)
-      set({ wifeSuspicion: newWifeSuspicion })
-    }
 
     // Determine emoji based on P/L percentage
     let emoji: string
@@ -1876,21 +1864,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return
     }
 
-    // If covering short at a loss, increase wife suspicion AND cool FBI heat
+    // If covering short at a loss, cool FBI heat
     if (profitLoss < 0) {
-      const wifeHeatIncrease = Math.min(15, Math.abs(profitLoss) / 10000)
-
-      const { wifeSuspicion, fbiHeat } = get()
-      const newWifeSuspicion = Math.min(100, wifeSuspicion + wifeHeatIncrease)
-
+      const { fbiHeat } = get()
       // Cooling mechanism: Closing short at loss reduces FBI heat by 5%
       // (Looks like a bad trader, not suspicious)
       const newFBIHeat = Math.max(0, fbiHeat - 5)
-
-      set({
-        wifeSuspicion: newWifeSuspicion,
-        fbiHeat: newFBIHeat
-      })
+      set({ fbiHeat: newFBIHeat })
     }
 
     const asset = ASSETS.find(a => a.id === position.assetId)

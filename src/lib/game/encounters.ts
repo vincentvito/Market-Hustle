@@ -214,14 +214,6 @@ export function rollForEncounter(
     }
   }
 
-  // Independent exponential roll for divorce: prob = 0.5 * (wifeSuspicion/90)^3
-  if (available.includes('divorce') && wifeSuspicion > 0) {
-    const divorceProb = 0.5 * Math.pow(wifeSuspicion / 90, 3)
-    if (Math.random() < divorceProb) {
-      return 'divorce'
-    }
-  }
-
   // Fall through to random pool (shitcoin/kidney/roulette/tax only)
   const poolEncounters = available.filter(e => e !== 'sec' && e !== 'divorce')
   if (poolEncounters.length === 0) return null

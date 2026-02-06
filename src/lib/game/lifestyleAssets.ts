@@ -369,7 +369,7 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
     basePrice: 15_250_000,
     dailyCost: 250_000,
     description: 'G650ER. Skip the lines, close deals at 45,000 feet.',
-    passiveBenefit: '+20% VC/Angel deal frequency. -20% wife heat',
+    passiveBenefit: '+20% VC/Angel deal frequency',
   },
   {
     id: 'mega_yacht',
@@ -378,7 +378,7 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
     basePrice: 80_000_000,
     dailyCost: 800_000,
     description: '85m custom build. Helicopter pad. Submarine bay.',
-    passiveBenefit: '-15% PE purchase prices. -30% wife heat',
+    passiveBenefit: '-15% PE purchase prices',
   },
   {
     id: 'art_collection',
@@ -387,7 +387,7 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
     basePrice: 5_000_000,
     dailyCost: 50_000,
     description: 'Basquiat. Warhol. Banksy. Status symbol.',
-    passiveBenefit: 'Flex on wife, status symbol',
+    passiveBenefit: 'Status symbol, reduces tax event chance',
   },
   {
     id: 'la_lakers',

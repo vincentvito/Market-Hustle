@@ -51,7 +51,7 @@ export const STAFF_ACTIONS: StaffAction[] = [
     cost: 3000,
     type: 'one-time',
     description: 'Ex-cop. Knows where the bodies are buried.',
-    effect: 'Reveals divorce lawyer strategy',
+    effect: 'Reveals hidden market connections',
   },
   {
     id: 'buy_senator',
@@ -73,7 +73,6 @@ export const DARK_ACTIONS: DarkAction[] = [
     type: 'per-use',
     description: 'A "business dinner" with insider connections.',
     effect: 'Insider tip on legislation',
-    wifeHeatChange: 10,
     fbiHeatChange: 0,
   },
   {
@@ -93,7 +92,7 @@ export const DARK_ACTIONS: DarkAction[] = [
     cost: 100000,
     type: 'one-time',
     description: 'New identity. New life. Half the money.',
-    effect: 'Reset both heats to 0. Lose 50% net worth',
+    effect: 'Reset FBI heat to 0. Lose 50% net worth',
   },
   {
     id: 'leak_to_press',

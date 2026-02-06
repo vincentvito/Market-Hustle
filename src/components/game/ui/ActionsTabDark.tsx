@@ -24,20 +24,12 @@ function getFbiColor(heat: number): string {
   return '#00cc00'
 }
 
-function getWifeColor(heat: number): string {
-  if (heat >= 60) return '#ff3333'
-  if (heat >= 30) return '#ffaa00'
-  return '#00cc00'
-}
-
 export function ActionsTabDark() {
   const {
     cash,
     fbiHeat = 0,
-    wifeSuspicion = 0,
     selectedTheme,
     getNetWorth,
-    increaseWifeHeat,
     increaseFBIHeat,
     decreaseFBIHeat,
   } = useGame()
@@ -54,9 +46,8 @@ export function ActionsTabDark() {
     switch (action.id) {
       case 'visit_escort': {
         useGame.setState({ cash: cash - action.cost })
-        increaseWifeHeat(10)
         useGame.setState({
-          activeBuyMessage: `${action.emoji} Insider tip acquired. Wife suspicion rising...`,
+          activeBuyMessage: `${action.emoji} Insider tip acquired.`,
         })
         break
       }
@@ -75,7 +66,6 @@ export function ActionsTabDark() {
         useGame.setState({
           cash: cash - action.cost - penalty,
           fbiHeat: 0,
-          wifeSuspicion: 0,
         })
         setPurchased(prev => new Set(prev).add(action.id))
         useGame.setState({
@@ -126,20 +116,6 @@ export function ActionsTabDark() {
             </div>
           </div>
 
-          {/* Wife Heat */}
-          <div className="relative h-7 bg-[#1a1a1a] rounded-full overflow-hidden">
-            <div
-              className="absolute inset-0 transition-all duration-500"
-              style={{
-                width: `${wifeSuspicion}%`,
-                backgroundColor: getWifeColor(wifeSuspicion),
-              }}
-            />
-            <div className="absolute inset-0 flex items-center justify-between px-3">
-              <div className="text-xs font-bold text-white z-10">WIFE</div>
-              <div className="text-xs font-bold text-gray-400 z-10">{wifeSuspicion.toFixed(1)}%</div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -188,16 +164,6 @@ export function ActionsTabDark() {
 
                   {/* Heat change indicators (skip if effect text already covers it) */}
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
-                    {action.wifeHeatChange != null && action.wifeHeatChange > 0 && !action.effect.toLowerCase().includes('wife') && (
-                      <span className="text-[10px] font-bold text-red-400">
-                        +{action.wifeHeatChange}% WIFE
-                      </span>
-                    )}
-                    {action.wifeHeatChange != null && action.wifeHeatChange < 0 && !action.effect.toLowerCase().includes('wife') && (
-                      <span className="text-[10px] font-bold text-green-400">
-                        {action.wifeHeatChange}% WIFE
-                      </span>
-                    )}
                     {action.fbiHeatChange != null && action.fbiHeatChange > 0 && !action.effect.toLowerCase().includes('fbi') && (
                       <span className="text-[10px] font-bold text-red-400">
                         +{action.fbiHeatChange}% FBI

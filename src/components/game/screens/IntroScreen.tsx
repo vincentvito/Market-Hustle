@@ -44,7 +44,7 @@ const SLIDES: IntroSlide[] = [
   },
   {
     lines: [
-      { text: 'Your wife thinks you still go to work.', style: 'bright' },
+      { text: 'Nobody knows you got fired.', style: 'bright' },
       { text: "You sit in Starbucks applying to jobs that don't exist anymore.", style: 'dim' },
     ],
   },
