@@ -114,8 +114,8 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
       onClick={() => onSelect(asset.id)}
       className={`
         flex flex-col items-center justify-center border border-mh-border
-        cursor-pointer text-center relative overflow-hidden
-        ${isBloomberg ? 'p-2 min-h-[80px] md:p-4 md:min-h-[130px] rounded-none' : isModern3 ? 'p-3 min-h-[92px] md:p-5 md:min-h-[140px] rounded-lg' : 'p-4 min-h-[115px] md:p-5 md:min-h-[140px]'}
+        cursor-pointer text-center relative overflow-hidden aspect-[3/2]
+        ${isBloomberg ? 'p-2 md:p-4 md:aspect-auto md:min-h-[130px] rounded-none' : isModern3 ? 'p-2 md:p-5 md:aspect-auto md:min-h-[140px] rounded-lg' : 'p-2 md:p-5 md:aspect-auto md:min-h-[140px]'}
         ${isRetro2 ? 'rounded' : ''}
         ${getBackgroundClass()}
       `}
@@ -128,15 +128,15 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
           style={getModern3AccentStyle()}
         />
       )}
-      <div className={`font-bold text-mh-text-bright truncate w-full ${isModern3 ? 'text-xs md:text-sm' : 'text-sm md:text-base'}`}>
+      <div className={`font-bold text-mh-text-bright truncate w-full ${isModern3 ? 'text-[10px] md:text-sm' : 'text-[11px] md:text-base'}`}>
         {asset.name}
       </div>
       <div id={priceId} className="flex flex-col items-center">
-        <div className={`font-bold text-mh-text-main mt-1 ${isModern3 ? 'text-base md:text-xl' : 'text-lg md:text-2xl'}`}>
+        <div className={`font-bold text-mh-text-main mt-0.5 ${isModern3 ? 'text-sm md:text-xl' : 'text-sm md:text-2xl'}`}>
           ${formatPrice(price)}
         </div>
         <div
-          className={`font-bold ${isModern3 ? 'text-xs md:text-sm mt-0.5' : 'text-sm md:text-base mt-1'} ${
+          className={`font-bold ${isModern3 ? 'text-[10px] md:text-sm mt-0' : 'text-[11px] md:text-base mt-0.5'} ${
             change > 0
               ? 'text-mh-profit-green'
               : change < 0
@@ -150,14 +150,14 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
       </div>
       {/* Position indicators */}
       {(hasShort || hasLeveraged) && (
-        <div className="flex gap-1 mt-1.5">
+        <div className="flex gap-0.5 mt-0.5">
           {hasShort && (
-            <span className="text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/40">
+            <span className="text-[8px] md:text-xs font-bold px-1 py-0 rounded bg-red-500/20 text-red-400 border border-red-500/40">
               SHORT
             </span>
           )}
           {hasLeveraged && (
-            <span className="text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">
+            <span className="text-[8px] md:text-xs font-bold px-1 py-0 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">
               MARGIN
             </span>
           )}

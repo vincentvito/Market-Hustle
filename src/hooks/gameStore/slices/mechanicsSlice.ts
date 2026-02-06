@@ -160,7 +160,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   screen: 'title',
   day: 1,
   gameDuration: 30,
-  cash: 100000,
+  cash: 50000,
   creditCardDebt: 50000,
   trustFundBalance: 0,
   holdings: {},
@@ -168,7 +168,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   prevPrices: {},
   priceHistory: {},
   costBasis: {},
-  initialNetWorth: 50000,
+  initialNetWorth: 0,
 
   // Heat/Suspicion tracking
   wifeSuspicion: 0,
@@ -398,7 +398,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       screen: 'game',
       day: 1,
       gameDuration,
-      cash: 100000,
+      cash: 50000,
       creditCardDebt: 50000,
       trustFundBalance: 0,
       holdings: {},
@@ -409,7 +409,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       prevPrices,
       priceHistory,
       costBasis: {},
-      initialNetWorth: 50000,  // Net worth = 100k cash - 50k debt = 50k
+      initialNetWorth: 0,  // Net worth = 50k cash - 50k debt = 0
       // Reset heat/suspicion
       wifeSuspicion: 0,
       wifeSuspicionFrozenUntilDay: null,
@@ -1604,25 +1604,22 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const finalNetWorth = get().getNetWorth()
     // Note: gameDuration already destructured at top of function
 
-    if (finalNetWorth < 0) {
-      // Margin trading bankruptcy - determine specific reason
-      let gameOverReason = 'MARGIN_CALLED'
+    if (finalNetWorth <= 0) {
+      // Determine specific game over reason based on what caused the loss
+      let gameOverReason = 'BANKRUPT'  // Default: no margin positions
 
-      // Check for catastrophic failure (> $1M in debt)
       if (finalNetWorth < -1_000_000) {
         gameOverReason = 'ECONOMIC_CATASTROPHE'
-      } else if (shortPositions.length > leveragedPositions.length) {
-        // More shorts than leveraged = short squeeze likely cause
+      } else if (shortPositions.length > 0 && shortPositions.length > leveragedPositions.length) {
         gameOverReason = 'SHORT_SQUEEZED'
+      } else if (leveragedPositions.length > 0 || shortPositions.length > 0) {
+        // Only show MARGIN_CALLED if player actually has margin/short positions
+        gameOverReason = 'MARGIN_CALLED'
       }
 
       // Record game result before showing game over screen
       saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn, get().isUsingProTrial, get().username)
       set({ screen: 'gameover', gameOverReason, isUsingProTrial: false, wifeSuspicion: Math.min(100, get().wifeSuspicion + 20) })
-    } else if (finalNetWorth <= 0) {
-      // Regular bankruptcy (net worth exactly 0)
-      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, 'BANKRUPT', get().isLoggedIn, get().isUsingProTrial, get().username)
-      set({ screen: 'gameover', gameOverReason: 'BANKRUPT', isUsingProTrial: false })
     } else if (newDay > gameDuration) {
       // Player survived the full duration - WIN!
       saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial, get().username)

@@ -19,6 +19,8 @@ import { HowToPlayModal, InteractiveTutorial, isTutorialSeen } from '../ui/HowTo
 import { TradeFeedback } from '../ui/TradeFeedback'
 import { ActionsModal } from '../ui/ActionsModal'
 import { GiftsModal } from '../ui/GiftsModal'
+import { OffshoreTrustModal } from '../ui/OffshoreTrustModal'
+import { DebtRepaymentModal } from '../ui/DebtRepaymentModal'
 import { useState, useEffect } from 'react'
 
 export function GameScreen() {
@@ -38,9 +40,13 @@ export function GameScreen() {
     setShowActionsModal,
     showGiftsModal,
     setShowGiftsModal,
+    creditCardDebt,
+    fbiHeat = 0,
   } = useGame()
-  const [showHelp, setShowHelp] = useState(false) // Text-based help modal (? button)
-  const [showTutorial, setShowTutorial] = useState(false) // Interactive tutorial (first game)
+  const [showHelp, setShowHelp] = useState(false)
+  const [showTutorial, setShowTutorial] = useState(false)
+  const [showOffshoreTrust, setShowOffshoreTrust] = useState(false)
+  const [showCreditCards, setShowCreditCards] = useState(false)
 
   // Show interactive tutorial on first game only
   useEffect(() => {
@@ -64,6 +70,13 @@ export function GameScreen() {
     return sum + pos.qty * (prices[pos.assetId] || 0)
   }, 0)
   const totalExposure = leveragedExposure + shortExposure
+
+  // FBI heat color
+  const getFbiColor = () => {
+    if (fbiHeat >= 60) return '#ff3333'
+    if (fbiHeat >= 30) return '#ffaa00'
+    return '#00cc00'
+  }
 
   // Risk levels - only show if there's actual exposure
   const hasExposure = totalExposure > 0
@@ -134,14 +147,31 @@ export function GameScreen() {
         </div>
       )}
 
-      {/* Floating Help Button - positioned above bottom bar on mobile, inline on desktop */}
+      {/* Floating Help Button - bottom left above action bar */}
       <button
         onClick={() => setShowHelp(true)}
-        className="lg:hidden fixed bottom-[72px] right-3 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-mh-bg border-2 border-mh-border text-mh-text-dim hover:text-mh-text-bright cursor-pointer text-sm font-mono shadow-lg"
+        className="lg:hidden fixed bottom-[72px] left-3 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-mh-bg border-2 border-mh-border text-mh-text-dim hover:text-mh-text-bright cursor-pointer text-sm font-mono shadow-lg"
         title="How to Play"
       >
         ?
       </button>
+
+      {/* Floating FBI Heat Bar - bottom right above action bar */}
+      <div className="fixed bottom-[72px] right-3 z-50 flex flex-col items-center gap-1.5">
+        <div className="text-xs font-bold" style={{ color: getFbiColor() }}>
+          {fbiHeat.toFixed(0)}%
+        </div>
+        <div className="relative w-4 h-24 bg-[#1a1a1a] rounded-full overflow-hidden">
+          <div
+            className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-full"
+            style={{
+              height: `${fbiHeat}%`,
+              backgroundColor: getFbiColor(),
+            }}
+          />
+        </div>
+        <div className="text-2xl leading-none">🕵️</div>
+      </div>
 
       {/* Bottom Bar - Action Strip */}
       <div
@@ -157,31 +187,38 @@ export function GameScreen() {
           ?
         </button>
 
-        {/* Actions Button - Icon + Label with border */}
+        {/* Trust Button */}
+        <button
+          onClick={() => setShowOffshoreTrust(true)}
+          className="h-12 w-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded flex-shrink-0"
+          title="Offshore Trust"
+        >
+          <span className="text-lg leading-none">🏦</span>
+        </button>
+
+        {/* Credit Button */}
+        <button
+          onClick={() => setShowCreditCards(true)}
+          className="h-12 w-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded flex-shrink-0"
+          title="Credit Cards"
+        >
+          <span className="text-lg leading-none">💳</span>
+        </button>
+
+        {/* Actions Button */}
         <button
           onClick={() => setShowActionsModal(true)}
-          className="flex-1 h-12 flex flex-row items-center justify-center gap-1.5 text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded min-w-0"
+          className="h-12 w-12 flex items-center justify-center text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded flex-shrink-0"
           title="Actions"
         >
           <span className="text-lg leading-none">🎯</span>
-          <span className="text-xs font-mono">Actions</span>
         </button>
 
-        {/* Gifts Button - Icon + Label with border */}
-        <button
-          onClick={() => setShowGiftsModal(true)}
-          className="flex-1 h-12 flex flex-row items-center justify-center gap-1.5 text-mh-text-dim hover:text-mh-text-bright cursor-pointer bg-transparent border-2 border-mh-border rounded min-w-0"
-          title="Gifts"
-        >
-          <span className="text-lg leading-none">💝</span>
-          <span className="text-xs font-mono">Gifts</span>
-        </button>
-
-        {/* Next Day Button - Accent-filled button taking ~40% width */}
+        {/* Next Day Button */}
         <button
           id="tutorial-next-day"
           onClick={triggerNextDay}
-          className={`h-12 font-bold cursor-pointer rounded flex-shrink-0 ${
+          className={`h-12 font-bold cursor-pointer rounded flex-1 ${
             isModern3
               ? 'text-[#0a0e14] text-sm'
               : isBloomberg
@@ -193,32 +230,45 @@ export function GameScreen() {
               background: 'linear-gradient(135deg, #00d4aa 0%, #00a88a 100%)',
               boxShadow: '0 4px 20px rgba(0, 212, 170, 0.4)',
               letterSpacing: '1px',
-              width: '40%',
-              minWidth: '100px',
             } : isRetro2 ? {
               background: '#00ff88',
               color: '#000000',
               boxShadow: '0 0 15px rgba(0, 255, 136, 0.6), 0 0 30px rgba(0, 255, 136, 0.3)',
               fontWeight: 700,
-              width: '40%',
-              minWidth: '100px',
             } : !isBloomberg ? {
               background: 'transparent',
               color: '#c8d8e8',
               border: '2px solid #c8d8e8',
               boxShadow: '0 0 10px rgba(200, 216, 232, 0.4), 0 0 20px rgba(200, 216, 232, 0.2)',
               fontWeight: 700,
-              width: '40%',
-              minWidth: '100px',
             } : {
-              width: '40%',
-              minWidth: '100px',
             }
           }
         >
-          Next Day →
+          ADVANCE →
         </button>
       </div>
+
+      {/* Trust & Credit Modals */}
+      {showOffshoreTrust && (
+        <OffshoreTrustModal onClose={() => setShowOffshoreTrust(false)} />
+      )}
+      {showCreditCards && creditCardDebt > 0 && (
+        <DebtRepaymentModal onClose={() => setShowCreditCards(false)} />
+      )}
+      {showCreditCards && creditCardDebt <= 0 && (
+        <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center" onClick={() => setShowCreditCards(false)}>
+          <div className="bg-mh-bg border border-mh-border rounded-lg p-6 max-w-md" onClick={e => e.stopPropagation()}>
+            <p className="text-mh-text-bright text-lg mb-4">No outstanding debt! Your credit card is paid off.</p>
+            <button
+              onClick={() => setShowCreditCards(false)}
+              className="w-full py-2 bg-mh-accent-blue text-white font-bold rounded hover:brightness-110"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* TradeSheet - rendered at GameScreen level for proper absolute positioning */}
       <TradeSheet

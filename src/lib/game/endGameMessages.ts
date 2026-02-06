@@ -21,7 +21,7 @@ export const END_GAME_MESSAGES: Record<string, EndGameMessage> = {
   BANKRUPT: {
     title: 'BANKRUPT',
     emoji: '💀',
-    flavor: 'Your portfolio went to zero. Wall Street claims another victim.',
+    flavor: 'The debt collectors are calling. Your credit cards are maxed and you have nothing left. Game over.',
   },
   DECEASED: {
     title: 'DECEASED',

@@ -5,7 +5,7 @@ import { useGame } from '@/hooks/useGame'
 export function WinScreen() {
   const { startGame, getNetWorth, gameDuration } = useGame()
   const netWorth = getNetWorth()
-  const INITIAL_CASH = 100000
+  const INITIAL_CASH = 50000
   const profit = netWorth - INITIAL_CASH
   const profitPercent = ((netWorth / INITIAL_CASH - 1) * 100).toFixed(1)
 

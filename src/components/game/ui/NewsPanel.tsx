@@ -227,12 +227,12 @@ export function NewsPanel() {
   return (
     <div
       id="tutorial-news"
-      className={`p-4 md:p-5 relative ${
+      className={`p-2.5 md:p-5 relative ${
         isBloomberg
-          ? 'bg-black h-[160px] md:h-auto md:max-h-[320px] border-b md:border-b-0 border-[#333333] border-l-[3px] border-l-[#ff8c00]'
+          ? 'bg-black h-[clamp(110px,22dvh,300px)] md:h-auto md:max-h-[300px] border-b md:border-b-0 border-[#333333] border-l-[3px] border-l-[#ff8c00]'
           : isModern3
-            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[160px] md:h-auto md:max-h-[320px] mt-2 mx-2 md:mt-0 md:mx-0 md:rounded-none md:border-l-0'
-            : 'border-b md:border-b-0 border-mh-border border-l-[3px] border-l-mh-accent-blue bg-[#0a0d10] h-[160px] md:h-auto md:max-h-[320px]'
+            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[clamp(110px,22dvh,300px)] md:h-auto md:max-h-[300px] mt-1 mx-2 md:mt-0 md:mx-0 md:rounded-none md:border-l-0'
+            : 'border-b md:border-b-0 border-mh-border border-l-[3px] border-l-mh-accent-blue bg-[#0a0d10] h-[clamp(110px,22dvh,300px)] md:h-auto md:max-h-[300px]'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
     >

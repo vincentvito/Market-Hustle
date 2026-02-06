@@ -12,7 +12,7 @@ import { MemberEndView } from './endGameViews/MemberEndView'
 import { ProEndView } from './endGameViews/ProEndView'
 import type { EndGameProps, LossBreakdown } from './endGameViews/types'
 
-const INITIAL_CASH = 100000
+const INITIAL_CASH = 50000
 
 /**
  * EndGameCoordinator - Master dispatcher for end-game screens.

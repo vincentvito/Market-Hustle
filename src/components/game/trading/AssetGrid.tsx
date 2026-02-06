@@ -40,7 +40,7 @@ export function AssetGrid() {
 
   // Get tab button classes based on theme and active state
   const getTabClass = (isActive: boolean) => {
-    const base = 'flex-1 py-2.5 text-sm font-bold transition-colors'
+    const base = 'flex-1 py-2 md:py-2.5 text-[13px] md:text-sm font-bold transition-colors'
 
     if (isBloomberg) {
       return `${base} font-mono tracking-wider ${
@@ -95,8 +95,8 @@ export function AssetGrid() {
 
       {activeTab === 'stocks' ? (
         <>
-          {/* Mobile/Tablet: single row horizontal scroll */}
-          <div className={`flex-1 min-h-0 lg:hidden overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+          {/* Mobile/Tablet: 3 cols vertical scroll */}
+          <div className={`flex-1 min-h-0 lg:hidden overflow-auto grid grid-cols-3 auto-rows-min ${
             isBloomberg
               ? 'gap-px bg-[#333333]'
               : isRetro2
@@ -105,25 +105,15 @@ export function AssetGrid() {
                   ? 'gap-2 p-2 bg-mh-bg'
                   : 'gap-px bg-mh-border'
           }`}>
-            <div className={`grid grid-cols-12 grid-rows-1 h-full w-[400vw] [@media(min-height:850px)]:grid-cols-6 [@media(min-height:850px)]:grid-rows-2 [@media(min-height:850px)]:w-[200vw] ${
-              isBloomberg
-                ? 'gap-px'
-                : isRetro2
-                  ? 'gap-2'
-                  : isModern3
-                    ? 'gap-2'
-                    : 'gap-px'
-            }`}>
-              {ASSETS.map((asset, index) => (
-                <AssetCell
-                  key={asset.id}
-                  asset={asset}
-                  onSelect={selectAsset}
-                  id={index === 0 ? 'tutorial-price-movement' : undefined}
-                  priceId={index === 0 ? 'tutorial-price-section' : undefined}
-                />
-              ))}
-            </div>
+            {ASSETS.map((asset, index) => (
+              <AssetCell
+                key={asset.id}
+                asset={asset}
+                onSelect={selectAsset}
+                id={index === 0 ? 'tutorial-price-movement' : undefined}
+                priceId={index === 0 ? 'tutorial-price-section' : undefined}
+              />
+            ))}
           </div>
           {/* Desktop: 4 cols vertical scroll */}
           <div className={`hidden lg:flex flex-1 min-h-0 overflow-auto ${
