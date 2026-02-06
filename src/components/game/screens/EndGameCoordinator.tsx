@@ -12,7 +12,8 @@ import { MemberEndView } from './endGameViews/MemberEndView'
 import { ProEndView } from './endGameViews/ProEndView'
 import type { EndGameProps, LossBreakdown } from './endGameViews/types'
 
-const INITIAL_CASH = 50000
+const STARTING_NET_WORTH = 0
+const STARTING_CAPITAL = 50000
 
 /**
  * EndGameCoordinator - Master dispatcher for end-game screens.
@@ -53,8 +54,8 @@ export function EndGameCoordinator() {
   // Compute derived values
   const outcome: 'win' | 'loss' = screen === 'win' ? 'win' : 'loss'
   const netWorth = getNetWorth()
-  const profitAmount = netWorth - INITIAL_CASH || 0
-  const profitPercent = ((netWorth / INITIAL_CASH - 1) * 100) || 0
+  const profitAmount = (netWorth - STARTING_NET_WORTH) || 0
+  const profitPercent = ((netWorth - STARTING_NET_WORTH) / STARTING_CAPITAL * 100) || 0
   const daysSurvived = outcome === 'win' ? gameDuration : day
   const reason = outcome === 'win' ? 'WIN' : gameOverReason
   const message = getEndGameMessage(reason)

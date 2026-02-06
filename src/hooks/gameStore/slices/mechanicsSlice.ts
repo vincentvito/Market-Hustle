@@ -123,7 +123,7 @@ function saveGameResult(
     date: new Date().toISOString(),
     duration: gameDuration as 30 | 45 | 60,
     finalNetWorth,
-    profitPercent: ((finalNetWorth - 50000) / 50000) * 100,
+    profitPercent: (finalNetWorth / 50000) * 100,
     daysSurvived,
     outcome: isWin ? 'win' : mapGameOverReasonToOutcome(gameOverReason || 'BANKRUPT'),
   }
@@ -1497,8 +1497,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // ===========================================================================
     // CREDIT CARD DEBT: Apply daily interest
     // ===========================================================================
-    // Apply 3.5% daily interest to credit card debt
-    const dailyInterest = creditCardDebt * 0.035
+    // Apply 0.5% daily interest to credit card debt
+    const dailyInterest = creditCardDebt * 0.005
     const newCreditCardDebt = creditCardDebt + dailyInterest
 
     // ===========================================================================
@@ -1604,7 +1604,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const finalNetWorth = get().getNetWorth()
     // Note: gameDuration already destructured at top of function
 
-    if (finalNetWorth <= 0) {
+    if (finalNetWorth < -25000) {
       // Determine specific game over reason based on what caused the loss
       let gameOverReason = 'BANKRUPT'  // Default: no margin positions
 
