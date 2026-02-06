@@ -34,7 +34,7 @@ export function AssetGrid() {
   // Get tab wrapper classes based on theme
   const getTabWrapperClass = () => {
     if (isBloomberg) return 'flex border-b-2 border-[#ff8c00] bg-black'
-    if (isModern3) return 'flex p-1 bg-[#0f1419] rounded my-2 mx-2'
+    if (isModern3) return 'flex p-1 bg-[#0f1419] rounded mt-1 mb-0.5 mx-2'
     return 'flex border-b border-mh-border'
   }
 
@@ -54,14 +54,14 @@ export function AssetGrid() {
       return `${base} rounded ${
         isActive
           ? 'text-[#0a0e14] bg-[#00d4aa] font-semibold'
-          : 'text-mh-text-dim hover:text-mh-text-bright'
+          : 'text-[#4a5568] hover:text-mh-text-bright bg-transparent'
       }`
     }
 
     return `${base} font-mono ${
       isActive
         ? 'text-mh-accent-blue border-b-2 border-mh-accent-blue bg-[#0d1a24]'
-        : 'text-mh-text-dim hover:text-mh-text-bright bg-mh-bg'
+        : 'text-[#4a5568] hover:text-mh-text-bright bg-mh-bg'
     }`
   }
 
@@ -100,9 +100,9 @@ export function AssetGrid() {
             isBloomberg
               ? 'gap-px bg-[#333333]'
               : isRetro2
-                ? 'gap-2 p-2 bg-mh-bg'
+                ? 'gap-1.5 p-1.5 bg-mh-bg'
                 : isModern3
-                  ? 'gap-2 p-2 bg-mh-bg'
+                  ? 'gap-1.5 p-1.5 bg-mh-bg'
                   : 'gap-px bg-mh-border'
           }`}>
             {ASSETS.map((asset, index) => (
