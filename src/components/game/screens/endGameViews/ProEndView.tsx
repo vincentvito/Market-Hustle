@@ -24,6 +24,7 @@ export function ProEndView({
   daysSurvived,
   gameDuration,
   onPlayAgain,
+  leaderboardRank,
 }: EndGameProps) {
   const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
   const resultsRef = useRef<HTMLDivElement>(null)
@@ -62,6 +63,19 @@ export function ProEndView({
           ({profitAmount >= 0 ? '+' : ''}{formatCompact(profitAmount)})
         </div>
       </div>
+
+      {leaderboardRank && (
+        <div className="mt-4 text-sm">
+          <div className="text-mh-text-dim text-xs mb-1">YOUR RANKING</div>
+          <div>
+            <span className="text-mh-accent-blue font-bold">#{leaderboardRank.dailyRank.toLocaleString()}</span>
+            <span className="text-mh-text-dim"> of {leaderboardRank.dailyTotal.toLocaleString()} today</span>
+            <span className="text-mh-text-dim mx-2">|</span>
+            <span className="text-mh-accent-blue font-bold">#{leaderboardRank.allTimeRank.toLocaleString()}</span>
+            <span className="text-mh-text-dim"> of {leaderboardRank.allTimeTotal.toLocaleString()} all-time</span>
+          </div>
+        </div>
+      )}
 
       <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>

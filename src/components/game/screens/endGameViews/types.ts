@@ -21,6 +21,16 @@ export interface LossBreakdown {
 }
 
 /**
+ * Leaderboard rank data fetched after game ends
+ */
+export interface LeaderboardRank {
+  dailyRank: number
+  dailyTotal: number
+  allTimeRank: number
+  allTimeTotal: number
+}
+
+/**
  * Props passed from EndGameCoordinator to all tier-specific views.
  * Views should be pure presentation components that receive all data via props.
  */
@@ -51,4 +61,7 @@ export interface EndGameProps {
 
   // Pro-specific (optional, only populated for Pro users on loss)
   lossBreakdown?: LossBreakdown
+
+  // Leaderboard rank (optional, loaded progressively)
+  leaderboardRank?: LeaderboardRank
 }

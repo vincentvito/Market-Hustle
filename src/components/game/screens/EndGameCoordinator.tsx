@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { useUserDetails } from '@/hooks/useUserDetails'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
@@ -10,7 +10,7 @@ import { AuthModal } from '@/components/auth/AuthModal'
 import { GuestEndView } from './endGameViews/GuestEndView'
 import { MemberEndView } from './endGameViews/MemberEndView'
 import { ProEndView } from './endGameViews/ProEndView'
-import type { EndGameProps, LossBreakdown } from './endGameViews/types'
+import type { EndGameProps, LossBreakdown, LeaderboardRank } from './endGameViews/types'
 
 const STARTING_NET_WORTH = 0
 const STARTING_CAPITAL = 50000
@@ -39,6 +39,9 @@ export function EndGameCoordinator() {
   const getProTrialGamesRemaining = useGame((state) => state.getProTrialGamesRemaining)
   const { isPro } = useUserDetails()
 
+  // Username for leaderboard rank
+  const username = useGame((state) => state.username)
+
   // Pro-specific data for loss breakdown
   const leveragedPositions = useGame((state) => state.leveragedPositions)
   const shortPositions = useGame((state) => state.shortPositions)
@@ -47,9 +50,35 @@ export function EndGameCoordinator() {
 
   // Local state
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [leaderboardRank, setLeaderboardRank] = useState<LeaderboardRank | undefined>()
 
   // Hooks
   const { checkout, loading: checkoutLoading } = useStripeCheckout()
+
+  // Fetch leaderboard rank after a short delay (gives fire-and-forget save time to land)
+  useEffect(() => {
+    if (!username) return
+
+    const timer = setTimeout(async () => {
+      try {
+        const score = getNetWorth()
+        const params = new URLSearchParams({
+          username,
+          score: String(Math.round(score)),
+          duration: String(gameDuration),
+        })
+        const res = await fetch(`/api/leaderboard/rank?${params}`)
+        if (res.ok) {
+          const data = await res.json()
+          setLeaderboardRank(data)
+        }
+      } catch {
+        // Silent fail — rank section simply won't render
+      }
+    }, 600)
+
+    return () => clearTimeout(timer)
+  }, [username, gameDuration, getNetWorth])
 
   // Compute derived values
   const outcome: 'win' | 'loss' = screen === 'win' ? 'win' : 'loss'
@@ -159,6 +188,7 @@ export function EndGameCoordinator() {
     onOpenAuth: handleOpenAuth,
     lossBreakdown,
     proTrialGamesRemaining: getProTrialGamesRemaining(),
+    leaderboardRank,
   }
 
   // AUTH DISABLED: Always show Pro end view for all users
