@@ -1,7 +1,8 @@
 'use client'
 
 import { useGame } from '@/hooks/useGame'
-import { getPEAbilities } from '@/lib/game/lifestyleAssets'
+import { getPEAbilities, getLifestyleAsset } from '@/lib/game/lifestyleAssets'
+import { PresidentialToolkit } from './PresidentialToolkit'
 import type { PEAbility } from '@/lib/game/types'
 
 function formatPrice(value: number): string {
@@ -17,7 +18,27 @@ function formatPrice(value: number): string {
   return `$${value.toFixed(0)}`
 }
 
-export function ActionsTabPEOps() {
+function formatBackfireRisk(ability: PEAbility): string {
+  const risks: string[] = []
+  const effects = ability.backfireEffects
+
+  if (effects.fine) {
+    risks.push(`${formatPrice(effects.fine)} fine`)
+  }
+  if (effects.losePE) {
+    risks.push('Lose PE asset')
+  }
+  if (effects.triggerEncounter) {
+    risks.push('SEC investigation')
+  }
+  if (effects.gameOverRisk) {
+    risks.push(`${Math.round(effects.gameOverRisk * 100)}% game over`)
+  }
+
+  return risks.length > 0 ? risks.join(', ') : 'Price crash'
+}
+
+export function ActionsTabLeverage() {
   const {
     ownedLifestyle,
     cash,
@@ -25,6 +46,7 @@ export function ActionsTabPEOps() {
     canExecutePEAbility,
     getPEAbilityStatus,
     selectedTheme,
+    isPresident,
   } = useGame()
   const isModern3 = selectedTheme === 'modern3'
 
@@ -39,10 +61,10 @@ export function ActionsTabPEOps() {
         <div className="text-center">
           <div className="text-4xl mb-3">💼</div>
           <div className="text-sm font-bold text-mh-text-bright mb-1">
-            No PE Companies Owned
+            No leverage operations available.
           </div>
           <div className="text-xs text-mh-text-dim">
-            Buy a Private Equity company in the LIFESTYLE tab to unlock special operations
+            Invest in Private Equity to unlock.
           </div>
         </div>
       </div>
@@ -53,8 +75,14 @@ export function ActionsTabPEOps() {
     <div className={`flex-1 overflow-auto ${isModern3 ? 'p-2 space-y-3' : 'p-3 space-y-3'}`}>
       {ownedPE.map(peItem => {
         const abilities = getPEAbilities(peItem.assetId)
+        const peAsset = getLifestyleAsset(peItem.assetId)
 
         if (abilities.length === 0) return null
+
+        // Special case: If player is president and owns Apex Media, show Presidential Toolkit
+        if (isPresident && peItem.assetId === 'pe_apex_media') {
+          return <PresidentialToolkit key={peItem.assetId} />
+        }
 
         return (
           <div
@@ -67,7 +95,7 @@ export function ActionsTabPEOps() {
           >
             {/* PE Company Name */}
             <div className="text-xs font-bold text-mh-text-dim mb-2 uppercase tracking-wide">
-              {peItem.assetId.replace('pe_', '').replace(/_/g, ' ')}
+              {peAsset?.emoji} {peAsset?.name || peItem.assetId.replace('pe_', '').replace(/_/g, ' ')}
             </div>
 
             {/* Abilities */}
@@ -101,10 +129,10 @@ export function ActionsTabPEOps() {
                               : 'text-mh-profit-green'
                         }`}>
                           {status.didBackfire === null
-                            ? `⏳ Pending Day ${status.usedOnDay}`
+                            ? `Pending Day ${status.usedOnDay}`
                             : status.didBackfire
-                              ? `✗ Backfired Day ${status.usedOnDay}`
-                              : `✓ Executed Day ${status.usedOnDay}`
+                              ? `Backfired Day ${status.usedOnDay}`
+                              : `Executed Day ${status.usedOnDay}`
                           }
                         </span>
                       )}
@@ -115,21 +143,21 @@ export function ActionsTabPEOps() {
                       {ability.flavor}
                     </div>
 
-                    {/* Cost and execute button (only if not used) */}
+                    {/* Cost, risk, and execute button (only if not used) */}
                     {!status.isUsed && (
-                      <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-2 text-[10px]">
+                      <div className="mt-2">
+                        <div className="flex items-center gap-3 text-[10px] mb-2">
                           <span className="font-bold text-amber-400">
                             Cost: {formatPrice(ability.cost)}
                           </span>
                           <span className="text-mh-loss-red">
-                            ⚠️ {Math.round(ability.backfireChance * 100)}% backfire
+                            Risk: {formatBackfireRisk(ability)}
                           </span>
                         </div>
                         <button
                           onClick={() => executePEAbility(ability.id, peItem.assetId)}
                           disabled={!canExecute}
-                          className={`px-3 py-1 rounded text-[10px] font-bold ${
+                          className={`w-full px-3 py-1.5 rounded text-[10px] font-bold ${
                             canExecute
                               ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
                               : 'bg-[#111920] text-mh-border cursor-not-allowed'

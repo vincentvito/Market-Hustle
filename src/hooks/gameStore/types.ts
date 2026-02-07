@@ -26,6 +26,9 @@ import type {
   LuxuryAssetId,
   PEAbilityId,
   UsedPEAbility,
+  PresidentialAbilityId,
+  UsedPresidentialAbility,
+  PendingStoryArc,
 } from '@/lib/game/types'
 import type { EncounterResult } from '@/lib/game/encounters'
 import type { UserTier } from '@/lib/game/userState'
@@ -104,7 +107,7 @@ export interface MechanicsSlice extends GameState {
 
   // Action bar modal states
   showActionsModal: boolean
-  activeActionsTab: 'staff' | 'dark' | 'buy' | 'peops'
+  activeActionsTab: 'leverage' | 'buy'
   showGiftsModal: boolean
 
   // Game control actions
@@ -142,7 +145,7 @@ export interface MechanicsSlice extends GameState {
   setSelectedNews: (news: NewsItem | null) => void
   setShowSettings: (show: boolean) => void
   setShowActionsModal: (show: boolean) => void
-  setActiveActionsTab: (tab: 'staff' | 'dark' | 'buy' | 'peops') => void
+  setActiveActionsTab: (tab: 'leverage' | 'buy') => void
   setShowGiftsModal: (show: boolean) => void
 
   // Gift actions
@@ -168,7 +171,7 @@ export interface MechanicsSlice extends GameState {
 
   // Liquidation actions
   pendingLiquidation: PendingLiquidation | null
-  confirmLiquidationSelection: (selectedAssets: Array<{ type: 'lifestyle' | 'trading'; id: string; currentValue: number; quantity: number }>) => void
+  confirmLiquidationSelection: (selectedAssets: Array<{ type: 'luxury' | 'lifestyle' | 'leveraged' | 'short' | 'trading'; id: string; currentValue: number; quantity: number }>) => void
 
   // PE Ability actions (new one-time villain actions)
   executePEAbility: (abilityId: PEAbilityId, peAssetId: string) => void
@@ -177,6 +180,15 @@ export interface MechanicsSlice extends GameState {
     isUsed: boolean
     usedOnDay: number | null
     didBackfire: boolean | null
+  }
+
+  // Presidential actions (endgame after winning election)
+  confirmElectionResult: () => void
+  executePresidentialAbility: (abilityId: PresidentialAbilityId) => void
+  canExecutePresidentialAbility: (abilityId: PresidentialAbilityId) => boolean
+  getPresidentialAbilityStatus: (abilityId: PresidentialAbilityId) => {
+    isUsed: boolean
+    usedOnDay: number | null
   }
 
   // Luxury asset actions

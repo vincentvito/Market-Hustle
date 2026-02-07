@@ -11,6 +11,7 @@ export type PEAbilityId =
   | 'chile_acquisition'      // Blackstone
   | 'project_chimera'        // Lazarus Genomics
   | 'operation_divide'       // Apex Media
+  | 'run_for_president'      // Apex Media - endgame
 
 export interface PEAbility {
   id: PEAbilityId
@@ -44,8 +45,13 @@ export interface UsedPEAbility {
   didBackfire: boolean | null  // null = outcome pending (revealed next day when effects apply)
 }
 
+export interface UsedPresidentialAbility {
+  abilityId: PresidentialAbilityId
+  usedOnDay: number
+}
+
 export interface PendingAbilityEffects {
-  abilityId: PEAbilityId
+  abilityId: PEAbilityId | PresidentialAbilityId  // Can be either PE or Presidential ability
   effects: Record<string, number>
   isBackfire: boolean
   peAssetId: string  // The PE company that triggered this
@@ -63,6 +69,76 @@ export interface PendingPhase2Effects {
   effects: Record<string, number>
   headline: string
   triggerOnDay: number  // The day these effects should fire
+}
+
+// 3-Part Story Arc for PE Abilities
+// Day N: Part 1 (story begins) → Day N+1: Part 2 (tension builds) → Day N+2: Part 3 (resolution)
+export interface PendingStoryArc {
+  abilityId: PEAbilityId
+  peAssetId: string
+  storyOutcome: 'favorable' | 'unfavorable'  // Pre-rolled on execution, hidden until Part 3
+  currentPhase: 1 | 2 | 3
+  startDay: number
+  part1Headline: string
+  part2Headline: string
+  part3Headline: string  // Uses successPart3 or backfirePart3 based on outcome
+  effects: Record<string, number>
+  fbiHeatIncrease: number  // Applied on Day N+2 when outcome revealed (+5 success, +15 backfire)
+  additionalConsequences?: {
+    losePE?: boolean
+    fine?: number
+    triggerEncounter?: EncounterType
+    gameOverRisk?: number
+  }
+}
+
+// Headline structure for 3-part PE ability stories
+export interface AbilityHeadlines {
+  part1: string         // Day N: Story begins
+  part2: string         // Day N+1: Tension builds
+  successPart3: string  // Day N+2: Favorable resolution
+  backfirePart3: string // Day N+2: Unfavorable resolution
+}
+
+// =============================================================================
+// PRESIDENTIAL ABILITY TYPES (Endgame powers after winning election)
+// =============================================================================
+
+export type PresidentialAbilityId =
+  | 'declare_war_china'
+  | 'invade_venezuela'
+  | 'tariffs_asia'
+  | 'nationalize_big_tech'
+  | 'ban_social_media'
+  | 'print_money'
+  | 'pardon_yourself'
+
+export interface PresidentialAbility {
+  id: PresidentialAbilityId
+  name: string
+  emoji: string
+  flavor: string
+  cost: number
+  effects: Record<string, number>
+  cashGain?: number           // For nationalize_big_tech (+$2B)
+  fbiReset?: boolean          // For pardon_yourself
+  permanentImmunity?: boolean // For pardon_yourself
+  apexBoost?: number          // For ban_social_media (Apex Media price boost)
+  delayedEffect?: {           // For print_money (inflation in 3 days)
+    daysDelay: number
+    effects: Record<string, number>
+    headline: string
+  }
+}
+
+export interface PendingElection {
+  result: 'win' | 'loss'  // Pre-computed at trigger time
+}
+
+export interface PendingInflationEffect {
+  triggerOnDay: number
+  effects: Record<string, number>
+  headline: string
 }
 
 // =============================================================================
@@ -84,7 +160,14 @@ export interface OperationState {
 // LUXURY ASSET TYPES
 // =============================================================================
 
-export type LuxuryAssetId = 'private_jet' | 'mega_yacht' | 'art_collection' | 'la_lakers'
+export type LuxuryAssetId =
+  | 'private_jet'
+  | 'mega_yacht'
+  | 'art_collection'
+  | 'ferrari_f1_team'
+  | 'la_lakers'
+  | 'star_wars_franchise'
+  | 'greenland'
 
 export interface LuxuryAsset {
   id: LuxuryAssetId
@@ -213,7 +296,7 @@ export interface GameState {
   day: number
   gameDuration: GameDuration  // Total days in this game (30, 45, or 60)
   cash: number
-  creditCardDebt: number  // Starting at 50000, accumulates 3.5% interest daily
+  creditCardDebt: number  // Starting at 50000, accumulates 1.75% interest daily
   trustFundBalance: number  // Offshore trust: sheltered from SEC/divorce/tax penalties
   holdings: Record<string, number>
   // Margin trading positions (Pro tier)
@@ -291,8 +374,15 @@ export interface GameState {
   ownedLuxury: LuxuryAssetId[]               // Owned luxury assets (no price fluctuation)
   // PE Abilities state (new one-time villain actions)
   usedPEAbilities: UsedPEAbility[]           // Abilities already used this game
-  pendingAbilityEffects: PendingAbilityEffects | null  // Effects to apply next day (Day N+1)
+  pendingAbilityEffects: PendingAbilityEffects | null  // Effects to apply next day (Presidential abilities)
+  pendingStoryArc: PendingStoryArc | null    // 3-part story arc for PE abilities
   pendingPhase2Effects: PendingPhase2Effects | null    // Two-phase effects (Day N+2, e.g. Chimera)
+  // Presidential state (endgame after winning election)
+  isPresident: boolean                       // True after winning election
+  usedPresidentialAbilities: UsedPresidentialAbility[]  // Track one-time presidential actions
+  hasPardoned: boolean                       // Permanent FBI immunity after pardon
+  pendingElection: PendingElection | null    // Election in progress (triggers animation)
+  pendingInflationEffect: PendingInflationEffect | null  // 3-day delayed effect from Print Money
   // Game Director state (narrative pacing system)
   directorState: DirectorState               // Director's tracking state
   directorConfig: DirectorConfig             // Director configuration
@@ -322,6 +412,8 @@ export interface PendingEncounter {
   // For roulette, need to track selected color and bet amount
   rouletteColor?: RouletteColor
   rouletteBet?: number
+  // If true, don't call nextDay() after resolving (encounter was triggered mid-day from story arc)
+  skipNextDayOnResolve?: boolean
 }
 
 // Pending liquidation (forced asset sale for SEC/Divorce/Tax)

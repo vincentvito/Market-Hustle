@@ -2,18 +2,14 @@
 
 import { useGame } from '@/hooks/useGame'
 import { Portal } from '@/components/ui/Portal'
-import { ActionsTabStaff } from './ActionsTabStaff'
-import { ActionsTabDark } from './ActionsTabDark'
+import { ActionsTabLeverage } from './ActionsTabLeverage'
 import { ActionsTabBuy } from './ActionsTabBuy'
-import { ActionsTabPEOps } from './ActionsTabPEOps'
 
-type TabId = 'staff' | 'dark' | 'buy' | 'peops'
+type TabId = 'leverage' | 'buy'
 
 const TABS: { id: TabId; label: string; emoji: string }[] = [
-  { id: 'staff', label: 'STAFF', emoji: '👔' },
-  { id: 'dark', label: 'DARK', emoji: '🌑' },
+  { id: 'leverage', label: 'LEVERAGE', emoji: '⚡' },
   { id: 'buy', label: 'BUY', emoji: '✨' },
-  { id: 'peops', label: 'PE OPS', emoji: '⚡' },
 ]
 
 export function ActionsModal() {
@@ -47,7 +43,7 @@ export function ActionsModal() {
             <div>
               <div className="text-lg font-bold text-mh-text-bright">Actions</div>
               <div className="text-xs text-mh-text-dim mt-0.5">
-                Execute special operations and purchases
+                Execute leverage operations and buy expensive toys
               </div>
             </div>
             <button
@@ -86,10 +82,8 @@ export function ActionsModal() {
 
           {/* Tab Content */}
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-            {activeActionsTab === 'staff' && <ActionsTabStaff />}
-            {activeActionsTab === 'dark' && <ActionsTabDark />}
+            {activeActionsTab === 'leverage' && <ActionsTabLeverage />}
             {activeActionsTab === 'buy' && <ActionsTabBuy />}
-            {activeActionsTab === 'peops' && <ActionsTabPEOps />}
           </div>
         </div>
       </div>

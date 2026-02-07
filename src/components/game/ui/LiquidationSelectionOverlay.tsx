@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { useGame } from '@/hooks/useGame'
-import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
+import { LIFESTYLE_ASSETS, LUXURY_ASSETS } from '@/lib/game/lifestyleAssets'
 import { ASSETS } from '@/lib/game/assets'
 
 interface SelectableAsset {
-  type: 'lifestyle' | 'trading'
+  type: 'luxury' | 'lifestyle' | 'leveraged' | 'short' | 'trading'
   id: string
   name: string
   emoji: string
@@ -23,10 +23,14 @@ function formatMoney(amount: number): string {
 export function LiquidationSelectionOverlay() {
   const {
     pendingLiquidation,
+    cash,
     holdings,
     prices,
     ownedLifestyle,
     lifestylePrices,
+    ownedLuxury,
+    leveragedPositions,
+    shortPositions,
     selectedTheme,
     confirmLiquidationSelection,
   } = useGame()
@@ -40,6 +44,18 @@ export function LiquidationSelectionOverlay() {
 
   // Build list of all sellable assets
   const selectableAssets: SelectableAsset[] = [
+    // Luxury assets (fixed price)
+    ...ownedLuxury.map(luxuryId => {
+      const asset = LUXURY_ASSETS.find(a => a.id === luxuryId)
+      return {
+        type: 'luxury' as const,
+        id: luxuryId,
+        name: asset?.name || 'Unknown',
+        emoji: asset?.emoji || '💎',
+        currentValue: asset?.basePrice || 0,
+        quantity: 1,
+      }
+    }),
     // Lifestyle assets
     ...ownedLifestyle.map(owned => {
       const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
@@ -52,6 +68,39 @@ export function LiquidationSelectionOverlay() {
         quantity: 1,
       }
     }),
+    // Leveraged positions (equity = value - debt)
+    ...leveragedPositions
+      .map(pos => {
+        const currentPrice = prices[pos.assetId] || 0
+        const equity = Math.max(0, (currentPrice * pos.qty) - pos.debtAmount)
+        const asset = ASSETS.find(a => a.id === pos.assetId)
+        return {
+          type: 'leveraged' as const,
+          id: pos.id,
+          name: `${asset?.name || pos.assetId} (Leveraged)`,
+          emoji: '📊',
+          currentValue: equity,
+          quantity: pos.qty,
+        }
+      })
+      .filter(a => a.currentValue > 0),
+    // Short positions (profit = cashReceived - liability)
+    ...shortPositions
+      .map(pos => {
+        const currentPrice = prices[pos.assetId] || 0
+        const liability = currentPrice * pos.qty
+        const profit = Math.max(0, pos.cashReceived - liability)
+        const asset = ASSETS.find(a => a.id === pos.assetId)
+        return {
+          type: 'short' as const,
+          id: pos.id,
+          name: `${asset?.name || pos.assetId} (Short)`,
+          emoji: '📉',
+          currentValue: profit,
+          quantity: pos.qty,
+        }
+      })
+      .filter(a => a.currentValue > 0),
     // Trading holdings
     ...Object.entries(holdings)
       .filter(([, qty]) => qty > 0)
@@ -69,11 +118,12 @@ export function LiquidationSelectionOverlay() {
       }),
   ]
 
-  // Calculate totals
+  // Calculate totals - cash is used first, so we need to cover the shortfall
+  const shortfall = Math.max(0, amountNeeded - cash)
   const selectedValue = selectedAssets.reduce((sum, a) => sum + a.currentValue, 0)
-  const remaining = Math.max(0, amountNeeded - selectedValue)
+  const remaining = Math.max(0, shortfall - selectedValue)
   const canConfirm = remaining <= 0
-  const progress = Math.min((selectedValue / amountNeeded) * 100, 100)
+  const progress = shortfall > 0 ? Math.min((selectedValue / shortfall) * 100, 100) : 100
 
   // Toggle asset selection
   const toggleAsset = (asset: SelectableAsset) => {
@@ -125,7 +175,8 @@ export function LiquidationSelectionOverlay() {
                 ASSET SEIZURE
               </div>
               <div className="text-mh-text-dim text-xs">
-                {reasonText}: {formatMoney(amountNeeded)} required
+                {reasonText}: {formatMoney(shortfall)} shortfall
+                {cash > 0 && ` (${formatMoney(cash)} cash will be used)`}
               </div>
             </div>
           </div>
@@ -136,7 +187,7 @@ export function LiquidationSelectionOverlay() {
           <div className="flex justify-between text-xs mb-2">
             <span className="text-mh-text-dim">Selected value</span>
             <span className={canConfirm ? 'text-mh-profit-green font-bold' : 'text-mh-text-main'}>
-              {formatMoney(selectedValue)} / {formatMoney(amountNeeded)}
+              {formatMoney(selectedValue)} / {formatMoney(shortfall)}
             </span>
           </div>
           <div className="w-full h-2 bg-[#1a2a3a] rounded overflow-hidden">
@@ -204,16 +255,22 @@ export function LiquidationSelectionOverlay() {
                           {asset.name}
                         </span>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                          asset.type === 'lifestyle'
+                          asset.type === 'luxury'
+                            ? 'bg-amber-500/20 text-amber-400'
+                            : asset.type === 'lifestyle'
                             ? 'bg-purple-500/20 text-purple-400'
+                            : asset.type === 'leveraged'
+                            ? 'bg-orange-500/20 text-orange-400'
+                            : asset.type === 'short'
+                            ? 'bg-red-500/20 text-red-400'
                             : 'bg-blue-500/20 text-blue-400'
                         }`}>
-                          {asset.type === 'lifestyle' ? 'ASSET' : 'STOCK'}
+                          {asset.type === 'luxury' ? 'LUXURY' : asset.type === 'lifestyle' ? 'ASSET' : asset.type === 'leveraged' ? 'MARGIN' : asset.type === 'short' ? 'SHORT' : 'STOCK'}
                         </span>
                       </div>
-                      {asset.type === 'trading' && (
+                      {(asset.type === 'trading' || asset.type === 'leveraged' || asset.type === 'short') && (
                         <div className="text-xs text-mh-text-dim mt-0.5">
-                          {asset.quantity} shares
+                          {asset.quantity} shares{asset.type !== 'trading' && ' (equity)'}
                         </div>
                       )}
                     </div>

@@ -46,7 +46,7 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
 
     // Update preview section
     const remainingDebt = creditCardDebtRef.current - amount
-    const newInterest = remainingDebt * 0.035
+    const newInterest = remainingDebt * 0.0175
 
     if (remainingDebtRef.current) {
       remainingDebtRef.current.textContent = formatMoney(remainingDebt)
@@ -132,7 +132,7 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-xl font-bold text-mh-text-bright mb-1">💳 Credit Card Debt</h2>
-            <div className="text-mh-text-dim text-sm">3.5% daily interest</div>
+            <div className="text-mh-text-dim text-sm">1.75% daily interest</div>
           </div>
           <button
             onClick={onClose}
@@ -149,7 +149,7 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
             {formatMoney(creditCardDebt)}
           </div>
           <div className="text-xs text-mh-text-dim mt-2">
-            Daily interest: <span className="text-mh-loss-red font-bold">{formatMoney(creditCardDebt * 0.035)}</span>
+            Daily interest: <span className="text-mh-loss-red font-bold">{formatMoney(creditCardDebt * 0.0175)}</span>
           </div>
         </div>
 
@@ -224,7 +224,7 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
           <div className="flex justify-between items-center">
             <span className="text-sm text-mh-text-dim">New Daily Interest:</span>
             <span ref={newInterestRef} className="text-sm font-bold text-mh-loss-red">
-              {formatMoney(creditCardDebt * 0.035)}
+              {formatMoney(creditCardDebt * 0.0175)}
             </span>
           </div>
         </div>

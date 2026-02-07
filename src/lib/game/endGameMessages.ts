@@ -9,6 +9,20 @@ export interface EndGameMessage {
   flavor: string
 }
 
+/**
+ * Position data for dynamic game over messages
+ */
+export interface PositionLossInfo {
+  name: string
+  pl: number
+  leverage?: number
+}
+
+export interface MarginCallContext {
+  worstLeveraged?: PositionLossInfo
+  worstShort?: PositionLossInfo
+}
+
 export const END_GAME_MESSAGES: Record<string, EndGameMessage> = {
   // Win outcome
   WIN: {
@@ -56,10 +70,55 @@ export const END_GAME_MESSAGES: Record<string, EndGameMessage> = {
 }
 
 /**
+ * Generate dynamic flavor text for margin call game over
+ */
+function generateMarginCallFlavor(context?: MarginCallContext): string {
+  const worst = context?.worstLeveraged
+  if (worst && worst.leverage) {
+    const loss = Math.abs(worst.pl).toLocaleString('en-US')
+    return `Your broker is on the line. Your ${worst.leverage}x leveraged trade in ${worst.name} resulted in a $${loss} loss. They want their money back. Unfortunately, you don't have it.`
+  }
+  return "Your broker is on the line. They want their money back. Unfortunately, you don't have it."
+}
+
+/**
+ * Generate dynamic flavor text for short squeeze game over
+ */
+function generateShortSqueezeFlavor(context?: MarginCallContext): string {
+  const worst = context?.worstShort
+  if (worst) {
+    const loss = Math.abs(worst.pl).toLocaleString('en-US')
+    return `${worst.name} squeezed to the moon. Your short position lost $${loss}. The market moved against you. Hard.`
+  }
+  return 'The market moved against you. Hard. Your short positions have consumed everything you own.'
+}
+
+/**
  * Get the message for a given outcome.
  * For wins, pass 'WIN'. For losses, pass the gameOverReason.
+ * Optional context provides position data for dynamic messages.
  */
-export function getEndGameMessage(reasonOrWin: string): EndGameMessage {
+export function getEndGameMessage(
+  reasonOrWin: string,
+  context?: MarginCallContext
+): EndGameMessage {
+  // Generate dynamic messages for margin-related game overs
+  if (reasonOrWin === 'MARGIN_CALLED') {
+    return {
+      title: 'MARGIN CALLED',
+      emoji: '📞',
+      flavor: generateMarginCallFlavor(context),
+    }
+  }
+
+  if (reasonOrWin === 'SHORT_SQUEEZED') {
+    return {
+      title: 'SHORT SQUEEZED',
+      emoji: '🩳',
+      flavor: generateShortSqueezeFlavor(context),
+    }
+  }
+
   return (
     END_GAME_MESSAGES[reasonOrWin] || {
       title: reasonOrWin || 'GAME OVER',
