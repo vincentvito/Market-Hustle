@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { db } from '@/db'
 import { authUsers, profiles, gameResults } from '@/db/schema'
 import { eq, and, sql } from 'drizzle-orm'
