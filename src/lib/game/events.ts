@@ -240,18 +240,12 @@ export type LifestyleEffects = {
   la_mansion?: number
   monaco_villa?: number
   dubai_palace?: number
-  // Commercial properties
-  strip_mall?: number
-  warehouse_complex?: number
-  medical_plaza?: number
-  office_tower?: number
-  shopping_center?: number
-  industrial_park?: number
+  private_island?: number
+  rockefeller_center?: number
   // All properties shorthand
   all_properties?: number
   us_properties?: number
   foreign_properties?: number
-  commercial_properties?: number
 
   // Private Equity shorthands (simplified 6-asset system)
   all_private_equity?: number
@@ -300,7 +294,6 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     la_mansion: -0.35, // Nearby, sympathy fears
     miami_condo: -0.15, // General fear
     nyc_apartment: -0.12,
-    office_tower: -0.18, // Commercial real estate concerns
     // Foreign properties benefit from flight capital
     monaco_villa: 0.08,
     dubai_palace: 0.10,
@@ -349,15 +342,12 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     pe_apex_media: 0.15, // AI content generation
   },
   "ROOM-TEMP SUPERCONDUCTOR CONFIRMED - ENERGY REVOLUTION BEGINS": {
-    commercial_properties: 0.10, // Cheaper operations
+    rockefeller_center: 0.10, // Cheaper operations
   },
 
   // === ENERGY EVENTS ===
-  "OIL TANKER EXPLODES IN STRAIT OF HORMUZ": {
-    warehouse_complex: -0.08, // Supply chain disruption
-  },
   "NUCLEAR FUSION BREAKTHROUGH ACHIEVED": {
-    commercial_properties: 0.12, // Cheaper energy future
+    rockefeller_center: 0.12, // Cheaper energy future
   },
 
   // === INFLATION / CURRENCY ===
@@ -402,7 +392,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
   "JOBS REPORT SHOCKS - 500K ADDED": {
     pe_sals_corner: 0.10, // More dining out
     pe_iron_oak_brewing: 0.08, // Craft beer consumption up
-    commercial_properties: 0.05, // Business expansion
+    rockefeller_center: 0.05, // Business expansion
   },
 
   // === AGRICULTURE EVENTS ===
@@ -412,7 +402,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
 
   // === TECH LAYOFFS ===
   "SILICON VALLEY LAYOFFS HIT 100,000": {
-    office_tower: -0.15, // Less office demand
+    rockefeller_center: -0.15, // Less office demand
     pe_sals_corner: -0.05, // Brooklyn less affected than Bay Area
   },
 
@@ -446,9 +436,9 @@ export function expandLifestyleEffects(effects: LifestyleEffects): Record<string
   // Property groupings - Residential
   const US_RESIDENTIAL = ['miami_condo', 'nyc_apartment', 'la_mansion']
   const FOREIGN_RESIDENTIAL = ['monaco_villa', 'dubai_palace']
-  // Commercial properties
-  const COMMERCIAL_PROPERTIES = ['strip_mall', 'warehouse_complex', 'medical_plaza', 'office_tower', 'shopping_center', 'industrial_park']
-  const US_PROPERTIES = [...US_RESIDENTIAL, ...COMMERCIAL_PROPERTIES]
+  // Ultra luxury properties
+  const ULTRA_LUXURY = ['private_island', 'rockefeller_center']
+  const US_PROPERTIES = [...US_RESIDENTIAL, ...ULTRA_LUXURY]
   const FOREIGN_PROPERTIES = [...FOREIGN_RESIDENTIAL]
   const ALL_PROPERTIES = [...US_PROPERTIES, ...FOREIGN_PROPERTIES]
 
@@ -466,9 +456,6 @@ export function expandLifestyleEffects(effects: LifestyleEffects): Record<string
   }
   if (effects.foreign_properties !== undefined) {
     FOREIGN_PROPERTIES.forEach(id => expanded[id] = effects.foreign_properties!)
-  }
-  if (effects.commercial_properties !== undefined) {
-    COMMERCIAL_PROPERTIES.forEach(id => expanded[id] = effects.commercial_properties!)
   }
 
   // Apply PE shorthand effects
@@ -488,13 +475,8 @@ export function expandLifestyleEffects(effects: LifestyleEffects): Record<string
   if (effects.la_mansion !== undefined) expanded.la_mansion = effects.la_mansion
   if (effects.monaco_villa !== undefined) expanded.monaco_villa = effects.monaco_villa
   if (effects.dubai_palace !== undefined) expanded.dubai_palace = effects.dubai_palace
-  // Commercial properties
-  if (effects.strip_mall !== undefined) expanded.strip_mall = effects.strip_mall
-  if (effects.warehouse_complex !== undefined) expanded.warehouse_complex = effects.warehouse_complex
-  if (effects.medical_plaza !== undefined) expanded.medical_plaza = effects.medical_plaza
-  if (effects.office_tower !== undefined) expanded.office_tower = effects.office_tower
-  if (effects.shopping_center !== undefined) expanded.shopping_center = effects.shopping_center
-  if (effects.industrial_park !== undefined) expanded.industrial_park = effects.industrial_park
+  if (effects.private_island !== undefined) expanded.private_island = effects.private_island
+  if (effects.rockefeller_center !== undefined) expanded.rockefeller_center = effects.rockefeller_center
 
   // Apply individual PE effects (override shorthands)
   ALL_PRIVATE_EQUITY.forEach(id => {

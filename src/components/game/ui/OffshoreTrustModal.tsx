@@ -125,7 +125,7 @@ export function OffshoreTrustModal({ onClose }: OffshoreTrustModalProps) {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-xl font-bold text-mh-text-bright mb-1">🏦 Offshore Trust</h2>
-            <div className="text-mh-text-dim text-sm">Shelter assets from penalties</div>
+            <div className="text-mh-text-dim text-sm">Protects against SEC fines, divorce settlements, and IRS penalties</div>
           </div>
           <button
             onClick={onClose}

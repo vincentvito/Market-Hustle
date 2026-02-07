@@ -160,10 +160,10 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     ? Math.round((cash * effectiveLeverage / price) * 1000) / 1000
     : Math.max(1, Math.floor((cash * effectiveLeverage) / price))
   const maxBuy = isFractional ? maxBuyRaw : Math.max(1, maxBuyRaw)
-  // Short mode: cash available for collateral = cash minus existing short liabilities
-  // (short proceeds are already in cash, so subtract what it would cost to cover all existing shorts)
-  const totalShortLiability = shortPositions.reduce((sum, pos) => sum + pos.qty * (prices[pos.assetId] || 0), 0)
-  const availableCashForShort = Math.max(0, cash - totalShortLiability)
+  // Short mode: available collateral = cash - 2 * totalShortProceeds
+  // This matches the shortSell function constraint: totalExposure <= originalCapital
+  const totalShortProceeds = shortPositions.reduce((sum, pos) => sum + pos.cashReceived, 0)
+  const availableCashForShort = Math.max(0, cash - 2 * totalShortProceeds)
   const maxShort = Math.floor(availableCashForShort / price)
   const maxSell = isShortMode && isPro ? Math.max(1, maxShort) : Math.max(1, owned)
 

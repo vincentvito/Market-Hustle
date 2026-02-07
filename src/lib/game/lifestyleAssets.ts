@@ -98,6 +98,20 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       chance: 0.50,
     },
   },
+  // Apex Media endgame ability
+  run_for_president: {
+    id: 'run_for_president',
+    name: 'Run for President',
+    emoji: '🏛️',
+    flavor: 'Launch a presidential campaign using your media empire. $12B entry. 50/50 odds. Winner takes the Oval Office.',
+    cost: 12_000_000_000,
+    successEffects: {}, // No market effects - unlocks presidency
+    backfireEffects: {
+      priceEffects: {}, // Apex Media -50% handled specially
+      // FBI heat +40 handled specially
+    },
+    backfireChance: 0.50, // 50/50 election
+  },
 }
 
 // Helper to get abilities for a PE company
@@ -106,7 +120,7 @@ export function getPEAbilities(peAssetId: string): PEAbility[] {
     pe_sals_corner: ['defense_spending_bill', 'drug_fast_track'],
     pe_blackstone_services: ['yemen_operations', 'chile_acquisition'],
     pe_lazarus_genomics: ['project_chimera'],
-    pe_apex_media: ['operation_divide'],
+    pe_apex_media: ['operation_divide', 'run_for_president'],
   }
   const abilityIds = abilityMap[peAssetId] || []
   return abilityIds.map(id => PE_ABILITIES[id])
@@ -138,17 +152,6 @@ export const PROPERTIES: LifestyleAsset[] = [
     dailyReturn: 0.02, // 2% daily
     description: 'Manhattan skyline views. Corporate housing goldmine.',
   },
-  // === COMMERCIAL PROPERTIES (NEW) ===
-  {
-    id: 'strip_mall',
-    name: 'Austin Strip Mall',
-    emoji: '🏪',
-    category: 'property',
-    basePrice: 3_500_000,
-    volatility: 0.025,
-    dailyReturn: 0.035, // 3.5% daily - highest return (smaller, riskier)
-    description: 'Tech corridor retail. Tenants include coffee shops, yoga studios, taco joints.',
-  },
   {
     id: 'la_mansion',
     name: 'Hollywood Hills Estate',
@@ -158,16 +161,6 @@ export const PROPERTIES: LifestyleAsset[] = [
     volatility: 0.025,
     dailyReturn: 0.018, // 1.8% daily
     description: 'Film location rentals. Celeb neighbor potential.',
-  },
-  {
-    id: 'warehouse_complex',
-    name: 'Dallas Warehouse Complex',
-    emoji: '🏭',
-    category: 'property',
-    basePrice: 12_000_000,
-    volatility: 0.02,
-    dailyReturn: 0.03, // 3% daily - logistics boom
-    description: 'E-commerce fulfillment hub. Amazon-proof location near major highways.',
   },
   {
     id: 'monaco_villa',
@@ -180,26 +173,6 @@ export const PROPERTIES: LifestyleAsset[] = [
     description: 'Tax haven paradise. F1 weekend jackpot.',
   },
   {
-    id: 'medical_plaza',
-    name: 'Phoenix Medical Plaza',
-    emoji: '🏥',
-    category: 'property',
-    basePrice: 28_000_000,
-    volatility: 0.015,
-    dailyReturn: 0.028, // 2.8% daily - healthcare always in demand
-    description: 'Outpatient clinic hub. Triple-net leases with medical groups.',
-  },
-  {
-    id: 'office_tower',
-    name: 'Chicago Office Tower',
-    emoji: '🏢',
-    category: 'property',
-    basePrice: 45_000_000,
-    volatility: 0.025,
-    dailyReturn: 0.022, // 2.2% daily - post-COVID office uncertainty
-    description: 'Loop district Class A. Major law firms and consultancies.',
-  },
-  {
     id: 'dubai_palace',
     name: 'Dubai Palm Palace',
     emoji: '🕌',
@@ -210,24 +183,24 @@ export const PROPERTIES: LifestyleAsset[] = [
     description: 'Oil sheikh neighbors. Ultimate flex property.',
   },
   {
-    id: 'shopping_center',
-    name: 'Atlanta Shopping Center',
-    emoji: '🛒',
-    category: 'property',
-    basePrice: 85_000_000,
-    volatility: 0.025,
-    dailyReturn: 0.022, // 2.2% daily
-    description: 'Regional mall with anchor tenants. Entertainment-focused retail surviving online.',
-  },
-  {
-    id: 'industrial_park',
-    name: 'Seattle Industrial Park',
-    emoji: '🏗️',
+    id: 'private_island',
+    name: 'Private Island',
+    emoji: '🏝️',
     category: 'property',
     basePrice: 150_000_000,
     volatility: 0.02,
-    dailyReturn: 0.018, // 1.8% daily - stable but lower yield at scale
-    description: 'Tech manufacturing campus. Data centers and cloud infrastructure.',
+    dailyReturn: 0.018, // 1.8% daily
+    description: 'Caribbean paradise. 500 acres of white sand, your own airstrip, total privacy.',
+  },
+  {
+    id: 'rockefeller_center',
+    name: 'Rockefeller Center NY',
+    emoji: '🏛️',
+    category: 'property',
+    basePrice: 4_500_000_000,
+    volatility: 0.015,
+    dailyReturn: 0.015, // 1.5% daily
+    description: 'NYC landmark. 22 acres of prime Manhattan. The ultimate trophy asset.',
   },
 ]
 
@@ -358,7 +331,7 @@ export const RISK_TIER_LABELS: Record<string, string> = {
 }
 
 // =============================================================================
-// LUXURY ASSETS - Aspirational purchases with passive benefits
+// LUXURY ASSETS - Expensive toys with passive benefits
 // Fixed price, fixed daily cost, no price fluctuation
 // =============================================================================
 export const LUXURY_ASSETS: LuxuryAsset[] = [
@@ -366,10 +339,19 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
     id: 'private_jet',
     name: 'Private Jet',
     emoji: '✈️',
-    basePrice: 15_250_000,
+    basePrice: 15_000_000,
     dailyCost: 250_000,
     description: 'G650ER. Skip the lines, close deals at 45,000 feet.',
-    passiveBenefit: '+20% VC/Angel deal frequency',
+    passiveBenefit: '+20% deal frequency',
+  },
+  {
+    id: 'art_collection',
+    name: 'Art Collection',
+    emoji: '🎨',
+    basePrice: 25_000_000,
+    dailyCost: 50_000,
+    description: 'Basquiat. Warhol. Banksy. Status symbol.',
+    passiveBenefit: 'Reduces tax events',
   },
   {
     id: 'mega_yacht',
@@ -378,25 +360,43 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
     basePrice: 80_000_000,
     dailyCost: 800_000,
     description: '85m custom build. Helicopter pad. Submarine bay.',
-    passiveBenefit: '-15% PE purchase prices',
+    passiveBenefit: '-15% PE prices',
   },
   {
-    id: 'art_collection',
-    name: 'Art Collection',
-    emoji: '🎨',
-    basePrice: 5_000_000,
-    dailyCost: 50_000,
-    description: 'Basquiat. Warhol. Banksy. Status symbol.',
-    passiveBenefit: 'Status symbol, reduces tax event chance',
+    id: 'ferrari_f1_team',
+    name: 'Ferrari F1 Team',
+    emoji: '🏎️',
+    basePrice: 3_500_000_000,
+    dailyCost: 15_000_000,
+    description: 'Prancing horse. Global brand. Championship dreams.',
+    passiveBenefit: 'Flex',
   },
   {
     id: 'la_lakers',
     name: 'LA Lakers',
     emoji: '🏀',
-    basePrice: 3_000_000_000,
-    dailyCost: 5_000_000,
-    description: 'Championship rings. Courtside seats. Ultimate flex.',
-    passiveBenefit: 'Ultimate flex, insider sports betting tips',
+    basePrice: 7_000_000_000,
+    dailyCost: 30_000_000,
+    description: 'Championship rings. Courtside seats. Hollywood elite.',
+    passiveBenefit: 'Flex',
+  },
+  {
+    id: 'star_wars_franchise',
+    name: 'Star Wars Franchise',
+    emoji: '⭐',
+    basePrice: 65_000_000_000,
+    dailyCost: -650_000_000, // NEGATIVE = generates income (+1%/day)
+    description: 'A galaxy far, far away. Yours to control.',
+    passiveBenefit: '+1%/day income',
+  },
+  {
+    id: 'greenland',
+    name: 'Greenland',
+    emoji: '🇬🇱',
+    basePrice: 1_000_000_000_000,
+    dailyCost: 1_000_000_000,
+    description: 'Strategic territory. Rare earth minerals. Ice.',
+    passiveBenefit: 'Flex',
   },
 ]
 

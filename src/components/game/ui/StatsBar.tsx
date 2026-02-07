@@ -3,7 +3,11 @@
 import { useGame } from '@/hooks/useGame'
 import { formatCompact } from '@/lib/utils/formatMoney'
 
-export function StatsBar() {
+interface StatsBarProps {
+  onDebtClick?: () => void
+}
+
+export function StatsBar({ onDebtClick }: StatsBarProps) {
   const {
     cash,
     fbiHeat = 0,
@@ -36,7 +40,10 @@ export function StatsBar() {
             </div>
           </div>
           {creditCardDebt > 0 && (
-            <div>
+            <div
+              onClick={onDebtClick}
+              className={onDebtClick ? 'cursor-pointer hover:opacity-80' : ''}
+            >
               <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>DEBT</div>
               <div className="text-lg md:text-xl font-bold text-mh-loss-red glow-red">
                 {formatCompact(creditCardDebt)}

@@ -12,7 +12,7 @@ import { formatNetWorth, formatCompact } from '@/lib/utils/formatMoney'
  * - Unified layout for both wins and losses
  * - Conditional styling (green for win, red for loss)
  * - No game limits - unlimited play
- * - Detailed loss breakdown for margin/short-related game overs
+ * - Dynamic narrative messages for margin-related game overs
  * - Primary "Play Again" button (always enabled)
  */
 export function ProEndView({
@@ -24,7 +24,6 @@ export function ProEndView({
   daysSurvived,
   gameDuration,
   onPlayAgain,
-  lossBreakdown,
 }: EndGameProps) {
   const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
   const resultsRef = useRef<HTMLDivElement>(null)
@@ -66,46 +65,6 @@ export function ProEndView({
 
       <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>
-
-      {/* Detailed breakdown for margin-related game overs (Pro exclusive) */}
-      {lossBreakdown && (
-        <div className="mb-8 p-4 md:p-6 bg-[#1a1a2e] rounded border border-mh-border text-left max-w-[300px] md:max-w-[420px] w-full">
-          <div className="text-mh-text-dim text-xs mb-3 text-center">WHAT WENT WRONG</div>
-
-          {lossBreakdown.leveragedLosses.length > 0 && (
-            <div className="mb-3">
-              <div className="text-mh-accent-blue text-xs font-bold mb-1">LEVERAGED POSITIONS:</div>
-              {lossBreakdown.leveragedLosses.map((p, i) => (
-                <div key={i} className="text-sm text-mh-loss-red flex justify-between">
-                  <span>
-                    {p.leverage}x {p.name}
-                  </span>
-                  <span>
-                    {formatCompact(p.pl)}
-                    {p.isUnderwater ? ' ⚠️' : ''}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {lossBreakdown.shortLosses.length > 0 && (
-            <div className="mb-3">
-              <div className="text-yellow-500 text-xs font-bold mb-1">SHORT POSITIONS:</div>
-              {lossBreakdown.shortLosses.map((p, i) => (
-                <div key={i} className="text-sm text-mh-loss-red flex justify-between">
-                  <span>SHORT {p.name}</span>
-                  <span>{formatCompact(p.pl)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="text-mh-text-dim text-xs pt-2 border-t border-mh-border mt-2">
-            Cash remaining: {formatCompact(lossBreakdown.cashRemaining)}
-          </div>
-        </div>
-      )}
 
       {/* Play Again Button - Always enabled for Pro */}
       <button

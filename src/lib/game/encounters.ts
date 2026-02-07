@@ -88,7 +88,7 @@ export const ENCOUNTERS: Record<EncounterType, EncounterDefinition> = {
     description: "A 'medical professional' approaches you in a dark alley. Business has been slow and they're paying top dollar for organs.",
     flavor: '"You have two kidneys, you only need one... probably."',
     choices: [
-      { label: 'SELL IT', description: '$75K cash, 25% chance of dying on the table' },
+      { label: 'SELL IT', description: '$12K cash, 25% chance of dying on the table' },
       { label: 'KEEP IT', description: 'Stay intact, stay broke' },
     ],
     maxPerGame: 1,
@@ -109,7 +109,7 @@ export const ENCOUNTERS: Record<EncounterType, EncounterDefinition> = {
     id: 'tax',
     title: 'IRS AUDIT',
     emoji: '📋',
-    description: 'The IRS has questions about your offshore accounts and "creative" deductions. Your accountant is sweating.',
+    description: 'The IRS has questions about your "creative" deductions. Your accountant is sweating.',
     flavor: '"We\'ve noticed some... irregularities."',
     choices: [
       { label: 'PAY UP', description: 'Lose 15% of net worth, avoid prosecution' },
@@ -182,8 +182,8 @@ export function getAvailableEncounters(
   // Roulette - needs $2K minimum
   if (cash >= 2000) available.push('roulette')
 
-  // Tax - once per game
-  if (!state.usedTax) available.push('tax')
+  // Tax - once per game, only if net worth >= $50K (worth auditing)
+  if (!state.usedTax && netWorth >= 50000) available.push('tax')
 
   return available
 }
@@ -198,16 +198,19 @@ export function rollForEncounter(
     ownsArtCollection?: boolean
     wifeSuspicion?: number
     fbiHeat?: number
+    hasPardoned?: boolean  // Presidential pardon grants permanent immunity from SEC/tax
   }
 ): EncounterType | null {
-  const { netWorth, gameLength = 30, ownsArtCollection = false, wifeSuspicion = 0, fbiHeat = 0 } = params
+  const { netWorth, gameLength = 30, ownsArtCollection = false, wifeSuspicion = 0, fbiHeat = 0, hasPardoned = false } = params
+
   if (!canTriggerEncounter(day, state, gameLength)) return null
 
   const available = getAvailableEncounters(state, cash, netWorth)
   if (available.length === 0) return null
 
   // Independent exponential roll for SEC: prob = 0.5 * (fbiHeat/90)^3
-  if (available.includes('sec') && fbiHeat > 0) {
+  // Presidential pardon grants permanent immunity from SEC
+  if (available.includes('sec') && fbiHeat > 0 && !hasPardoned) {
     const secProb = 0.5 * Math.pow(fbiHeat / 90, 3)
     if (Math.random() < secProb) {
       return 'sec'
@@ -215,7 +218,11 @@ export function rollForEncounter(
   }
 
   // Fall through to random pool (shitcoin/kidney/roulette/tax only)
-  const poolEncounters = available.filter(e => e !== 'sec' && e !== 'divorce')
+  // Presidential pardon grants permanent immunity from tax encounters
+  let poolEncounters = available.filter(e => e !== 'sec' && e !== 'divorce')
+  if (hasPardoned) {
+    poolEncounters = poolEncounters.filter(e => e !== 'tax')
+  }
   if (poolEncounters.length === 0) return null
 
   // Base trigger probability: 10-25% depending on game progress
@@ -351,8 +358,8 @@ export function resolveKidney(
     }
   } else {
     return {
-      headline: 'SUCCESSFUL SURGERY: $75K richer, one kidney lighter',
-      cashChange: 75000,
+      headline: 'SUCCESSFUL SURGERY: $12K richer, one kidney lighter',
+      cashChange: 12000,
     }
   }
 }
@@ -448,6 +455,12 @@ export function resolveTax(
   const exposedNetWorth = Math.max(0, netWorth - trustFundBalance)
   if (choice === 'pay') {
     const penalty = Math.floor(exposedNetWorth * 0.15)
+    if (penalty === 0) {
+      return {
+        headline: 'IRS AUDIT CLEARED: Nothing to seize. Your assets are well protected.',
+        cashChange: 0,
+      }
+    }
     return {
       headline: `IRS SETTLEMENT: You paid $${penalty.toLocaleString('en-US')} in back taxes and penalties`,
       liquidationRequired: penalty,
@@ -456,12 +469,18 @@ export function resolveTax(
     // Offshore: 40% escape, 60% bad
     if (Math.random() < 0.4) {
       return {
-        headline: 'OFFSHORE SUCCESS: Your Swiss accounts remain hidden. For now.',
+        headline: 'OFFSHORE SUCCESS: Your accounts remain hidden. For now.',
         cashChange: 0,
       }
     } else {
       // 60% bad outcome - lose 30%
       const penalty = Math.floor(exposedNetWorth * 0.30)
+      if (penalty === 0) {
+        return {
+          headline: 'AUDIT SURVIVED: IRS found nothing to seize. Your offshore protection held.',
+          cashChange: 0,
+        }
+      }
       // 50% of the bad outcomes also result in prison
       if (Math.random() < 0.5) {
         return {

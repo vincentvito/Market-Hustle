@@ -32,7 +32,7 @@ const SLIDES: IntroSlide[] = [
   },
   {
     lines: [
-      { text: 'The AI does your job now.', style: 'red' },
+      { text: '"The AI does your job now."', style: 'red' },
       { text: 'One meeting. One sentence. Gone.', style: 'dim' },
     ],
   },
@@ -58,7 +58,7 @@ const SLIDES: IntroSlide[] = [
     lines: [
       { text: 'You maxed your credit card. $50K.', style: 'red' },
       { text: '30 days to pay it back.', style: 'bright' },
-      { text: 'Do it for your daughter. Do it for your marriage.', style: 'accent' },
+      { text: 'Do it for your daughter.', style: 'accent' },
     ],
   },
 ]

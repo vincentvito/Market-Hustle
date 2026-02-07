@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { useUserDetails } from '@/hooks/useUserDetails'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
-import { getEndGameMessage } from '@/lib/game/endGameMessages'
+import { getEndGameMessage, type MarginCallContext } from '@/lib/game/endGameMessages'
 import { ASSETS } from '@/lib/game/assets'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { GuestEndView } from './endGameViews/GuestEndView'
@@ -58,7 +58,6 @@ export function EndGameCoordinator() {
   const profitPercent = ((netWorth - STARTING_NET_WORTH) / STARTING_CAPITAL * 100) || 0
   const daysSurvived = outcome === 'win' ? gameDuration : day
   const reason = outcome === 'win' ? 'WIN' : gameOverReason
-  const message = getEndGameMessage(reason)
   const canPlayAgain = gamesRemaining > 0
 
   // Compute loss breakdown for Pro users
@@ -107,6 +106,26 @@ export function EndGameCoordinator() {
       cashRemaining: cash,
     }
   }, [isPro, outcome, gameOverReason, leveragedPositions, shortPositions, prices, cash])
+
+  // Compute context for dynamic game over messages
+  const marginCallContext = useMemo((): MarginCallContext | undefined => {
+    if (!lossBreakdown) return undefined
+
+    // Find worst leveraged position (most negative P&L)
+    const worstLeveraged = lossBreakdown.leveragedLosses.length > 0
+      ? [...lossBreakdown.leveragedLosses].sort((a, b) => a.pl - b.pl)[0]
+      : undefined
+
+    // Find worst short position (most negative P&L)
+    const worstShort = lossBreakdown.shortLosses.length > 0
+      ? [...lossBreakdown.shortLosses].sort((a, b) => a.pl - b.pl)[0]
+      : undefined
+
+    return { worstLeveraged, worstShort }
+  }, [lossBreakdown])
+
+  // Get the end game message (with context for dynamic messages)
+  const message = getEndGameMessage(reason, marginCallContext)
 
   // Action handlers
   const handlePlayAgain = () => {

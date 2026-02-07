@@ -11,6 +11,7 @@ import { NewsDetailOverlay } from '../ui/NewsDetailOverlay'
 import { StartupOfferOverlay } from '../ui/StartupOfferOverlay'
 import { PEExitOfferOverlay } from '../ui/PEExitOfferOverlay'
 import { EncounterPopup } from '../ui/EncounterPopup'
+import { ElectionPopup } from '../ui/ElectionPopup'
 import { LiquidationSelectionOverlay } from '../ui/LiquidationSelectionOverlay'
 import { InvestmentResultOverlay } from '../ui/InvestmentResultOverlay'
 import { AssetGrid } from '../trading/AssetGrid'
@@ -42,6 +43,8 @@ export function GameScreen() {
     setShowGiftsModal,
     creditCardDebt,
     fbiHeat = 0,
+    hasPardoned,
+    pendingElection,
   } = useGame()
   const [showHelp, setShowHelp] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
@@ -114,7 +117,7 @@ export function GameScreen() {
       <ActionsModal />
       <GiftsModal />
       <Header />
-      <StatsBar />
+      <StatsBar onDebtClick={() => setShowCreditCards(true)} />
       <PortfolioOverlay
         onSelectAsset={handlePortfolioAssetSelect}
         onSelectLifestyle={handlePortfolioLifestyleSelect}
@@ -125,6 +128,8 @@ export function GameScreen() {
       <PEExitOfferOverlay />
       <EncounterPopup />
       <LiquidationSelectionOverlay />
+      {/* Election popup - highest priority (z-500) */}
+      <ElectionPopup />
       {/* Celebration overlays - highest priority (z-500) */}
       <InvestmentResultOverlay />
       <NewsPanel />
@@ -158,19 +163,34 @@ export function GameScreen() {
 
       {/* Floating FBI Heat Bar - bottom right above action bar */}
       <div className="fixed bottom-[72px] right-3 z-50 flex flex-col items-center gap-1.5">
-        <div className="text-xs font-bold" style={{ color: getFbiColor() }}>
-          {fbiHeat.toFixed(0)}%
-        </div>
-        <div className="relative w-4 h-24 bg-[#1a1a1a] rounded-full overflow-hidden">
-          <div
-            className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-full"
-            style={{
-              height: `${fbiHeat}%`,
-              backgroundColor: getFbiColor(),
-            }}
-          />
-        </div>
-        <div className="text-2xl leading-none">🕵️</div>
+        {hasPardoned ? (
+          <>
+            {/* Presidential immunity - no FBI heat display */}
+            <div className="text-xs font-bold text-mh-profit-green animate-pulse">
+              IMMUNE
+            </div>
+            <div className="relative w-4 h-24 bg-[#1a1a1a] rounded-full overflow-hidden flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-t from-mh-profit-green/30 to-transparent" />
+            </div>
+            <div className="text-2xl leading-none">⚖️</div>
+          </>
+        ) : (
+          <>
+            <div className="text-xs font-bold" style={{ color: getFbiColor() }}>
+              {fbiHeat.toFixed(0)}%
+            </div>
+            <div className="relative w-4 h-24 bg-[#1a1a1a] rounded-full overflow-hidden">
+              <div
+                className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-full"
+                style={{
+                  height: `${fbiHeat}%`,
+                  backgroundColor: getFbiColor(),
+                }}
+              />
+            </div>
+            <div className="text-2xl leading-none">🕵️</div>
+          </>
+        )}
       </div>
 
       {/* Bottom Bar - Action Strip */}
