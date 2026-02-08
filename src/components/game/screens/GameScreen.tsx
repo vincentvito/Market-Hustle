@@ -42,8 +42,6 @@ export function GameScreen() {
     showGiftsModal,
     setShowGiftsModal,
     creditCardDebt,
-    fbiHeat = 0,
-    hasPardoned,
     pendingElection,
   } = useGame()
   const [showHelp, setShowHelp] = useState(false)
@@ -73,13 +71,6 @@ export function GameScreen() {
     return sum + pos.qty * (prices[pos.assetId] || 0)
   }, 0)
   const totalExposure = leveragedExposure + shortExposure
-
-  // FBI heat color
-  const getFbiColor = () => {
-    if (fbiHeat >= 60) return '#ff3333'
-    if (fbiHeat >= 30) return '#ffaa00'
-    return '#00cc00'
-  }
 
   // Risk levels - only show if there's actual exposure
   const hasExposure = totalExposure > 0
@@ -161,37 +152,7 @@ export function GameScreen() {
         ?
       </button>
 
-      {/* Floating FBI Heat Bar - bottom right above action bar */}
-      <div className="fixed bottom-[72px] right-3 z-50 flex flex-col items-center gap-1.5">
-        {hasPardoned ? (
-          <>
-            {/* Presidential immunity - no FBI heat display */}
-            <div className="text-xs font-bold text-mh-profit-green animate-pulse">
-              IMMUNE
-            </div>
-            <div className="relative w-4 h-24 bg-[#1a1a1a] rounded-full overflow-hidden flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-t from-mh-profit-green/30 to-transparent" />
-            </div>
-            <div className="text-2xl leading-none">⚖️</div>
-          </>
-        ) : (
-          <>
-            <div className="text-xs font-bold" style={{ color: getFbiColor() }}>
-              {fbiHeat.toFixed(0)}%
-            </div>
-            <div className="relative w-4 h-24 bg-[#1a1a1a] rounded-full overflow-hidden">
-              <div
-                className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-full"
-                style={{
-                  height: `${fbiHeat}%`,
-                  backgroundColor: getFbiColor(),
-                }}
-              />
-            </div>
-            <div className="text-2xl leading-none">🕵️</div>
-          </>
-        )}
-      </div>
+      {/* FBI Heat Bar - DISABLED (kept for future use) */}
 
       {/* Bottom Bar - Action Strip */}
       <div

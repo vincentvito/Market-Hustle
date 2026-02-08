@@ -317,6 +317,7 @@ export interface GameState {
   event: MarketEvent | null
   message: string
   gameOverReason: string
+  pendingGameOver: { reason: string; netWorth: number } | null
   selectedAsset: string | null
   buyQty: number
   newsHistory: string[]

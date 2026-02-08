@@ -183,6 +183,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   event: null,
   message: '',
   gameOverReason: '',
+  pendingGameOver: null as { reason: string; netWorth: number } | null,
   newsHistory: ['MARKET OPEN - GOOD LUCK TRADER'],
   todayNews: [],
   rumors: [],
@@ -425,6 +426,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       event: null,
       message: '',
       gameOverReason: '',
+      pendingGameOver: null,
       selectedAsset: null,
       buyQty: 1,
       newsHistory: [openingEvent?.headline || 'MARKETS OPEN - GOOD LUCK TRADER'],
@@ -1654,46 +1656,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const newCreditCardDebt = creditCardDebt + dailyInterest
 
     // ===========================================================================
-    // FBI HEAT: Calculate daily accumulation from risky positions
+    // FBI HEAT: DISABLED (kept for future use - always 0)
     // ===========================================================================
-    const { fbiHeat } = get()
-    // leveragedPositions and shortPositions already destructured at top of function
-
-    // Clean books: no open short or leveraged positions = FBI heat cools -2%/day
-    let fbiHeatIncrease: number
-
-    if (shortPositions.length === 0 && leveragedPositions.length === 0) {
-      fbiHeatIncrease = -2
-    } else {
-      // Base rate: +1% per day just for playing
-      fbiHeatIncrease = 1
-
-      // Each open short: +3% per day
-      fbiHeatIncrease += shortPositions.length * 3
-
-      // Each leveraged position: +2% per day base
-      leveragedPositions.forEach(pos => {
-        let positionHeat = 2  // Base heat per leveraged position
-
-        // Leverage bonus: higher leverage = more heat
-        // 2x leverage = +0% bonus
-        // 5x leverage = +1% bonus
-        // 10x leverage = +2% bonus
-        if (pos.leverage >= 10) {
-          positionHeat += 2
-        } else if (pos.leverage >= 5) {
-          positionHeat += 1
-        }
-
-        fbiHeatIncrease += positionHeat
-      })
-    }
-
-    // Add story arc FBI heat if Part 3 resolved today
-    fbiHeatIncrease += storyArcFBIHeat
-
-    // Apply heat change (clamp 0-100%)
-    const newFBIHeat = Math.min(100, Math.max(0, fbiHeat + fbiHeatIncrease))
+    const newFBIHeat = 0
 
     // 8. Update state
     const headlines = todayNewsItems.map(n => n.headline)
@@ -1789,9 +1754,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         gameOverReason = 'MARGIN_CALLED'
       }
 
-      // Record game result before showing game over screen
-      saveGameResult(false, finalNetWorth, newDay - 1, gameDuration, gameOverReason, get().isLoggedIn, get().isUsingProTrial, get().username)
-      set({ screen: 'gameover', gameOverReason, isUsingProTrial: false })
+      // Don't show game over immediately - let the player see their negative net worth first.
+      // On the next ADVANCE click, triggerNextDay() will show the game over screen.
+      set({ pendingGameOver: { reason: gameOverReason, netWorth: finalNetWorth } })
     } else if (newDay > gameDuration) {
       // Player survived the full duration - WIN!
       saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial, get().username)
@@ -1801,8 +1766,15 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
   // Called when user clicks "Next Day" - checks for encounter before advancing
   triggerNextDay: () => {
-    const { day, cash, encounterState, pendingStartupOffer, gameDuration, isCelebrationDay, ownedLuxury, showPortfolioBeforeAdvance, holdings } = get()
+    const { day, cash, encounterState, pendingStartupOffer, gameDuration, isCelebrationDay, ownedLuxury, showPortfolioBeforeAdvance, holdings, pendingGameOver } = get()
     const netWorth = get().getNetWorth()
+
+    // If there's a pending game over (player saw their negative net worth last turn), now show game over
+    if (pendingGameOver) {
+      saveGameResult(false, pendingGameOver.netWorth, day, gameDuration, pendingGameOver.reason, get().isLoggedIn, get().isUsingProTrial, get().username)
+      set({ screen: 'gameover', gameOverReason: pendingGameOver.reason, pendingGameOver: null, isUsingProTrial: false })
+      return
+    }
 
     // Show portfolio recap before advancing if setting is on and player has positions
     const hasPositions = Object.values(holdings).some(qty => qty > 0)

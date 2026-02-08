@@ -10,7 +10,6 @@ interface StatsBarProps {
 export function StatsBar({ onDebtClick }: StatsBarProps) {
   const {
     cash,
-    fbiHeat = 0,
     creditCardDebt,
     getPortfolioValue,
     setShowPortfolio,
@@ -21,12 +20,6 @@ export function StatsBar({ onDebtClick }: StatsBarProps) {
   const portfolioValue = getPortfolioValue()
   const isBloomberg = selectedTheme === 'bloomberg'
   const hasPositions = portfolioValue > 0 || leveragedPositions.length > 0 || shortPositions.length > 0
-
-  const getFbiColor = () => {
-    if (fbiHeat >= 60) return '#ff3333'
-    if (fbiHeat >= 30) return '#ffaa00'
-    return '#00cc00'
-  }
 
   return (
     <>
