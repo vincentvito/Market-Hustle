@@ -1,10 +1,10 @@
-import { LifestyleAsset, LuxuryAsset, LuxuryAssetId, PEAbility, PEAbilityId } from './types'
+import { LifestyleAsset, LuxuryAsset, LuxuryAssetId, PEAbility, PEAbilityId, InsiderTipScenario } from './types'
 
 // =============================================================================
 // PE ABILITIES - One-time villain actions with 20% backfire risk
 // =============================================================================
 export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
-  // Sal's Corner abilities
+  // Capitol Consulting Group abilities
   defense_spending_bill: {
     id: 'defense_spending_bill',
     name: 'Defense Spending Bill',
@@ -98,6 +98,19 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       chance: 0.50,
     },
   },
+  // Smokey's on K — single repeatable insider tip (system randomly picks a bill scenario)
+  insider_tip: {
+    id: 'insider_tip',
+    name: 'Insider Tip',
+    emoji: '🍖',
+    flavor: "Slip a congressional staffer some cash for insider info on bills about to pass",
+    cost: 100_000,
+    successEffects: {},         // Determined at runtime from randomly selected scenario
+    backfireEffects: {},        // Determined at runtime from randomly selected scenario
+    backfireChance: 0.15,
+    silentExecution: true,
+    repeatable: true,
+  },
   // Apex Media endgame ability
   run_for_president: {
     id: 'run_for_president',
@@ -117,7 +130,8 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
 // Helper to get abilities for a PE company
 export function getPEAbilities(peAssetId: string): PEAbility[] {
   const abilityMap: Record<string, PEAbilityId[]> = {
-    pe_sals_corner: ['defense_spending_bill', 'drug_fast_track'],
+    pe_smokeys_on_k: ['insider_tip'],
+    pe_capitol_consulting: ['defense_spending_bill', 'drug_fast_track'],
     pe_blackstone_services: ['yemen_operations', 'chile_acquisition'],
     pe_lazarus_genomics: ['project_chimera'],
     pe_apex_media: ['operation_divide', 'run_for_president'],
@@ -125,6 +139,74 @@ export function getPEAbilities(peAssetId: string): PEAbility[] {
   const abilityIds = abilityMap[peAssetId] || []
   return abilityIds.map(id => PE_ABILITIES[id])
 }
+
+// Insider tip bill scenarios — randomly selected when player executes insider_tip ability
+export const INSIDER_TIP_SCENARIOS: InsiderTipScenario[] = [
+  {
+    id: 'coffee_reserve_act',
+    sectorHint: 'the commodity markets',
+    successEffects: { coffee: 0.20, gold: 0.10 },
+    backfireEffects: {
+      priceEffects: { coffee: -0.15 },
+      fine: 300_000,
+    },
+    headlines: {
+      part1: '',
+      part2: 'WHISPERS: USDA OFFICIALS QUIETLY MEETING WITH COMMODITY TRADERS ABOUT EMERGENCY STOCKPILE PROGRAM',
+      successPart3: 'BREAKING: COFFEE STRATEGIC RESERVE ACT SIGNED - FEDS TO STOCKPILE MILLIONS OF TONS OF BEANS',
+      backfirePart3: 'DEAD ON ARRIVAL: STRATEGIC RESERVE BILL KILLED IN COMMITTEE - SPONSORS FACE ETHICS PROBE',
+    },
+    topic: { category: 'commodities' },
+  },
+  {
+    id: 'crypto_tax_amnesty',
+    sectorHint: 'the crypto markets',
+    successEffects: { btc: 0.20, altcoins: 0.25 },
+    backfireEffects: {
+      priceEffects: { altcoins: -0.20 },
+      triggerEncounter: 'sec',
+    },
+    headlines: {
+      part1: '',
+      part2: 'WHISPERS: CRYPTO-FRIENDLY SENATORS DRAFTING SURPRISE TAX LEGISLATION BEHIND CLOSED DOORS',
+      successPart3: 'BREAKING: CRYPTO TAX AMNESTY ACT PASSES WITH BIPARTISAN SUPPORT - DIGITAL ASSETS EXEMPT FROM GAINS TAX',
+      backfirePart3: 'BUSTED: SEC CRACKS DOWN ON CRYPTO LOBBYING RING - INSIDER TRADING PROBE LAUNCHED',
+    },
+    topic: { category: 'crypto' },
+  },
+  {
+    id: 'clean_vehicle_act',
+    sectorHint: 'tech & EVs',
+    successEffects: { tesla: 0.20, lithium: 0.15, oil: -0.10 },
+    backfireEffects: {
+      priceEffects: { tesla: -0.15 },
+      fine: 300_000,
+    },
+    headlines: {
+      part1: '',
+      part2: 'RUMOR: DOE OFFICIALS SPOTTED AT PRIVATE BRIEFING WITH AUTOMAKERS - EV MANDATE DISCUSSED',
+      successPart3: 'BREAKING: CLEAN VEHICLE ACCELERATION ACT SIGNED - ALL NEW CARS MUST BE ELECTRIC BY 2032',
+      backfirePart3: 'REVERSED: EV MANDATE STRUCK DOWN BY COURTS - AUTOMAKERS WHO BET ON ELECTRIC LEFT EXPOSED',
+    },
+    topic: { category: 'energy', subcategory: 'ev' },
+  },
+  {
+    id: 'nuclear_renaissance_act',
+    sectorHint: 'the energy sector',
+    successEffects: { uranium: 0.25, oil: -0.10 },
+    backfireEffects: {
+      priceEffects: { uranium: -0.15 },
+      fine: 300_000,
+    },
+    headlines: {
+      part1: '',
+      part2: 'RUMOR: NRC COMMISSIONER HINTING AT MAJOR POLICY SHIFT ON NEW REACTOR PERMITS',
+      successPart3: 'BREAKING: NUCLEAR RENAISSANCE ACT PASSES - 50 NEW REACTORS APPROVED IN HISTORIC ENERGY PIVOT',
+      backfirePart3: 'MELTDOWN: SAFETY SCANDAL DERAILS NUCLEAR BILL - NRC FREEZES ALL NEW PERMIT APPLICATIONS',
+    },
+    topic: { category: 'energy', subcategory: 'nuclear' },
+  },
+]
 
 // =============================================================================
 // PROPERTIES - Stable rental income (1.5-4% daily), NEVER negative
@@ -214,9 +296,21 @@ export const PROPERTIES: LifestyleAsset[] = [
 export const PRIVATE_EQUITY: LifestyleAsset[] = [
   // === BLUE CHIP TIER - Prestige/Income Assets ===
   {
-    id: 'pe_sals_corner',
-    name: "Sal's Corner",
-    emoji: '🍝',
+    id: 'pe_smokeys_on_k',
+    name: "Smokey's on K",
+    emoji: '🍖',
+    category: 'private_equity',
+    basePrice: 500_000,
+    volatility: 0.03,
+    dailyReturn: 0.05,    // 5%/day - standard blue chip return
+    description: "Hole-in-the-wall BBQ joint on K Street. Congressional staffers can't resist the brisket — or running their mouths.",
+    failureChancePerDay: 0.001, // ~3%/month
+    // Abilities: insider_tip (repeatable — randomly picks a bill scenario)
+  },
+  {
+    id: 'pe_capitol_consulting',
+    name: 'Capitol Consulting Group',
+    emoji: '🏛️',
     category: 'private_equity',
     basePrice: 2_500_000,
     volatility: 0.03,     // Added volatility for balance

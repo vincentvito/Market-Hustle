@@ -42,13 +42,12 @@ export function GameScreen() {
     showGiftsModal,
     setShowGiftsModal,
     creditCardDebt,
-    pendingElection,
+    pendingGameOver,
   } = useGame()
   const [showHelp, setShowHelp] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
   const [showOffshoreTrust, setShowOffshoreTrust] = useState(false)
   const [showCreditCards, setShowCreditCards] = useState(false)
-
   // Show interactive tutorial on first game only
   useEffect(() => {
     if (!isTutorialSeen()) {
@@ -226,7 +225,7 @@ export function GameScreen() {
             }
           }
         >
-          ADVANCE →
+          {pendingGameOver ? 'GAME OVER' : 'ADVANCE →'}
         </button>
       </div>
 

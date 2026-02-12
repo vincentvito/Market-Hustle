@@ -5,9 +5,14 @@
 
 import type { AssetMood, EventSentiment, MarketEvent, EventChain, EventChainOutcome } from './types'
 
-// Mood decay window in days - moods older than this are ignored
-// Reduced from 3 to 2 to allow more realistic market reversals (profit-taking, crisis resolution)
-const MOOD_DECAY_DAYS = 2
+// Two-phase mood window:
+// Phase 1 (hard block): mood age 0-1 days — opposite events blocked entirely
+// Phase 2 (reversal window): mood age 2 days — opposite events allowed with bonus
+// Phase 3: mood age 3+ — mood expired, clean slate
+const MOOD_DECAY_DAYS = 3
+const HARD_BLOCK_DAYS = 1            // Mood age <= this: no opposite events
+const REVERSAL_BONUS_MULTIPLIER = 1.3 // 30% boost to reversal event effects
+const REVERSAL_CHANCE = 0.5           // 50% chance reversal is allowed in the window
 
 // =============================================================================
 // SENTIMENT DERIVATION
@@ -28,7 +33,18 @@ export function deriveSentiment(effects: Record<string, number>): EventSentiment
   const hasPositive = values.some(v => v > 0)
   const hasNegative = values.some(v => v < 0)
 
-  if (hasPositive && hasNegative) return 'mixed'
+  if (hasPositive && hasNegative) {
+    // Magnitude-weighted: if dominant direction accounts for >80% of total
+    // absolute effect, classify as that direction instead of 'mixed'
+    const positiveSum = values.filter(v => v > 0).reduce((s, v) => s + v, 0)
+    const negativeSum = Math.abs(values.filter(v => v < 0).reduce((s, v) => s + v, 0))
+    const total = positiveSum + negativeSum
+    if (total > 0) {
+      if (positiveSum / total >= 0.8) return 'bullish'
+      if (negativeSum / total >= 0.8) return 'bearish'
+    }
+    return 'mixed'
+  }
   if (hasPositive) return 'bullish'
   if (hasNegative) return 'bearish'
   return 'neutral'
@@ -119,7 +135,9 @@ function sentimentsConflict(
 
 /**
  * Check if an event conflicts with current asset moods.
- * Returns true if the event would create a jarring narrative contradiction.
+ * Two-phase system:
+ * - Hard block (mood age 0-1): opposite events blocked entirely
+ * - Reversal window (mood age 2): opposite events allowed with 50% chance
  */
 export function hasEventConflict(
   event: MarketEvent,
@@ -149,7 +167,15 @@ export function hasEventConflict(
     )
 
     if (mood && sentimentsConflict(sentiment, mood.sentiment)) {
-      return true // Conflict found
+      const moodAge = currentDay - mood.recordedDay
+      if (moodAge <= HARD_BLOCK_DAYS) {
+        return true // Hard block phase — conflict
+      }
+      // Reversal window — allow with probability gate
+      if (Math.random() > REVERSAL_CHANCE) {
+        return true // Failed the probability gate — still blocked
+      }
+      // Passed the gate — reversal allowed (no conflict)
     }
   }
 
@@ -159,6 +185,7 @@ export function hasEventConflict(
 /**
  * Check if an event chain conflicts with current asset moods.
  * Uses the rumor sentiment for initial check.
+ * Same two-phase system as hasEventConflict.
  */
 export function hasChainConflict(
   chain: EventChain,
@@ -188,7 +215,15 @@ export function hasChainConflict(
     )
 
     if (mood && sentimentsConflict(rumorSentiment, mood.sentiment)) {
-      return true // Conflict found
+      const moodAge = currentDay - mood.recordedDay
+      if (moodAge <= HARD_BLOCK_DAYS) {
+        return true // Hard block phase — conflict
+      }
+      // Reversal window — allow with probability gate
+      if (Math.random() > REVERSAL_CHANCE) {
+        return true // Failed the probability gate — still blocked
+      }
+      // Passed the gate — reversal allowed
     }
   }
 
@@ -197,6 +232,7 @@ export function hasChainConflict(
 
 /**
  * Check if a specific outcome conflicts with current asset moods.
+ * Same two-phase system as hasEventConflict.
  */
 function hasOutcomeConflict(
   outcome: EventChainOutcome,
@@ -231,7 +267,15 @@ function hasOutcomeConflict(
     )
 
     if (mood && sentimentsConflict(sentiment, mood.sentiment)) {
-      return true // Conflict found
+      const moodAge = currentDay - mood.recordedDay
+      if (moodAge <= HARD_BLOCK_DAYS) {
+        return true // Hard block phase — conflict
+      }
+      // Reversal window — allow with probability gate
+      if (Math.random() > REVERSAL_CHANCE) {
+        return true // Failed the probability gate — still blocked
+      }
+      // Passed the gate — reversal allowed
     }
   }
 
@@ -480,6 +524,36 @@ export function recordStoryMood(
  */
 export function decayMoods(moods: AssetMood[], currentDay: number): AssetMood[] {
   return moods.filter(mood => (currentDay - mood.recordedDay) < MOOD_DECAY_DAYS)
+}
+
+/**
+ * Get reversal bonus multiplier for an event.
+ * Returns REVERSAL_BONUS_MULTIPLIER if the event opposes a mood in the reversal window.
+ * Returns 1.0 otherwise (no bonus).
+ */
+export function getReversalBonus(
+  event: MarketEvent,
+  assetMoods: AssetMood[],
+  currentDay: number
+): number {
+  const sentiment = getEventSentiment(event)
+  if (sentiment === 'neutral' || sentiment === 'mixed') return 1.0
+
+  const affectedAssets = getEventAffectedAssets(event)
+
+  for (const assetId of affectedAssets) {
+    const mood = assetMoods.find(m => m.assetId === assetId)
+    if (!mood) continue
+
+    const moodAge = currentDay - mood.recordedDay
+    // Reversal window: mood age is in phase 2 (after hard block, before decay)
+    if (moodAge > HARD_BLOCK_DAYS && moodAge < MOOD_DECAY_DAYS) {
+      if (sentimentsConflict(sentiment, mood.sentiment)) {
+        return REVERSAL_BONUS_MULTIPLIER
+      }
+    }
+  }
+  return 1.0
 }
 
 // =============================================================================

@@ -218,7 +218,7 @@ const GOSSIP_TEMPLATES: GossipTemplate[] = [
   // Single trade profit (high frequency)
   {
     id: 'single_trade_profit',
-    template: 'WALL ST GOSSIP: {USER} JUST MADE {AMOUNT} IN A SINGLE TRADE.',
+    template: '{USER} JUST MADE {AMOUNT} IN A SINGLE TRADE.',
     weight: 6,
     amountRange: { min: 500_000, max: 50_000_000 },
   },
@@ -226,7 +226,7 @@ const GOSSIP_TEMPLATES: GossipTemplate[] = [
   // Net worth milestone (logarithmic distribution from $5M to $50B)
   {
     id: 'net_worth_milestone',
-    template: 'WALL ST GOSSIP: {USER} JUST REACHED {AMOUNT} NET WORTH.',
+    template: '{USER} JUST REACHED {AMOUNT} NET WORTH.',
     weight: 8,
     useLogarithmic: true,
     amountRange: { min: 5_000_000, max: 50_000_000_000 },
@@ -235,7 +235,7 @@ const GOSSIP_TEMPLATES: GossipTemplate[] = [
   // Single trade flex (with asset)
   {
     id: 'single_trade_asset',
-    template: 'WALL ST GOSSIP: {USER} JUST MADE {AMOUNT} ON {ASSET}. SINGLE TRADE.',
+    template: '{USER} JUST MADE {AMOUNT} ON {ASSET}. SINGLE TRADE.',
     weight: 4,
     requiresAsset: true,
     amountRange: { min: 300_000, max: 10_000_000 },
@@ -244,16 +244,44 @@ const GOSSIP_TEMPLATES: GossipTemplate[] = [
   // Single trade flex (big money, no asset)
   {
     id: 'single_trade_big',
-    template: 'WALL ST GOSSIP: {USER} JUST MADE {AMOUNT} ON A SINGLE TRADE.',
+    template: '{USER} JUST MADE {AMOUNT} ON A SINGLE TRADE.',
     weight: 1,
     amountRange: { min: 10_000_000, max: 100_000_000 },
   },
 
-  // Lifestyle flex
+  // --- LOSSES (negative gossip) ---
+
+  // Single trade loss (general)
   {
-    id: 'more_than_most',
-    template: 'WALL ST GOSSIP: {USER} MADE MORE TODAY THAN MOST MAKE IN A YEAR.',
+    id: 'single_trade_loss',
+    template: '{USER} JUST LOST {AMOUNT} IN A SINGLE TRADE.',
+    weight: 5,
+    amountRange: { min: 500_000, max: 30_000_000 },
+  },
+
+  // Loss on specific asset
+  {
+    id: 'single_trade_loss_asset',
+    template: '{USER} JUST LOST {AMOUNT} ON {ASSET}.',
     weight: 3,
+    requiresAsset: true,
+    amountRange: { min: 300_000, max: 10_000_000 },
+  },
+
+  // Liquidation (dramatic)
+  {
+    id: 'liquidation',
+    template: '{USER} JUST GOT LIQUIDATED. LOST {AMOUNT}.',
+    weight: 2,
+    amountRange: { min: 5_000_000, max: 80_000_000 },
+  },
+
+  // Account wipeout (brutal)
+  {
+    id: 'account_wipeout',
+    template: '{USER} LOST {AMOUNT} THIS WEEK. ACCOUNT ALMOST WIPED.',
+    weight: 1,
+    amountRange: { min: 2_000_000, max: 50_000_000 },
   },
 ]
 
@@ -427,7 +455,7 @@ export function createGossipNewsItem(playerNetWorth: number): NewsItem {
   return {
     headline,
     effects: {}, // Gossip has no market effects
-    labelType: 'none', // Blends in with other news, no dramatic label
+    labelType: 'gossip',
   }
 }
 

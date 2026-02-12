@@ -6,6 +6,7 @@
 import { ASSETS } from '@/lib/game/assets'
 import { EVENTS, CATEGORY_WEIGHTS } from '@/lib/game/events'
 import { EVENT_CHAINS, CHAIN_CATEGORY_WEIGHTS } from '@/lib/game/eventChains'
+import { SCHEDULED_EVENTS, SCHEDULED_EVENT_WEIGHTS } from '@/lib/game/scheduledEvents'
 import { ANGEL_STARTUPS, VC_STARTUPS } from '@/lib/game/startups'
 import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
 import { getStoryById } from '@/lib/game/stories'
@@ -14,8 +15,9 @@ import {
   hasChainConflict,
   MAX_CONFLICT_RETRIES,
   getEventSentiment,
+  getReversalBonus,
 } from '@/lib/game/sentimentHelpers'
-import type { DirectorEventModifiers, SecondOrderState } from '@/lib/game/director'
+import type { DirectorEventModifiers, SecondOrderState, NarrativeTheme } from '@/lib/game/director'
 import {
   shouldSurpriseBypass,
   combineSentiment,
@@ -32,6 +34,10 @@ import type {
   ActiveEscalation,
   ActiveStory,
   AssetMood,
+  ScheduledEvent,
+  ActiveScheduledEvent,
+  PEAbilityId,
+  PendingStoryArc,
 } from '@/lib/game/types'
 
 // ============================================================================
@@ -99,7 +105,7 @@ export function saveGameResult(
     date: new Date().toISOString(),
     duration: gameDuration as 30 | 45 | 60,
     finalNetWorth,
-    profitPercent: ((finalNetWorth - 100000) / 100000) * 100,
+    profitPercent: (finalNetWorth / 50000) * 100,
     daysSurvived,
     outcome: isWin ? 'win' : mapGameOverReasonToOutcome(gameOverReason || 'BANKRUPT'),
   }
@@ -130,7 +136,7 @@ export function saveGameResultSync(
     date: new Date().toISOString(),
     duration: gameDuration as 30 | 45 | 60,
     finalNetWorth,
-    profitPercent: ((finalNetWorth - 100000) / 100000) * 100,
+    profitPercent: (finalNetWorth / 50000) * 100,
     daysSurvived,
     outcome: isWin ? 'win' : mapGameOverReasonToOutcome(gameOverReason || 'BANKRUPT'),
   }
@@ -143,13 +149,25 @@ export function saveGameResultSync(
 // EVENT/CHAIN TOPIC BLOCKING
 // ============================================================================
 
+/** Maps PE ability IDs to their thematic category/subcategory for topic-blocking. */
+export const PE_ABILITY_TOPICS: Record<PEAbilityId, { category: string; subcategory?: string }> = {
+  defense_spending_bill: { category: 'geopolitical', subcategory: 'military' },
+  drug_fast_track:       { category: 'biotech' },
+  yemen_operations:      { category: 'geopolitical', subcategory: 'middle-east' },
+  chile_acquisition:     { category: 'energy' },
+  project_chimera:       { category: 'biotech', subcategory: 'pandemic' },
+  operation_divide:      { category: 'geopolitical', subcategory: 'domestic' },
+  run_for_president:     { category: 'geopolitical', subcategory: 'domestic' },
+  insider_tip:           { category: 'insider' },  // Actual category overridden at runtime from selected scenario
+}
+
 /**
- * Get categories that are currently "in use" by active stories or chains.
+ * Get categories that are currently "in use" by active stories, chains, or PE ability story arcs.
  * These categories should be blocked from single events to prevent conflicts.
  * For geopolitical events, we use regional blocking (geo:subcategory) to allow
  * independent regions to have concurrent events (e.g., Taiwan + Middle East)
  */
-export function getActiveTopics(activeStories: ActiveStory[], activeChains: ActiveChain[]): Set<string> {
+export function getActiveTopics(activeStories: ActiveStory[], activeChains: ActiveChain[], pendingStoryArc?: PendingStoryArc | null): Set<string> {
   const topics = new Set<string>()
 
   // Add story categories (and subcategories if present)
@@ -178,6 +196,17 @@ export function getActiveTopics(activeStories: ActiveStory[], activeChains: Acti
     if (chain.subcategory) topics.add(chain.subcategory)
   })
 
+  // Add PE ability story arc topics (prevents thematic overlap during 3-day arcs)
+  if (pendingStoryArc) {
+    const { category, subcategory } = pendingStoryArc
+    if (category === 'geopolitical' && subcategory) {
+      topics.add(`geo:${subcategory}`)
+    } else {
+      topics.add(category)
+    }
+    if (subcategory) topics.add(subcategory)
+  }
+
   return topics
 }
 
@@ -189,7 +218,8 @@ export function selectRandomEvent(
   activeEscalations: ActiveEscalation[],
   currentDay: number,
   blockedCategories: Set<string>,
-  assetMoods: AssetMood[] = []
+  assetMoods: AssetMood[] = [],
+  usedEventHeadlines: string[] = []
 ): MarketEvent | null {
   // Build adjusted weights based on active escalations
   const adjustedWeights: Record<string, number> = { ...CATEGORY_WEIGHTS }
@@ -228,7 +258,7 @@ export function selectRandomEvent(
   for (let attempt = 0; attempt < MAX_CONFLICT_RETRIES; attempt++) {
     const rand = Math.random()
     let cumulative = 0
-    let selectedCategory = 'economic'
+    let selectedCategory = 'geopolitical'
 
     for (const [category, weight] of Object.entries(normalizedWeights)) {
       cumulative += weight
@@ -238,8 +268,12 @@ export function selectRandomEvent(
       }
     }
 
-    const categoryEvents = EVENTS.filter(e => e.category === selectedCategory)
-    if (categoryEvents.length === 0) continue
+    const allCategoryEvents = EVENTS.filter(e => e.category === selectedCategory)
+    if (allCategoryEvents.length === 0) continue
+
+    // Prefer unused events, but fall back to all if category exhausted
+    const unusedEvents = allCategoryEvents.filter(e => !usedEventHeadlines.includes(e.headline))
+    const categoryEvents = unusedEvents.length > 0 ? unusedEvents : allCategoryEvents
 
     const event = categoryEvents[Math.floor(Math.random() * categoryEvents.length)]
 
@@ -304,11 +338,24 @@ export function selectRandomChain(
       c => c.category === selectedCategory && !usedChainIds.includes(c.id)
     )
 
+    // Also filter by subcategory to prevent same-region overlap (e.g., Taiwan chain + Taiwan story)
+    availableChains = availableChains.filter(c => {
+      if (c.subcategory && blockedCategories.has(c.subcategory)) return false
+      if (c.category === 'geopolitical' && c.subcategory && blockedCategories.has(`geo:${c.subcategory}`)) return false
+      return true
+    })
+
     if (availableChains.length === 0) {
       // Try any non-blocked category
       availableChains = EVENT_CHAINS.filter(
         c => !usedChainIds.includes(c.id) && !blockedCategories.has(c.category)
       )
+      // Apply subcategory filtering to fallback too
+      availableChains = availableChains.filter(c => {
+        if (c.subcategory && blockedCategories.has(c.subcategory)) return false
+        if (c.category === 'geopolitical' && c.subcategory && blockedCategories.has(`geo:${c.subcategory}`)) return false
+        return true
+      })
     }
 
     if (availableChains.length === 0) return null
@@ -340,7 +387,8 @@ export function selectRandomEventWithDirector(
   blockedCategories: Set<string>,
   assetMoods: AssetMood[],
   modifiers: DirectorEventModifiers,
-  secondOrder?: SecondOrderState
+  secondOrder?: SecondOrderState,
+  usedEventHeadlines: string[] = []
 ): MarketEvent | null {
   // Check for surprise bypass (12% chance to ignore all modifiers)
   const isSurprise = shouldSurpriseBypass()
@@ -422,7 +470,7 @@ export function selectRandomEventWithDirector(
   for (let attempt = 0; attempt < MAX_CONFLICT_RETRIES; attempt++) {
     const rand = Math.random()
     let cumulative = 0
-    let selectedCategory = 'economic'
+    let selectedCategory = 'geopolitical'
 
     for (const [category, weight] of Object.entries(normalizedWeights)) {
       cumulative += weight
@@ -432,8 +480,13 @@ export function selectRandomEventWithDirector(
       }
     }
 
-    let categoryEvents = EVENTS.filter(e => e.category === selectedCategory)
-    if (categoryEvents.length === 0) continue
+    const allCategoryEvents = EVENTS.filter(e => e.category === selectedCategory)
+    if (allCategoryEvents.length === 0) continue
+
+    // Prefer unused events — if category exhausted, retry with different category
+    const unusedEvents = allCategoryEvents.filter(e => !usedEventHeadlines.includes(e.headline))
+    if (unusedEvents.length === 0) continue
+    let categoryEvents = unusedEvents
 
     // Apply sentiment bias filter (70% respect rate for organic feel)
     if (effectiveSentiment !== 'neutral' && Math.random() < 0.7) {
@@ -456,9 +509,13 @@ export function selectRandomEventWithDirector(
         ? 1.0
         : modifiers.volatilityMultiplier * rippleVolatility
 
-      // Apply volatility multiplier to effects if not 1.0
-      if (totalVolatility !== 1.0) {
-        return scaleEventEffects(event, totalVolatility)
+      // Check for reversal bonus (1.3x if event opposes a mood in reversal window)
+      const reversalBonus = getReversalBonus(event, assetMoods, currentDay)
+      const finalMultiplier = Math.min(totalVolatility * reversalBonus, 2.5)
+
+      // Apply combined multiplier to effects if not 1.0
+      if (finalMultiplier !== 1.0) {
+        return scaleEventEffects(event, finalMultiplier)
       }
       return event
     }
@@ -476,7 +533,8 @@ export function selectRandomChainWithDirector(
   assetMoods: AssetMood[],
   currentDay: number,
   modifiers: DirectorEventModifiers,
-  secondOrder?: SecondOrderState
+  secondOrder?: SecondOrderState,
+  gameDuration?: number
 ): EventChain | null {
   // Check for surprise bypass (12% chance to ignore all modifiers)
   const isSurprise = shouldSurpriseBypass()
@@ -549,13 +607,15 @@ export function selectRandomChainWithDirector(
       }
     }
 
+    // Filter: right category, not used, and can resolve before game ends
+    const canResolve = (c: EventChain) => !gameDuration || currentDay + c.duration <= gameDuration
     let availableChains = EVENT_CHAINS.filter(
-      c => c.category === selectedCategory && !usedChainIds.includes(c.id)
+      c => c.category === selectedCategory && !usedChainIds.includes(c.id) && canResolve(c)
     )
 
     if (availableChains.length === 0) {
       availableChains = EVENT_CHAINS.filter(
-        c => !usedChainIds.includes(c.id) && !allBlockedCategories.has(c.category)
+        c => !usedChainIds.includes(c.id) && !allBlockedCategories.has(c.category) && canResolve(c)
       )
     }
 
@@ -657,4 +717,78 @@ export function selectOutcomeWithBonus(startup: Startup, bonus: number): Startup
 export function getRandomDuration(startup: Startup): number {
   const [min, max] = startup.duration
   return min + Math.floor(Math.random() * (max - min + 1))
+}
+
+// ============================================================================
+// SCHEDULED EVENT SELECTION
+// Calendar-driven events (Fed, jobs, GDP) with 1-day advance notice
+// ============================================================================
+
+export function selectRandomScheduledEvent(
+  blockedCategories: Set<string>,
+  activeScheduledEvent: ActiveScheduledEvent | null,
+  currentDay: number,
+  gameDuration: number,
+  usedScheduledEventIds: string[] = [],
+): ScheduledEvent | null {
+  // Guard: only one active at a time
+  if (activeScheduledEvent) return null
+  // Guard: not too early or too late
+  if (currentDay < 3 || currentDay > gameDuration - 2) return null
+
+  // Filter out events whose category is blocked
+  const allAvailable = SCHEDULED_EVENTS.filter(e => !blockedCategories.has(e.category))
+  if (allAvailable.length === 0) return null
+
+  // Prefer unused events, fall back to all if pool exhausted
+  const unused = allAvailable.filter(e => !usedScheduledEventIds.includes(e.id))
+  const available = unused.length > 0 ? unused : allAvailable
+
+  // Build weights for available events
+  const weights: { event: ScheduledEvent; weight: number }[] = available.map(e => ({
+    event: e,
+    weight: SCHEDULED_EVENT_WEIGHTS[e.id] ?? 0.1,
+  }))
+
+  const totalWeight = weights.reduce((sum, w) => sum + w.weight, 0)
+  if (totalWeight === 0) return null
+
+  const roll = Math.random() * totalWeight
+  let cumulative = 0
+  for (const { event, weight } of weights) {
+    cumulative += weight
+    if (roll <= cumulative) {
+      return event
+    }
+  }
+  return weights[weights.length - 1].event
+}
+
+// =============================================================================
+// THEME <-> CATEGORY MAPPING HELPERS
+// =============================================================================
+
+const CATEGORY_TO_THEME: Record<string, NarrativeTheme> = {
+  tech: 'tech_boom',
+  crypto: 'crypto_winter',
+  geopolitical: 'geopolitical_crisis',
+  economic: 'economic_uncertainty',
+  energy: 'commodity_surge',
+}
+
+const THEME_TO_CATEGORY_MAP: Record<NarrativeTheme, string | null> = {
+  tech_boom: 'tech',
+  crypto_winter: 'crypto',
+  geopolitical_crisis: 'geopolitical',
+  economic_uncertainty: 'economic',
+  commodity_surge: 'energy',
+  none: null,
+}
+
+export function categoryToTheme(category: string): NarrativeTheme | null {
+  return CATEGORY_TO_THEME[category] || null
+}
+
+export function themeToCategory(theme: NarrativeTheme): string | null {
+  return THEME_TO_CATEGORY_MAP[theme] || null
 }

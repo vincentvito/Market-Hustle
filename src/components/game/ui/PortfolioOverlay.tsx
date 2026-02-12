@@ -9,7 +9,8 @@ import type { LuxuryAssetId } from '@/lib/game/types'
 // Helper to get PE ability description for portfolio display
 function getPEAbilityDescription(assetId: string, dailyReturn?: number): string | null {
   const abilityDescriptions: Record<string, string> = {
-    pe_sals_corner: 'Unlocks lobbying abilities',
+    pe_smokeys_on_k: 'Unlocks insider tips from congressional staffers',
+    pe_capitol_consulting: 'Unlocks lobbying abilities',
     pe_blackstone_services: 'Unlocks destabilization operations',
     pe_lazarus_genomics: 'Unlocks bioweapon research',
     pe_apex_media: 'Unlocks misinformation campaigns',
@@ -511,13 +512,16 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
                   }, 0))} leveraged
                 </span>
               )}
-              {shortPositions.length > 0 && (
-                <span className="text-yellow-500">
-                  {' '}- {formatCompact(shortPositions.reduce((sum, pos) => {
-                    return sum + pos.qty * (prices[pos.assetId] || 0)
-                  }, 0))} short
-                </span>
-              )}
+              {shortPositions.length > 0 && (() => {
+                const shortPL = shortPositions.reduce((sum, pos) => {
+                  return sum + (pos.cashReceived - pos.qty * (prices[pos.assetId] || 0))
+                }, 0)
+                return (
+                  <span className={shortPL >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'}>
+                    {' '}{shortPL >= 0 ? '+' : '-'} {formatCompact(Math.abs(shortPL))} short
+                  </span>
+                )
+              })()}
             </div>
           </div>
         </div>

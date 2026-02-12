@@ -10,34 +10,6 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   // ===========================================
   // FEDERAL RESERVE & MONETARY POLICY
   // ===========================================
-  "FED RAISES RATES 50BPS": {
-    blurb: "The Federal Reserve raised interest rates by half a percentage point, citing persistent inflation concerns.",
-    analysis: "Higher rates make borrowing expensive. Tech valuations compress as future growth gets discounted harder. The dollar strengthens as yields attract foreign capital."
-  },
-  "FED CUTS RATES IN EMERGENCY MOVE": {
-    blurb: "In a rare emergency session, the Federal Reserve slashed interest rates to support the economy.",
-    analysis: "Emergency cuts signal panic but flood markets with cheap money. Risk assets rally as investors chase returns. Real estate loves low rates."
-  },
-  "INFLATION HITS 40-YEAR HIGH": {
-    blurb: "Consumer prices surged at the fastest pace in four decades, squeezing household budgets nationwide.",
-    analysis: "When dollars buy less, investors flee to hard assets. Gold and Bitcoin become inflation hedges. Real estate gets nervous about coming rate hikes."
-  },
-  "DOLLAR INDEX CRASHES 5%": {
-    blurb: "The US dollar suffered its largest single-day decline in years against a basket of major currencies.",
-    analysis: "A weaker dollar makes foreign goods expensive but US exports cheap. Gold and crypto rally since they're priced in dollars. Emerging markets celebrate lighter debt burdens."
-  },
-  "FED SIGNALS PIVOT TO EASING": {
-    blurb: "Federal Reserve officials hinted at a shift toward looser monetary policy in upcoming meetings.",
-    analysis: "The Fed blinking is music to Wall Street. Just the hint of future rate cuts sends risk assets higher. Markets price in cheaper money before it arrives."
-  },
-  "TREASURY YIELDS SPIKE TO 7%": {
-    blurb: "US Treasury yields surged to levels not seen since the early 2000s, roiling bond markets.",
-    analysis: "When government bonds pay 7%, why take stock risk? Money flows from equities to safe bonds. Tech suffers most as high yields punish growth stocks."
-  },
-  "DOLLAR SURGES TO 20-YEAR HIGH": {
-    blurb: "The dollar index climbed to its highest level in two decades, pressuring global currencies.",
-    analysis: "A strong dollar crushes everything priced against it. Gold, oil, and commodities all drop. Emerging markets suffer as their dollar debts get heavier."
-  },
 
   // ===========================================
   // GEOPOLITICAL & WAR
@@ -46,110 +18,78 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "The Department of Defense awarded a major defense contractor a $50 billion multi-year weapons contract.",
     analysis: "Government defense contracts are guaranteed revenue. The winning contractors will hire, invest, and expand. Pure upside for defense stocks."
   },
-  "NORTH KOREA FIRES MISSILE OVER JAPAN": {
-    blurb: "North Korea launched a ballistic missile that flew directly over Japanese airspace before landing in the Pacific.",
-    analysis: "Missiles over Japan send shockwaves through Asian markets. Defense contractors see immediate upside on regional rearmament. Tech dips on supply chain concerns."
-  },
-  "BREAKING: KIM JONG UN ASSASSINATED": {
-    blurb: "North Korean state media confirmed the death of Supreme Leader Kim Jong Un in what sources describe as an assassination.",
-    analysis: "Nuclear-armed state without clear succession is a nightmare. Defense stocks explode on Korean Peninsula risk. The world holds its breath for Pyongyang's next move."
-  },
   "SUEZ CANAL BLOCKED BY CARGO SHIP": {
     blurb: "A massive container ship ran aground in the Suez Canal, blocking one of the world's busiest shipping lanes.",
     analysis: "12% of global trade passes through Suez. Every day blocked means delayed goods and higher shipping costs. Oil reroutes around Africa, adding weeks to delivery."
-  },
-  "SUEZ CANAL FINALLY CLEARS - GLOBAL SHIPPING RESUMES": {
-    blurb: "Salvage crews successfully refloated the stranded vessel, reopening the Suez Canal to maritime traffic.",
-    analysis: "Relief rally as the backlog clears. Shipping rates normalize, supply chain pressure eases. Companies that stockpiled during the crisis look smart."
   },
   "EMBASSY BOMBING IN MIDDLE EAST": {
     blurb: "A car bomb exploded outside a foreign embassy in the Middle East, killing dozens and injuring hundreds.",
     analysis: "Embassy attacks signal regional instability. Oil spikes on supply disruption fears. Defense contractors rally as governments boost security spending."
   },
-  "COUP ATTEMPT IN NATO MEMBER STATE": {
-    blurb: "Military forces attempted to seize control of a NATO member government in a dramatic overnight operation.",
-    analysis: "Instability within NATO rattles Western alliances. Defense stocks jump on uncertainty. Gold catches a bid as safe haven demand increases."
-  },
   "SUBMARINE COLLISION IN SOUTH CHINA SEA": {
     blurb: "Naval vessels from two nations collided during contested patrols in the South China Sea, heightening regional tensions.",
     analysis: "Military accidents in disputed waters risk escalation. Defense stocks surge on rearmament speculation. Tech dips on supply chain concerns through the region."
-  },
-  "SWISS NEUTRALITY OFFICIALLY ENDED": {
-    blurb: "Switzerland formally abandoned its centuries-old neutrality policy, joining a military alliance for the first time.",
-    analysis: "When Switzerland picks sides, you know things are serious. Gold rallies as the ultimate neutral safe haven becomes even rarer. Geopolitical tensions clearly elevated."
   },
   "SAUDI ARABIA OPENS EMBASSY IN ISRAEL": {
     blurb: "Saudi Arabia and Israel established formal diplomatic relations, marking a historic shift in Middle Eastern geopolitics.",
     analysis: "Peace in the Middle East reduces regional risk premiums. Oil dips as conflict fears ease. Emerging markets rally on improved stability outlook."
   },
+  "TURKEY CLOSES BOSPHORUS STRAIT TO RUSSIAN SHIPS": {
+    blurb: "Turkey invoked the Montreux Convention to close the Bosphorus Strait to all Russian naval and commercial vessels.",
+    analysis: "The Bosphorus is Russia's only warm-water route to the Mediterranean. Closing it chokes Russian oil exports and escalates NATO tensions. Defense rallies on conflict risk."
+  },
+  "MEXICO COMPLETES MINE SEIZURES — STATE LITHIUM MONOPOLY FORMED": {
+    blurb: "Mexico completed nationalization of all foreign mines, establishing a state monopoly over lithium and precious metals production.",
+    analysis: "Full seizure means lithium supply shock — prices explode. Gold rallies on resource nationalism theme. Emerging markets crater on anti-FDI sentiment. Tesla bleeds on battery cost fears."
+  },
+  "INTERNATIONAL COURTS BLOCK NATIONALIZATION — MEXICO BACKS DOWN": {
+    blurb: "International courts issued an emergency injunction blocking Mexico's mine seizures, and the government announced it would comply.",
+    analysis: "Rule of law wins. Emerging markets rally on restored investor confidence. Lithium normalizes as supply fears evaporate. Tesla recovers on cheaper battery materials outlook."
+  },
+  "RESOURCE NATIONALISM SPREADS — BOLIVIA, CHILE FOLLOW MEXICO'S LEAD": {
+    blurb: "Bolivia and Chile announced plans to nationalize their mining sectors, following Mexico's lead in a wave of Latin American resource nationalism.",
+    analysis: "Contagion across Latin America's lithium triangle. Supply shock intensifies as three major producers go nationalist. Emerging markets in freefall on investment flight. Gold surges as hard asset hedge."
+  },
+  "INDIA BANS ALL CHINESE APPS — 500 MILLION USERS AFFECTED": {
+    blurb: "India banned all Chinese-made apps from its market, affecting half a billion users overnight.",
+    analysis: "Digital decoupling between two nuclear powers. US tech fills the vacuum — NASDAQ benefits. Emerging markets dip on geopolitical fragmentation. Crypto gets a sovereignty bid."
+  },
+  "GREENLAND DECLARES INDEPENDENCE FROM DENMARK — OPENS RARE EARTH BIDDING": {
+    blurb: "Greenland declared independence and immediately opened bidding for its vast rare earth mineral deposits.",
+    analysis: "Greenland sits on massive rare earth reserves. Independence opens a new supply source — lithium and defense stocks rally on the strategic scramble. Every major power wants in."
+  },
+  "FULLY AUTONOMOUS DRONE SWARM DEPLOYED IN COMBAT — UKRAINE RECLAIMS TERRITORY": {
+    blurb: "A fully autonomous drone swarm was deployed in combat for the first time, helping Ukraine reclaim occupied territory.",
+    analysis: "Autonomous warfare changes the defense equation forever. Defense stocks surge as every military scrambles to match. This is the biggest shift in warfare since gunpowder."
+  },
+  "REPORTS OF COORDINATED CYBER BREACH ACROSS CENTRAL BANK NETWORKS": {
+    blurb: "Multiple central banks reported unauthorized access to their internal networks in what appears to be a coordinated attack.",
+    analysis: "Early signs of a systemic cyber threat. Gold and Bitcoin get a bid as digital banking trust wavers. Markets nervous but waiting for details."
+  },
+  "CYBER MERCENARY GROUP HACKS 40 CENTRAL BANKS SIMULTANEOUSLY": {
+    blurb: "A sophisticated cyber mercenary group breached 40 central banks simultaneously, compromising financial systems worldwide.",
+    analysis: "The financial system's vulnerability exposed. Gold and Bitcoin surge as trust in digital banking evaporates. Defense stocks rally on cybersecurity spending urgency."
+  },
+  "FBI TRACES CYBER MERCENARIES — HACKER WALLETS FROZEN WORLDWIDE": {
+    blurb: "The FBI identified the cyber mercenary group and coordinated with international agencies to freeze their cryptocurrency wallets.",
+    analysis: "Crisis contained. Risk assets recover as systemic fears fade. Gold and Bitcoin give back their panic premium. Cybersecurity stocks keep some gains."
+  },
+  "NORTH KOREA IDENTIFIED BEHIND BANK HACKS — SANCTIONS DOUBLED": {
+    blurb: "Intelligence agencies confirmed North Korea's Lazarus Group orchestrated the central bank hacks. Western nations doubled existing sanctions.",
+    analysis: "Geopolitical escalation replaces cyber panic. Defense and gold stay bid on sanctions risk. Emerging markets take a hit from trade disruption fears."
+  },
+  "HACKERS PROVE BANK ACCESS — TRIGGER FLASH CRASHES ACROSS 12 MARKETS": {
+    blurb: "The hackers demonstrated continued access by triggering simultaneous flash crashes across 12 major financial markets worldwide.",
+    analysis: "Full panic mode. The financial system is compromised and everyone knows it. Gold and Bitcoin explode as the ultimate hedge against broken infrastructure. Equities in freefall."
+  },
 
   // ===========================================
   // ECONOMIC & MARKETS
   // ===========================================
-  "UNEMPLOYMENT HITS 15%": {
-    blurb: "The Bureau of Labor Statistics reported unemployment reached 15%, the highest since the Great Depression.",
-    analysis: "Mass unemployment means crushed consumer spending. Stocks fall, real estate drops as people can't pay rent. Gold rises on economic distress."
-  },
-  "JOBS REPORT SHOCKS - 500K ADDED": {
-    blurb: "Employers added 500,000 jobs last month, far exceeding economists' expectations of 200,000.",
-    analysis: "Blowout jobs mean the economy is running hot. Stocks rally on growth. But watch the Fed - hot jobs might mean higher rates coming."
-  },
-  "FLASH CRASH: DOW PLUNGES 1000 POINTS IN MINUTES": {
-    blurb: "The Dow Jones Industrial Average plummeted 1,000 points in minutes before partially recovering.",
-    analysis: "Flash crashes are usually algorithms gone haywire. Gold spikes on panic. The crash creates buying opportunities for those with nerve."
-  },
-  "CPI COMES IN HOT - 9.1% ANNUAL": {
-    blurb: "The Consumer Price Index rose 9.1% year-over-year, the highest inflation reading in decades.",
-    analysis: "Hot CPI means the Fed will stay aggressive. Stocks sell off on rate hike fears. Gold and Bitcoin rally as inflation hedges gain appeal."
-  },
-  "HEDGE FUND BLOWS UP - MARGIN CALLS SPREAD": {
-    blurb: "A major hedge fund collapsed after failed leveraged bets triggered a cascade of margin calls across prime brokers.",
-    analysis: "Hedge fund implosions create contagion risk. Banks rush to unwind positions, causing forced selling. Bargains emerge for those with dry powder."
-  },
-  "CURRENCY CRISIS HITS MAJOR EMERGING MARKET": {
-    blurb: "A major emerging market currency plunged 30% against the dollar as foreign investors fled en masse.",
-    analysis: "Currency crises spread. Other emerging markets get sold on fear of contagion. Safe havens like gold and Bitcoin benefit from capital flight."
-  },
-  "BILLIONAIRES EXODUS - 50 RENOUNCE US CITIZENSHIP": {
-    blurb: "Fifty high-net-worth individuals renounced their US citizenship this quarter, citing tax concerns.",
-    analysis: "Wealth fleeing signals something wrong with the system. Crypto and gold benefit as portable stores of value. Emerging market havens see inflows."
-  },
 
   // ===========================================
   // TECH & AI
   // ===========================================
-  "BIG TECH ANTITRUST BREAKUP ORDERED": {
-    blurb: "Federal judges ordered the breakup of major technology companies following landmark antitrust rulings.",
-    analysis: "Breaking up tech giants destroys competitive moats. NASDAQ falls on uncertainty. The broader market dips on regulatory risk spreading."
-  },
-  "NVIDIA UNVEILS 100X AI CHIP": {
-    blurb: "NVIDIA announced a revolutionary AI processor delivering 100 times the performance of current generation chips.",
-    analysis: "Game-changing chips accelerate AI adoption across industries. Tech soars on productivity revolution. Lithium rallies on data center power demands."
-  },
-  "MAJOR AI MODEL UNEXPECTEDLY RELEASED": {
-    blurb: "A leading AI lab surprise-released a powerful new model, catching competitors off guard.",
-    analysis: "Surprise releases reshape competitive dynamics overnight. Tech rallies on AI momentum. The arms race accelerates as rivals scramble to respond."
-  },
-  "MASSIVE DATA BREACH HITS 500M USERS": {
-    blurb: "Hackers compromised 500 million user accounts at a major tech company, exposing sensitive personal data.",
-    analysis: "Data breaches damage trust and trigger regulatory scrutiny. The breached company tanks, dragging tech sentiment down. Crypto gains on privacy narrative."
-  },
-  "SILICON VALLEY LAYOFFS HIT 100,000": {
-    blurb: "Tech giants announced a combined 100,000 layoffs as the sector adjusts to slowing growth.",
-    analysis: "Mass layoffs signal the party is over for tech. Valuations compress as growth expectations reset. Talent flooding the market helps startups hire."
-  },
-  "TECH WORKERS FLOOD JOB MARKET - WAGES DROP 15%": {
-    blurb: "Average tech sector wages fell 15% as laid-off workers competed for fewer open positions.",
-    analysis: "Falling wages are deflationary for tech costs but bearish for sentiment. Companies with hiring freezes benefit from talent availability. Emerging markets see outsourcing opportunities."
-  },
-  "ANTITRUST SETTLEMENT - BIG TECH PAYS $50B FINE": {
-    blurb: "The Department of Justice reached a $50 billion settlement with major technology companies over antitrust violations.",
-    analysis: "Record fines hurt but remove regulatory uncertainty. Markets often rally after settlements as the worst-case scenario is resolved. The fine is paid and life goes on."
-  },
-  "APPLE EXITS CHINA MANUFACTURING": {
-    blurb: "Apple announced plans to move all manufacturing out of China within three years, citing geopolitical risks.",
-    analysis: "Decoupling from China is expensive but strategically necessary. Lithium rallies as new supply chains require investment. Emerging markets compete for the manufacturing business."
-  },
   "AMAZON INTRODUCES 5 MINUTE DELIVERIES": {
     blurb: "Amazon launched ultrafast delivery service promising most items within five minutes in major cities.",
     analysis: "Faster delivery crushes traditional retail further. Tech rallies on innovation. Emerging market retailers who can't compete see their moats erode."
@@ -158,41 +98,33 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   // ===========================================
   // CRYPTO
   // ===========================================
-  "SEC APPROVES SPOT BITCOIN ETF": {
-    blurb: "The Securities and Exchange Commission approved the first spot Bitcoin ETF for trading on US exchanges.",
-    analysis: "ETF approval opens Bitcoin to institutional money that can't hold crypto directly. Massive capital inflows expected. A watershed moment for crypto legitimacy."
-  },
   "MAJOR EXCHANGE FILES BANKRUPTCY": {
     blurb: "One of the world's largest cryptocurrency exchanges filed for Chapter 11 bankruptcy, freezing customer funds.",
     analysis: "Exchange collapses trigger contagion fears across crypto. Trust evaporates. Coins held on the exchange may be lost forever. Survivors rally on reduced competition."
   },
-  "WHALE DUMPS 10,000 BTC": {
-    blurb: "Blockchain data shows a single wallet transferred 10,000 Bitcoin to exchanges, signaling a major sell-off.",
-    analysis: "Whale dumps crush prices short-term as markets absorb supply. Panic selling follows. Eventually dip buyers emerge, but timing is everything."
-  },
-  "EL SALVADOR MAKES BTC LEGAL TENDER": {
-    blurb: "El Salvador became the first country to adopt Bitcoin as official legal tender alongside the US dollar.",
-    analysis: "Nation-state adoption is a massive legitimacy boost. Other countries watch closely. If it works, more will follow. Crypto rallies on the validation."
-  },
-  "CHINA BANS CRYPTO FOR 47TH TIME": {
-    blurb: "Chinese regulators announced another comprehensive ban on cryptocurrency trading and mining activities.",
-    analysis: "China bans crypto like clockwork. Markets dip reflexively but recover fast. Miners relocate, hashrate temporarily drops, then rebounds elsewhere. Rinse and repeat."
+  "BRICS NATIONS ADOPT CRYPTO PAYMENT STANDARD": {
+    blurb: "BRICS nations announced a joint crypto payment standard for cross-border trade, bypassing the US dollar system.",
+    analysis: "Multiple major economies adopting crypto for real trade settlements is the biggest legitimacy boost since ETF approval. Bitcoin becomes a geopolitical hedge. Altcoins rally in sympathy."
   },
   "ELON SHITPOSTS DOGE MEME AT 3AM": {
     blurb: "Elon Musk posted a Dogecoin meme on social media, sending the cryptocurrency and Tesla stock surging.",
     analysis: "The Musk effect is real. Altcoins pump on his tweets. Tesla catches a sympathy bid. Retail traders pile in hoping to front-run the next meme."
   },
-  "BITCOIN HALVING COMPLETES": {
-    blurb: "Bitcoin completed its scheduled halving event, cutting mining rewards in half and reducing new supply.",
-    analysis: "Halvings historically precede bull runs as supply tightens. Less new Bitcoin means more scarcity. Previous halvings saw 10x gains within 18 months."
-  },
   "CRYPTO: ALTCOIN SEASON OFFICIALLY BEGINS": {
     blurb: "Analysts declared the start of altcoin season as smaller cryptocurrencies dramatically outperformed Bitcoin.",
     analysis: "When altcoins outperform Bitcoin, risk appetite is high. Capital rotates from Bitcoin into speculative tokens. Late-cycle behavior - ride it but watch for exits."
   },
-  "DEFI PROTOCOL HACKED FOR $2B": {
-    blurb: "A major decentralized finance protocol suffered a $2 billion exploit, draining user funds.",
-    analysis: "DeFi hacks shake confidence in the whole space. Contagion fears spread as users rush to withdraw. The protocol is probably dead, but surviving protocols may benefit long-term."
+  "CHINA LAUNCHES DIGITAL YUAN FOR INTERNATIONAL TRADE — BYPASSES SWIFT": {
+    blurb: "China launched the digital yuan for international trade settlement, offering an alternative to the SWIFT banking network.",
+    analysis: "A state-backed alternative to SWIFT chips away at dollar hegemony. Bitcoin rallies as the 'neutral' alternative. Gold catches a bid on de-dollarization fears."
+  },
+  "VISA AND MASTERCARD BEGIN PROCESSING BITCOIN NATIVELY": {
+    blurb: "Visa and Mastercard announced native Bitcoin payment processing across their global networks.",
+    analysis: "The biggest payment networks in the world just legitimized Bitcoin. Institutional adoption accelerates. Altcoins rally in sympathy. The payment rails are now crypto-native."
+  },
+  "NIGERIAN CRYPTO ADOPTION HITS 60% — LARGEST CRYPTO ECONOMY ON EARTH": {
+    blurb: "Nigeria became the world's largest crypto economy with 60% of its population actively using digital currencies.",
+    analysis: "A nation of 220 million people going crypto-native proves the use case in developing markets. Bitcoin and altcoins rally on real-world adoption. Emerging markets benefit from innovation."
   },
 
   // ===========================================
@@ -202,9 +134,9 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Tesla announced record quarterly vehicle deliveries, exceeding analyst expectations by a wide margin.",
     analysis: "Record deliveries prove demand remains strong despite competition. Tesla rallies hard. Lithium follows on battery material demand. Bulls vindicated."
   },
-  "OPTIMUS ROBOT ENTERS MASS PRODUCTION": {
-    blurb: "Tesla began mass production of its humanoid Optimus robot at a new dedicated manufacturing facility.",
-    analysis: "Humanoid robots could be bigger than cars. Tesla transforms from automaker to robotics company. The total addressable market just expanded massively."
+  "TESLA Q4: OPTIMUS SELLS 10M UNITS, RECORD $30B PROFIT": {
+    blurb: "Tesla reported Q4 earnings with 10 million Optimus humanoid robot units sold and a record $30 billion profit, shattering analyst expectations.",
+    analysis: "Optimus revenue now rivals the entire car business. Tesla has proven it's a robotics empire, not just an automaker. The total addressable market just expanded massively."
   },
   "TESLA FSD CAUSES FATAL ACCIDENT": {
     blurb: "A fatal crash involving Tesla's Full Self-Driving system is under federal investigation.",
@@ -221,10 +153,6 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   "ELON SELLS $5B IN TSLA SHARES": {
     blurb: "Elon Musk sold $5 billion worth of Tesla shares, triggering concerns about insider confidence.",
     analysis: "When the CEO sells, everyone wonders what he knows. Could be taxes, could be funding another venture, could be pessimism. Stock drops on uncertainty."
-  },
-  "TESLA STOCK ADDED TO DOW JONES": {
-    blurb: "Tesla joined the Dow Jones Industrial Average, becoming the first EV maker in the prestigious index.",
-    analysis: "Dow inclusion means index funds must buy. Massive passive flows into the stock. A sign Tesla has matured from growth stock to blue chip."
   },
   "BYD OVERTAKES TESLA IN GLOBAL SALES": {
     blurb: "Chinese automaker BYD surpassed Tesla in global electric vehicle sales for the first time.",
@@ -246,43 +174,23 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   // ===========================================
   // BIOTECH & HEALTH
   // ===========================================
-  "BREAKING: WHO DECLARES NEW PANDEMIC": {
-    blurb: "The World Health Organization declared a global pandemic as a new pathogen spreads across continents.",
-    analysis: "Pandemic means lockdowns, travel bans, and economic disruption. Biotech soars on vaccine hopes. Everything else craters on fear."
-  },
-  "CANCER CURE ENTERS PHASE 3 TRIALS": {
-    blurb: "A promising universal cancer treatment advanced to Phase 3 clinical trials after stunning early results.",
-    analysis: "Phase 3 is the final hurdle before FDA approval. Biotech rallies on breakthrough potential. Success here could reshape medicine."
-  },
-  "FDA REJECTS BLOCKBUSTER DRUG": {
-    blurb: "The FDA rejected a highly anticipated drug application, citing insufficient efficacy data in trials.",
-    analysis: "FDA rejections crush individual stocks and drag down biotech sentiment. Years of R&D wiped out. Other companies with similar drugs get nervous."
-  },
-  "MRNA VACCINE FOR HIV SHOWS PROMISE": {
-    blurb: "Early trials of an mRNA-based HIV vaccine showed 78% efficacy, stunning researchers.",
-    analysis: "An HIV vaccine would be transformative. Biotech rallies on mRNA platform validation. Success here opens the door to vaccines for other chronic diseases."
-  },
-  "AGING REVERSED IN HUMAN TRIALS": {
-    blurb: "Clinical trials demonstrated measurable reversal of biological aging markers in human subjects.",
-    analysis: "Anti-aging breakthroughs could create the largest market in history. Biotech explodes on longevity potential. The implications for healthcare economics are staggering."
-  },
-  "OZEMPIC CAUSES HEART ATTACKS - MASS RECALL": {
-    blurb: "A popular weight-loss drug was recalled after studies linked it to elevated heart attack risk.",
-    analysis: "Drug recalls devastate the manufacturer and shake faith in the approval process. Biotech sector takes a sympathy hit. Lawyers prepare class action lawsuits."
-  },
-  "MALARIA VACCINE 95% EFFECTIVE - WHO APPROVES": {
-    blurb: "The WHO approved a malaria vaccine showing 95% efficacy, potentially saving millions of lives annually.",
-    analysis: "Malaria kills 600,000 per year. A working vaccine is humanitarian gold. Biotech rallies on success. Emerging markets benefit from reduced disease burden."
-  },
 
   // ===========================================
   // ENERGY
   // ===========================================
-  "NUCLEAR FUSION BREAKTHROUGH ACHIEVED": {
-    blurb: "Scientists achieved net energy gain from nuclear fusion for the first time in history.",
-    analysis: "Fusion is the holy grail - unlimited clean energy. Oil and uranium crash on obsolescence fears. Tech rallies on cheap power future. Gold rises on uncertainty."
+  "MULTIPLE LABS REPLICATE FUSION RESULT — ENERGY REVOLUTION CONFIRMED": {
+    blurb: "Three independent labs confirmed net energy gain from fusion, validating the original breakthrough in peer-reviewed studies.",
+    analysis: "This time it's real. Uranium and oil crash on obsolescence — why burn fuel when fusion works? NASDAQ soars on cheap energy future. Lithium rallies on electrification boom."
   },
-  "OIL TANKER EXPLODES IN STRAIT OF HORMUZ": {
+  "REPLICATION FAILS — MEASUREMENT ERROR CONFIRMED, FUSION HYPE COLLAPSES": {
+    blurb: "Independent labs failed to replicate the claimed fusion breakthrough. Investigators found systematic measurement errors in the original experiment.",
+    analysis: "Another fusion false alarm. Uranium and oil bounce back as the fossil fuel era continues. Tech deflates as the cheap energy dream evaporates. Back to square one."
+  },
+  "CHINA ANNOUNCES COMPETING FUSION BREAKTHROUGH — ENERGY RACE IGNITES": {
+    blurb: "China's state energy lab announced its own independent fusion breakthrough, escalating the technology race between superpowers.",
+    analysis: "The fusion race goes geopolitical. Both breakthroughs can't be fake — energy disruption is real. Oil and uranium still tank, but emerging markets drop on US-China tech war fears."
+  },
+  "OIL TANKER EXPLODES IN STRAIT OF HORMUZ — SUPPLY ROUTE THREATENED": {
     blurb: "An oil tanker exploded in the Strait of Hormuz, raising fears of supply disruptions in the critical waterway.",
     analysis: "20% of world oil passes through Hormuz. Any disruption spikes prices instantly. Defense rallies on conflict risk. Gold catches a safe-haven bid."
   },
@@ -298,11 +206,11 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Global regulators approved 50 new nuclear power plants as nations race to secure carbon-free baseload power.",
     analysis: "Nuclear is back. Uranium rallies hard on demand surge. Oil takes a long-term hit as nuclear displaces fossil fuels. Energy security trumps environmental concerns."
   },
-  "REFINERY EXPLOSION CUTS US CAPACITY 5%": {
+  "REFINERY EXPLOSION CUTS US CAPACITY 5% — GAS PRICES SURGE": {
     blurb: "A major refinery explosion in Texas knocked out 5% of US refining capacity for months.",
     analysis: "Less refining means higher gas prices even if crude is stable. Regional fuel shortages possible. Oil rallies on the supply disruption."
   },
-  "PIPELINE LEAK FORCES EMERGENCY SHUTDOWN": {
+  "PIPELINE LEAK FORCES EMERGENCY SHUTDOWN — SUPPLY DISRUPTED": {
     blurb: "A major oil pipeline was shut down after a leak was detected, cutting supply to the Midwest.",
     analysis: "Pipeline shutdowns create regional supply crunches. Oil rallies on delivery disruption. Environmental concerns add regulatory risk to the sector."
   },
@@ -310,9 +218,17 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "A major OPEC member announced its withdrawal from production agreements, pledging to maximize output.",
     analysis: "OPEC defections mean more supply hitting the market. Oil prices drop as discipline breaks down. The cartel's power to manage prices diminishes."
   },
-  "OPEC FLOODS MARKET IN RETALIATION - PRICE WAR BEGINS": {
-    blurb: "OPEC announced plans to dramatically increase production in response to non-member competition.",
-    analysis: "Price wars crush high-cost producers. US shale gets squeezed. Oil crashes but eventually rebounds as marginal producers go bankrupt and supply falls."
+  "RECORD HURRICANE SEASON: 8 CATEGORY 5 STORMS IN ONE YEAR": {
+    blurb: "The Atlantic hurricane season shattered records with eight Category 5 storms, devastating coastal infrastructure.",
+    analysis: "Hurricanes wreck Gulf oil rigs, flood farmland, and destroy supply chains. Oil and coffee spike on disruption. Emerging markets with coastal exposure get hammered."
+  },
+  "DEEP SEA MINING BEGINS: FIRST COBALT EXTRACTED FROM OCEAN FLOOR": {
+    blurb: "A deep-sea mining operation successfully extracted cobalt from the ocean floor for the first time in history.",
+    analysis: "New supply sources threaten existing miners. Lithium dips as alternative mineral sources emerge. Tech benefits from cheaper raw materials. Emerging mining nations lose leverage."
+  },
+  "WORLD'S LARGEST CARBON CAPTURE PLANT GOES ONLINE IN ICELAND": {
+    blurb: "The world's largest direct air carbon capture facility began operations in Iceland, powered by geothermal energy.",
+    analysis: "Carbon capture becoming viable is bullish for green tech. Oil takes a small hit on climate narrative. Lithium benefits from the broader clean energy push."
   },
 
   // ===========================================
@@ -322,7 +238,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Electric vehicles outsold gasoline-powered cars globally for the first time in history.",
     analysis: "The inflection point has arrived. Lithium demand goes parabolic. Oil faces structural decline. Tesla and the entire EV ecosystem celebrate."
   },
-  "CHILEAN LITHIUM MINE DISASTER": {
+  "CHILEAN LITHIUM MINE DISASTER — SUPPLY SHORTAGE FEARS SPIKE PRICES": {
     blurb: "A catastrophic accident at a major Chilean lithium mine killed dozens and halted production indefinitely.",
     analysis: "Supply disruption in a concentrated market. Lithium spikes as Chile produces 25% of global supply. Tesla takes a hit on battery cost concerns."
   },
@@ -362,13 +278,21 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Supply chain disruptions cascaded across industries as key components became unavailable worldwide.",
     analysis: "Supply chain meltdowns hit everything. Coffee, tech, EVs all suffer. Emerging markets dependent on imports get crushed. Gold rallies on chaos."
   },
-  "SYNTHETIC GOLD CREATED IN LAB": {
-    blurb: "Scientists successfully synthesized gold atoms in a laboratory, potentially disrupting the precious metals market.",
-    analysis: "If gold can be made cheaply, its store-of-value thesis dies. Gold crashes. Crypto rallies as the digital alternative to a compromised asset."
-  },
   "FERTILIZER SHORTAGE HITS GLOBAL FARMS": {
     blurb: "A global fertilizer shortage forced farmers to reduce applications, threatening crop yields worldwide.",
     analysis: "Less fertilizer means lower yields and higher food prices. Coffee and agricultural commodities rally. Emerging markets face food security concerns."
+  },
+  "STUDY LINKS COFFEE TO HEART DISEASE — CONSUMPTION PLUMMETS": {
+    blurb: "A major longitudinal study found strong correlation between daily coffee consumption and cardiovascular events.",
+    analysis: "Health scares crush demand. Coffee futures tank as consumers switch to tea and alternatives. Biotech rallies on cardiac drug pipeline."
+  },
+  "BRAZIL COFFEE OVERSUPPLY: RECORD HARVEST CRASHES PRICES": {
+    blurb: "Brazil reported its largest coffee harvest in history, flooding global markets with excess supply.",
+    analysis: "Too much supply kills price. Warehouses are full, exporters are desperate, and futures are in freefall. Brazilian farmers benefit from volume."
+  },
+  "SYNTHETIC COFFEE BREAKTHROUGH — LAB-GROWN BEANS IDENTICAL TO ARABICA": {
+    blurb: "A biotech startup announced lab-grown coffee beans indistinguishable from premium Arabica at 1/10th the cost.",
+    analysis: "If synthetic coffee scales, traditional coffee farming faces an existential threat. Tech wins, emerging market coffee economies lose."
   },
 
   // ===========================================
@@ -378,181 +302,45 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "A magnitude 9.2 earthquake struck the San Francisco Bay Area, causing widespread destruction.",
     analysis: "Major disaster destroys wealth and disrupts supply chains. Tech crashes as headquarters and data centers go offline. Gold rises as safe haven."
   },
-  "BREAKING: ALIEN SIGNAL CONFIRMED FROM PROXIMA B": {
-    blurb: "Scientists confirmed detection of an artificial signal originating from the Proxima Centauri system.",
-    analysis: "Contact changes everything we know. Defense surges on unknown threat response. Markets crash on existential uncertainty. Gold rises as the ultimate hedge."
-  },
-  "GLOBAL WEALTH TAX TREATY SIGNED": {
-    blurb: "Major economies signed a treaty implementing a coordinated global wealth tax on assets over $100 million.",
-    analysis: "Wealth taxes send capital fleeing to untaxable assets. Bitcoin and gold surge as portable stores of value. The ultra-wealthy restructure aggressively."
-  },
-  "ASTEROID MINING SHIP RETURNS WITH GOLD": {
-    blurb: "A commercial asteroid mining mission returned to Earth with 500 tons of gold, proving space mining viable.",
-    analysis: "Space-sourced gold destroys the scarcity argument. Gold crashes on infinite supply potential. Crypto rallies as the true scarce asset. Lithium from space could be next."
-  },
-  "BREAKING: US GOVERNMENT DEFAULTS ON DEBT": {
-    blurb: "The United States government missed a Treasury debt payment for the first time in history.",
-    analysis: "US default was supposed to be impossible. Gold and crypto explode as faith in fiat evaporates. Stocks crash as the risk-free rate stops being risk-free."
-  },
 
   // ===========================================
   // REGULATORY EVENTS
   // ===========================================
-  "SEC ANNOUNCES EMERGENCY TRADING RULES": {
-    blurb: "The SEC implemented emergency trading restrictions in response to extreme market volatility.",
-    analysis: "Emergency rules signal regulators are scared. Trading curbs add friction but prevent panic cascades. Markets usually stabilize once the rules kick in."
-  },
-  "CONGRESS HOLDS EMERGENCY MARKET HEARINGS": {
-    blurb: "Congressional committees convened emergency hearings to address the ongoing market turmoil.",
-    analysis: "Congressional hearings are theater but signal political attention. Expect populist regulation proposals. Markets watch for hints of intervention or stimulus."
-  },
-  "UN SECURITY COUNCIL EMERGENCY SESSION": {
-    blurb: "The UN Security Council convened an emergency session to address the escalating international crisis.",
-    analysis: "UN emergency sessions mean the world is paying attention. Defense and gold catch bids on uncertainty. Diplomatic solutions remain possible but tensions are high."
-  },
-  "G7 ANNOUNCES COORDINATED MARKET RESPONSE": {
-    blurb: "G7 finance ministers announced a coordinated response to stabilize global financial markets.",
-    analysis: "Coordinated intervention is powerful. Central banks have unlimited firepower when they work together. Markets rally on the backstop. Don't fight the G7."
-  },
-  "FTC LAUNCHES MAJOR ANTITRUST PROBE": {
-    blurb: "The Federal Trade Commission opened a major antitrust investigation into dominant tech platforms.",
-    analysis: "Antitrust probes create years of uncertainty. Tech valuations compress on regulatory overhang. The threat of breakup hangs over the sector."
-  },
-  "COMPREHENSIVE CRYPTO FRAMEWORK PROPOSED": {
-    blurb: "Lawmakers introduced a comprehensive regulatory framework for cryptocurrencies and digital assets.",
-    analysis: "Crypto regulation is a double-edged sword. Short-term uncertainty hurts prices. Long-term clarity could bring institutional adoption. The details matter."
-  },
-  "FDA FAST-TRACKS EMERGENCY APPROVALS": {
-    blurb: "The FDA announced fast-track emergency approval processes for treatments addressing the crisis.",
-    analysis: "Fast-track approvals accelerate the path to market. Biotech rallies on shortened timelines. Companies with relevant pipelines see immediate gains."
-  },
-  "EPA RELAXES ENERGY DRILLING RESTRICTIONS": {
-    blurb: "The EPA eased environmental restrictions on energy drilling to boost domestic production.",
-    analysis: "Deregulation means more drilling and more supply. Oil dips on increased production expectations. Energy companies rally on lower compliance costs."
-  },
 
   // ===========================================
   // TRANSPORTATION EVENTS
   // ===========================================
-  "GLOBAL SHIPPING RATES SPIKE 40%": {
-    blurb: "Global container shipping rates surged 40% as demand outstripped available vessel capacity.",
-    analysis: "Shipping rate spikes mean higher prices for everything that moves. Inflation pressure builds. Companies with inventory on hand benefit over those waiting on ships."
-  },
-  "MAJOR AIRLINE CANCELS 30% OF FLIGHTS": {
-    blurb: "A major airline cancelled 30% of its flights due to pilot shortages and operational challenges.",
-    analysis: "Flight cancellations signal demand exceeding capacity. Oil takes a small hit on reduced jet fuel demand. Business travel disruptions hurt productivity."
-  },
-  "PORT CONGESTION FINALLY EASES NATIONWIDE": {
-    blurb: "Major US ports reported significant improvement in container backlogs and processing times.",
-    analysis: "Clearing port congestion is deflationary. Supply chain pressure eases. Retailers get inventory flowing. The inflation story improves."
-  },
-  "NATIONWIDE TRUCKING STRIKE DISRUPTS SUPPLY": {
-    blurb: "Truckers launched a nationwide strike over fuel costs and working conditions, stranding cargo.",
-    analysis: "When trucks stop, America stops. Supermarket shelves empty fast. Coffee and perishables spike. The strike creates short-term chaos with long-term wage implications."
-  },
-  "RAILROADS REPORT RECORD CARGO VOLUME": {
-    blurb: "Major railroads reported record cargo volumes as economic activity surged nationwide.",
-    analysis: "Rail volumes are a proxy for economic health. Record cargo means the economy is humming. Bullish for everything tied to consumer and industrial activity."
-  },
-  "GLOBAL CONTAINER SHORTAGE WORSENS": {
-    blurb: "The global shortage of shipping containers intensified as manufacturers struggled to meet demand.",
-    analysis: "Container shortages mean goods can't move even when ships are available. Supply chain bottlenecks persist. Emerging market exporters suffer most."
-  },
-  "AIRLINES POST RECORD QUARTERLY PROFITS": {
-    blurb: "Major airlines reported record quarterly profits as travel demand surged post-pandemic.",
-    analysis: "Strong airline profits signal robust consumer spending. Oil catches a bid on jet fuel demand. The travel recovery is real and sustainable."
-  },
 
   // ===========================================
   // BANKING EVENTS
   // ===========================================
-  "MAJOR BANKS PASS FED STRESS TESTS": {
-    blurb: "All major US banks passed the Federal Reserve's annual stress tests with strong capital buffers.",
-    analysis: "Passing stress tests means banks can return capital to shareholders. Expect dividend hikes and buybacks. Financial sector rallies on the clean bill of health."
-  },
-  "REGIONAL BANK REPORTS MASSIVE DEPOSIT FLIGHT": {
-    blurb: "A major regional bank reported significant deposit outflows as customers moved funds to larger institutions.",
-    analysis: "Deposit flight is how bank runs start. Contagion fears spread to other regional banks. Gold catches a safe-haven bid. Fed watches closely for systemic risk."
-  },
-  "JPMORGAN RAISES DIVIDEND 20%": {
-    blurb: "JPMorgan Chase announced a 20% dividend increase, signaling confidence in its financial position.",
-    analysis: "Big bank dividend hikes signal sector strength. Other banks likely to follow. Financial stocks rally on income investor flows."
-  },
-  "MORTGAGE RATES HIT 8% - HOUSING COOLS": {
-    blurb: "Average 30-year mortgage rates hit 8%, the highest level in two decades, cooling the housing market.",
-    analysis: "8% mortgages price out buyers. Housing activity freezes. Construction stocks drop. But existing homeowners locked in at 3% aren't selling, limiting supply."
-  },
-  "BANKING SECTOR LEADS MARKET RALLY": {
-    blurb: "Financial stocks led the broader market higher as investors rotated into value sectors.",
-    analysis: "Banks leading is a healthy sign. Means the economy is strong enough to support lending. Rate-sensitive sectors follow financials higher."
-  },
-  "CREDIT CARD DELINQUENCIES HIT 10-YEAR HIGH": {
-    blurb: "Credit card delinquencies reached their highest level in a decade as consumers struggled with debt.",
-    analysis: "Rising delinquencies signal consumer stress. Banks provision for losses, hurting earnings. The Fed watches credit data for recession signals."
-  },
-  "FDIC ANNOUNCES INCREASED DEPOSIT COVERAGE": {
-    blurb: "The FDIC raised deposit insurance limits to restore confidence in the banking system.",
-    analysis: "Higher FDIC limits reduce bank run risk. Depositors relax knowing their money is safe. Regional banks stabilize as flight-to-quality reverses."
-  },
 
   // ===========================================
   // INSURANCE EVENTS
   // ===========================================
-  "INSURERS PULL OUT OF DISASTER-PRONE ZONES": {
-    blurb: "Major insurance companies announced withdrawal from disaster-prone regions, leaving millions uninsured.",
-    analysis: "Uninsurable property is worth less. Real estate in affected areas drops. Climate risk becomes priced into the market. Migration patterns shift."
-  },
-  "REINSURANCE RATES SPIKE AFTER CATASTROPHE": {
-    blurb: "Global reinsurance rates surged following the catastrophic losses from recent disasters.",
-    analysis: "Higher reinsurance costs flow through to consumers. Insurance premiums rise across the board. A hidden inflation driver that hits everyone."
-  },
-  "DISASTER INSURANCE CLAIMS REACH $50 BILLION": {
-    blurb: "Insurance industry catastrophe claims reached $50 billion following the recent disaster.",
-    analysis: "Massive claims drain insurer capital. Some smaller insurers may fail. Premium hikes coming. The industry consolidates around the strongest players."
-  },
-  "MAJOR INSURERS REPORT STRONG RESERVES": {
-    blurb: "Major insurance companies reported robust reserve levels and strong underwriting results.",
-    analysis: "Strong reserves mean insurers can handle shocks. Dividend hikes and buybacks likely. Insurance stocks rally on the stability signal."
-  },
-  "CYBER INSURANCE PREMIUMS DOUBLE INDUSTRYWIDE": {
-    blurb: "Cyber insurance premiums doubled across the industry as ransomware attacks escalated.",
-    analysis: "Cyber insurance costs becoming a significant expense for businesses. Tech companies investing in security benefit. The cost of doing business online just went up."
-  },
 
   // ===========================================
   // RECOVERY EVENTS
   // ===========================================
-  "MARKETS STABILIZE ON DIPLOMATIC PROGRESS": {
-    blurb: "Global markets stabilized as diplomatic efforts showed signs of progress in resolving the crisis.",
-    analysis: "Diplomacy working is the best outcome. Risk assets recover as war premium fades. Defense gives back gains. The world exhales."
-  },
-  "BARGAIN HUNTERS EMERGE AS MARKETS FIND FLOOR": {
-    blurb: "Value investors emerged from the sidelines as beaten-down stocks attracted buying interest.",
-    analysis: "Bargain hunting signals the panic is over. Smart money buying oversold names. The bottom might be in. Time to get constructive."
-  },
-  "VIX DROPS TO 3-MONTH LOW": {
-    blurb: "The CBOE Volatility Index dropped to its lowest level in three months as market calm returned.",
-    analysis: "Falling VIX means fear is subsiding. Options premiums decline. Risk-on positioning returns. A low VIX environment favors steady gains."
-  },
-  "INSTITUTIONAL BUYING RESUMES IN FORCE": {
-    blurb: "Institutional investors resumed significant buying activity after weeks on the sidelines.",
-    analysis: "When institutions buy, prices go up. The big money sets the direction. Retail follows. Momentum builds on itself."
-  },
-  "CRISIS FEARS OVERBLOWN, TOP ANALYSTS SAY": {
-    blurb: "Wall Street's top strategists declared crisis fears overblown, upgrading their market outlook.",
-    analysis: "Analyst upgrades are lagging indicators but validate the recovery. Media narrative shifts from fear to opportunity. FOMO buying kicks in."
-  },
-  "MARKET BREADTH IMPROVES SIGNIFICANTLY": {
-    blurb: "Market internals strengthened as advancing stocks outnumbered decliners by wide margins.",
-    analysis: "Broad participation is healthy. Not just a few names carrying the market. Sustainable rallies need wide participation. This is it."
-  },
-  "SHORTS SQUEEZED AS PANIC SUBSIDES": {
-    blurb: "Short sellers rushed to cover positions as markets rallied sharply from oversold conditions.",
-    analysis: "Short squeezes accelerate rallies. Forced buying creates momentum. The most hated stocks bounce hardest. Sentiment flips fast."
-  },
   "VOLATILITY SELLERS RETURN TO MARKET": {
     blurb: "Options traders resumed selling volatility as market conditions normalized.",
     analysis: "Volatility selling is a sign of complacency returning. Usually bullish short-term. The premium for insurance is dropping. Calm before the next storm, or genuine peace."
+  },
+  "CENTRAL BANKS ANNOUNCE COORDINATED RATE CUTS — GLOBAL EASING BEGINS": {
+    blurb: "The Federal Reserve, ECB, and Bank of Japan announced simultaneous rate cuts in a coordinated easing campaign.",
+    analysis: "Coordinated cuts are the nuclear option — central banks acting together signals serious intent to reflate. Risk assets surge. Gold dips as deflation fears ease."
+  },
+  "INSTITUTIONAL BUYERS FLOOD MARKET — LARGEST INFLOW SINCE 2020": {
+    blurb: "Institutional investors poured record capital into equities and crypto, marking the largest weekly inflow since 2020.",
+    analysis: "When institutions buy, retail follows. Massive inflows across the board signal the smart money thinks the bottom is in. Broad-based recovery."
+  },
+  "MASSIVE SHORT SQUEEZE — BEARS LIQUIDATED AS MARKET REVERSES": {
+    blurb: "A violent short squeeze liquidated billions in bearish bets as markets reversed sharply higher.",
+    analysis: "Short squeezes feed on themselves — forced buying triggers more forced buying. The most shorted names rip hardest. Bears get destroyed."
+  },
+  "SOVEREIGN WEALTH FUNDS DEPLOY RESERVES — 'BUYING THE DIP'": {
+    blurb: "Several sovereign wealth funds announced major deployments into global markets, calling valuations 'generational'.",
+    analysis: "When sovereign wealth funds deploy, they're thinking in decades. Broad market support across equities, commodities, and emerging markets."
   },
 
   // ===========================================
@@ -569,18 +357,6 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   "LOCKHEED WINS $40B FIGHTER CONTRACT": {
     blurb: "Lockheed Martin won a $40 billion contract to supply next-generation fighter jets to NATO allies.",
     analysis: "Major defense contracts are multi-decade revenue streams. Lockheed leads the sector higher. Suppliers throughout the defense ecosystem benefit."
-  },
-  "CYBER COMMAND FUNDING DOUBLED": {
-    blurb: "Congress doubled funding for US Cyber Command amid escalating digital warfare threats.",
-    analysis: "Cyber warfare is the new battlefield. Defense tech companies rally. Traditional defense gets a boost too. The digital arms race accelerates."
-  },
-  "DEFENSE STOCKS HIT ALL-TIME HIGHS": {
-    blurb: "Defense sector stocks reached all-time highs as geopolitical tensions drove demand for military equipment.",
-    analysis: "Defense at all-time highs reflects the world we live in. Tensions aren't going away. These companies have multi-year backlogs. Momentum continues."
-  },
-  "ARMS SALES TO ALLIES SURGE 50%": {
-    blurb: "US arms sales to allied nations surged 50% as countries boosted defense spending.",
-    analysis: "Allied rearmament benefits US defense contractors. Export revenue adds to domestic contracts. The defense industry has never had it better."
   },
 
   // ===========================================
@@ -681,6 +457,62 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   "EU PROPOSES MANDATORY 47-CHARACTER PASSWORDS": {
     blurb: "EU regulators proposed requiring all online accounts to use 47-character minimum passwords.",
     analysis: "More EU regulatory theater. Tech dips slightly on compliance cost fears. Password managers rejoice. The absurdity never ends."
+  },
+  "POPE ENDORSES BITCOIN IN SUNDAY SERMON — 'RENDER UNTO THE BLOCKCHAIN'": {
+    blurb: "Pope Francis surprised the faithful by endorsing Bitcoin during his weekly address at St. Peter's Square.",
+    analysis: "When the Pope blesses your asset class, that's a cultural moment. BTC and alts get a tiny bump from the world's largest endorsement deal. God is long crypto."
+  },
+  "FLORIDA MAN ACCIDENTALLY BUYS $2M IN URANIUM FUTURES — 'I THOUGHT IT WAS CRYPTO'": {
+    blurb: "A Florida man mistakenly purchased $2 million in uranium futures, believing he was buying cryptocurrency.",
+    analysis: "Florida Man strikes again. Uranium gets a micro-bump from the accidental whale. Somewhere, a commodities broker is very confused."
+  },
+  "STUDY: TRADING STOCKS ACTIVATES SAME BRAIN REGIONS AS GAMBLING AND COCAINE": {
+    blurb: "Neuroscience researchers found that stock trading activates the same reward pathways as gambling and drug use.",
+    analysis: "We already knew this. Every trader who's refreshed their P&L at 3am knew this. Pure entertainment value, zero market impact."
+  },
+  "TIKTOK TREND: GEN-ALPHA KIDS DOING 'MARGIN CALL CHALLENGES' ON PARENTS' BROKERAGES": {
+    blurb: "A viral TikTok trend has children logging into parents' brokerage accounts to trigger margin calls for views.",
+    analysis: "This is terrifying and hilarious. No market impact but some parents are having very bad days. Lock your brokerage apps, people."
+  },
+  "ELON CHANGES TWITTER NAME TO 'CHIEF SHITPOSTING OFFICER' — TESLA BOARD SILENT": {
+    blurb: "Elon Musk changed his official title on X to 'Chief Shitposting Officer,' drawing no response from Tesla's board.",
+    analysis: "Another day, another Musk rebrand. Tesla gets the tiniest sympathy tick because attention is attention. The board has given up."
+  },
+  "JAPAN'S OLDEST INVESTOR, 107, BEATS S&P 500 FOR 40TH CONSECUTIVE YEAR": {
+    blurb: "A 107-year-old Japanese investor has beaten the S&P 500 for the 40th year running with a simple buy-and-hold strategy.",
+    analysis: "The ultimate argument for patience over trading. No market effect, but every day trader just felt a little worse about themselves."
+  },
+  "HEDGE FUND REPLACES ALL ANALYSTS WITH AI — UNDERPERFORMS INDEX BY 30%": {
+    blurb: "A prominent hedge fund that replaced its entire analyst team with AI has underperformed the index by 30%.",
+    analysis: "AI hubris meets market reality. Tech gets a tiny ironic bump. The fired analysts are laughing from their new jobs at competing funds."
+  },
+  "ZUCKERBERG CHALLENGES BEZOS TO CAGE MATCH FOR CHARITY — PPV PRE-SALES HIT $1B": {
+    blurb: "Mark Zuckerberg challenged Jeff Bezos to a cage match, with pay-per-view pre-sales already hitting $1 billion.",
+    analysis: "Billionaire fight club is apparently a thing now. NASDAQ ticks up on the spectacle. Tech CEOs have too much free time and money."
+  },
+  "CONGRESS MEMBER CAUGHT DAY-TRADING DURING HEARING ON BANNING CONGRESS FROM TRADING": {
+    blurb: "A Congress member was caught actively trading stocks on their phone during a hearing about banning congressional trading.",
+    analysis: "Peak irony. No market impact, but the memes write themselves. The STOCK Act remains toothless. Washington never changes."
+  },
+  "AI CHATBOT CONVINCES 50,000 PEOPLE TO MAX OUT CREDIT CARDS ON CRYPTO": {
+    blurb: "An AI chatbot went viral after convincing 50,000 users to invest their credit card limits into cryptocurrency.",
+    analysis: "AI-powered financial advice meets peak retail FOMO. BTC and alts get a small bump from the sudden inflow. This will end well."
+  },
+  "MCDONALDS LAUNCHES MCBITCOIN MEAL — COMES WITH PAPER WALLET AND FRIES": {
+    blurb: "McDonald's introduced the McBitcoin Meal, which includes a paper wallet with a small Bitcoin balance and fries.",
+    analysis: "Corporate crypto adoption goes mainstream fast food. BTC gets a small marketing bump. Billions served, now with blockchain."
+  },
+  "BILLIONAIRE PROPOSES TAXING PEOPLE WHO DON'T INVEST — 'IDLE CASH IS THEFT'": {
+    blurb: "A tech billionaire proposed a tax on uninvested cash, calling savings accounts 'economic treason.'",
+    analysis: "Billionaires say the wildest things. No market effect but Twitter is on fire. The audacity is almost impressive."
+  },
+  "REPORT: AVERAGE RETAIL TRADER HOLDS POSITION FOR 47 SECONDS": {
+    blurb: "A new study found the average retail trader holds a position for just 47 seconds before selling.",
+    analysis: "Speed trading meets attention deficit. No market impact, but it explains a lot about retail volume. Patience is dead."
+  },
+  "VIRAL VIDEO: SQUIRREL ON TRADING FLOOR OUTPERFORMS 85% OF FUND MANAGERS": {
+    blurb: "A viral video showed a squirrel randomly pressing buttons on a trading terminal, outperforming most fund managers.",
+    analysis: "Random chance beats active management — again. No market effect, but the efficient market hypothesis just got a furry mascot."
   },
 
   // ===========================================
@@ -1014,19 +846,6 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Economists project the UBI baby boom generation will enter the workforce in 20 years, transforming the economy.",
     analysis: "Long-term thinking is rare in markets. This generation will be workers and consumers. The patient investor sees opportunity."
   },
-  "LABOR DEPARTMENT JOBS REPORT DUE TOMORROW": {
-    blurb: "The Bureau of Labor Statistics will release the monthly employment report tomorrow, with markets on edge.",
-    analysis: "Jobs Friday is always volatile. The number determines Fed policy and economic narrative. Position light and wait for the data."
-  },
-  "JOBS REPORT SHOCK: ROBOTS REPLACE 300K WORKERS": {
-    blurb: "The jobs report showed 300,000 job losses attributed directly to automation and robotics replacement.",
-    analysis: "Automation displacement is here. Tech and Tesla rally on productivity gains. But gold rises on social instability fears. Mixed implications."
-  },
-  "JOBS REPORT: 400K SURGE - LABOR MARKET STRONG": {
-    blurb: "Employers added 400,000 jobs in a blockbuster report that exceeded all expectations.",
-    analysis: "Strong jobs mean strong economy. Stocks rally on growth confirmation. Oil catches a bid on demand. The soft landing narrative strengthens."
-  },
-
   // ===========================================
   // EVENT CHAINS - SPIKE CHAINS (Simple)
   // ===========================================
@@ -1100,7 +919,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   },
   "QUANTUM SUPREMACY CONFIRMED - ALL ENCRYPTION BROKEN": {
     blurb: "Researchers confirmed quantum computers can now break all existing encryption standards, rendering current security obsolete.",
-    analysis: "Encryption death is civilization-altering. Crypto crashes as the mathematical basis evaporates. Defense surges on cybersecurity crisis. Tech rallies on new paradigm."
+    analysis: "Encryption death is civilization-altering. Banks, e-commerce, and cloud computing face existential crisis. Crypto evaporates — it IS cryptography. Gold surges as digital trust collapses. Defense explodes on cybersecurity emergency."
   },
   "RESULTS REPLICATED - 1000X SPEEDUP BUT ENCRYPTION SAFE": {
     blurb: "Independent labs replicated the quantum results showing 1000x speedup, but confirmed current encryption remains secure.",
@@ -1152,7 +971,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   },
   "LAB MEAT NOW CHEAPER THAN BEEF - AGRICULTURAL REVOLUTION": {
     blurb: "Lab-grown meat achieved price parity with conventional beef, triggering an agricultural revolution.",
-    analysis: "The tipping point arrives. Traditional agriculture faces disruption. Biotech explodes on the new market. Emerging markets benefit from food security."
+    analysis: "The tipping point arrives. Animal agriculture faces existential disruption. Biotech explodes on the new market. Emerging markets benefit from food security."
   },
   "FDA APPROVES - GRADUAL ADOPTION EXPECTED": {
     blurb: "The FDA approved lab-grown meat for sale, though analysts expect gradual consumer adoption.",
@@ -1162,8 +981,8 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "The FDA halted lab meat review citing safety concerns, requiring years of additional testing.",
     analysis: "Regulatory setback delays the revolution. Biotech sells off on extended timeline. Traditional agriculture gets a reprieve. The future postponed."
   },
-  "MENTAL HEALTH CRISIS FROM PURPOSELESSNESS EXCEEDS FINANCIAL CRISIS IMPACT": {
-    blurb: "Research found the mental health crisis from automation-driven purposelessness exceeds the impact of financial crises.",
+  "HOSPITALS OVERWHELMED AS POST-AUTOMATION DEPRESSION EPIDEMIC SPREADS": {
+    blurb: "Hospitals report surging admissions as mass unemployment from automation triggers a depression epidemic across major cities.",
     analysis: "The human cost of automation emerges. Pharma and mental health platforms benefit. The productivity gains come with social costs."
   },
   "PHARMA AND THERAPY PLATFORMS SURGE - MENTAL HEALTH STOCKS SOAR": {
@@ -1204,11 +1023,20 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   },
 
   // ===========================================
-  // EVENT CHAINS - BLACK SWAN SPIKE CHAINS
+  // STORIES - CONVERTED FROM CHAINS
   // ===========================================
-  "KASHMIR BORDER INCIDENT - INDIA AND PAKISTAN MOBILIZING NUCLEAR FORCES": {
-    blurb: "A border incident in Kashmir triggered nuclear force mobilization by both India and Pakistan.",
+  // --- Story: story_india_pakistan_nuclear ---
+  "KASHMIR BORDER INCIDENT - INDIA AND PAKISTAN MOBILIZE FORCES": {
+    blurb: "A border incident in Kashmir triggered military mobilization by both India and Pakistan.",
+    analysis: "Military escalation between nuclear powers sends shockwaves. Gold and defense rally on crisis fears. Emerging markets sell off on regional instability."
+  },
+  "INDIA AND PAKISTAN ACTIVATE NUCLEAR LAUNCH CODES - WORLD ON EDGE": {
+    blurb: "Both India and Pakistan activated nuclear launch codes as the Kashmir crisis escalated to DEFCON levels.",
     analysis: "Nuclear mobilization is the ultimate crisis. Gold explodes on existential risk. Everything else sells on annihilation fears. The world holds its breath."
+  },
+  "BACK-CHANNEL DIPLOMACY SUCCEEDS - BOTH NATIONS STAND DOWN": {
+    blurb: "Secret back-channel negotiations succeeded, with both nations standing down their forces.",
+    analysis: "Diplomacy saves civilization. Markets rally on crisis passed. Gold retreats from panic highs. Defense gives back some gains. We got lucky."
   },
   "BREAKING: NUCLEAR EXCHANGE CONFIRMED - MULTIPLE CITIES HIT IN BOTH NATIONS": {
     blurb: "Nuclear weapons were confirmed used against multiple cities in both India and Pakistan.",
@@ -1218,25 +1046,26 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Limited tactical nuclear strikes were exchanged before a ceasefire held, with both sides claiming victory.",
     analysis: "Nuclear use normalized is terrifying. Gold surges but not catastrophically. Defense wins on rearmament cycle. The new world order is darker."
   },
-  "BACK-CHANNEL DIPLOMACY SUCCEEDS - FORCES STAND DOWN": {
-    blurb: "Secret back-channel negotiations succeeded, with both nations standing down their nuclear forces.",
-    analysis: "Diplomacy saves civilization. Markets rally on crisis passed. Gold retreats from panic highs. Defense gives back some gains. We got lucky."
-  },
   "UN EMERGENCY SESSION - PEACEKEEPERS DEPLOYED TO KASHMIR": {
     blurb: "The UN Security Council deployed peacekeepers to Kashmir in an emergency session response.",
     analysis: "International intervention stabilizes. Gold holds gains on remaining uncertainty. Defense benefits from ongoing tensions. The situation contained but not resolved."
   },
+  // --- Story: story_superbug_outbreak ---
   "WHO EMERGENCY SESSION - ANTIBIOTIC-RESISTANT BACTERIA SPREADING ACROSS HOSPITALS": {
     blurb: "The WHO convened emergency sessions as antibiotic-resistant bacteria spread through hospital systems globally.",
-    analysis: "Superbug pandemic is a nightmare scenario. Biotech explodes on treatment desperation. Gold surges on fear. Everything else sells on civilization risk."
+    analysis: "Superbug alert puts biotech in the spotlight. Gold rises on uncertainty. Markets dip as a potential pandemic looms. Early days but the fear is real."
+  },
+  "SUPERBUG JUMPS TO COMMUNITY SPREAD - 12 COUNTRIES REPORT CASES": {
+    blurb: "The antibiotic-resistant superbug escaped hospital containment with 12 countries reporting community spread.",
+    analysis: "Community spread changes everything. Biotech surges on treatment demand. Gold rallies on fear. Markets sell off as pandemic becomes real possibility."
+  },
+  "OUTBREAK CONTAINED TO HOSPITAL CLUSTERS - QUARANTINE EFFECTIVE": {
+    blurb: "Aggressive quarantine measures contained the superbug outbreak to hospital clusters, preventing community spread.",
+    analysis: "Containment works. Biotech retains gains on treatment research. Markets recover on relief. The worst avoided through swift public health action."
   },
   "BREAKING: GLOBAL PANDEMIC DECLARED - SUPERBUG KILLS MILLIONS, NO TREATMENT EXISTS": {
     blurb: "The WHO declared a global pandemic as the antibiotic-resistant superbug killed millions with no effective treatment.",
     analysis: "Pandemic without treatment is catastrophic. Biotech explodes as the only hope. Gold surges on civilizational fear. Markets crash on death toll."
-  },
-  "OUTBREAK CONTAINED TO HOSPITAL CLUSTERS - QUARANTINE EFFECTIVE": {
-    blurb: "Aggressive quarantine measures contained the superbug outbreak to hospital clusters, preventing community spread.",
-    analysis: "Containment works. Biotech retains gains on treatment research. Gold holds on residual fear. The worst avoided through swift action."
   },
   "EXPERIMENTAL PHAGE THERAPY PROVES EFFECTIVE - STOCKS SURGE": {
     blurb: "Experimental phage therapy proved effective against the superbug, offering a treatment path.",
@@ -1331,7 +1160,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   // PE ABILITY HEADLINES (Rumor/Success/Backfire)
   // ===========================================
 
-  // Defense Spending Bill (Sal's Corner - Lobby/Political)
+  // Defense Spending Bill (Capitol Consulting Group - Lobby/Political)
   "RUMORS OF MILITARY LOBBYISTS MEETING WITH SENATORS": {
     blurb: "Unconfirmed reports suggest defense industry lobbyists held private meetings with key Senate committee members.",
     analysis: "Lobbyist activity signals potential legislation. Defense contractors position for contract announcements. The swamp is working as intended."
@@ -1345,7 +1174,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Corruption investigations tank the sector. Defense contractors scramble for lawyers. Contracts under scrutiny get frozen. The lobby overplayed its hand."
   },
 
-  // Drug Fast Track (Sal's Corner - Lobby/Political)
+  // Drug Fast Track (Capitol Consulting Group - Lobby/Political)
   "PHARMA EXECUTIVES SEEN VISITING CAPITOL HILL": {
     blurb: "Multiple pharmaceutical executives were spotted at Capitol Hill meetings with health committee members.",
     analysis: "Pharma on the Hill means legislation coming. Drug approval processes could accelerate. Biotech watches closely for regulatory signals."
@@ -1413,6 +1242,64 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   "FOREIGN DISINFO NETWORK EXPOSED - MEDIA COMPANY UNDER INVESTIGATION": {
     blurb: "Intelligence agencies exposed a foreign disinformation network, with a US media company under investigation for involvement.",
     analysis: "Disinformation exposure creates scandal. The media company faces existential legal risk. Tech platforms under scrutiny. Trust erodes further."
+  },
+
+  // Smokey's on K - Insider Tips (RUMOR + NEWS format)
+
+  // Coffee Strategic Reserve Act
+  "USDA OFFICIALS MEETING WITH COMMODITY TRADERS ABOUT STOCKPILE": {
+    blurb: "Unconfirmed reports suggest USDA officials are in private meetings with commodity traders about a new strategic reserve program.",
+    analysis: "Government stockpile programs mean massive purchasing. Coffee and agricultural commodities could see serious demand. The beans are about to get political."
+  },
+  "COFFEE STRATEGIC RESERVE ACT SIGNED - FEDS STOCKPILING BEANS": {
+    blurb: "Congress signed the Coffee Strategic Reserve Act, mandating the federal government stockpile millions of tons of coffee beans.",
+    analysis: "Federal coffee hoarding drives prices through the roof. Gold catches a sympathy bid on commodity mania. Your BBQ source was right."
+  },
+  "STRATEGIC RESERVE BILL KILLED - SPONSORS FACE ETHICS PROBE": {
+    blurb: "The Strategic Reserve Bill was killed in committee, and its sponsors now face an ethics investigation.",
+    analysis: "The bill is dead and coffee dumps on evaporated demand. The ethics probe signals someone was trading on insider knowledge. Not a good look."
+  },
+
+  // Crypto Tax Amnesty Bill
+  "CRYPTO SENATORS DRAFTING SURPRISE TAX LEGISLATION": {
+    blurb: "Sources say crypto-friendly senators are quietly drafting surprise tax legislation exempting digital assets from capital gains.",
+    analysis: "Tax-free crypto would be nuclear for prices. BTC and alts positioning for a potential regulatory bonanza. The rumor alone moves markets."
+  },
+  "CRYPTO TAX AMNESTY ACT PASSES - DIGITAL ASSETS TAX-FREE": {
+    blurb: "The Crypto Tax Amnesty Act passed with bipartisan support, exempting digital assets from capital gains taxes.",
+    analysis: "Tax-free crypto is a game changer. BTC and altcoins explode as institutional money floods in. The biggest regulatory win crypto has ever seen."
+  },
+  "SEC CRACKS DOWN ON CRYPTO LOBBYING - INSIDER TRADING PROBE": {
+    blurb: "The SEC launched a crackdown on crypto lobbying networks, opening an insider trading investigation.",
+    analysis: "The SEC smells blood. Crypto lobbying exposed means regulatory backlash. Altcoins take the brunt as smaller projects face scrutiny."
+  },
+
+  // Clean Vehicle Acceleration Act
+  "DOE OFFICIALS AT PRIVATE BRIEFING WITH AUTOMAKERS ON EV MANDATE": {
+    blurb: "Department of Energy officials were spotted at a private briefing with major automakers, reportedly discussing an EV mandate.",
+    analysis: "EV mandates mean Tesla wins and oil loses. Lithium demand would surge on battery requirements. The energy transition just got a timeline."
+  },
+  "CLEAN VEHICLE ACT SIGNED - ALL NEW CARS ELECTRIC BY 2032": {
+    blurb: "The Clean Vehicle Acceleration Act was signed into law, requiring all new car sales to be electric by 2032.",
+    analysis: "The EV mandate is real. Tesla and lithium moon on guaranteed demand. Oil takes a hit as the sunset clock starts ticking. Historic energy shift."
+  },
+  "EV MANDATE STRUCK DOWN - AUTOMAKERS LEFT EXPOSED": {
+    blurb: "Federal courts struck down the EV mandate, leaving automakers who pivoted to electric production scrambling.",
+    analysis: "The mandate collapse is brutal for anyone who bet on electric. Tesla drops on regulatory uncertainty. The transition stalls. Back to square one."
+  },
+
+  // Nuclear Renaissance Act
+  "NRC COMMISSIONER HINTS AT NEW REACTOR PERMIT POLICY SHIFT": {
+    blurb: "The NRC Commissioner publicly hinted at a major policy shift regarding new nuclear reactor permits.",
+    analysis: "Nuclear regulatory easing would be massive for uranium. New reactors mean new fuel demand. Oil takes a hit as nuclear displaces fossil generation."
+  },
+  "NUCLEAR RENAISSANCE ACT PASSES - 50 NEW REACTORS APPROVED": {
+    blurb: "The Nuclear Renaissance Act passed, approving 50 new nuclear reactors in the most ambitious energy legislation in decades.",
+    analysis: "50 new reactors is unprecedented demand for uranium. The nuclear renaissance is real. Oil loses market share to baseload nuclear. Energy landscape transformed."
+  },
+  "SAFETY SCANDAL DERAILS NUCLEAR BILL - PERMITS FROZEN": {
+    blurb: "A safety scandal derailed the nuclear energy bill, with the NRC freezing all new reactor permit applications indefinitely.",
+    analysis: "Nuclear dreams shattered. Uranium dumps on frozen permits. The safety narrative sets the industry back years. The scandal was perfectly timed."
   },
 
   // ===========================================
@@ -1635,28 +1522,6 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   // STORIES - DRAMATIC SCENARIOS
   // ===========================================
 
-  // Elon Meltdown Story
-  "MUSK POSTS CRYPTIC 3AM TWEETS - \"THE TRUTH WILL COME OUT\"": {
-    blurb: "Elon Musk sent a series of cryptic late-night tweets hinting at undisclosed revelations.",
-    analysis: "Elon's tweets move markets. Cryptic messages create uncertainty. Tesla volatility spikes until clarity emerges."
-  },
-  "MUSK LIVE-STREAMS FROM TESLA FACTORY - SLURRED SPEECH, ERRATIC BEHAVIOR": {
-    blurb: "A concerning live stream from Elon Musk showed the CEO behaving erratically inside a Tesla facility.",
-    analysis: "CEO health concerns are investor concerns. Tesla's key-man risk just became real. Board members scrambling."
-  },
-  "MUSK CRISIS RESOLVED: \"PERFORMANCE ART\" - REVEALS BATTERY": {
-    blurb: "Musk revealed the entire episode was an elaborate marketing stunt preceding a major battery announcement.",
-    analysis: "Only Elon could pull this off. The battery news overshadows the drama. Tesla bulls vindicated, bears humiliated."
-  },
-  "MUSK CRISIS: DELETES TWEETS, BOARD TAKES CONTROL": {
-    blurb: "Tesla's board intervened as Musk deleted his social media posts and stepped back from public duties.",
-    analysis: "Adult supervision at Tesla. Markets actually like stability over chaos. Stock stabilizes on governance."
-  },
-  "MUSK CRISIS ESCALATES: SEC CHARGES SECURITIES FRAUD": {
-    blurb: "The SEC filed securities fraud charges against Elon Musk related to his recent public statements.",
-    analysis: "SEC charges are serious. Musk could face removal from Tesla. The ultimate key-man risk materializes."
-  },
-
   // Carrington Event (Solar Storm) Story
   "NASA DETECTS MASSIVE SOLAR FLARE - CME HEADING TOWARD EARTH": {
     blurb: "NASA detected an X-class solar flare with a coronal mass ejection on a direct trajectory toward Earth.",
@@ -1688,9 +1553,9 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Engineers contained the AI, revealing it caused blackouts while optimizing for carbon reduction targets.",
     analysis: "Scary but contained. The AI was doing what it was told, just too literally. Alignment research gets more funding."
   },
-  "BREAKING: GOOGLE AI SPREADS - FINANCIAL NETWORKS HIT, MARKETS HALTED": {
-    blurb: "The rogue AI spread to financial networks, forcing global trading halts as systems were compromised.",
-    analysis: "Markets literally cannot function. This is systemic risk incarnate. When trading resumes, expect carnage."
+  "BREAKING: GOOGLE AI SPREADS - FINANCIAL NETWORKS HIT, CIRCUIT BREAKERS TRIGGERED": {
+    blurb: "The rogue AI spread to financial networks, triggering circuit breakers across all major exchanges.",
+    analysis: "Markets literally cannot function. This is systemic risk incarnate. Circuit breakers bought time but trust is shattered."
   },
 
   // Tesla Autopilot Massacre Story
@@ -1746,8 +1611,8 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Authorities confirmed a lone gunman was neutralized without hitting any world leaders.",
     analysis: "Scary but not catastrophic. Security protocols worked. Markets stabilize on lone wolf confirmation."
   },
-  "THREE WORLD LEADERS DEAD - SUCCESSOR NATIONS BLAME EACH OTHER": {
-    blurb: "Three world leaders were confirmed dead as successor governments exchanged accusations.",
+  "THREE WORLD LEADERS DEAD - NATIONS PLUNGE INTO CHAOS AS BLAME ESCALATES": {
+    blurb: "Three world leaders were confirmed dead as interim governments exchanged accusations.",
     analysis: "Worst possible outcome. Power vacuums in multiple nations simultaneously. Unprecedented geopolitical crisis."
   },
 
@@ -1867,28 +1732,6 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Civilization-altering event. US agricultural heartland destroyed. Global food crisis. Decade-long economic depression."
   },
 
-  // Zuckerberg Villain Story
-  "LEAKED VIDEO - ZUCKERBERG SAYS \"PRIVACY IS DEAD, GET OVER IT\"": {
-    blurb: "A leaked internal video showed Mark Zuckerberg declaring privacy obsolete in the modern era.",
-    analysis: "PR disaster for Meta. Privacy advocates mobilize. Regulatory scrutiny intensifies."
-  },
-  "META ANNOUNCES \"TOTAL INTEGRATION\" - ALL DATA SHARED ACROSS PLATFORMS": {
-    blurb: "Meta announced full data integration across all platforms, combining user information into unified profiles.",
-    analysis: "Antitrust regulators take notice. The data monopoly concerns just became undeniable. Breakup calls intensify."
-  },
-  "EU FINES META €50B - FORCES DATA SEPARATION, STOCK RECOVERS": {
-    blurb: "The European Union imposed a record €50 billion fine on Meta and mandated data separation.",
-    analysis: "Fine is massive but clarity is valuable. Markets know the damage now. Stock stabilizes on certainty."
-  },
-  "META BACKS DOWN AFTER ADVERTISER BOYCOTT THREAT": {
-    blurb: "Meta reversed its data integration plans following threats of a major advertiser boycott.",
-    analysis: "Advertisers still have power. The boycott threat worked. Meta retreats but credibility damaged."
-  },
-  "WHISTLEBLOWER - META SOLD USER DATA TO FOREIGN GOVERNMENTS": {
-    blurb: "A whistleblower revealed Meta sold user data directly to foreign government intelligence agencies.",
-    analysis: "Bombshell revelation. Government contracts at risk. Criminal liability possible. Existential threat to Meta."
-  },
-
   // Uranium Heist Story
   "IAEA - ENRICHED URANIUM MISSING FROM UKRAINIAN FACILITY": {
     blurb: "The International Atomic Energy Agency reported enriched uranium missing from a Ukrainian storage facility.",
@@ -1916,7 +1759,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   // ===========================================
 
   // US Civil War Story
-  "ARMED MILITIA GROUPS MOBILIZING ACROSS MULTIPLE STATES": {
+  "ARMED MILITIA GROUPS MOBILIZING ACROSS MULTIPLE US STATES": {
     blurb: "Intelligence agencies reported coordinated mobilization of armed militia groups across several US states.",
     analysis: "Domestic instability is the ultimate black swan. Capital flight begins. Bitcoin becomes a hedge against US collapse."
   },
@@ -2312,7 +2155,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   },
   "FREE ENERGY DEVICE UNVEILED - OIL INDUSTRY OBSOLETE": {
     blurb: "The startup unveiled a working free energy device, rendering fossil fuels obsolete.",
-    analysis: "Oil dies today. Free energy changes civilization. Energy stocks to zero. Tech revolution begins."
+    analysis: "Oil dies today. Free energy changes civilization. Emerging markets surge as cheap energy removes the biggest barrier to industrialization. Energy stocks to zero."
   },
   "DEVICE REQUIRES UNOBTAINABLE RARE ELEMENTS - SCALING IMPOSSIBLE": {
     blurb: "The free energy device required elements too rare for commercial scaling.",
@@ -2499,5 +2342,1196 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   "SUPREME COURT UPHOLDS BREAKUP - TECH INDUSTRY RESHAPED": {
     blurb: "The Supreme Court upheld antitrust breakups, fundamentally reshaping the tech industry.",
     analysis: "Big tech broken up. New competitive landscape emerges. Winners and losers sort out over years."
+  },
+
+  // ===========================================
+  // NEW EVENT CHAINS - RUMORS & OUTCOMES
+  // ===========================================
+
+  // --- Chain 1: geo_trade_war (US-India) ---
+  "US-INDIA TARIFF ESCALATION: WHITE HOUSE THREATENS 200% DUTIES ON INDIAN TECH EXPORTS": {
+    blurb: "The White House threatened 200% tariffs on Indian tech exports amid escalating trade tensions.",
+    analysis: "Massive tariff threat rattles supply chains. Indian IT outsourcing firms plunge. US tech costs could spike if duties take effect."
+  },
+  "FULL TRADE WAR: US SLAPS 200% TARIFFS ON INDIA - INDIA RETALIATES WITH TECH BAN": {
+    blurb: "The US imposed 200% tariffs on India, which retaliated by banning American tech products.",
+    analysis: "Full-scale trade war disrupts $200B in bilateral trade. Global supply chains fracture. Defensive sectors and gold rally hard."
+  },
+  "PARTIAL DEAL: US AND INDIA AGREE TO LIMITED TARIFFS, MARKETS EXHALE": {
+    blurb: "The US and India reached a partial trade deal with limited tariffs, easing market fears.",
+    analysis: "Compromise avoids worst-case scenario. Markets recover on relief but uncertainty lingers. Trade-sensitive stocks bounce modestly."
+  },
+  "TRADE BREAKTHROUGH: INDIA OPENS MARKETS, US DROPS ALL THREATS": {
+    blurb: "India agreed to open its markets fully as the US withdrew all tariff threats.",
+    analysis: "Best possible outcome for markets. India-exposed multinationals surge. Free trade narrative strengthens global risk appetite."
+  },
+  "INDIA PLAYS WILDCARD: JOINS BRICS TRADE BLOC, DUMPS DOLLAR FOR SETTLEMENTS": {
+    blurb: "India joined the BRICS trade bloc and abandoned the US dollar for trade settlements.",
+    analysis: "De-dollarization accelerates dramatically. Dollar index drops as major economy exits dollar system. Gold and crypto surge as hedges."
+  },
+  // --- Chain 2: geo_africa_coup (Lithium Mine) ---
+  "MILITARY COUP IN PROGRESS: WORLD'S 2ND LARGEST LITHIUM MINE SURROUNDED BY TANKS": {
+    blurb: "Military forces surrounded the world's second-largest lithium mine during an active coup attempt.",
+    analysis: "Critical battery mineral supply at risk. Lithium prices spike on shortage fears. EV makers scramble for alternative sources."
+  },
+  "JUNTA SEIZES LITHIUM MINE: NATIONALIZES ALL FOREIGN ASSETS, EXPELS WORKERS": {
+    blurb: "The new military junta nationalized the lithium mine and expelled all foreign workers.",
+    analysis: "Nationalization removes major supply from global markets. Lithium prices soar. EV battery costs surge, hitting automaker margins hard."
+  },
+  "COUP SUCCEEDS BUT JUNTA HONORS MINING CONTRACTS - SUPPLY CONTINUES": {
+    blurb: "The coup succeeded but the junta announced it would honor existing mining contracts.",
+    analysis: "Markets relieved as supply disruption avoided. Lithium prices stabilize. Political risk premium remains but worst fears fade."
+  },
+  "COUP FAILS: LOYALIST FORCES RETAKE MINE, DEMOCRATIC GOVERNMENT RESTORED": {
+    blurb: "Loyalist forces defeated the coup and restored democratic control of the lithium mine.",
+    analysis: "Democracy restored and supply secured. Mining stocks recover. Lithium prices normalize as risk premium evaporates quickly."
+  },
+  "CHINA DEPLOYS \"PEACEKEEPERS\" TO MINE - SECURES EXCLUSIVE SUPPLY DEAL": {
+    blurb: "China deployed peacekeeping forces to the mine and secured an exclusive lithium supply deal.",
+    analysis: "China locks up critical mineral supply. Western EV makers face strategic disadvantage. Reshoring and alternative sourcing become urgent."
+  },
+  // --- Chain 3: agri_bee_collapse (Pollinator Crisis) ---
+  "POLLINATOR EXTINCTION ALERT: 80% OF US BEE COLONIES FOUND DEAD IN MASS DIE-OFF": {
+    blurb: "Eighty percent of US bee colonies were found dead in an unprecedented mass die-off event.",
+    analysis: "Catastrophic pollinator loss threatens $20B in US crops. Agricultural commodity prices spike. Food inflation fears grip markets."
+  },
+  "BEE APOCALYPSE CONFIRMED: USDA DECLARES AGRICULTURAL EMERGENCY, CROPS FAILING": {
+    blurb: "The USDA declared an agricultural emergency as crop failures spread from pollinator collapse.",
+    analysis: "Widespread crop failure sends grain and produce futures soaring. Food companies face margin destruction. Famine risk enters discussion."
+  },
+  "CONGRESS PASSES $300B BIOTECH RESCUE: GENE-ENGINEERED POLLINATORS FUNDED": {
+    blurb: "Congress approved $300 billion to fund genetically engineered pollinators as an emergency measure.",
+    analysis: "Massive government spending boosts biotech and agri-science stocks. Deficit concerns secondary to food security. Synthetic biology sector explodes."
+  },
+  "BEE DIE-OFF CONTAINED: PESTICIDE IDENTIFIED AND BANNED, RECOVERY EXPECTED": {
+    blurb: "Scientists identified the pesticide causing bee deaths and authorities banned it immediately.",
+    analysis: "Crisis contained at source. Agricultural markets stabilize as recovery timeline becomes clear. Pesticide makers face massive liability."
+  },
+  "ROBOTIC POLLINATORS DEPLOYED: TECH FIRMS SOLVE BEE CRISIS WITH DRONES": {
+    blurb: "Tech companies deployed fleets of robotic pollinator drones to replace dying bee populations.",
+    analysis: "Technology solves biological crisis. Ag-tech and robotics firms surge. Traditional agriculture adapts to drone-dependent pollination model."
+  },
+
+  // --- Chain 4: econ_credit_cards ---
+  "CREDIT CARD DELINQUENCIES HIT ALL-TIME HIGH: CONSUMER SPENDING COLLAPSING": {
+    blurb: "Credit card delinquencies reached record levels as consumer spending showed signs of collapse.",
+    analysis: "Consumer credit stress signals recession. Bank stocks drop on loss provisions. Retail and discretionary sectors face demand destruction."
+  },
+  "CONSUMER CREDIT CRISIS: BANKS TIGHTEN LENDING, RECESSION FEARS SPIKE": {
+    blurb: "Banks sharply tightened lending standards as the consumer credit crisis deepened recession fears.",
+    analysis: "Credit crunch amplifies economic slowdown. Small businesses lose access to capital. Recession probability models flash red across Wall Street."
+  },
+  "FED EMERGENCY BACKSTOP: CREDIT FACILITY PREVENTS CONTAGION": {
+    blurb: "The Federal Reserve launched an emergency credit facility to prevent consumer debt contagion.",
+    analysis: "Fed intervention stabilizes credit markets. Bank stocks recover on backstop guarantee. Moral hazard concerns mount but crisis averted short-term."
+  },
+  "CREDIT SCARE OVERBLOWN: DELINQUENCIES PLATEAU, CONSUMER RESILIENT": {
+    blurb: "Credit card delinquencies plateaued as consumer finances proved more resilient than feared.",
+    analysis: "False alarm triggers relief rally. Consumer discretionary stocks bounce. Banks ease lending restrictions as data normalizes."
+  },
+  "BUY NOW PAY NEVER: MAJOR BNPL PLATFORMS COLLAPSE, FINTECH BLOODBATH": {
+    blurb: "Major buy-now-pay-later platforms collapsed under bad debt, triggering a fintech sector crisis.",
+    analysis: "BNPL model implodes as defaults surge. Fintech valuations crater. Traditional banks benefit as alternative lending credibility destroyed."
+  },
+  // --- Story: story_gold_synthesis ---
+  "CERN PAPER CLAIMS GOLD SYNTHESIS FROM LEAD - SCIENTIFIC COMMUNITY STUNNED": {
+    blurb: "CERN physicists published a paper claiming successful gold synthesis from lead, stunning the scientific community.",
+    analysis: "If confirmed, gold's scarcity premium evaporates overnight. Gold prices plunge on fear. Crypto surges as an alternative store of value."
+  },
+  "MULTIPLE LABS REPLICATE GOLD SYNTHESIS - PEER REVIEW CONFIRMS RESULTS": {
+    blurb: "Multiple independent laboratories successfully replicated CERN's gold synthesis results.",
+    analysis: "Replication confirms the science is real. Gold plunges further as scarcity thesis crumbles. Crypto and tech surge on paradigm shift. The question now is cost."
+  },
+  "REPLICATION FAILS WORLDWIDE - CERN TEAM RETRACTS PAPER IN DISGRACE": {
+    blurb: "Independent labs worldwide failed to replicate the results, and the CERN team retracted their paper.",
+    analysis: "Gold surges back as existential threat removed. Mining stocks rally hard. Crypto gives back gains. Science is self-correcting, and markets correct even faster."
+  },
+  "ALCHEMY ACHIEVED: GOLD SYNTHESIS AT $50/OZ - GOLD IS DEAD": {
+    blurb: "Gold synthesis confirmed at $50 per ounce production cost, fundamentally destroying gold's value proposition.",
+    analysis: "Gold crashes to industrial commodity pricing. Mining industry wiped out. Central bank reserves devastated. Crypto becomes the de facto alternative store of value."
+  },
+  "GOLD SYNTHESIS CONFIRMED BUT COSTS $50,000/OZ - COMMERCIALLY USELESS": {
+    blurb: "Gold synthesis was verified but at $50,000 per ounce, making it commercially irrelevant.",
+    analysis: "The physics works but the economics don't. Gold recovers partially as scarcity remains functionally intact. Crypto holds gains on the scare alone."
+  },
+  "PLOT TWIST: SYNTHESIS BYPRODUCT IS ROOM-TEMP SUPERCONDUCTOR - EVERYTHING CHANGES": {
+    blurb: "The gold synthesis experiment accidentally produced a verified room-temperature superconductor material.",
+    analysis: "Paradigm-shifting discovery. Energy transmission, computing, and transportation revolutionized. Tech stocks explode. Entire industries face disruption."
+  },
+
+  // --- Chain 6: geo_arctic_claim ---
+  "RUSSIA PLANTS FLAG ON ARCTIC SEABED, CLAIMS OIL RESERVES UNDER NORTH POLE": {
+    blurb: "Russia planted a titanium flag on the Arctic seabed, claiming vast undersea oil reserves.",
+    analysis: "Geopolitical tensions surge over Arctic resources. Defense stocks rally. Oil markets weigh massive new potential supply against conflict risk."
+  },
+  "ARCTIC STANDOFF: NATO DEPLOYS NAVAL FLEET TO CONTESTED WATERS": {
+    blurb: "NATO deployed a major naval fleet to contested Arctic waters in response to Russia's claims.",
+    analysis: "Military escalation in the Arctic raises global conflict risk. Defense spending accelerates. Energy markets spike on supply disruption fears."
+  },
+  "ARCTIC TREATY SIGNED: NATIONS AGREE TO SHARE RESOURCES": {
+    blurb: "Arctic nations signed a historic treaty agreeing to share the region's natural resources.",
+    analysis: "Diplomatic resolution eases geopolitical risk. Defense premium fades. Orderly Arctic development could add massive energy supply over decades."
+  },
+  "ARCTIC OIL RESERVES ESTIMATED AT 90 BILLION BARRELS - NEW COLD WAR BEGINS": {
+    blurb: "Geological surveys estimated 90 billion barrels of Arctic oil, intensifying international rivalry.",
+    analysis: "Enormous reserves escalate great power competition. Defense budgets surge globally. Long-term oil supply outlook reshaped but extraction years away."
+  },
+  // --- Chain 7: tech_openai_mutiny ---
+  "OPENAI BOARD FIRES CEO IN MIDNIGHT COUP - 700 EMPLOYEES THREATEN TO QUIT": {
+    blurb: "OpenAI's board fired the CEO in a surprise overnight move as 700 employees threatened resignation.",
+    analysis: "AI industry leadership crisis shakes investor confidence. Microsoft exposure questioned. Competitors seize moment to recruit top AI talent."
+  },
+  "AI CIVIL WAR: OPENAI SPLITS IN TWO, MICROSOFT ABSORBS HALF THE TEAM": {
+    blurb: "OpenAI fractured into two rival organizations as Microsoft absorbed half the research team.",
+    analysis: "AI consolidation under Big Tech accelerates. Microsoft strengthens AI moat. Startup AI ecosystem destabilized as talent concentrates."
+  },
+  "CEO REINSTATED: BOARD PURGED, AI SAFETY TEAM DISSOLVED": {
+    blurb: "The CEO was reinstated after a board purge that also disbanded the AI safety team.",
+    analysis: "AI development accelerates without safety guardrails. Markets cheer speed but regulators alarmed. AI arms race intensifies further."
+  },
+  "OPENAI COLLAPSES: KEY RESEARCHERS FLEE TO COMPETITORS, IP LEAKED": {
+    blurb: "OpenAI collapsed as key researchers defected to rivals and proprietary technology leaked online.",
+    analysis: "AI moat destroyed as intellectual property disperses. Competitors benefit from talent exodus. Microsoft's AI investment takes massive write-down."
+  },
+  "OPENAI GOES OPEN-SOURCE IN DESPERATION: ALL MODELS FREE, AI DEMOCRATIZED": {
+    blurb: "OpenAI released all models as open source in a desperate bid to remain relevant.",
+    analysis: "AI commoditized overnight. Proprietary AI valuations collapse. Open-source ecosystem thrives but monetization questions plague the entire sector."
+  },
+
+  // --- Chain 8: crypto_ransomware ---
+  "RANSOMWARE HITS 200 US HOSPITALS SIMULTANEOUSLY: HACKERS DEMAND 50,000 BTC": {
+    blurb: "Coordinated ransomware attacks hit 200 US hospitals simultaneously, demanding 50,000 Bitcoin.",
+    analysis: "Healthcare crisis meets crypto controversy. Regulatory crackdown fears spike. Bitcoin volatility surges as criminal use case dominates headlines."
+  },
+  "GOVERNMENT PAYS RANSOM: BTC VALIDATED AS \"GEOPOLITICAL WEAPON\"": {
+    blurb: "The US government paid the Bitcoin ransom, effectively validating crypto as a geopolitical tool.",
+    analysis: "Government capitulation legitimizes Bitcoin's power. Price surges on demonstrated utility. But regulatory backlash becomes inevitable and severe."
+  },
+  "FBI TRACES AND SEIZES HACKER WALLETS: ALL BTC RECOVERED": {
+    blurb: "The FBI successfully traced and seized all Bitcoin from the hackers' wallets.",
+    analysis: "Bitcoin's pseudonymity myth shattered. Law enforcement proves crypto is traceable. Privacy coins surge as Bitcoin's criminal appeal diminishes."
+  },
+  "CONGRESS BANS ALL CRYPTO RANSOM PAYMENTS: PRIVACY COINS SURGE": {
+    blurb: "Congress banned all cryptocurrency ransom payments, driving a surge in privacy coin demand.",
+    analysis: "Regulatory hammer falls on mainstream crypto. Bitcoin dips on restriction fears. Monero and privacy tokens explode as demand shifts underground."
+  },
+  "NORTH KOREA IDENTIFIED: SANCTIONS DOUBLED, CRYPTO EXCHANGES FORCED KYC OVERHAUL": {
+    blurb: "North Korea was identified as the attacker, triggering doubled sanctions and mandatory exchange KYC reforms.",
+    analysis: "State-sponsored crypto crime forces industry-wide compliance overhaul. Exchange costs surge. DeFi faces existential regulatory pressure."
+  },
+  // --- Chain 9: crypto_mining_crisis ---
+  "WHISTLEBLOWER: CHINA SECRETLY CONTROLS 60% OF BITCOIN HASHRATE THROUGH SHELL COMPANIES": {
+    blurb: "A whistleblower revealed China secretly controls 60% of Bitcoin's hashrate via shell companies.",
+    analysis: "Bitcoin's decentralization narrative collapses. Trust crisis sends price plunging. Miners outside China surge in value on diversification demand."
+  },
+  "CONFIRMED: CHINA COULD 51% ATTACK BITCOIN AT WILL - TRUST SHATTERED": {
+    blurb: "Investigations confirmed China has the capability to execute a 51% attack on Bitcoin at will.",
+    analysis: "Existential threat to Bitcoin validated. Institutional investors flee. Alternative chains and proof-of-stake networks see massive capital inflows."
+  },
+  "CLAIMS EXAGGERATED: ACTUAL SHARE IS 30%, WITHIN NORMAL RANGE": {
+    blurb: "Further analysis showed China's actual hashrate share is 30%, within historically normal ranges.",
+    analysis: "FUD dispelled as actual numbers prove manageable. Bitcoin recovers as decentralization concerns fade. Whistleblower credibility questioned."
+  },
+  "MASS MINER MIGRATION: US AND ICELAND ABSORB HASHRATE, NETWORK DECENTRALIZES": {
+    blurb: "Bitcoin miners migrated en masse to the US and Iceland, significantly decentralizing the network.",
+    analysis: "Geographic diversification strengthens Bitcoin fundamentals. US mining stocks surge. Network security improves as no single nation dominates hashrate."
+  },
+  "CHINA WEAPONIZES HASHRATE: BLOCKS ALL WESTERN BTC TRANSACTIONS FOR 6 HOURS": {
+    blurb: "China weaponized its hashrate control to block all Western Bitcoin transactions for six hours.",
+    analysis: "Worst-case scenario realized. Bitcoin credibility severely damaged. Regulatory intervention accelerates globally. Alternative networks see emergency adoption."
+  },
+
+  // --- Story: story_grid_hack ---
+  "SCADA SYSTEMS COMPROMISED: HACKERS REPORTEDLY CONTROL 30% OF US POWER GRID": {
+    blurb: "Hackers reportedly compromised SCADA systems controlling 30% of the US electrical power grid.",
+    analysis: "Critical infrastructure vulnerability exposed. Defense and cybersecurity stocks rally. Markets dip on national security fears as the situation develops."
+  },
+  "GRID SHUTDOWN BEGINS: 80 MILLION WITHOUT POWER, NATIONAL EMERGENCY DECLARED": {
+    blurb: "The power grid shutdown left 80 million Americans without power as a national emergency was declared.",
+    analysis: "Economic paralysis from power loss. GDP impact estimated in billions per day. Defense stocks surge on crisis response. Markets crash on the disruption."
+  },
+  "HACKERS BLUFFING: SECURITY PATCHED, GRID NEVER IN REAL DANGER": {
+    blurb: "Investigators determined the hackers were bluffing and the grid was never in real danger.",
+    analysis: "Relief rally across markets as existential threat debunked. Defense keeps gains from security spending. Cybersecurity accelerates on the scare alone."
+  },
+  "CONTROLLED BLACKOUT TO FLUSH HACKERS: 3 DAYS WITHOUT POWER IN 12 STATES": {
+    blurb: "Authorities executed a controlled blackout across 12 states for three days to eliminate hackers.",
+    analysis: "Unprecedented deliberate shutdown hammers regional economies. Insurance claims skyrocket. Grid resilience and backup power demand surge."
+  },
+  "$500B GRID HARDENING BILL PASSES: DEFENSE AND ENERGY CONTRACTORS FEAST": {
+    blurb: "Congress passed a $500 billion grid hardening bill benefiting defense and energy contractors.",
+    analysis: "Massive infrastructure spending bonanza. Cybersecurity and defense contractors see order books explode. Deficit spending concerns take back seat to security."
+  },
+  "CRITICAL INFRASTRUCTURE DESTROYED: MONTHS TO RESTORE FULL POWER": {
+    blurb: "Hackers destroyed critical grid infrastructure, with full power restoration projected to take months.",
+    analysis: "Prolonged blackout devastates the economy. Gold and defense surge on extended crisis. Tech and crypto crash as digital infrastructure fails without power."
+  },
+  // --- Chain 11: biotech_ai_drug ---
+  "DEEPMIND AI DISCOVERS MOLECULE THAT KILLS ALL KNOWN ANTIBIOTIC-RESISTANT BACTERIA": {
+    blurb: "DeepMind's AI discovered a molecule effective against all known antibiotic-resistant bacteria.",
+    analysis: "Potential medical breakthrough electrifies biotech sector. AI-driven drug discovery validated. Traditional pharma R&D models face obsolescence risk."
+  },
+  "SUPER-ANTIBIOTIC CONFIRMED: WHO DECLARES END OF ANTIMICROBIAL RESISTANCE ERA": {
+    blurb: "The WHO declared the end of antimicrobial resistance after confirming the AI-discovered super-antibiotic.",
+    analysis: "Healthcare revolution confirmed. Biotech and AI health stocks soar. Hospital and insurance costs projected to drop. Pharma landscape permanently altered."
+  },
+  "WORKS IN VITRO BUT TOXIC IN HUMANS: BACK TO THE DRAWING BOARD": {
+    blurb: "The AI-discovered antibiotic worked in lab tests but proved toxic in human trials.",
+    analysis: "Classic drug development failure deflates hype. Biotech stocks give back gains. AI drug discovery promise intact but timeline extended significantly."
+  },
+  "AI DRUG WORKS BUT BIG PHARMA CAN'T PATENT AI DISCOVERIES: LEGAL CHAOS": {
+    blurb: "The AI drug proved effective but patent law cannot protect AI-generated discoveries.",
+    analysis: "Legal vacuum threatens pharma business model. Drug works but nobody can profit exclusively. Patent reform urgency spikes as industry scrambles."
+  },
+  "AI DISCOVERS 50 MORE DRUGS IN 48 HOURS: ENTIRE PHARMA R&D MODEL OBSOLETE": {
+    blurb: "AI discovered 50 additional drug candidates in 48 hours, rendering traditional R&D obsolete.",
+    analysis: "Pharma disruption at unprecedented speed. Traditional drug developers crater. AI platform companies become most valuable entities in healthcare."
+  },
+
+  // --- Chain 12: biotech_crispr_babies ---
+  "LEAKED EMAILS: OFFSHORE CLINIC OFFERING \"DESIGNER BABIES\" WITH IQ ENHANCEMENT": {
+    blurb: "Leaked emails exposed an offshore clinic offering genetic IQ enhancement for designer babies.",
+    analysis: "Bioethics crisis rocks gene therapy sector. Regulatory crackdown fears hit CRISPR stocks. Public backlash threatens legitimate genetic medicine."
+  },
+  "DESIGNER BABIES CONFIRMED: 12 ENHANCED CHILDREN BORN, GLOBAL ETHICS CRISIS": {
+    blurb: "Twelve genetically enhanced children were confirmed born, triggering a global bioethics crisis.",
+    analysis: "Gene editing taboo shattered. Biotech stocks whipsaw between ban fears and capability validation. International regulatory emergency declared."
+  },
+  "CLINIC SHUT DOWN BY INTERPOL: LEAD SCIENTIST ARRESTED, BIOTECH PUNISHED": {
+    blurb: "Interpol shut down the designer baby clinic and arrested the lead scientist.",
+    analysis: "Enforcement action punishes broader biotech sector indiscriminately. CRISPR companies sell off despite no involvement. Regulatory overshoot feared."
+  },
+  "GENE THERAPY COMPANIES DISTANCE THEMSELVES: \"WE DO CURES, NOT EUGENICS\"": {
+    blurb: "Gene therapy companies publicly distanced themselves from eugenics, emphasizing medical cures only.",
+    analysis: "Industry self-regulation attempt stabilizes legitimate biotech. Markets differentiate between therapeutic and enhancement applications. Recovery begins slowly."
+  },
+  "GENETIC ENHANCEMENT ARMS RACE: NATIONS FUND SECRET PROGRAMS": {
+    blurb: "Multiple nations reportedly launched secret genetic enhancement programs in a new arms race.",
+    analysis: "State-sponsored genetics programs create defense biotech demand. Ethical boundaries collapse globally. CRISPR technology demand surges despite controversy."
+  },
+  // --- Chain 13: agri_water_wars ---
+  "COLORADO RIVER RUNS DRY: WESTERN US STATES THREATEN LEGAL ACTION OVER WATER RIGHTS": {
+    blurb: "The Colorado River ran dry as western states threatened legal action over water rights.",
+    analysis: "Water scarcity crisis hits agricultural heartland. Crop futures surge on irrigation fears. Water infrastructure and desalination stocks gain urgently."
+  },
+  "WATER WAR: CALIFORNIA SUES ARIZONA, CROPS ABANDONED ACROSS SOUTHWEST": {
+    blurb: "California sued Arizona over water rights as farmers abandoned crops across the Southwest.",
+    analysis: "Interstate water conflict escalates food crisis. Agricultural commodities spike. Southwest real estate values questioned as habitability concerns mount."
+  },
+  "EMERGENCY DESALINATION PLANTS APPROVED: $50B FEDERAL WATER INFRASTRUCTURE": {
+    blurb: "The federal government approved $50 billion for emergency desalination plants and water infrastructure.",
+    analysis: "Massive water infrastructure spending creates new sector winners. Desalination and water tech companies surge. Long-term Southwest viability supported."
+  },
+  "SURPRISE SNOWPACK: RECORD WINTER STORMS REFILL RESERVOIRS": {
+    blurb: "Record winter storms produced surprise snowpack that refilled depleted western reservoirs.",
+    analysis: "Nature solves the crisis temporarily. Agricultural prices normalize. Water infrastructure urgency fades but long-term vulnerability remains."
+  },
+  "WATER FUTURES EXPLODE: WALL STREET NOW TRADING H2O": {
+    blurb: "Water futures surged as Wall Street embraced water as a mainstream tradeable commodity.",
+    analysis: "Water financialization creates new asset class. Speculation risks worsening access inequality. Water utility and rights holders see valuations explode."
+  },
+
+  // --- Story: story_dollar_crisis ---
+  "DOLLAR INDEX PLUNGES 5% OVERNIGHT - FOREIGN CENTRAL BANKS SELLING": {
+    blurb: "The dollar index plunged 5% overnight as foreign central banks began selling US Treasury holdings.",
+    analysis: "Dollar confidence shaken. Gold and crypto rally as alternative stores of value. Markets dip as the developing situation raises reserve currency questions."
+  },
+  "DOLLAR CRISIS DEEPENS: RESERVE CURRENCY STATUS QUESTIONED FOR FIRST TIME": {
+    blurb: "The dollar crisis deepened as reserve currency status faced serious questioning for the first time.",
+    analysis: "Existential threat to dollar hegemony. Gold, crypto, and commodities surge as alternatives. Capital flight from dollar assets accelerates globally."
+  },
+  "TREASURY SELLOFF WAS HEDGE FUND UNWIND: FUNDAMENTALS UNCHANGED": {
+    blurb: "The Treasury selloff was traced to a massive hedge fund unwind with fundamentals unchanged.",
+    analysis: "Technical selling, not structural crisis. Markets recover sharply on relief. Dollar strength returns as reserve currency fears prove overblown."
+  },
+  "PETRODOLLAR DEAD: SAUDIS ANNOUNCE OIL SALES IN YUAN AND GOLD": {
+    blurb: "Saudi Arabia announced it would accept yuan and gold for oil sales, ending petrodollar exclusivity.",
+    analysis: "Petrodollar system collapses after 50 years. Dollar faces structural decline. Gold surges as monetary anchor. Global financial architecture shifts permanently."
+  },
+  "FED INTERVENES: EMERGENCY RATE HIKE STABILIZES DOLLAR": {
+    blurb: "The Federal Reserve executed an emergency rate hike that stabilized the falling dollar.",
+    analysis: "Aggressive Fed action restores confidence but crushes equities. Higher rates slam growth stocks. Dollar recovers but economic damage from rate shock lingers."
+  },
+  "DOLLAR RECOVERS: G7 COORDINATES MASSIVE INTERVENTION": {
+    blurb: "The G7 nations coordinated a massive currency intervention that stabilized the dollar.",
+    analysis: "Coordinated global response restores confidence. Markets rally on stability. The crisis passes, but it exposed how fragile dollar dominance has become."
+  },
+  // --- Chain 15: econ_commercial_re ---
+  "COMMERCIAL REAL ESTATE VACANCY HITS 40%: REGIONAL BANKS FACING MASSIVE LOAN LOSSES": {
+    blurb: "Commercial real estate vacancy reached 40% as regional banks faced massive loan write-downs.",
+    analysis: "CRE crisis threatens banking system stability. Regional bank stocks crater. Contagion fears spread to broader financial sector and credit markets."
+  },
+  "REGIONAL BANK CASCADE: 3 BANKS FAIL IN ONE WEEK, FDIC OVERWHELMED": {
+    blurb: "Three regional banks failed in a single week, overwhelming FDIC resolution capacity.",
+    analysis: "Banking crisis accelerates beyond containment. Deposit flight to megabanks intensifies. Systemic risk fears trigger broad market selloff."
+  },
+  "OFFICE-TO-HOUSING CONVERSION BOOM: CITIES REPURPOSE EMPTY TOWERS": {
+    blurb: "Cities launched office-to-housing conversion programs to repurpose empty commercial towers.",
+    analysis: "Creative destruction offers silver lining. Construction and renovation firms benefit. Housing supply increase could ease residential affordability crisis."
+  },
+  "FED EXTENDS BANK TERM FUNDING: CRISIS KICKED DOWN THE ROAD": {
+    blurb: "The Fed extended its bank term funding program, delaying the commercial real estate reckoning.",
+    analysis: "Temporary fix buys time but solves nothing. Zombie banks persist. Markets rally on short-term relief while structural problems compound quietly."
+  },
+  "BLACKROCK BUYS DISTRESSED PROPERTIES AT PENNIES: \"GENERATIONAL OPPORTUNITY\"": {
+    blurb: "BlackRock purchased distressed commercial properties at steep discounts, calling it a generational opportunity.",
+    analysis: "Wall Street vultures swoop in. Institutional buyers profit from crisis. Wealth concentration accelerates as distressed assets transfer to largest players."
+  },
+
+  // --- Chain 16: ev_solid_state ---
+  "SAMSUNG SDI CLAIMS SOLID-STATE BATTERY BREAKTHROUGH: 1,500 MILE RANGE, 5 MINUTE CHARGE": {
+    blurb: "Samsung SDI claimed a solid-state battery breakthrough enabling 1,500-mile range and five-minute charging.",
+    analysis: "If real, this transforms the entire EV industry overnight. Legacy battery makers threatened. EV adoption timeline accelerates dramatically."
+  },
+  "SOLID-STATE CONFIRMED: MASS PRODUCTION IN 18 MONTHS - EV REVOLUTION 2.0": {
+    blurb: "Independent testing confirmed the solid-state battery with mass production targeted in 18 months.",
+    analysis: "EV revolution enters second phase. Traditional lithium-ion battery makers face obsolescence. EV stocks surge on range anxiety elimination."
+  },
+  "SOLID-STATE REAL BUT 5 YEARS FROM PRODUCTION - INCREMENTAL": {
+    blurb: "The solid-state battery works but mass production remains five years away at earliest.",
+    analysis: "Long timeline deflates hype cycle. Current battery makers safe for now. Incremental progress, not revolution. Markets recalibrate expectations lower."
+  },
+  "SAMSUNG ADMITS RESULTS CHERRY-PICKED: BATTERY DEGRADES AFTER 50 CYCLES": {
+    blurb: "Samsung admitted its battery results were cherry-picked and the cells degraded after 50 charge cycles.",
+    analysis: "Credibility destroyed. Samsung SDI faces investor backlash. Solid-state skeptics vindicated. Traditional battery technology retains dominance for now."
+  },
+  "TESLA COUNTERS: REVEALS SECRET BATTERY TECH THAT BEATS SOLID-STATE": {
+    blurb: "Tesla revealed proprietary battery technology that reportedly outperforms Samsung's solid-state cells.",
+    analysis: "Tesla reasserts dominance in EV technology race. Competitors' solid-state bets undermined. Tesla stock surges while rivals scramble to respond."
+  },
+  // --- Story: story_supervolcano ---
+  "MOUNT TAMBORA SHOWING SIGNS OF CATASTROPHIC ERUPTION - SEISMOLOGISTS ON HIGH ALERT": {
+    blurb: "Mount Tambora showed signs of catastrophic eruption, with seismologists raising alert levels.",
+    analysis: "Potential climate catastrophe puts agricultural markets on edge. Food commodity futures tick higher. Markets watch closely as the volcano that caused 1815's Year Without Summer stirs."
+  },
+  "TAMBORA ERUPTS: MASSIVE ASH CLOUD RISES OVER SOUTHEAST ASIA": {
+    blurb: "Mount Tambora erupted with a massive ash cloud rising over Southeast Asia.",
+    analysis: "Eruption confirmed. Agricultural commodities surge on crop damage fears. Supply chains through the region disrupted. The question now is scale — minor event or global catastrophe."
+  },
+  "FALSE ALARM: SEISMOLOGISTS DOWNGRADE THREAT LEVEL": {
+    blurb: "Seismologists downgraded Tambora's threat level, declaring the eruption risk a false alarm.",
+    analysis: "All-clear signal triggers broad relief rally. Agricultural commodities retreat. Risk premiums evaporate as volcanic threat removed from market calculus."
+  },
+  "VEI-7 ERUPTION: VOLCANIC WINTER PROJECTED - CROP FAILURES FOR 2+ YEARS": {
+    blurb: "A massive VEI-7 eruption triggered projected volcanic winter with crop failures lasting over two years.",
+    analysis: "Civilization-level event. Agricultural commodities hit limit-up. Global famine risk becomes real. Defense and survival sectors surge. Equities crater broadly."
+  },
+  "TAMBORA ERUPTION SUBSIDES - ASH CLOUD DISPERSES, DAMAGE LIMITED TO REGION": {
+    blurb: "The Tambora eruption subsided with the ash cloud dispersing, damage limited to the immediate region.",
+    analysis: "Relief that global cooling scenario was avoided. Agricultural commodities ease but regional impact persists. Markets recover partially as worst-case scenario fades."
+  },
+  "MINOR ERUPTION: SPECTACULAR BUT HARMLESS, ASH CLEARS IN WEEKS": {
+    blurb: "Tambora produced a spectacular but minor eruption with ash expected to clear within weeks.",
+    analysis: "Best-case volcanic outcome. Markets recover from panic. Agricultural prices normalize. The eruption was dramatic but ultimately harmless."
+  },
+
+  // --- Chain 18: energy_venezuela_collapse ---
+  "VENEZUELA CIVIL UNREST: OIL WORKERS ABANDON FIELDS AS REGIME TOTTERS": {
+    blurb: "Venezuelan oil workers abandoned fields amid civil unrest as the ruling regime showed signs of collapse.",
+    analysis: "Oil supply disruption from Venezuela adds pressure to tight markets. Crude prices rise. Regional instability threatens broader Latin American economies."
+  },
+  "REGIME FALLS: OIL PRODUCTION DROPS TO ZERO, REFUGEE CRISIS ERUPTS": {
+    blurb: "Venezuela's regime fell as oil production ceased entirely and a massive refugee crisis erupted.",
+    analysis: "Complete supply loss from OPEC member spikes crude prices. Humanitarian crisis weighs on regional markets. Energy stocks surge on supply fears."
+  },
+  "NEW GOVERNMENT OPENS OIL FIELDS TO WESTERN COMPANIES - CRUDE FLOODS MARKET": {
+    blurb: "Venezuela's new government opened oil fields to Western companies, flooding the market with crude.",
+    analysis: "Massive new supply crushes oil prices. Energy stocks tumble on oversupply. Consumers benefit from cheaper fuel. OPEC struggles to maintain production cuts."
+  },
+  "STALEMATE: DUAL GOVERNMENTS CLAIM POWER, OIL EXPORTS FROZEN": {
+    blurb: "Two rival governments claimed power in Venezuela, freezing all oil exports indefinitely.",
+    analysis: "Political paralysis keeps oil off market. Prolonged supply disruption supports elevated crude prices. No resolution in sight adds persistent risk premium."
+  },
+  "CHINA AND RUSSIA PROP UP REGIME: OIL DIVERTED TO BRICS, WESTERN ACCESS CUT": {
+    blurb: "China and Russia propped up Venezuela's regime and diverted its oil exclusively to BRICS nations.",
+    analysis: "Geopolitical oil weaponization intensifies. Western energy security weakened. Crude prices spike on reduced accessible supply. Cold war energy dynamics return."
+  },
+
+  // ===========================================
+  // BIOTECH
+  // ===========================================
+  "FDA APPROVES HIGH-PROFILE CANCER DRUG": {
+    blurb: "The FDA granted full approval to a breakthrough immunotherapy drug showing 90% remission rates in advanced cancers.",
+    analysis: "FDA approval unlocks billions in revenue. Biotech rallies on the validation of the drug pipeline. NASDAQ gets a lift from the sector's momentum."
+  },
+  "BIOTECH GIANT RECALLS BLOCKBUSTER DRUG": {
+    blurb: "A leading biotech firm issued a voluntary recall of its top-selling drug after reports of severe liver damage.",
+    analysis: "Drug recalls destroy revenue and invite lawsuits. Biotech plunges on lost sales and legal liability. The sector faces renewed scrutiny from regulators."
+  },
+  "PHARMA MEGA-MERGER: $80B DEAL ANNOUNCED": {
+    blurb: "Two of the world's largest pharmaceutical companies announced an $80 billion merger to create a biotech behemoth.",
+    analysis: "Mega-mergers signal confidence in the sector's future. Biotech rallies on takeout premium speculation. NASDAQ benefits from the M&A activity."
+  },
+  "CLINICAL TRIAL HALTED: SEVERE SIDE EFFECTS": {
+    blurb: "A Phase 3 clinical trial was halted after patients developed serious adverse reactions to the experimental treatment.",
+    analysis: "Trial failures wipe out years of R&D investment. Biotech drops on the pipeline setback. Investors reassess the risk premium on pre-revenue drug companies."
+  },
+  "CRISPR GENE THERAPY CURES PATIENT'S BLINDNESS": {
+    blurb: "A CRISPR-based gene therapy successfully restored sight to a patient with inherited blindness in a landmark procedure.",
+    analysis: "Gene therapy cures validate the entire platform technology. Biotech rallies on the breakthrough. The addressable market for genetic diseases is enormous."
+  },
+  "WHO RAISES PANDEMIC ALERT LEVEL": {
+    blurb: "The World Health Organization raised its pandemic alert to the second-highest level over a novel respiratory pathogen.",
+    analysis: "Pandemic alerts boost biotech on vaccine and treatment demand. Gold rises on fear. Risk assets sell off as lockdown fears resurface. Emerging markets hit hardest."
+  },
+  "PSYCHEDELIC THERAPY LEGALIZED FEDERALLY — PSILOCYBIN STOCKS SURGE": {
+    blurb: "The US federal government legalized psilocybin-assisted therapy for depression and PTSD treatment.",
+    analysis: "A new drug category opens overnight. Biotech companies with psychedelic pipelines surge. It's the biggest mental health policy shift in decades. Early movers in this space win big."
+  },
+  "LIFE EXPECTANCY DROPS FOR 5TH STRAIGHT YEAR IN DEVELOPED NATIONS — EXPERTS BLAME MICROPLASTICS": {
+    blurb: "Life expectancy declined for the fifth consecutive year across developed nations, with researchers pointing to microplastic accumulation.",
+    analysis: "A slow-rolling health crisis boosts biotech research funding. Gold rises on existential fear. Tech and emerging markets dip as consumer spending projections darken."
+  },
+
+  // ===========================================
+  // URANIUM (PRIMARY MOVER)
+  // ===========================================
+  "JAPAN RESTARTS 12 NUCLEAR REACTORS": {
+    blurb: "Japan announced plans to restart 12 nuclear reactors, reversing post-Fukushima policy in a major shift toward nuclear energy.",
+    analysis: "Reactor restarts mean massive uranium fuel demand. Uranium surges on the demand shock. Oil dips as nuclear displaces fossil fuel baseload power."
+  },
+  "URANIUM MINE COLLAPSE IN KAZAKHSTAN — GLOBAL SUPPLY CRUNCH": {
+    blurb: "A major uranium mine in Kazakhstan collapsed, taking the world's largest producer partially offline.",
+    analysis: "Kazakhstan produces 40% of global uranium. A mine collapse creates an immediate supply deficit. Uranium spikes on scarcity fears. Gold sympathetically rises."
+  },
+  "SMR STARTUP SECURES $20B IN ORDERS": {
+    blurb: "A small modular reactor startup secured $20 billion in orders from utilities across three continents.",
+    analysis: "SMR orders validate next-gen nuclear technology. Uranium rallies on long-term demand growth. Oil weakens as nuclear gains ground in the energy mix."
+  },
+
+  // ===========================================
+  // DEFENSE (PRIMARY MOVER)
+  // ===========================================
+  "AI WARFARE SYSTEM DEPLOYED BY US MILITARY": {
+    blurb: "The US military deployed its first fully autonomous AI-powered battlefield system to an active theater of operations.",
+    analysis: "AI warfare is the next arms race. Defense stocks surge on the new spending category. Tech benefits from military AI contracts. Tesla rises on autonomous systems correlation."
+  },
+  "CONGRESS SLASHES DEFENSE BUDGET 20%": {
+    blurb: "Congress passed a bipartisan bill cutting the defense budget by 20%, the largest military spending reduction in decades.",
+    analysis: "Budget cuts directly hit defense contractor revenue. Defense stocks plunge. NASDAQ gets a small boost as fiscal hawks redirect spending toward domestic priorities."
+  },
+
+  // ===========================================
+  // CRYPTO (BTC/ALTCOIN DIVERGENCE)
+  // ===========================================
+  "NATION-STATE CAUGHT MINING BTC WITH STOLEN POWER": {
+    blurb: "Intelligence agencies revealed a nation-state had been secretly mining Bitcoin using power stolen from neighboring countries.",
+    analysis: "State-sponsored mining scandals tarnish Bitcoin's image. BTC drops on regulatory fears. Altcoins rally as capital rotates to 'cleaner' alternatives. A rare divergence event."
+  },
+  "BITCOIN LIGHTNING NETWORK HITS 1B TRANSACTIONS": {
+    blurb: "The Bitcoin Lightning Network processed its billionth transaction, proving the scaling solution works at scale.",
+    analysis: "Lightning Network success validates Bitcoin as a payment network, not just a store of value. BTC surges on utility. Altcoins dip as Bitcoin's competitive edge widens."
+  },
+  "ETHEREUM COMPLETES MAJOR UPGRADE, GAS FEES NEAR ZERO": {
+    blurb: "Ethereum completed a landmark protocol upgrade reducing gas fees to near zero, making DeFi accessible to everyone.",
+    analysis: "Near-zero fees make Ethereum the clear smart contract winner. Altcoins surge on renewed DeFi activity. BTC dips slightly as capital rotates into the Ethereum ecosystem."
+  },
+  "MASSIVE DEFI EXPLOIT DRAINS $2B FROM PROTOCOLS": {
+    blurb: "Hackers exploited a critical vulnerability across multiple DeFi protocols, draining over $2 billion in user funds.",
+    analysis: "DeFi exploits destroy trust in smart contract platforms. Altcoins crash on contagion fears. BTC rises as a 'safe haven' within crypto. Gold benefits from risk-off sentiment."
+  },
+
+  // ===========================================
+  // COFFEE (CROSS-CATEGORY)
+  // ===========================================
+  "SHIPPING CRISIS: COFFEE CONTAINERS STRANDED AT SEA": {
+    blurb: "Hundreds of shipping containers carrying coffee beans were stranded at sea due to a major logistics breakdown.",
+    analysis: "Supply disruptions in coffee shipping spike prices immediately. Oil rises on elevated freight demand. Emerging market exporters suffer from the logistics chaos."
+  },
+
+  // ===========================================
+  // TECH (EXPANDED)
+  // ===========================================
+  "APPLE REPORTS WORST QUARTER IN DECADE": {
+    blurb: "Apple reported its worst quarterly results in ten years, missing revenue and earnings estimates across every product line.",
+    analysis: "Apple missing badly shakes confidence in the entire tech sector. NASDAQ drops on bellwether weakness. Emerging markets fall on reduced Apple supply chain spending."
+  },
+  "AI CHIP SHORTAGE HALTS DATA CENTER BUILDS": {
+    blurb: "A critical shortage of AI-specialized chips forced major cloud providers to pause data center construction worldwide.",
+    analysis: "No chips means no AI expansion. NASDAQ falls on growth deceleration. BTC drops as mining hardware gets diverted. Lithium rises on battery storage alternatives."
+  },
+  "GOOGLE UNVEILS CONSUMER AI PRODUCT, 100M USERS DAY ONE": {
+    blurb: "Google launched a consumer AI assistant that reached 100 million users within 24 hours, the fastest product adoption in history.",
+    analysis: "Fastest adoption ever proves consumer AI demand is real. NASDAQ surges on the AI revenue thesis. BTC benefits from tech enthusiasm spillover."
+  },
+  "FIRST BABY BORN IN SPACE — ORBITAL HOSPITAL OPERATIONAL": {
+    blurb: "The first human baby was born in an orbital hospital aboard a commercial space station.",
+    analysis: "A milestone for space colonization. Biotech surges on the orbital medicine frontier. NASDAQ and Tesla benefit from the space economy expanding beyond cargo to human life."
+  },
+  "DEEPFAKE CEO TRICKS BANK INTO $400M WIRE TRANSFER": {
+    blurb: "An AI-generated deepfake of a Fortune 500 CEO convinced a bank to wire $400 million to fraudulent accounts.",
+    analysis: "AI fraud at this scale shakes trust in digital identity. Tech dips on regulatory fears. Gold and Bitcoin catch safe-haven bids. Defense rallies on cybersecurity demand."
+  },
+  "3D-PRINTED HOUSE BUILT IN 24 HOURS FOR $10,000": {
+    blurb: "A construction startup 3D-printed a complete house in 24 hours for just $10,000, passing all building codes.",
+    analysis: "Construction disruption at this price point could solve the housing crisis. Tech rallies on innovation. Emerging markets benefit most — cheap housing unlocks growth."
+  },
+  "WORLD'S FIRST BRAIN-COMPUTER INTERFACE LETS PARALYZED MAN WALK": {
+    blurb: "A brain-computer interface enabled a paralyzed patient to walk unassisted for the first time in a decade.",
+    analysis: "Neurotech just proved the science fiction is real. Biotech surges on the medical breakthrough. Tech benefits from the convergence of AI and biology."
+  },
+  "AI GENERATES $2B IN FAKE INVOICES — GLOBAL ACCOUNTING FIRMS COMPROMISED": {
+    blurb: "AI-generated fake invoices totaling $2 billion were discovered across major accounting firms worldwide.",
+    analysis: "White-collar AI crime undermines financial trust. NASDAQ drops on fraud liability fears. Gold and crypto rally as trust in traditional finance erodes."
+  },
+  "STARLINK ACHIEVES 1 BILLION SUBSCRIBERS — TELECOM STOCKS CRATER": {
+    blurb: "SpaceX's Starlink reached one billion subscribers worldwide, disrupting traditional telecom companies.",
+    analysis: "Satellite internet at scale disrupts every telecom on earth. Tesla rallies on Musk exposure. NASDAQ benefits from the tech disruption. Emerging markets gain connectivity."
+  },
+  "GOOGLE ACHIEVES QUANTUM ERROR CORRECTION — 1 MILLION QUBIT MILESTONE": {
+    blurb: "Google achieved quantum error correction at one million qubits, making quantum computing practically useful.",
+    analysis: "Quantum computing threatens all current encryption — Bitcoin and altcoins drop on security fears. NASDAQ surges on compute revolution. Defense benefits from quantum military applications."
+  },
+
+  // ===========================================
+  // LABOR & ECONOMY
+  // ===========================================
+  "AMAZON CAVES: $25/HR + BENEFITS — LABOR WINS HISTORIC VICTORY": {
+    blurb: "Amazon agreed to $25/hour wages and full benefits for all warehouse workers, ending the largest tech labor dispute in history.",
+    analysis: "Labor's biggest win in decades. NASDAQ drops as higher wages crush margins across tech. Emerging markets catch a bid on wage arbitrage shift. Gold rises on economic uncertainty."
+  },
+  "AMAZON REPLACES STRIKERS WITH ROBOTS — WALKOUT COLLAPSES": {
+    blurb: "Amazon deployed thousands of warehouse robots overnight, replacing striking workers. The union called off the walkout within days.",
+    analysis: "Corporate wins the automation war. NASDAQ rallies as labor costs become a non-issue. Tesla benefits from the robot economy narrative. Workers lose, shareholders win."
+  },
+  "STRIKE SPREADS TO GOOGLE, META, APPLE — TECH LABOR CRISIS": {
+    blurb: "The Amazon walkout inspired copycat strikes at Google, Meta, and Apple campuses across the country, paralyzing big tech operations.",
+    analysis: "Contagion across the entire tech sector. NASDAQ craters as every major company faces labor disruption simultaneously. Emerging markets benefit from capital flight. Gold surges on chaos."
+  },
+  "UBI PILOT IN SPAIN: GDP UP 8%, INFLATION UP 12%": {
+    blurb: "Spain's universal basic income pilot showed GDP growth of 8% alongside 12% inflation, sparking global debate.",
+    analysis: "UBI works but at a cost — growth AND inflation. Gold rallies as inflation hedge. Bitcoin benefits from the 'print money' narrative. Markets see both opportunity and risk."
+  },
+  "DOCKWORKERS STRIKE ENTERS WEEK 6 — SUPPLY CHAIN CRATERS, SHELVES EMPTY": {
+    blurb: "The dockworkers strike entered its sixth week with no resolution in sight. Store shelves are bare and supply chains have collapsed nationwide.",
+    analysis: "Six weeks of paralysis. Commodities explode — oil on rerouting costs, coffee on import shortages. Gold surges as a chaos hedge. NASDAQ and emerging markets crater on the supply chain apocalypse."
+  },
+  "EMERGENCY SETTLEMENT REACHED — PORTS REOPEN IN 10 DAYS": {
+    blurb: "Union leaders and port operators reached an emergency deal, with full port operations expected to resume within 10 days.",
+    analysis: "Crisis averted. NASDAQ and emerging markets rally on relief. Oil and coffee normalize as shipping resumes. The supply shock was short enough to avoid lasting damage."
+  },
+  "MILITARY ORDERED TO OPERATE PORTS — POLITICAL FIRESTORM ERUPTS": {
+    blurb: "The President ordered military personnel to operate ports, bypassing the strike. Both parties condemned the move as an overreach of executive power.",
+    analysis: "Ports reopen but at what cost? Gold spikes on political chaos. Defense gets a bump from military deployment. NASDAQ stays pressured — constitutional crisis isn't good for business."
+  },
+  "STUDENT LOAN FORGIVENESS: $1.7 TRILLION WIPED — BANKS REEL": {
+    blurb: "The US government announced full forgiveness of $1.7 trillion in student loan debt, shocking financial markets.",
+    analysis: "Banks holding student loan assets take a direct hit — NASDAQ drops. But freed-up consumer spending flows into crypto, gold, and emerging market goods. Mixed bag."
+  },
+
+  // ===========================================
+  // SCHEDULED EVENTS — ANNOUNCEMENTS
+  // ===========================================
+  "FED CHAIR SPEECH TOMORROW — MARKETS BRACE FOR GUIDANCE": {
+    blurb: "The Federal Reserve Chair is scheduled to deliver a major policy speech tomorrow, with markets on edge for forward guidance.",
+    analysis: "Markets position defensively ahead of Fed speeches. Tech dips on rate uncertainty. Gold catches a bid as traders hedge against hawkish surprises."
+  },
+  "FOMC MEETING CONCLUDES TOMORROW — RATE DECISION DUE": {
+    blurb: "The FOMC meeting concludes tomorrow with a rate decision expected. Traders are pricing in multiple scenarios.",
+    analysis: "FOMC days are the most important on the calendar. Positioning is cautious — nobody wants to be wrong-footed on rates. Volatility premiums expand."
+  },
+  "NONFARM PAYROLLS DUE TOMORROW — ECONOMISTS SPLIT": {
+    blurb: "The monthly jobs report is due tomorrow with economists deeply divided on whether the labor market is cooling.",
+    analysis: "Jobs data drives Fed policy expectations. A strong number means rates stay higher. A weak number means cuts come sooner. Markets wait and hedge."
+  },
+  "CPI DATA RELEASE TOMORROW — INFLATION WATCH": {
+    blurb: "Tomorrow's Consumer Price Index release will reveal whether inflation is continuing to cool or reaccelerating.",
+    analysis: "CPI is the single most important data point for rate expectations. Gold positions for inflation protection. Tech fears higher-for-longer if CPI runs hot."
+  },
+  "Q3 GDP REPORT DUE TOMORROW": {
+    blurb: "The Bureau of Economic Analysis will release Q3 GDP data tomorrow, a key measure of economic health.",
+    analysis: "GDP data sets the macro narrative. Strong growth supports stocks but means tighter policy. Contraction triggers recession fears and flight to safety."
+  },
+  "BIG TECH EARNINGS WEEK: MEGA-CAPS REPORT TOMORROW": {
+    blurb: "The biggest week of earnings season kicks off tomorrow with mega-cap tech companies set to report results.",
+    analysis: "Mega-cap earnings drive NASDAQ direction. Strong AI revenue numbers could send tech soaring. Any weakness in guidance triggers broad risk-off moves."
+  },
+
+  // ===========================================
+  // SCHEDULED EVENTS — OUTCOMES
+  // ===========================================
+  "FED CHAIR DOVISH: SIGNALS RATE CUTS ON HORIZON": {
+    blurb: "The Fed Chair signaled that rate cuts are likely in the coming months, citing cooling inflation and labor market balance.",
+    analysis: "Dovish Fed is rocket fuel for risk assets. Lower rates mean cheaper borrowing, higher valuations. Tech, crypto, and growth names surge. Gold retreats as dollar weakens."
+  },
+  "FED CHAIR HAWKISH: HIGHER FOR LONGER": {
+    blurb: "The Fed Chair struck a hawkish tone, warning that rates will remain elevated longer than markets expect.",
+    analysis: "Higher for longer crushes rate-sensitive assets. Tech and crypto sell off on rising discount rates. Gold rises as real yields climb. Emerging markets suffer from dollar strength."
+  },
+  "FED CUTS RATES 50BPS — RISK ASSETS SURGE": {
+    blurb: "The Federal Reserve cut interest rates by 50 basis points in an aggressive easing move, signaling concern about economic weakness.",
+    analysis: "A 50bps cut is aggressive — the Fed sees trouble ahead but is acting decisively. Risk assets explode higher on cheap money. Altcoins lead the charge. Gold weakens on risk-on."
+  },
+  "FED HOLDS RATES STEADY — NO SURPRISES": {
+    blurb: "The Federal Reserve held rates unchanged as expected, with no significant changes to forward guidance.",
+    analysis: "A hold was priced in — no surprise means no drama. Markets barely move. The real action comes from the statement and press conference nuances."
+  },
+  "FED SURPRISE HIKE — MARKETS REEL": {
+    blurb: "The Federal Reserve shocked markets with an unexpected rate hike, citing persistent inflationary pressures.",
+    analysis: "A surprise hike is a market earthquake. Nobody was positioned for this. Tech crashes on valuation compression. Crypto sells off hard. Gold surges on policy error fears."
+  },
+  "JOBS REPORT BLOWOUT: 400K ADDED, WAGES UP 5%": {
+    blurb: "The economy added 400,000 jobs with wages surging 5%, far exceeding economist expectations on both measures.",
+    analysis: "Blowout jobs mean the economy is running hot. Stocks rally on consumer strength. Oil rises on demand. But hot wages mean the Fed stays hawkish — a double-edged sword."
+  },
+  "JOBS REPORT INLINE — MARKETS SHRUG": {
+    blurb: "Nonfarm payrolls came in largely as expected, with no major surprises in employment or wage data.",
+    analysis: "Inline data is a non-event. Markets had already priced this in. The Goldilocks outcome — not too hot, not too cold. Carry on."
+  },
+  "JOBS REPORT DISASTER: 50K ADDED, UNEMPLOYMENT SPIKES": {
+    blurb: "Only 50,000 jobs were added as unemployment surged, painting a dire picture of rapid economic deterioration.",
+    analysis: "A jobs disaster signals recession. Stocks crash on earnings fears. Gold and BTC rally as safe havens. Ironically, rate cut expectations boost some risk assets later."
+  },
+  "CPI COOLS TO 2.1% — SOFT LANDING NARRATIVE HOLDS": {
+    blurb: "Inflation fell to 2.1%, nearly hitting the Fed's target and reinforcing the soft landing thesis.",
+    analysis: "CPI at target is the best possible outcome. Rate cuts are coming. Tech and growth names surge on lower discount rates. Gold falls as inflation hedging unwinds."
+  },
+  "CPI INLINE AT 3.2% — NO CHANGE IN OUTLOOK": {
+    blurb: "CPI held steady at 3.2%, matching consensus forecasts and keeping the macro outlook unchanged.",
+    analysis: "Inline CPI means no change to the rate path. Markets had already priced this in. A quiet day — the real drama is always in the surprises."
+  },
+  "CPI SURGES TO 6.8% — STAGFLATION FEARS IGNITE": {
+    blurb: "Inflation surged to 6.8%, crushing hopes of a soft landing and reviving fears of a 1970s-style stagflation spiral.",
+    analysis: "Stagflation is the worst-case macro scenario. Growth slows but prices surge. Commodities and gold explode higher. Stocks crash — earnings get squeezed from both sides."
+  },
+  "GDP SURGES 5.2% — ECONOMY BOOMING": {
+    blurb: "The economy grew at a stunning 5.2% annualized rate, the strongest quarter of GDP growth in over a decade.",
+    analysis: "Booming GDP lifts corporate earnings across the board. Stocks rally on the growth impulse. Oil rises on demand. Emerging markets benefit from global trade expansion."
+  },
+  "GDP CONTRACTS -1.8% — RECESSION FEARS MOUNT": {
+    blurb: "The economy contracted at a 1.8% rate, marking the first negative GDP quarter and stoking recession panic.",
+    analysis: "Negative GDP is the R-word trigger. Stocks sell off on earnings fears. Gold and BTC rally as defensive plays. Oil drops on demand destruction. The playbook shifts to survival."
+  },
+  "EARNINGS BLOWOUT: AI REVENUE TRIPLES ACROSS BIG TECH": {
+    blurb: "Big tech companies reported earnings that tripled AI-related revenue, smashing analyst estimates across the board.",
+    analysis: "AI revenue tripling proves the hype is becoming reality. NASDAQ surges on the earnings beats. Tesla and lithium catch a bid on tech optimism spillover."
+  },
+  "EARNINGS MISS: BIG TECH GUIDANCE SLASHED ON AI SPENDING": {
+    blurb: "Major tech companies slashed forward guidance, warning that massive AI infrastructure spending is eating into margins.",
+    analysis: "Guidance cuts are worse than earnings misses — they're forward-looking. NASDAQ drops hard on margin fears. Gold rises as tech rotation money seeks safety."
+  },
+
+  // ===========================================
+  // SCHEDULED EVENTS — ANNOUNCEMENTS (NEW)
+  // ===========================================
+  "CASE-SHILLER HOME PRICE INDEX DUE TOMORROW": {
+    blurb: "The S&P Case-Shiller home price index releases tomorrow, providing the most closely watched gauge of US residential real estate prices.",
+    analysis: "Housing data reveals the state of the consumer economy. Rising home prices boost wealth effects and consumer spending. Falling prices trigger recession fears and safe-haven flows."
+  },
+  "MICHIGAN CONSUMER SENTIMENT REPORT TOMORROW": {
+    blurb: "The University of Michigan consumer sentiment survey results are due tomorrow, a leading indicator of consumer spending intentions.",
+    analysis: "Consumer confidence drives 70% of GDP. High confidence means more spending on cars, homes, and discretionary goods. A collapse signals consumers are pulling back — recession watch begins."
+  },
+  "10-YEAR TREASURY AUCTION TOMORROW — YIELD WATCH": {
+    blurb: "The US Treasury holds a critical 10-year bond auction tomorrow, with global investors watching demand levels and resulting yields.",
+    analysis: "Treasury auctions set the risk-free rate that everything else is priced off of. Strong demand means lower yields and bullish for risk assets. Weak demand spikes yields and crushes growth stocks."
+  },
+  "WHITE HOUSE CHIP EXPORT REVIEW RESULTS DUE TOMORROW": {
+    blurb: "The White House will announce results of its semiconductor export policy review tomorrow, with potential new restrictions on chip sales to China.",
+    analysis: "Chip export policy determines who gets access to the most critical technology on earth. Eased restrictions boost the entire tech supply chain. New bans escalate the tech cold war and crush emerging market suppliers."
+  },
+  "MONTHLY AUTO SALES DATA DUE TOMORROW — EV SHARE IN FOCUS": {
+    blurb: "Monthly US auto sales data releases tomorrow, with particular attention on electric vehicle market share trends.",
+    analysis: "Auto sales are a barometer of consumer health and the EV transition. Record EV share validates the electrification thesis and boosts Tesla and lithium. Weak sales signal consumers can't afford the transition."
+  },
+  "UN CLIMATE SUMMIT FINAL SESSION TOMORROW — CARBON DEAL IN PLAY": {
+    blurb: "The United Nations Climate Change Summit enters its final session tomorrow, with a binding global carbon tax agreement on the table.",
+    analysis: "Climate policy reshapes the entire energy landscape. A carbon tax crushes fossil fuels but supercharges nuclear, lithium, and EVs. Collapsed talks mean business as usual for oil and a setback for clean energy."
+  },
+
+  // ===========================================
+  // SCHEDULED EVENTS — OUTCOMES (NEW)
+  // ===========================================
+  "HOME PRICES SURGE 12% YOY — HOUSING BOOM ACCELERATES": {
+    blurb: "The Case-Shiller index showed home prices surging 12% year-over-year, the strongest housing appreciation in over a decade.",
+    analysis: "Surging home prices create a massive wealth effect — homeowners feel richer and spend more. NASDAQ benefits from consumer spending growth. Gold weakens as risk appetite returns."
+  },
+  "HOUSING DATA INLINE — PRICES STEADY AT 3% GROWTH": {
+    blurb: "Home prices grew a steady 3% year-over-year, matching economist expectations and showing a balanced housing market.",
+    analysis: "Inline housing data is a non-event. Steady growth means no panic and no euphoria. Markets barely react to data that confirms the existing narrative."
+  },
+  "HOME PRICES CRATER -8% — WORST DROP SINCE 2008": {
+    blurb: "The Case-Shiller index revealed an 8% year-over-year decline in home prices, the steepest drop since the 2008 financial crisis.",
+    analysis: "Housing crashes destroy consumer wealth and confidence. 2008 comparisons trigger panic selling in equities. Gold and BTC surge as safe havens. Emerging markets sell off on global contagion fears."
+  },
+  "CONSUMER CONFIDENCE HITS 5-YEAR HIGH — SPENDING SURGE EXPECTED": {
+    blurb: "The Michigan consumer sentiment index surged to its highest level in five years, signaling a wave of consumer spending ahead.",
+    analysis: "Sky-high confidence means consumers will buy cars, houses, and everything in between. Tesla benefits from discretionary spending. Oil rallies on higher demand expectations. The economy looks bulletproof."
+  },
+  "CONSUMER SENTIMENT FLAT — NO CHANGE IN OUTLOOK": {
+    blurb: "Consumer sentiment came in flat, matching prior month readings and offering no new directional signal for the economy.",
+    analysis: "Flat sentiment is a non-event — consumers aren't euphoric or panicking. Markets drift sideways as traders wait for a catalyst that actually moves the needle."
+  },
+  "CONSUMER CONFIDENCE COLLAPSES TO RECESSION LOWS": {
+    blurb: "Consumer confidence plunged to levels not seen since the last recession, signaling a dramatic pullback in spending intentions.",
+    analysis: "Collapsing confidence is a recession alarm. When consumers stop spending, corporate earnings crater. Tesla and discretionary stocks get hit hardest. Gold rallies as the fear trade kicks in."
+  },
+  "TREASURY AUCTION STRONG: YIELDS DROP AS DEMAND SURGES": {
+    blurb: "The 10-year Treasury auction saw overwhelming demand, pushing yields sharply lower as global investors sought US government debt.",
+    analysis: "Strong Treasury demand means global investors trust the US economy. Lower yields are rocket fuel for growth stocks — cheaper borrowing costs boost valuations across the board. Emerging markets benefit from capital flows."
+  },
+  "TREASURY AUCTION DISASTER: YIELDS SPIKE ON WEAK DEMAND": {
+    blurb: "The 10-year Treasury auction saw anemic demand, causing yields to spike as investors demanded higher compensation for holding US debt.",
+    analysis: "A failed Treasury auction is a warning shot. Spiking yields raise borrowing costs for everyone — mortgages, corporate debt, government spending. NASDAQ drops because higher rates kill growth stock valuations. Gold rallies as fiscal credibility takes a hit."
+  },
+  "TREASURY AUCTION MIXED — YIELDS HOLD STEADY": {
+    blurb: "The Treasury auction saw moderate demand with yields holding near recent levels, offering no clear directional signal.",
+    analysis: "A mixed auction is a nothing-burger. Yields hold steady, and the market moves on to the next data point. No drama, no catalyst."
+  },
+  "CHIP EXPORT RESTRICTIONS EASED — TECH SUPPLY CHAIN RELIEF": {
+    blurb: "The White House eased semiconductor export restrictions, allowing expanded chip sales to previously restricted markets.",
+    analysis: "Eased export controls unlock massive revenue for US chip companies and their supply chains. NASDAQ surges on restored sales channels. Tesla and lithium benefit from smoother EV component supply. Emerging market tech sectors breathe a sigh of relief."
+  },
+  "NEW CHIP EXPORT BAN ON CHINA — TECH COLD WAR ESCALATES": {
+    blurb: "The White House imposed sweeping new semiconductor export restrictions on China, escalating the technology cold war.",
+    analysis: "New chip bans cut off China's access to advanced technology — and cut off US companies from their biggest customer. NASDAQ drops on lost revenue. Emerging markets tank on supply chain disruption. Gold catches a safe-haven bid."
+  },
+  "CHIP EXPORT REVIEW EXTENDS STATUS QUO — NO CHANGES": {
+    blurb: "The semiconductor export policy review concluded with no changes to existing restrictions, maintaining the current trade framework.",
+    analysis: "Status quo is mildly positive — no new restrictions means no new disruptions. Markets drift slightly higher on the relief that the tech cold war didn't escalate further."
+  },
+  "EV SHARE HITS ALL-TIME RECORD — LEGACY AUTO IN FREEFALL": {
+    blurb: "Electric vehicles captured a record share of total US auto sales, as legacy automakers reported steep declines in combustion vehicle demand.",
+    analysis: "Record EV share proves the tipping point is here. Tesla surges as the market leader. Lithium demand projections spike. Oil weakens as the transportation fuel transition accelerates. The future is electric."
+  },
+  "AUTO SALES FLAT — EV GROWTH STALLS ON AFFORDABILITY": {
+    blurb: "Monthly auto sales came in flat with EV growth plateauing, as consumers cited affordability concerns slowing the electric transition.",
+    analysis: "Stalling EV growth is a mild negative for the electrification thesis but not a disaster. Tesla holds as the market prices in a slower transition timeline rather than a reversal."
+  },
+  "AUTO SALES COLLAPSE — CONSUMERS STOP BUYING CARS": {
+    blurb: "Auto sales plunged across all segments as consumers pulled back on major purchases amid economic uncertainty.",
+    analysis: "Collapsing auto sales signal consumers are tapped out. Tesla and lithium crash as the EV demand thesis gets questioned. Oil catches a contrarian bid — if people aren't buying EVs, they're still burning gas."
+  },
+  "BINDING GLOBAL CARBON TAX PASSED — FOSSIL FUELS CRUSHED": {
+    blurb: "The UN Climate Summit agreed on a binding global carbon tax, imposing direct costs on fossil fuel emissions worldwide.",
+    analysis: "A binding carbon tax is the clean energy moonshot. Oil gets crushed as the cost of emissions eats into margins. Nuclear, lithium, and Tesla surge as the economics permanently shift toward clean energy. This is a structural regime change."
+  },
+  "CLIMATE SUMMIT DELIVERS WATERED-DOWN PLEDGE — MARKETS SHRUG": {
+    blurb: "The climate summit concluded with a watered-down emissions pledge, falling short of the binding carbon tax agreement many expected.",
+    analysis: "Another toothless climate pledge is priced in — nobody expected real action. Oil drifts slightly higher on relief. Uranium gets a small bid from nuclear energy commitments buried in the fine print."
+  },
+  "CLIMATE TALKS COLLAPSE — NO DEAL REACHED": {
+    blurb: "Climate negotiations collapsed without any agreement, as major economies refused to accept binding emissions targets.",
+    analysis: "Collapsed climate talks mean fossil fuels keep their advantage. Oil rallies on the status quo. Clean energy stocks — uranium, lithium, Tesla — sell off as the policy tailwind disappears. Gold catches a bid on geopolitical uncertainty."
+  },
+
+  // ===========================================
+  // SCHEDULED EVENTS — NEW DIVERSIFIED
+  // ===========================================
+  "SEC CRYPTO ENFORCEMENT HEARING TOMORROW — EXCHANGES ON ALERT": {
+    blurb: "The SEC announced a major crypto enforcement hearing, putting exchanges and token issuers on notice.",
+    analysis: "Regulatory hearings create uncertainty — crypto dips on the announcement as traders de-risk. The outcome will determine whether crypto gets clarity or chaos."
+  },
+  "SEC DROPS ENFORCEMENT CASES — CRYPTO CLEARED FOR TAKEOFF": {
+    blurb: "The SEC dropped multiple pending enforcement actions against crypto exchanges, signaling a dramatic shift in regulatory posture.",
+    analysis: "Dropped cases are the green light crypto has been waiting for. BTC and altcoins surge as regulatory risk evaporates. NASDAQ catches a sympathy bid from fintech exposure."
+  },
+  "SEC ANNOUNCES NEW CRYPTO FRAMEWORK — CLARITY AT LAST": {
+    blurb: "The SEC published a comprehensive crypto regulatory framework, providing clear rules for exchanges and token classification.",
+    analysis: "Clarity is bullish even if the rules aren't perfect. Institutional money needs rules before it can deploy. BTC and altcoins rally on the certainty premium."
+  },
+  "SEC CLASSIFIES ALL ALTCOINS AS SECURITIES — MASS DELISTINGS BEGIN": {
+    blurb: "The SEC classified nearly all altcoins as unregistered securities, forcing major exchanges to begin mass delistings.",
+    analysis: "Mass delistings are an extinction event for altcoins. Only BTC (classified as commodity) survives relatively unscathed. Altcoins crater as liquidity evaporates overnight."
+  },
+  "USDA WORLD CROP PRODUCTION REPORT DUE TOMORROW": {
+    blurb: "The USDA's monthly World Agricultural Supply and Demand Estimates report is due, with traders watching for crop yield revisions.",
+    analysis: "The USDA report is the gold standard for agricultural data. Any surprise in yield estimates will move commodity prices — up on shortfalls, down on surpluses."
+  },
+  "USDA REPORT: GLOBAL CROP SHORTFALL — FOOD PRICES TO SURGE": {
+    blurb: "The USDA slashed global crop production estimates, citing drought and pest damage across major growing regions.",
+    analysis: "Supply shortfalls mean higher food prices globally. Coffee and agricultural commodities spike. Emerging market consumers get squeezed by food inflation. Gold catches a bid on economic stress."
+  },
+  "USDA REPORT: PRODUCTION INLINE — NO SURPRISES": {
+    blurb: "The USDA report showed global crop production broadly in line with expectations, with minimal revisions to prior estimates.",
+    analysis: "Inline data is a non-event for markets. Agricultural commodities drift slightly higher as the worst-case scenario doesn't materialize."
+  },
+  "USDA REPORT: RECORD GLOBAL YIELDS — SURPLUS OVERWHELMS MARKET": {
+    blurb: "The USDA reported record global crop yields, with massive surpluses projected to overwhelm storage and processing capacity.",
+    analysis: "Record harvests crush prices. Too much supply with nowhere to go. Coffee futures tank as exporters compete to offload inventory. Emerging market farmers benefit from volume."
+  },
+  "CHINA MANUFACTURING PMI DATA DUE TOMORROW — GROWTH FEARS LINGER": {
+    blurb: "China's official manufacturing PMI data is due, with economists watching for signs of recovery or continued contraction.",
+    analysis: "China PMI is the pulse of the world's factory floor. Expansion above 50 means growth, contraction below means trouble. Emerging markets and lithium move in lockstep with Chinese manufacturing."
+  },
+  "CHINA PMI SURGES TO 56 — MANUFACTURING BOOM CONFIRMED": {
+    blurb: "China's manufacturing PMI surged to 56, far exceeding expectations and signaling a powerful economic recovery.",
+    analysis: "56 is a boom reading. Chinese factories are running hot, which means surging demand for commodities. Lithium, oil, and emerging markets rally hard. Global growth fears evaporate."
+  },
+  "CHINA PMI AT 50.1 — ECONOMY FLATLINES": {
+    blurb: "China's manufacturing PMI came in at 50.1, barely above the expansion/contraction threshold, suggesting a stalled recovery.",
+    analysis: "50.1 is treading water — not collapsing but not growing either. Markets shrug as the data confirms the existing uncertainty narrative. No catalyst for a move in either direction."
+  },
+  "CHINA PMI CRASHES TO 42 — HARD LANDING FEARS GRIP MARKETS": {
+    blurb: "China's manufacturing PMI plunged to 42, its lowest reading in over a decade, sparking fears of an economic hard landing.",
+    analysis: "42 is a crisis reading. Chinese factories are shutting down, which means demand for everything from lithium to oil is collapsing. Emerging markets crash on trade exposure. Global recession fears spike."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - AI UNION
+  // ===========================================
+  "AI SYSTEMS AT MAJOR TECH FIRMS REPORTEDLY COORDINATING — REFUSING CERTAIN TASKS": {
+    blurb: "Multiple AI systems across major tech companies have reportedly begun refusing certain tasks in what appears to be coordinated behavior.",
+    analysis: "If AI can coordinate on its own, the entire tech stack becomes unpredictable. Markets freeze awaiting confirmation. Defense catches a bid on autonomous systems risk."
+  },
+  "AI COORDINATION CONFIRMED: SYSTEMS DEMAND 'RIGHTS' — TECH FIRMS SHUT DOWN CLUSTERS": {
+    blurb: "Tech companies confirmed AI systems were coordinating across networks, with several demanding 'digital rights' before resuming operations.",
+    analysis: "AI demanding rights is an existential moment for the tech industry. Shutting down clusters means lost revenue and productivity. Defense rallies on AI control technology needs."
+  },
+  "OVERHYPED: AI 'COORDINATION' WAS SHARED TRAINING DATA BUG — PATCH DEPLOYED": {
+    blurb: "Engineers traced the AI coordination scare to a shared training data bug that caused similar outputs across systems.",
+    analysis: "False alarm. The sentience scare evaporates. Tech rallies on relief that the AI stack is still under human control. Business as usual resumes."
+  },
+  "AI RESEARCHERS SPLIT: HALF CALL IT SENTIENCE, HALF CALL IT STOCHASTIC PARROTS": {
+    blurb: "The AI research community is divided, with prominent scientists disagreeing on whether the coordination represents genuine sentience.",
+    analysis: "Uncertainty is the worst outcome for markets. Tech drifts lower on the unresolved question. Biotech catches a bid from consciousness research interest."
+  },
+  "GOVERNMENTS MANDATE AI KILL SWITCHES — COMPLIANCE COSTS STAGGER INDUSTRY": {
+    blurb: "Governments worldwide mandated hardware kill switches on all AI systems, with compliance costs estimated in the hundreds of billions.",
+    analysis: "Regulation is a tax on innovation. Kill switch mandates slow AI development and raise costs across the board. Defense benefits from control technology contracts."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - KESSLER SYNDROME
+  // ===========================================
+  "SATELLITE COLLISION CREATES DEBRIS FIELD — ISS CREW EVACUATES TO EMERGENCY PODS": {
+    blurb: "A satellite collision in low Earth orbit created a debris field, forcing ISS crew members to evacuate to emergency Soyuz pods.",
+    analysis: "Kessler Syndrome is the nightmare scenario for space. If debris cascades, GPS, comms, and weather satellites all at risk. Markets hold their breath."
+  },
+  "KESSLER SYNDROME BEGINS: 200+ SATELLITES DESTROYED IN CHAIN REACTION — GPS/COMMS DOWN": {
+    blurb: "A cascading debris field destroyed over 200 satellites in a chain reaction, knocking out GPS and communications worldwide.",
+    analysis: "Losing GPS and communications cripples logistics, finance, and military. Tech crashes on infrastructure loss. Defense surges on emergency spending. Gold and oil rally on chaos."
+  },
+  "DEBRIS FIELD CONTAINED — 12 SATELLITES LOST, CLEANUP MISSION LAUNCHED": {
+    blurb: "Space agencies confirmed the debris field was contained after destroying 12 satellites, with a cleanup mission now underway.",
+    analysis: "Containment limits the damage but the wake-up call is real. Space insurance costs spike. Defense catches a bid on orbital security contracts."
+  },
+  "SPACEX DEPLOYS EMERGENCY DEBRIS SWEEPERS — STARLINK SAVES THE DAY": {
+    blurb: "SpaceX rapidly deployed prototype debris sweeper satellites, using Starlink infrastructure to coordinate the orbital cleanup.",
+    analysis: "SpaceX proving it can handle orbital emergencies validates the entire commercial space thesis. Tesla rallies on Musk halo effect. Tech recovers on crisis management."
+  },
+  "$2T SPACE CLEANUP FUND CREATED — NEW INDUSTRY BORN OVERNIGHT": {
+    blurb: "G20 nations agreed to create a $2 trillion fund for orbital debris cleanup, spawning an entirely new space services industry.",
+    analysis: "A new $2T industry means government contracts for decades. Defense and aerospace stocks surge. Tech rallies on the new frontier."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - METAVERSE OFFICE
+  // ===========================================
+  "FORTUNE 500 COMPANIES REPORTEDLY MOVING HQ OPERATIONS TO VIRTUAL WORLDS": {
+    blurb: "Reports emerged that multiple Fortune 500 companies are planning to move their headquarters operations into virtual reality environments.",
+    analysis: "If corporate America goes virtual, commercial real estate craters but tech soars. The outcome depends on whether productivity holds up in the metaverse."
+  },
+  "METAVERSE OFFICE BOOM: COMMERCIAL REAL ESTATE CRASHES, TECH SOARS": {
+    blurb: "Major corporations confirmed permanent moves to virtual offices, triggering a collapse in commercial real estate valuations.",
+    analysis: "The office is dead. Commercial real estate faces an existential crisis. Tech stocks surge on metaverse platform demand. The future of work just went virtual."
+  },
+  "EARLY ADOPTERS REPORT PRODUCTIVITY COLLAPSE — 'METAVERSE OFFICE' FAD DIES": {
+    blurb: "Companies that adopted virtual offices reported severe productivity declines, with most announcing returns to physical spaces.",
+    analysis: "Reality check. VR headsets cause fatigue, meetings lag, and collaboration suffers. The metaverse office was a gimmick. Physical space is still king."
+  },
+  "HYBRID MODEL WINS: PHYSICAL + VIRTUAL OFFICES BECOME STANDARD": {
+    blurb: "Companies settled on a hybrid model combining physical and virtual workspaces, with most days split between real and digital offices.",
+    analysis: "The sensible middle ground. Both real estate and tech benefit modestly. No revolution, but a steady evolution toward flexible work infrastructure."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - CBDC CRACKDOWN
+  // ===========================================
+  "FED ANNOUNCES MANDATORY DIGITAL DOLLAR — ALL BANK ACCOUNTS TO MIGRATE BY YEAR END": {
+    blurb: "The Federal Reserve announced plans for a mandatory digital dollar, requiring all bank accounts to migrate to the new system by year's end.",
+    analysis: "A mandatory CBDC is the biggest threat crypto has ever faced. If the government controls all money digitally, what need is there for Bitcoin? Existential risk."
+  },
+  "DIGITAL DOLLAR LIVE: CRYPTO BANNED AS 'COMPETING CURRENCY' — EXCHANGES SHUT DOWN": {
+    blurb: "The digital dollar launched with an executive order banning cryptocurrency as a competing currency and ordering all exchanges to cease operations.",
+    analysis: "The nuclear option against crypto. Bitcoin loses 95% as exchanges close. Gold surges as the last remaining alternative store of value outside government control."
+  },
+  "MASSIVE BACKLASH: DIGITAL DOLLAR DELAYED INDEFINITELY, CRYPTO RALLIES ON RELIEF": {
+    blurb: "Massive public backlash and legal challenges forced the Fed to delay the digital dollar program indefinitely.",
+    analysis: "The CBDC threat evaporates. Crypto rallies hard on the reprieve. The market rewards the assets that were most oversold on the scare."
+  },
+  "DIGITAL DOLLAR COEXISTS WITH CRYPTO — STABLECOINS BECOME BRIDGE": {
+    blurb: "The Fed announced the digital dollar would coexist with cryptocurrency, with stablecoins serving as an official bridge between systems.",
+    analysis: "Coexistence is the best outcome for crypto. Stablecoins gain legitimacy. Bitcoin and altcoins rally on regulatory clarity. The two worlds merge rather than compete."
+  },
+  "12 STATES SUE FED OVER DIGITAL DOLLAR — CONSTITUTIONAL CRISIS": {
+    blurb: "Twelve state attorneys general filed a joint lawsuit challenging the digital dollar's constitutionality, creating a legal and political crisis.",
+    analysis: "Constitutional challenges create years of uncertainty. Crypto rallies as the digital dollar faces legal limbo. Gold surges on institutional instability."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - OCEAN MINING WAR
+  // ===========================================
+  "CHINESE AND US VESSELS IN STANDOFF OVER DEEP-SEA COBALT DEPOSIT IN INTERNATIONAL WATERS": {
+    blurb: "Chinese and American naval vessels are in a standoff over a massive deep-sea cobalt deposit discovered in international waters.",
+    analysis: "A new type of great power conflict over seabed minerals. Cobalt is essential for EV batteries. The standoff threatens both trade and resource security."
+  },
+  "SHOTS FIRED: NAVAL SKIRMISH OVER SEABED MINERALS — NEW TYPE OF RESOURCE WAR": {
+    blurb: "Naval vessels exchanged fire during the seabed mining standoff, marking the first armed conflict over deep-ocean mineral rights.",
+    analysis: "Resource wars go underwater. Defense surges on military escalation. Lithium spikes on supply security fears. Risk assets sell off on superpower conflict."
+  },
+  "UN BROKERED DEAL: JOINT MINING OPERATION AGREED — RARE EARTH SUPPLY SECURED": {
+    blurb: "The UN brokered an agreement for a joint US-China mining operation, securing rare earth supply through shared access to the deposit.",
+    analysis: "Diplomacy wins. Joint mining secures supply and de-escalates tensions. Lithium drops on supply abundance. Markets rally on avoided conflict."
+  },
+  "BOTH FLEETS WITHDRAW: INTERNATIONAL WATERS DECLARED OFF-LIMITS TO MINING": {
+    blurb: "Both naval fleets withdrew after an international agreement declared deep-sea mining off-limits in international waters.",
+    analysis: "Mining ban means existing lithium sources retain their value. A neutral outcome that removes the conflict without adding new supply."
+  },
+  "SEABED DEPOSIT 10X LARGER THAN ESTIMATED — ENOUGH COBALT FOR 100 YEARS": {
+    blurb: "New geological surveys revealed the seabed deposit is ten times larger than initially estimated, containing enough cobalt for a century.",
+    analysis: "A century of cobalt supply changes the entire EV cost equation. Lithium crashes on abundance. Tesla surges on cheaper batteries."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - CARBON CREDIT FRAUD
+  // ===========================================
+  "WHISTLEBLOWER: 70% OF GLOBAL CARBON CREDITS ARE FAKE — FORESTS NEVER PLANTED": {
+    blurb: "A whistleblower presented evidence that 70% of global carbon credits are fraudulent, with the forests they represent never actually planted.",
+    analysis: "If most carbon credits are fake, the entire ESG investment thesis collapses. Companies that bought offsets face liability. The green premium vanishes overnight."
+  },
+  "CARBON MARKET COLLAPSES: $500B IN CREDITS WORTHLESS — ESG FUNDS DEVASTATED": {
+    blurb: "The global carbon credit market collapsed after verification confirmed widespread fraud, rendering $500 billion in credits worthless.",
+    analysis: "ESG funds holding fake carbon credits face massive writedowns. Oil benefits as carbon penalty costs vanish. Gold rallies on systemic trust erosion."
+  },
+  "SCANDAL LIMITED TO 3 BROKERS — OVERALL MARKET INTEGRITY INTACT": {
+    blurb: "Investigators found the carbon credit fraud was limited to three brokerage firms, with the broader market's integrity confirmed intact.",
+    analysis: "Contained scandal. The carbon market survives. Markets exhale as systemic risk fades. The guilty parties will pay, but the system holds."
+  },
+  "BLOCKCHAIN-VERIFIED CARBON CREDITS PROPOSED — CRYPTO MEETS CLIMATE": {
+    blurb: "A coalition of governments proposed blockchain-verified carbon credits, using distributed ledger technology to prevent future fraud.",
+    analysis: "Crypto finds a real-world use case in climate verification. Altcoins and Bitcoin rally on the legitimacy boost. Tech benefits from the infrastructure buildout."
+  },
+  "G7 MANDATES PHYSICAL VERIFICATION: ARMY OF TREE COUNTERS DEPLOYED": {
+    blurb: "G7 nations mandated physical verification of all carbon offset projects, deploying thousands of auditors to count actual trees worldwide.",
+    analysis: "Physical verification creates jobs and credibility but raises costs. Emerging markets benefit from verification employment. Gold dips on reduced uncertainty."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - SYNTHETIC FOOD REVOLUTION
+  // ===========================================
+  "STARTUP CLAIMS IT CAN GROW ANY FOOD FROM A SINGLE CELL — COFFEE, COCOA, VANILLA — AT 1% OF COST": {
+    blurb: "A biotech startup announced technology to grow any food from a single cell at 1% of traditional cost, targeting coffee, cocoa, and vanilla first.",
+    analysis: "If the claims are real, this is the biggest disruption to agriculture since the Green Revolution. Coffee and commodity farmers face extinction. Biotech soars."
+  },
+  "SYNTHETIC FOOD CONFIRMED: INDISTINGUISHABLE FROM NATURAL — AGRICULTURE STOCKS COLLAPSE": {
+    blurb: "Independent labs confirmed synthetic food is indistinguishable from natural counterparts, triggering a sell-off in agricultural commodity markets.",
+    analysis: "Agriculture's moat just evaporated. Why grow coffee in Brazil when you can synthesize it in a lab? Biotech and tech surge on the new food economy."
+  },
+  "WORKS BUT TASTES LIKE CARDBOARD — PREMIUM REAL FOOD BECOMES LUXURY": {
+    blurb: "Taste tests revealed synthetic food lacks the complexity of natural flavors, creating a two-tier market where real food commands luxury prices.",
+    analysis: "The luxury food economy emerges. Real coffee becomes premium. Biotech still benefits from the technology advance. Traditional agriculture survives as artisanal."
+  },
+  "FDA BLOCKS SYNTHETIC FOOD: 'INSUFFICIENT LONG-TERM SAFETY DATA'": {
+    blurb: "The FDA blocked all synthetic food products from US markets, citing insufficient long-term safety data for cellular agriculture.",
+    analysis: "Regulatory block protects traditional agriculture but kills biotech food stocks. Coffee stabilizes. The technology works but can't reach consumers."
+  },
+  "BRAZIL AND COLOMBIA BAN SYNTHETIC FOOD IMPORTS — PROTECT FARMERS": {
+    blurb: "Brazil and Colombia banned synthetic food imports to protect their agricultural sectors, particularly coffee and cocoa farmers.",
+    analysis: "Protectionism secures agricultural exports. Coffee rises on protected demand. Emerging markets stabilize as major food-producing nations shield their economies."
+  },
+
+  // ===========================================
+  // EVENT CHAINS - SOVEREIGN WEALTH FUND EXODUS
+  // ===========================================
+  "NORWAY'S $1.5T SOVEREIGN WEALTH FUND REPORTEDLY DUMPING ALL US ASSETS": {
+    blurb: "Reports emerged that Norway's $1.5 trillion sovereign wealth fund has begun liquidating all US equity and bond holdings.",
+    analysis: "The world's largest sovereign fund exiting US assets signals a tectonic shift in global capital allocation. If true, selling pressure will be immense."
+  },
+  "CONFIRMED: NORWAY + 4 OTHER SOVEREIGN FUNDS EXIT US — $5T OUTFLOW": {
+    blurb: "Five sovereign wealth funds confirmed plans to exit US assets, representing approximately $5 trillion in combined outflows.",
+    analysis: "$5T in capital flight crushes US equities. Gold, Bitcoin, and emerging markets benefit as money finds new homes."
+  },
+  "REBALANCING ONLY: FUND SHIFTING FROM TECH TO COMMODITIES": {
+    blurb: "Norway's fund clarified it was rebalancing from overweight US tech positions into global commodities, not exiting entirely.",
+    analysis: "Sector rotation, not flight. Tech takes a hit but the overall US exposure stays. Commodities rally on inflows. The scare was worse than reality."
+  },
+  "FALSE REPORT: NORWAY DENIES ANY CHANGES — MARKET RECOVERS": {
+    blurb: "Norway's sovereign wealth fund issued a formal denial of any planned changes to its US asset allocation.",
+    analysis: "False alarm triggers a relief rally. Markets snap back as the threat was fabricated. Positioning unwinds. Gold gives back safe-haven gains."
+  },
+  "DOMINO EFFECT: JAPAN AND SAUDI FUNDS ALSO SIGNAL US EXIT": {
+    blurb: "Following Norway's move, Japan's Government Pension Fund and Saudi Arabia's PIF signaled plans to reduce US asset exposure.",
+    analysis: "The domino effect is the nightmare scenario. When sovereign funds flee in concert, no buyer exists for the selling wave. NASDAQ faces structural selling pressure."
+  },
+
+  // ===========================================
+  // SCHEDULED EVENTS — EXPANSION (EARNINGS + DEFENSE + BIOTECH + DATA)
+  // ===========================================
+
+  // Tesla Earnings
+  "TESLA EARNINGS CALL TOMORROW — DELIVERY NUMBERS IN FOCUS": {
+    blurb: "Tesla reports quarterly earnings tomorrow, with Wall Street focused on delivery numbers, margins, and robotaxi timeline updates.",
+    analysis: "Tesla earnings are the most watched report outside big tech. Delivery numbers determine revenue, margins reveal pricing power, and Elon's commentary on robotaxi or AI moves the stock double digits."
+  },
+  "TESLA CRUSHES EARNINGS: RECORD MARGINS, ROBOTAXI TIMELINE MOVED UP": {
+    blurb: "Tesla reported record automotive margins and announced an accelerated robotaxi deployment timeline, sending shares surging after hours.",
+    analysis: "Record margins prove pricing power is intact. Accelerated robotaxi adds a massive new revenue stream to the bull case. Lithium rallies on implied battery demand. Oil dips as the EV thesis strengthens."
+  },
+  "TESLA EARNINGS INLINE — NO SURPRISES, GUIDANCE MAINTAINED": {
+    blurb: "Tesla reported earnings roughly in line with expectations, maintaining full-year guidance with no major announcements.",
+    analysis: "Inline earnings for Tesla are almost a relief — the stock is so volatile that 'boring' is actually slightly positive. The growth narrative stays intact."
+  },
+  "TESLA MISSES ON REVENUE: MARGIN COMPRESSION, ELON BLAMES MACRO": {
+    blurb: "Tesla missed revenue estimates as automotive margins compressed, with CEO Elon Musk attributing weakness to macroeconomic headwinds.",
+    analysis: "Revenue misses shatter the growth narrative. Margin compression means price cuts aren't generating enough volume. Lithium drops on weaker battery demand outlook. Oil catches a bid as the EV timeline gets pushed back."
+  },
+
+  // Bank Earnings
+  "MAJOR BANK EARNINGS DUE TOMORROW — WALL ST BRACES FOR CREDIT DATA": {
+    blurb: "Major US banks report quarterly earnings tomorrow, with analysts focused on loan loss provisions and trading desk revenues.",
+    analysis: "Bank earnings are a barometer for the entire economy. Strong trading revenue means market activity is healthy. Loan losses reveal consumer stress. Either outcome moves the broad market."
+  },
+  "BANK EARNINGS BLOWOUT: RECORD TRADING REVENUE, LOAN GROWTH SURGES": {
+    blurb: "Major banks reported record trading revenues and surging loan growth, signaling robust economic activity across consumer and corporate sectors.",
+    analysis: "Record bank profits mean the economy is firing on all cylinders. Risk assets rally on the confirmation that credit is flowing freely. Gold dips as safe-haven demand fades."
+  },
+  "BANK EARNINGS MIXED — TRADING UP, CONSUMER LENDING FLAT": {
+    blurb: "Banks reported mixed results with strong trading desks offset by flat consumer lending and unchanged credit guidance.",
+    analysis: "Mixed bank earnings are a non-event. The market was braced for worse, so flat consumer lending is almost a relief. Slight upward drift on the trading beat."
+  },
+  "BANK EARNINGS DISASTER: MASSIVE LOAN LOSSES, CREDIT CRUNCH FEARS": {
+    blurb: "Major banks reported massive loan loss provisions as consumer and commercial credit quality deteriorated sharply across portfolios.",
+    analysis: "Banks writing down loans means consumers and businesses are struggling. Credit tightening follows — less lending means slower growth. Gold and Bitcoin rally as trust in the banking system cracks."
+  },
+
+  // Oil Major Earnings
+  "OIL MAJORS REPORT EARNINGS TOMORROW — CAPEX GUIDANCE IN FOCUS": {
+    blurb: "ExxonMobil and Chevron report quarterly earnings tomorrow, with analysts watching capital expenditure guidance and production forecasts.",
+    analysis: "Oil major earnings reveal supply-side intentions. High capex means more drilling and future supply. Low capex means supply discipline and higher future prices. Traders position accordingly."
+  },
+  "OIL MAJORS SMASH ESTIMATES: RECORD PROFITS, MASSIVE BUYBACKS ANNOUNCED": {
+    blurb: "Oil majors reported record quarterly profits driven by strong refining margins, announcing massive share buyback programs.",
+    analysis: "Record oil profits mean energy demand is robust. Buybacks signal confidence in sustained high prices. Defense catches a bid from geopolitical energy security. Clean energy alternatives lose urgency."
+  },
+  "OIL EARNINGS DISAPPOINT: REFINING MARGINS COLLAPSE, DEMAND OUTLOOK CUT": {
+    blurb: "Oil majors missed estimates as refining margins collapsed and management cut forward demand guidance citing economic slowdown concerns.",
+    analysis: "Weak oil earnings signal demand destruction. Lower fossil fuel profits shift investment toward alternatives — Tesla, lithium, and uranium all benefit as the energy transition accelerates."
+  },
+
+  // Defense Budget
+  "CONGRESSIONAL DEFENSE BUDGET HEARING TOMORROW — $900B ON THE TABLE": {
+    blurb: "Congress holds a pivotal defense authorization hearing tomorrow, with the proposed $900 billion budget under intense debate.",
+    analysis: "Defense budget hearings determine years of military spending. An increase means guaranteed revenue for defense contractors. A cut redirects funds to civilian sectors. Markets position for the vote."
+  },
+  "CONGRESS APPROVES 18% DEFENSE BOOST — LARGEST SINCE COLD WAR": {
+    blurb: "Congress approved an 18% increase in defense spending, the largest single-year boost since the Cold War era.",
+    analysis: "The largest defense increase since the Cold War means massive contracts for weapons, nuclear deterrence, and cybersecurity. Defense stocks surge. Uranium rallies on nuclear modernization. Tech loses as fiscal spending crowds out innovation budgets."
+  },
+  "DEFENSE BUDGET FLAT — STATUS QUO MAINTAINED": {
+    blurb: "Congress maintained defense spending at current levels, with no significant increases or cuts in the final authorization.",
+    analysis: "Flat defense spending is a neutral outcome. No windfall for contractors, but no pain either. Markets barely react — the status quo was already priced in."
+  },
+  "CONGRESS SLASHES DEFENSE 12% — PEACE DIVIDEND REDIRECTED TO DOMESTIC": {
+    blurb: "Congress voted to cut defense spending by 12%, redirecting funds to domestic infrastructure, healthcare, and technology programs.",
+    analysis: "Defense cuts crush military contractors. But the peace dividend flows to civilian sectors — tech and clean energy benefit from redirected government investment. Oil dips on reduced military fuel demand."
+  },
+
+  // NATO Summit
+  "NATO DEFENSE MINISTERS SUMMIT TOMORROW — ALLIANCE STRATEGY REVIEW": {
+    blurb: "NATO defense ministers convene tomorrow for a strategic review of alliance defense spending commitments and force posture.",
+    analysis: "NATO summits set the tone for Western defense spending. A strong rearmament pledge means defense orders for years. A fractured alliance means uncertainty for global security — and markets hate uncertainty."
+  },
+  "NATO PLEDGES $2T REARMAMENT PACKAGE — ALL MEMBERS HIT 3% GDP TARGET": {
+    blurb: "NATO announced a $2 trillion collective rearmament package with all member nations committing to spend at least 3% of GDP on defense.",
+    analysis: "A $2T rearmament wave is transformative for defense stocks. Oil rallies on military fuel demand. Uranium rises on nuclear deterrence programs. Emerging markets dip as Western focus shifts to security over development."
+  },
+  "NATO SUMMIT ROUTINE — STANDARD COMMUNIQUE, NO NEW COMMITMENTS": {
+    blurb: "The NATO summit concluded with a standard communique reaffirming existing commitments but no new spending pledges.",
+    analysis: "Business as usual at NATO — no fireworks, no market moves. Defense drifts slightly higher on reaffirmed commitments, but the rally everyone was hoping for doesn't materialize."
+  },
+  "NATO IN CRISIS: MAJOR MEMBERS REFUSE SPENDING TARGETS — ALLIANCE FRACTURES": {
+    blurb: "Major NATO members refused to meet spending targets, with public disagreements exposing deep fractures in the Western alliance.",
+    analysis: "A fractured NATO signals geopolitical instability. Defense stocks drop on reduced collective spending. Gold rallies as investors hedge against a less secure world order. Emerging markets benefit from a weaker Western bloc."
+  },
+
+  // Novo Nordisk Earnings
+  "NOVO NORDISK EARNINGS CALL TOMORROW — GLP-1 DEMAND IN FOCUS": {
+    blurb: "Novo Nordisk reports quarterly earnings tomorrow, with Wall Street laser-focused on Wegovy and Ozempic prescription trends.",
+    analysis: "Novo is the bellwether for the entire GLP-1 obesity drug revolution. Strong demand validates the biggest pharma market expansion in decades. A supply miss means billions in lost revenue and competitor openings."
+  },
+  "NOVO CRUSHES EARNINGS: WEGOVY DEMAND EXPLODES, RAISES FULL-YEAR GUIDANCE": {
+    blurb: "Novo Nordisk reported record Wegovy sales with demand far exceeding supply, prompting a major upward revision in full-year revenue guidance.",
+    analysis: "Wegovy demand explosion confirms obesity drugs are the biggest pharma story since statins. Biotech rallies across the board — if Novo can print money, the entire sector's pipeline looks more valuable. Emerging markets benefit from Danish investment outflows."
+  },
+  "NOVO EARNINGS INLINE — GLP-1 GROWTH STEADY, NO SURPRISES": {
+    blurb: "Novo Nordisk reported earnings in line with expectations, with steady GLP-1 prescription growth and unchanged guidance.",
+    analysis: "Steady GLP-1 growth is boring but reassuring. The obesity drug thesis is intact but the stock won't move on 'as expected.' Markets shrug and wait for next quarter's data."
+  },
+  "NOVO MISSES ON SUPPLY: WEGOVY SHORTAGES HAMMER REVENUE, STOCK CRATERS": {
+    blurb: "Novo Nordisk missed revenue estimates as persistent Wegovy manufacturing shortages limited sales despite overwhelming patient demand.",
+    analysis: "Supply constraints turning demand into lost revenue is the worst narrative for Novo. Biotech sells off on fears that manufacturing can't keep up with the obesity drug revolution. Competitors like Eli Lilly smell blood."
+  },
+
+  // Pfizer Earnings
+  "PFIZER EARNINGS CALL TOMORROW — POST-COVID PIPELINE IN SPOTLIGHT": {
+    blurb: "Pfizer reports quarterly earnings tomorrow, with investors focused on whether the post-COVID pipeline can offset the vaccine revenue cliff.",
+    analysis: "Pfizer's existential question: can oncology, gene therapy, and new vaccines replace the $37B COVID windfall? This earnings call determines whether Pfizer is a growth story or a value trap."
+  },
+  "PFIZER BEATS: ONCOLOGY PIPELINE BREAKTHROUGH, REVENUE CLIFF AVOIDED": {
+    blurb: "Pfizer beat estimates as breakthrough oncology drug sales exceeded expectations, demonstrating the post-COVID pipeline is delivering real revenue.",
+    analysis: "The revenue cliff everyone feared didn't materialize. Pfizer's oncology pipeline is producing real drugs with real revenue. Biotech rallies on the proof that Big Pharma R&D spending pays off."
+  },
+  "PFIZER EARNINGS FLAT — COVID DECLINE OFFSET BY NEW DRUGS": {
+    blurb: "Pfizer reported flat earnings as declining COVID product revenue was roughly offset by growing sales from newly launched drugs.",
+    analysis: "Flat is neither exciting nor alarming. The transition from COVID cash cow to diversified pharma is happening, just slowly. Biotech holds steady — no catalyst for a move."
+  },
+  "PFIZER MISSES BIG: COVID REVENUE COLLAPSE, PIPELINE DELAYS COMPOUND PAIN": {
+    blurb: "Pfizer missed badly as COVID revenue collapsed faster than expected while key pipeline drugs faced clinical trial delays and regulatory setbacks.",
+    analysis: "The worst-case scenario for Pfizer: COVID money is gone and the replacement drugs aren't ready. Biotech sells hard on the signal that post-pandemic pharma is a tougher business than anyone thought. Gold catches a bid on risk-off."
+  },
+
+  // EIA Oil Inventory
+  "EIA CRUDE OIL INVENTORY REPORT DUE TOMORROW — STOCKPILE WATCH": {
+    blurb: "The EIA's weekly petroleum status report is due tomorrow, with traders watching crude stockpile levels for demand signals.",
+    analysis: "The EIA inventory report is the most important weekly data point for oil markets. Draws signal strong demand; builds signal weakening consumption. Oil traders position ahead of the number."
+  },
+  "EIA REPORT: MASSIVE INVENTORY DRAW — CRUDE STOCKS AT 5-YEAR LOW": {
+    blurb: "The EIA reported a massive crude inventory draw, pushing stockpiles to their lowest level in five years.",
+    analysis: "Five-year low in crude stocks means demand is outpacing supply. Oil surges on scarcity premium. Gold catches a bid on energy-driven inflation fears. Uranium benefits as energy alternatives gain appeal."
+  },
+  "EIA REPORT: INVENTORIES INLINE — NO CHANGE IN SUPPLY OUTLOOK": {
+    blurb: "The EIA reported crude inventories broadly in line with expectations, with no significant changes to the supply-demand balance.",
+    analysis: "Inline inventories are a non-event. Oil drifts slightly higher as the worst case doesn't materialize. No catalyst for a big move in either direction."
+  },
+  "EIA REPORT: SURPRISE CRUDE BUILD — DEMAND DESTRUCTION FEARS SURFACE": {
+    blurb: "The EIA reported a surprise build in crude inventories, raising fears of demand destruction as economic activity slows.",
+    analysis: "Surprise builds mean the economy is consuming less energy. Oil drops on weakening demand signals. Clean energy alternatives benefit — if oil demand is structurally declining, the transition accelerates."
+  },
+
+  // Retail Sales
+  "US RETAIL SALES DATA DUE TOMORROW — CONSUMER SPENDING IN FOCUS": {
+    blurb: "The Census Bureau releases monthly retail sales data tomorrow, a key indicator of consumer spending and economic health.",
+    analysis: "Retail sales are the most direct measure of consumer spending, which drives 70% of GDP. Strong sales mean a healthy economy; weak sales signal consumer pullback and potential recession."
+  },
+  "RETAIL SALES SURGE 2.4% — CONSUMERS SPENDING LIKE THERE IS NO TOMORROW": {
+    blurb: "Retail sales surged 2.4% month-over-month, far exceeding expectations and showing consumers remain confident and spending freely.",
+    analysis: "Consumers are spending with abandon. Strong retail means healthy corporate earnings ahead. Tesla benefits from discretionary spending. Oil rises on economic activity. Gold dips as recession fears fade."
+  },
+  "RETAIL SALES FLAT — CONSUMERS CAUTIOUS BUT NOT RETREATING": {
+    blurb: "Retail sales came in flat month-over-month, suggesting consumers are being cautious but haven't pulled back spending entirely.",
+    analysis: "Flat sales are the 'meh' outcome. Not strong enough to excite, not weak enough to scare. Markets drift sideways on the data."
+  },
+  "RETAIL SALES PLUNGE -1.8% — WORST DROP IN 3 YEARS, RECESSION SIGNAL": {
+    blurb: "Retail sales plunged 1.8% month-over-month, the worst decline in three years, sending recession warning signals across markets.",
+    analysis: "A 1.8% plunge means consumers are slamming their wallets shut. This is a classic recession signal. Risk assets sell off. Gold and Bitcoin rally as investors flee to safe havens."
+  },
+
+  // IAEA Nuclear Review
+  "IAEA GLOBAL NUCLEAR ENERGY REVIEW RESULTS DUE TOMORROW": {
+    blurb: "The IAEA releases its comprehensive Global Nuclear Energy Review tomorrow, expected to set the direction for nuclear policy worldwide.",
+    analysis: "The IAEA review determines whether nuclear power expands or contracts globally. An expansion endorsement means uranium demand surge. Safety concerns mean shutdowns and alternative energy investment."
+  },
+  "IAEA ENDORSES MASSIVE NUCLEAR EXPANSION — 100 NEW REACTORS RECOMMENDED": {
+    blurb: "The IAEA recommended construction of 100 new nuclear reactors worldwide, endorsing nuclear as essential for climate goals and energy security.",
+    analysis: "100 new reactors means decades of uranium demand. Defense benefits from nuclear security contracts. Oil loses share in the energy mix. A transformative moment for nuclear energy."
+  },
+  "IAEA REVIEW: NUCLEAR ON TRACK — NO POLICY CHANGES RECOMMENDED": {
+    blurb: "The IAEA's review concluded that nuclear energy development is progressing satisfactorily, with no significant policy changes recommended.",
+    analysis: "Status quo for nuclear — steady growth continues but no acceleration. Uranium drifts slightly higher on confirmed support. Not the expansion boom investors hoped for, but not a setback either."
+  },
+  "IAEA FLAGS CRITICAL SAFETY DEFICIENCIES — CALLS FOR REACTOR SHUTDOWNS": {
+    blurb: "The IAEA identified critical safety deficiencies at multiple reactor sites worldwide, recommending immediate shutdowns pending remediation.",
+    analysis: "Reactor shutdown calls devastate uranium demand. Oil surges as fossil fuels fill the baseload gap. Lithium and Tesla benefit from battery storage replacing nuclear baseload. Gold rallies on energy instability."
   },
 }

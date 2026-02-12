@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { Scanlines } from './ui/Scanlines'
 import { TitleScreen } from './screens/TitleScreen'
@@ -22,6 +23,28 @@ interface MarketHustleProps {
 
 export function MarketHustle({ initialLeaderboards }: MarketHustleProps) {
   const screen = useGame(state => state.screen)
+  const setPreloadedScenario = useGame(state => state.setPreloadedScenario)
+  const startGame = useGame(state => state.startGame)
+  const scenarioLoaded = useRef(false)
+
+  // Detect ?scenario=<id> URL param and auto-load + start the scenario
+  useEffect(() => {
+    if (scenarioLoaded.current) return
+    const params = new URLSearchParams(window.location.search)
+    const scenarioId = params.get('scenario')
+    if (!scenarioId) return
+    scenarioLoaded.current = true
+
+    fetch(`/api/scenarios/${scenarioId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) {
+          setPreloadedScenario(data)
+          startGame()
+        }
+      })
+      .catch(() => { /* scenario load failed, fall through to normal game */ })
+  }, [setPreloadedScenario, startGame])
 
   return (
     <div className="h-full w-full flex flex-col">

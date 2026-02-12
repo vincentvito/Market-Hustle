@@ -10,7 +10,7 @@ import type { PEAbilityId, AbilityHeadlines } from './types'
  */
 export const ABILITY_HEADLINES: Record<PEAbilityId, AbilityHeadlines> = {
   // =============================================================================
-  // LOBBY/POLITICAL (Sal's Corner)
+  // LOBBY/POLITICAL (Capitol Consulting Group)
   // =============================================================================
 
   defense_spending_bill: {
@@ -65,6 +65,17 @@ export const ABILITY_HEADLINES: Record<PEAbilityId, AbilityHeadlines> = {
     part2: 'DEVELOPING: VIRAL MISINFORMATION CAMPAIGN TRACED TO COORDINATED NETWORK - TENSIONS RISING',
     successPart3: 'CHAOS: PROTESTS ERUPT ACROSS MAJOR US CITIES - INVESTORS FLEE TO SAFE HAVENS',
     backfirePart3: 'UNMASKED: FOREIGN DISINFO NETWORK EXPOSED - MEDIA COMPANY UNDER FEDERAL INVESTIGATION',
+  },
+
+  // =============================================================================
+  // INSIDER TIP (Smokey's on K) — placeholder, headlines sourced from INSIDER_TIP_SCENARIOS at runtime
+  // =============================================================================
+
+  insider_tip: {
+    part1: '',
+    part2: '',
+    successPart3: '',
+    backfirePart3: '',
   },
 
   // Special case: run_for_president triggers ElectionPopup immediately, no story arc
