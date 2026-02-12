@@ -8,12 +8,14 @@ import { TIER_COLORS, type MilestoneTier } from '@/lib/game/milestones'
 // Priority order for news sorting (lower = higher priority, displayed first)
 const LABEL_PRIORITY: Record<NewsLabelType | 'undefined', number> = {
   breaking: 0,
-  news: 1,
-  developing: 2,
-  rumor: 3,
-  gossip: 4,   // Flavor events appear below main news
-  none: 5,
-  undefined: 5, // Treat undefined same as none
+  scheduled: 1, // Calendar events (Fed, jobs, GDP) shown prominently
+  news: 2,
+  developing: 3,
+  rumor: 4,
+  gossip: 5,   // Wall St Gossip (trading messages) appear below main news
+  flavor: 5,   // Flavor events (meme/celebrity) same tier as gossip
+  none: 6,
+  undefined: 6, // Treat undefined same as none
 }
 
 function getNewsPriority(labelType?: NewsLabelType): number {
@@ -22,41 +24,25 @@ function getNewsPriority(labelType?: NewsLabelType): number {
 }
 
 // Helper to get label display based on labelType
-function getLabelDisplay(labelType?: NewsLabelType): { text: string; colorClass: string; glowStyle?: React.CSSProperties } | null {
+function getLabelDisplay(labelType?: NewsLabelType): { text: string; colorClass: string } | null {
   switch (labelType) {
     case 'breaking':
-      return {
-        text: '⚡ BREAKING',
-        colorClass: 'text-mh-news',
-        glowStyle: { textShadow: '0 0 8px rgba(255,170,0,0.4)' }
-      }
+      return { text: '⚡ BREAKING', colorClass: 'text-mh-news' }
     case 'developing':
-      return {
-        text: 'DEVELOPING',
-        colorClass: 'text-mh-news',
-        glowStyle: { textShadow: '0 0 8px rgba(255,170,0,0.4)' }
-      }
+      return { text: 'DEVELOPING', colorClass: 'text-mh-news' }
     case 'rumor':
-      return {
-        text: 'RUMOR',
-        colorClass: 'text-mh-news',
-        glowStyle: { textShadow: '0 0 8px rgba(255,170,0,0.4)' }
-      }
+      return { text: 'RUMOR', colorClass: 'text-mh-news' }
+    case 'scheduled':
+      return { text: 'SCHEDULED', colorClass: 'text-mh-news' }
     case 'gossip':
-      return {
-        text: 'NEWS',
-        colorClass: 'text-mh-news',
-        glowStyle: { textShadow: '0 0 8px rgba(255,170,0,0.4)' }
-      }
+      return { text: 'WALL ST GOSSIP', colorClass: 'text-mh-news' }
+    case 'flavor':
+      return { text: 'JUST IN', colorClass: 'text-mh-news' }
     case 'none':
       return null
     case 'news':
     default:
-      return {
-        text: 'NEWS',
-        colorClass: 'text-mh-news',
-        glowStyle: { textShadow: '0 0 8px rgba(255,170,0,0.4)' }
-      }
+      return { text: 'NEWS', colorClass: 'text-mh-news' }
   }
 }
 
@@ -73,6 +59,16 @@ export function NewsPanel() {
   const isModern3 = selectedTheme === 'modern3'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
+
+  // Theme-aware glow matching --mh-news color per theme
+  const newsGlowStyle: React.CSSProperties = isModern3
+    ? { textShadow: '0 0 8px rgba(0,212,170,0.4)' }    // #00d4aa
+    : isRetro2
+      ? { textShadow: '0 0 8px rgba(0,255,136,0.4)' }   // #00ff88
+      : isBloomberg
+        ? { textShadow: '0 0 8px rgba(255,204,0,0.4)' }  // #ffcc00
+        : { textShadow: '0 0 8px rgba(255,170,0,0.4)' }  // #ffaa00
+  const scheduledGlowStyle: React.CSSProperties = { textShadow: '0 0 8px rgba(100,180,255,0.4)' }
 
   // Typewriter state
   const [typewriterIndex, setTypewriterIndex] = useState(0) // Which news item is currently typing
@@ -107,6 +103,7 @@ export function NewsPanel() {
     headline: r.rumor,
     effects: {},
     labelType: 'rumor' as NewsLabelType,
+    predictionLine: day > r.startDay ? r.predictionLine : undefined,
   }))
   const allNews = [...todayNews, ...chainRumorItems]
     .sort((a, b) => getNewsPriority(a.labelType) - getNewsPriority(b.labelType))
@@ -231,7 +228,7 @@ export function NewsPanel() {
         isBloomberg
           ? 'bg-black h-[clamp(140px,28dvh,350px)] md:h-auto md:max-h-[300px] border-b md:border-b-0 border-[#333333] border-l-[3px] border-l-[#ff8c00]'
           : isModern3
-            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[clamp(140px,28dvh,350px)] md:h-auto md:max-h-[300px] mt-1 mx-2 md:mt-0 md:mx-0 md:rounded-none md:border-l-0'
+            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[clamp(140px,28dvh,350px)] md:h-auto md:max-h-[300px] mx-2 md:mx-0 md:rounded-none md:border-l-0'
             : 'border-b md:border-b-0 border-mh-border border-l-[3px] border-l-mh-accent-blue bg-[#0a0d10] h-[clamp(140px,28dvh,350px)] md:h-auto md:max-h-[300px]'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
@@ -247,55 +244,6 @@ export function NewsPanel() {
             }}
           >
             ★ {activeMilestone.title} — {activeMilestone.scarcityMessage}
-          </div>
-        )}
-
-        {/* Day 1 welcome message */}
-        {day === 1 && milestonePhase === 'idle' && (
-          <div className="text-base leading-relaxed space-y-2 mb-3">
-            {isModern3 ? (
-              <>
-                <div
-                  className="py-2 px-2 -mx-2 rounded-lg font-bold text-mh-profit-green text-base"
-                  style={{
-                    background: 'rgba(0,212,170,0.12)',
-                    textShadow: '0 0 10px rgba(0,212,170,0.6)',
-                  }}
-                >
-                  BUY LOW. SELL HIGH. MAKE BILLIONS.
-                </div>
-                <div
-                  className="text-mh-profit-green text-sm"
-                  style={{ textShadow: '0 0 8px rgba(0,212,170,0.5)' }}
-                >
-                  TAP ANY ASSET TO BUY OR SELL. WATCH THE NEWS.
-                </div>
-                <div
-                  className="text-mh-profit-green text-sm"
-                  style={{ textShadow: '0 0 8px rgba(0,212,170,0.5)' }}
-                >
-                  RUMORS HINT AT TOMORROW. POSITION YOURSELF EARLY.
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="text-mh-news font-bold text-base" style={{ textShadow: '0 0 8px rgba(255,170,0,0.4)' }}>
-                  &gt; BUY LOW. SELL HIGH. MAKE BILLIONS.
-                </div>
-                <div
-                  className={`${isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'} text-sm`}
-                  style={isRetro2 ? { textShadow: '0 0 8px rgba(0,255,136,0.5)' } : undefined}
-                >
-                  &gt; TAP ANY ASSET TO BUY OR SELL. WATCH THE NEWS.
-                </div>
-                <div
-                  className={`${isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'} text-sm`}
-                  style={isRetro2 ? { textShadow: '0 0 8px rgba(0,255,136,0.5)' } : undefined}
-                >
-                  &gt; RUMORS HINT AT TOMORROW. POSITION YOURSELF EARLY.
-                </div>
-              </>
-            )}
           </div>
         )}
 
@@ -334,7 +282,7 @@ export function NewsPanel() {
               }}
               className="leading-relaxed cursor-pointer hover:brightness-125 transition-all"
             >
-              <span className={`${textColorClass} font-bold text-[15px] md:text-[16px]`} style={label?.glowStyle}>
+              <span className={`${textColorClass} font-bold text-[15px] md:text-[16px]`} style={label ? (news.labelType === 'scheduled' ? scheduledGlowStyle : newsGlowStyle) : undefined}>
                 {label && <>{label.text}: </>}
                 {displayedHeadline}
                 {showCursor && <span className="animate-pulse">▌</span>}
@@ -344,6 +292,17 @@ export function NewsPanel() {
                   className={`text-sm opacity-80 ml-1 ${isModern3 || isRetro2 ? 'text-mh-profit-green' : 'text-mh-rumor'}`}
                   style={isModern3 || isRetro2 ? { textShadow: '0 0 8px rgba(0,255,136,0.5)' } : undefined}
                 >ⓘ</span>
+              )}
+              {news.predictionLine && !isTypewriting && (
+                <div
+                  className="text-[13px] md:text-[14px] font-bold mt-0.5 tracking-wide"
+                  style={{
+                    color: '#60a5fa',
+                    textShadow: '0 0 8px rgba(96,165,250,0.3)',
+                  }}
+                >
+                  {news.predictionLine}
+                </div>
               )}
             </div>
           )

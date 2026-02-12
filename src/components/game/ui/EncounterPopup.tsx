@@ -309,10 +309,10 @@ export function EncounterPopup() {
 
     switch (pendingEncounter.type) {
       case 'sec':
-        result = choiceIndex === 0 ? resolveSEC('pay', netWorth, trustFundBalance) : resolveSEC('fight', netWorth, trustFundBalance)
+        result = choiceIndex === 0 ? resolveSEC('pay', netWorth, cash, trustFundBalance) : resolveSEC('fight', netWorth, cash, trustFundBalance)
         break
       case 'divorce':
-        result = choiceIndex === 0 ? resolveDivorce('settle', netWorth, trustFundBalance) : resolveDivorce('contest', netWorth, trustFundBalance)
+        result = choiceIndex === 0 ? resolveDivorce('settle', netWorth, cash, trustFundBalance) : resolveDivorce('contest', netWorth, cash, trustFundBalance)
         break
       case 'shitcoin':
         result = choiceIndex === 0 ? resolveShitcoin('mint', cash) : resolveShitcoin('pass', cash)
@@ -399,7 +399,7 @@ export function EncounterPopup() {
       { label: '$10K', value: 10000 },
       { label: '$50K', value: 50000 },
       { label: '$100K', value: 100000 },
-      { label: 'ALL IN', value: cash },
+      { label: 'ALL IN', value: Math.floor(cash) },
     ]
 
     return (

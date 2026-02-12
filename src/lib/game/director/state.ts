@@ -133,8 +133,8 @@ export function updateDirectorState(
       state.activeTheme = 'none'
       state.themeStrength = 0
     } else {
-      // Theme strength fades over time
-      state.themeStrength = Math.max(0, previousState.themeStrength - 0.1)
+      // Theme strength fades slowly (-0.03/day stays above 0.3 threshold for ~23 days)
+      state.themeStrength = Math.max(0, previousState.themeStrength - 0.03)
     }
   }
 

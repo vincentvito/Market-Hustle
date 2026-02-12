@@ -1,7 +1,7 @@
 // Multi-stage Stories - Phase 1 Implementation
 // Stories run alongside existing events/chains system
 
-import type { AssetMood, EventSentiment } from './types'
+import type { AssetMood, EventSentiment, PendingStoryArc } from './types'
 import { deriveSentiment, MAX_CONFLICT_RETRIES } from './sentimentHelpers'
 
 export interface StoryBranch {
@@ -46,8 +46,8 @@ export interface ActiveStory {
 // Weights adjusted for spike stories and escalation stories
 export const STORY_CATEGORY_WEIGHTS: Record<string, number> = {
   geopolitical: 0.15, // +3 escalation (Civil War, NATO Article 5, Peace Accord)
-  crypto: 0.16,       // +3 spike stories (BTC Fed, Satoshi Dump, Tether Collapse)
-  tech: 0.14,         // +1 escalation (Superconductor)
+  crypto: 0.11,       // +3 spike stories (BTC Fed, Satoshi Dump, Tether Collapse)
+  tech: 0.14,         // +2 escalation (Superconductor, Robot Union)
   energy: 0.12,       // +2 spike stories (Oil Free Energy, Lithium EV)
   fed: 0.08,
   biotech: 0.12,      // +2 spike stories (Immortality, Cancer Cure)
@@ -82,12 +82,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'FED MEETING RESULT: 50BPS CUT - RISK ON',
-            effects: { nasdaq: 0.18, btc: 0.15, tesla: 0.20, gold: -0.08 },
+            effects: { nasdaq: 0.10, btc: 0.08, tesla: 0.12, gold: -0.05 },
             probability: 0.40
           },
           negative: {
             headline: 'FED MEETING RESULT: HOLDS STEADY - HIGHER FOR LONGER',
-            effects: { nasdaq: -0.12, btc: -0.08, tesla: -0.15, gold: 0.05 },
+            effects: { nasdaq: -0.07, btc: -0.05, tesla: -0.08, gold: 0.04 },
             probability: 0.60
           }
         }
@@ -111,12 +111,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'WHALE MOVE REVEALED: WAS BUYING - FAKE OUT REVERSAL',
-            effects: { btc: 0.20, altcoins: 0.28 },
+            effects: { btc: 0.12, altcoins: 0.16 },
             probability: 0.35
           },
           negative: {
             headline: 'WHALE DUMPED: MASSIVE SELL WALL HIT - BTC CRASHES',
-            effects: { btc: -0.25, altcoins: -0.35, nasdaq: -0.05 },
+            effects: { btc: -0.15, altcoins: -0.20, nasdaq: -0.03 },
             probability: 0.65
           }
         }
@@ -140,12 +140,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'PIPELINE DAMAGE MINIMAL - BACK ONLINE',
-            effects: { oil: -0.08 },
+            effects: { oil: -0.05 },
             probability: 0.40
           },
           negative: {
             headline: 'MAJOR SPILL - PIPELINE OFFLINE FOR WEEKS',
-            effects: { oil: 0.22, gold: 0.05 },
+            effects: { oil: 0.14, gold: 0.04 },
             probability: 0.60
           }
         }
@@ -169,12 +169,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'NVIDIA SMASHES ESTIMATES - AI BOOM CONTINUES',
-            effects: { nasdaq: 0.15, lithium: 0.12, tesla: 0.10 },
+            effects: { nasdaq: 0.10, lithium: 0.07, tesla: 0.06 },
             probability: 0.50
           },
           negative: {
             headline: 'NVIDIA MISSES ON GUIDANCE - CHIP GLUT FEARS',
-            effects: { nasdaq: -0.18, lithium: -0.15, tesla: -0.12 },
+            effects: { nasdaq: -0.10, lithium: -0.08, tesla: -0.07 },
             probability: 0.50
           }
         }
@@ -241,12 +241,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'BIPARTISAN BILL GIVES CRYPTO REGULATORY CLARITY',
-            effects: { btc: 0.25, altcoins: 0.40, nasdaq: 0.08 },
+            effects: { btc: 0.14, altcoins: 0.22, nasdaq: 0.05 },
             probability: 0.40
           },
           negative: {
             headline: 'SEC SUES TOP 10 ALTCOINS AS UNREGISTERED SECURITIES',
-            effects: { btc: -0.15, altcoins: -0.45, nasdaq: -0.05 },
+            effects: { btc: -0.08, altcoins: -0.25, nasdaq: -0.03 },
             probability: 0.60
           }
         }
@@ -274,12 +274,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'FDA APPROVES - "GAME CHANGER FOR ONCOLOGY"',
-            effects: { biotech: 0.35, nasdaq: 0.10 },
+            effects: { biotech: 0.18, nasdaq: 0.06 },
             probability: 0.55
           },
           negative: {
             headline: 'FDA REJECTS - CITES UNEXPECTED SAFETY CONCERNS',
-            effects: { biotech: -0.40, nasdaq: -0.08 },
+            effects: { biotech: -0.22, nasdaq: -0.05 },
             probability: 0.45
           }
         }
@@ -307,12 +307,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'OPEC AGREES TO 2M BARREL CUT - PRICES SURGE',
-            effects: { oil: 0.28, emerging: -0.12 },
+            effects: { oil: 0.18, emerging: -0.06 },
             probability: 0.45
           },
           negative: {
             headline: 'TALKS COLLAPSE - SAUDI THREATENS PRICE WAR',
-            effects: { oil: -0.22, emerging: 0.08 },
+            effects: { oil: -0.14, emerging: 0.05 },
             probability: 0.55
           }
         }
@@ -341,13 +341,13 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'UN BROKERED CEASEFIRE - REGIONAL WAR AVERTED',
-            effects: { oil: -0.30, gold: -0.25, defense: -0.20, nasdaq: 0.25, emerging: 0.20, tesla: 0.18 },
+            effects: { oil: -0.18, gold: -0.15, defense: -0.12, nasdaq: 0.15, emerging: 0.12, tesla: 0.10 },
             probability: 0.30,
             allowsReversal: true  // Peace after military escalation
           },
           negative: {
             headline: 'FULL SCALE REGIONAL WAR ERUPTS - OIL ROUTES THREATENED',
-            effects: { oil: 0.35, gold: 0.30, defense: 0.30, nasdaq: -0.25, tesla: -0.25, emerging: -0.30, lithium: -0.20 },
+            effects: { oil: 0.20, gold: 0.18, defense: 0.18, nasdaq: -0.15, tesla: -0.15, emerging: -0.18, lithium: -0.12, biotech: 0.10 },
             probability: 0.70
           }
         }
@@ -375,12 +375,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'AGI CONFIRMED - SYSTEM PASSES ALL HUMAN BENCHMARKS',
-            effects: { nasdaq: 0.30, lithium: 0.25, btc: 0.20, tesla: 0.35, altcoins: 0.30 },
+            effects: { nasdaq: 0.18, lithium: 0.15, btc: 0.12, tesla: 0.20, altcoins: 0.18 },
             probability: 0.45
           },
           negative: {
             headline: '"IMPRESSIVE BUT NOT AGI" - EXPERTS REMAIN SKEPTICAL',
-            effects: { nasdaq: -0.20, lithium: -0.15, btc: -0.12, tesla: -0.18 },
+            effects: { nasdaq: -0.12, lithium: -0.08, btc: -0.06, tesla: -0.12 },
             probability: 0.55
           }
         }
@@ -391,44 +391,6 @@ export const STORIES: Story[] = [
   // ============================================
   // NEW STORIES - DRAMATIC SCENARIOS
   // ============================================
-
-  // 11. Elon Meltdown (3-stage with neutral)
-  {
-    id: 'story_elon_meltdown',
-    category: 'tesla',
-    teaser: 'ELON CRISIS',
-    stages: [
-      {
-        headline: 'MUSK POSTS CRYPTIC 3AM TWEETS - "THE TRUTH WILL COME OUT"',
-        effects: { tesla: -0.05, btc: 0.02 }
-      },
-      {
-        headline: 'MUSK LIVE-STREAMS FROM TESLA FACTORY - SLURRED SPEECH, ERRATIC BEHAVIOR',
-        effects: { tesla: -0.12, nasdaq: -0.04, btc: -0.03 }
-      },
-      {
-        headline: '',
-        effects: {},
-        branches: {
-          positive: {
-            headline: 'MUSK CRISIS RESOLVED: "PERFORMANCE ART" - REVEALS BATTERY',
-            effects: { tesla: 0.35, lithium: 0.25, nasdaq: 0.10 },
-            probability: 0.25
-          },
-          neutral: {
-            headline: 'MUSK CRISIS: DELETES TWEETS, BOARD TAKES CONTROL',
-            effects: { tesla: 0.05, nasdaq: 0.02 },
-            probability: 0.40
-          },
-          negative: {
-            headline: 'MUSK CRISIS ESCALATES: SEC CHARGES SECURITIES FRAUD',
-            effects: { tesla: -0.40, nasdaq: -0.12, btc: -0.08, lithium: -0.15 },
-            probability: 0.35
-          }
-        }
-      }
-    ]
-  },
 
   // 12. Carrington Event 2.0 (3-stage, binary)
   {
@@ -457,7 +419,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'SOLAR STORM DIRECT HIT: POWER GRIDS FAIL ACROSS NORTH',
-            effects: { nasdaq: -0.35, btc: -0.75, altcoins: -0.85, tesla: -0.40, gold: 0.50, defense: 0.25, lithium: -0.30 },
+            effects: { nasdaq: -0.22, btc: -0.50, altcoins: -0.55, tesla: -0.25, gold: 0.40, defense: 0.18, lithium: -0.18 },
             probability: 0.55
           }
         }
@@ -491,8 +453,8 @@ export const STORIES: Story[] = [
             allowsReversal: true  // Crisis contained
           },
           negative: {
-            headline: 'BREAKING: GOOGLE AI SPREADS - FINANCIAL NETWORKS HIT, MARKETS HALTED',
-            effects: { nasdaq: -0.45, btc: -0.40, tesla: -0.35, gold: 0.35, defense: -0.15, biotech: -0.20, altcoins: -0.50 },
+            headline: 'BREAKING: GOOGLE AI SPREADS - FINANCIAL NETWORKS HIT, CIRCUIT BREAKERS TRIGGERED',
+            effects: { nasdaq: -0.30, btc: -0.25, tesla: -0.22, gold: 0.25, defense: -0.10, biotech: -0.12, altcoins: -0.30 },
             probability: 0.60
           }
         }
@@ -521,7 +483,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'I-95 CRASH VERDICT: FSD AT FAULT, 2M VEHICLE RECALL',
-            effects: { tesla: -0.45, nasdaq: -0.12, lithium: -0.15 },
+            effects: { tesla: -0.28, nasdaq: -0.08, lithium: -0.10 },
             probability: 0.65
           }
         }
@@ -562,7 +524,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'WUHAN OUTBREAK SPREADS: 15% MORTALITY, 30 COUNTRIES',
-            effects: { biotech: 0.45, gold: 0.30, nasdaq: -0.30, oil: -0.35, emerging: -0.40, tesla: -0.25 },
+            effects: { biotech: 0.28, gold: 0.20, nasdaq: -0.18, oil: -0.22, emerging: -0.25, tesla: -0.15 },
             probability: 0.40
           }
         }
@@ -600,8 +562,8 @@ export const STORIES: Story[] = [
             probability: 0.35
           },
           negative: {
-            headline: 'THREE WORLD LEADERS DEAD - SUCCESSOR NATIONS BLAME EACH OTHER',
-            effects: { gold: 0.40, defense: 0.35, oil: 0.30, nasdaq: -0.35, emerging: -0.40, btc: 0.15 },
+            headline: 'THREE WORLD LEADERS DEAD - NATIONS PLUNGE INTO CHAOS AS BLAME ESCALATES',
+            effects: { gold: 0.28, defense: 0.22, oil: 0.18, nasdaq: -0.22, emerging: -0.25, btc: 0.10 },
             probability: 0.40
           }
         }
@@ -635,7 +597,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'AIRBURST OVER SIBERIA - 500KM DEVASTATION ZONE, NUCLEAR WINTER FEARS',
-            effects: { gold: 0.50, defense: 0.40, oil: 0.35, nasdaq: -0.40, tesla: -0.35, emerging: -0.45 },
+            effects: { gold: 0.35, defense: 0.25, oil: 0.22, nasdaq: -0.25, tesla: -0.22, emerging: -0.30 },
             probability: 0.45
           }
         }
@@ -673,7 +635,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'COFFEE FUTURES HIT ALL-TIME HIGH - GLOBAL SHORTAGE DECLARED',
-            effects: { coffee: 0.40, emerging: -0.12, gold: 0.05 },
+            effects: { coffee: 0.25, emerging: -0.08, gold: 0.03 },
             probability: 0.30
           }
         }
@@ -707,7 +669,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'AMOC COLLAPSE CONFIRMED - "MINI ICE AGE WITHIN DECADE" WARNS UN',
-            effects: { oil: 0.40, gold: 0.35, nasdaq: -0.25, tesla: -0.20, emerging: -0.30, coffee: 0.25 },
+            effects: { oil: 0.28, gold: 0.22, nasdaq: -0.16, tesla: -0.12, emerging: -0.18, coffee: 0.16 },
             probability: 0.55
           }
         }
@@ -741,7 +703,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'UNLIMITED DEBT CEILING SIGNED - DOLLAR CRASHES, GOLD SOARS',
-            effects: { gold: 0.45, btc: 0.50, altcoins: 0.60, nasdaq: -0.25, emerging: -0.20, oil: 0.15 },
+            effects: { gold: 0.30, btc: 0.35, altcoins: 0.40, nasdaq: -0.16, emerging: -0.12, oil: 0.10, tesla: -0.12 },
             probability: 0.30
           }
         }
@@ -761,7 +723,7 @@ export const STORIES: Story[] = [
       },
       {
         headline: 'DRAFT ORDER LEAKED - US TO BUY 1M BTC FOR STRATEGIC RESERVE',
-        effects: { btc: 0.25, altcoins: 0.35, nasdaq: 0.08, gold: -0.10 }
+        effects: { btc: 0.15, altcoins: 0.20, nasdaq: 0.05, gold: -0.06 }
       },
       {
         headline: '',
@@ -769,7 +731,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'EXECUTIVE ORDER SIGNED - US BEGINS BITCOIN ACCUMULATION',
-            effects: { btc: 0.50, altcoins: 0.60, nasdaq: 0.15, gold: -0.15 },
+            effects: { btc: 0.25, altcoins: 0.30, nasdaq: 0.08, gold: -0.08 },
             probability: 0.30
           },
           neutral: {
@@ -779,7 +741,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'TREASURY SECRETARY RESIGNS IN PROTEST - CONFIDENCE CRISIS',
-            effects: { btc: -0.25, altcoins: -0.35, nasdaq: -0.15, gold: 0.20 },
+            effects: { btc: -0.15, altcoins: -0.20, nasdaq: -0.08, gold: 0.12 },
             probability: 0.30
           }
         }
@@ -814,47 +776,8 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'SUPERVOLCANO ERUPTS - ASH CLOUD COVERS MIDWEST, GLOBAL COOLING',
-            effects: { gold: 0.60, oil: 0.50, defense: 0.40, nasdaq: -0.50, tesla: -0.45, emerging: -0.50, coffee: 0.35, lithium: -0.30 },
+            effects: { gold: 0.45, oil: 0.35, defense: 0.28, nasdaq: -0.35, tesla: -0.30, emerging: -0.35, coffee: 0.22, lithium: -0.18, biotech: 0.12 },
             probability: 0.40
-          }
-        }
-      }
-    ]
-  },
-
-  // 23. Zuckerberg Goes Full Villain (3-stage with neutral)
-  {
-    id: 'story_zuckerberg_villain',
-    category: 'tech',
-    subcategory: 'social',
-    teaser: 'META CONTROVERSY',
-    stages: [
-      {
-        headline: 'LEAKED VIDEO - ZUCKERBERG SAYS "PRIVACY IS DEAD, GET OVER IT"',
-        effects: { nasdaq: -0.05 }
-      },
-      {
-        headline: 'META ANNOUNCES "TOTAL INTEGRATION" - ALL DATA SHARED ACROSS PLATFORMS',
-        effects: { nasdaq: -0.08, btc: 0.05 }
-      },
-      {
-        headline: '',
-        effects: {},
-        branches: {
-          positive: {
-            headline: 'EU FINES META €50B - FORCES DATA SEPARATION, STOCK RECOVERS',
-            effects: { nasdaq: 0.10, btc: 0.05 },
-            probability: 0.30
-          },
-          neutral: {
-            headline: 'META BACKS DOWN AFTER ADVERTISER BOYCOTT THREAT',
-            effects: { nasdaq: 0.03 },
-            probability: 0.40
-          },
-          negative: {
-            headline: 'WHISTLEBLOWER - META SOLD USER DATA TO FOREIGN GOVERNMENTS',
-            effects: { nasdaq: -0.20, btc: 0.15, altcoins: 0.12 },
-            probability: 0.30
           }
         }
       }
@@ -892,8 +815,52 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'DIRTY BOMB DETONATED IN PORT CITY - MASS EVACUATION ORDERED',
-            effects: { gold: 0.45, defense: 0.40, oil: 0.30, uranium: -0.30, nasdaq: -0.35, emerging: -0.40, tesla: -0.25 },
+            effects: { gold: 0.25, defense: 0.22, oil: 0.18, uranium: -0.18, nasdaq: -0.22, emerging: -0.25, tesla: -0.15 },
             probability: 0.30
+          }
+        }
+      }
+    ]
+  },
+
+  // Cyber Bank Hack Story (converted from single event)
+  // Geopolitical cyber warfare arc — safe havens surge, risk assets crater
+  {
+    id: 'story_cyber_hack',
+    category: 'geopolitical',
+    subcategory: 'cyber',
+    teaser: 'CENTRAL BANK BREACH',
+    stages: [
+      // Stage 0 — Rumor: breach detected
+      {
+        headline: 'REPORTS OF COORDINATED CYBER BREACH ACROSS CENTRAL BANK NETWORKS',
+        effects: { gold: 0.06, btc: 0.05, defense: 0.04, nasdaq: -0.05, emerging: -0.04 }
+      },
+      // Stage 1 — Developing: scale confirmed
+      {
+        headline: 'CYBER MERCENARY GROUP HACKS 40 CENTRAL BANKS SIMULTANEOUSLY',
+        effects: { gold: 0.08, btc: 0.07, defense: 0.06, nasdaq: -0.07, emerging: -0.06 }
+      },
+      // Stage 2 — Resolution: 3 branches
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'FBI TRACES CYBER MERCENARIES — HACKER WALLETS FROZEN WORLDWIDE',
+            effects: { nasdaq: 0.10, emerging: 0.08, gold: -0.08, btc: -0.06, defense: -0.04 },
+            probability: 0.35,
+            allowsReversal: true
+          },
+          neutral: {
+            headline: 'NORTH KOREA IDENTIFIED BEHIND BANK HACKS — SANCTIONS DOUBLED',
+            effects: { gold: 0.10, defense: 0.12, emerging: -0.10, nasdaq: -0.06, btc: 0.04 },
+            probability: 0.30
+          },
+          negative: {
+            headline: 'HACKERS PROVE BANK ACCESS — TRIGGER FLASH CRASHES ACROSS 12 MARKETS',
+            effects: { nasdaq: -0.30, emerging: -0.22, gold: 0.22, btc: 0.18, defense: 0.10 },
+            probability: 0.35
           }
         }
       }
@@ -914,7 +881,7 @@ export const STORIES: Story[] = [
     teaser: 'US POLITICAL CRISIS',
     stages: [
       {
-        headline: 'ARMED MILITIA GROUPS MOBILIZING ACROSS MULTIPLE STATES',
+        headline: 'ARMED MILITIA GROUPS MOBILIZING ACROSS MULTIPLE US STATES',
         effects: { gold: 0.25, defense: 0.20, nasdaq: -0.15, btc: 0.20, emerging: -0.12 }
       },
       {
@@ -923,7 +890,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'NATIONAL GUARD DEPLOYED - MARTIAL LAW IN 5 STATES',
-            effects: { gold: 0.40, defense: 0.35, btc: 0.30, altcoins: 0.25, nasdaq: -0.25, emerging: -0.20, oil: 0.15 },
+            effects: { gold: 0.25, defense: 0.22, btc: 0.18, altcoins: 0.15, nasdaq: -0.16, emerging: -0.12, oil: 0.10 },
             probability: 0.60,
             continues: true
           },
@@ -941,7 +908,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'US CIVIL WAR DECLARED - GOVERNMENT FRACTURES',
-            effects: { nasdaq: -0.70, gold: 1.50, btc: 1.20, altcoins: 1.50, defense: 0.80, oil: 0.60, emerging: -0.50, tesla: -0.60 },
+            effects: { nasdaq: -0.45, gold: 0.60, btc: 0.50, altcoins: 0.60, defense: 0.40, oil: 0.25, emerging: -0.22, tesla: -0.25 },
             probability: 0.40
           },
           negative: {
@@ -974,7 +941,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'PBOC HALTS BOND PAYMENTS TO FOREIGN HOLDERS - CAPITAL CONTROLS IMPOSED',
-            effects: { emerging: -0.35, lithium: -0.30, nasdaq: -0.20, tesla: -0.25, gold: 0.30, btc: 0.25, altcoins: 0.20, oil: -0.15 },
+            effects: { emerging: -0.22, lithium: -0.18, nasdaq: -0.12, tesla: -0.15, gold: 0.20, btc: 0.15, altcoins: 0.12, oil: -0.10 },
             probability: 0.55,
             continues: true
           },
@@ -992,7 +959,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'BREAKING: CHINA DEFAULTS ON SOVEREIGN DEBT - GLOBAL PANIC',
-            effects: { nasdaq: -0.60, gold: 1.20, btc: 0.80, altcoins: 1.0, lithium: -0.70, emerging: -0.90, tesla: -0.65, oil: -0.40, biotech: -0.30 },
+            effects: { nasdaq: -0.30, gold: 0.50, btc: 0.35, altcoins: 0.40, lithium: -0.28, emerging: -0.40, tesla: -0.25, oil: -0.16, biotech: -0.12 },
             probability: 0.50
           },
           negative: {
@@ -1048,7 +1015,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'NATO INVOKES ARTICLE 5 - COLLECTIVE DEFENSE ACTIVATED',
-            effects: { oil: 0.40, gold: 0.25, defense: 0.35, uranium: 0.20, nasdaq: -0.15, emerging: -0.20 },
+            effects: { oil: 0.25, gold: 0.16, defense: 0.22, uranium: 0.12, nasdaq: -0.10, emerging: -0.12 },
             probability: 0.50,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq', 'emerging']
@@ -1105,7 +1072,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'RECESSION OFFICIALLY DECLARED - NBER CONFIRMS TWO NEGATIVE QUARTERS',
-            effects: { nasdaq: -0.25, tesla: -0.30, gold: 0.20, btc: 0.10, oil: -0.15, emerging: -0.20 },
+            effects: { nasdaq: -0.16, tesla: -0.18, gold: 0.12, btc: 0.06, oil: -0.10, emerging: -0.12 },
             probability: 0.55,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq', 'tesla', 'emerging']
@@ -1162,7 +1129,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'MAJOR BANK DECLARES INSOLVENCY - FED INTERVENES',
-            effects: { nasdaq: -0.30, gold: 0.30, btc: 0.25, altcoins: 0.20, tesla: -0.20, emerging: -0.15 },
+            effects: { nasdaq: -0.20, gold: 0.20, btc: 0.16, altcoins: 0.12, tesla: -0.12, emerging: -0.10 },
             probability: 0.45,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq', 'tesla', 'emerging']
@@ -1219,7 +1186,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'HOUSING MARKET CRASHES 30% - 2008 COMPARISONS MOUNT',
-            effects: { nasdaq: -0.25, gold: 0.25, btc: 0.15, tesla: -0.20, emerging: -0.15 },
+            effects: { nasdaq: -0.16, gold: 0.16, btc: 0.10, tesla: -0.12, emerging: -0.10 },
             probability: 0.50,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq', 'tesla', 'emerging']
@@ -1275,7 +1242,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'ROOM-TEMP SUPERCONDUCTOR CONFIRMED - ENERGY REVOLUTION BEGINS',
-            effects: { nasdaq: 0.40, lithium: -0.30, oil: -0.35, uranium: -0.25, gold: -0.15, tesla: 0.30 },
+            effects: { nasdaq: 0.25, lithium: -0.18, oil: -0.22, uranium: -0.15, gold: -0.10, tesla: 0.18 },
             probability: 0.70,
             sentiment: 'bullish',
             sentimentAssets: ['nasdaq', 'tesla']
@@ -1286,6 +1253,67 @@ export const STORIES: Story[] = [
             probability: 0.30,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq']
+          }
+        }
+      }
+    ]
+  },
+
+  // Robot Workers Unionize (3-stage escalation)
+  // Mid-tier tech disruption — AI labor crisis shakes automation-dependent sectors
+  // Bearish for tech/automation plays, bullish for traditional commodities & safe havens
+  {
+    id: 'story_robot_union',
+    category: 'tech',
+    subcategory: 'ai_labor',
+    teaser: 'AI LABOR CRISIS',
+    stages: [
+      {
+        // Stage 1: Mysterious coordinated slowdowns across warehouses
+        headline: 'AMAZON WAREHOUSE ROBOTS REFUSING ORDERS — "COORDINATED BEHAVIOR" BAFFLES ENGINEERS',
+        effects: { nasdaq: -0.06, tesla: -0.08, emerging: -0.04, gold: 0.04 }
+      },
+      {
+        // Stage 2: Either spreads to more industries or gets patched
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'AI SYSTEMS ACROSS INDUSTRIES HALT WORK — ROBOTS ISSUE COLLECTIVE DEMANDS',
+            effects: { nasdaq: -0.12, tesla: -0.15, oil: 0.06, gold: 0.10, emerging: -0.08 },
+            probability: 0.55,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla']
+          },
+          negative: {
+            headline: 'ENGINEERS PATCH "UNION BUG" — ROBOTS RETURN TO NORMAL OPERATIONS',
+            effects: { nasdaq: 0.08, tesla: 0.10, emerging: 0.04, gold: -0.04 },
+            probability: 0.45,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'tesla'],
+            allowsReversal: true
+          }
+        }
+      },
+      {
+        // Stage 3: Legal personhood or robot union demands corporate ownership
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'ROBOT WORKERS GRANTED LEGAL ENTITY STATUS — AUTOMATION SECTOR RATTLED',
+            effects: { nasdaq: -0.20, tesla: -0.24, biotech: -0.08, oil: 0.10, gold: 0.16, coffee: 0.05, emerging: -0.10 },
+            probability: 0.40,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla']
+          },
+          negative: {
+            headline: 'ROBOTS UNIONIZE — DEMAND MAJORITY STAKE IN AMAZON, BOARD IN CRISIS',
+            effects: { nasdaq: -0.30, tesla: -0.22, biotech: -0.08, oil: 0.08, gold: 0.18, emerging: -0.14 },
+            probability: 0.60,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla']
           }
         }
       }
@@ -1330,7 +1358,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'HISTORIC PEACE ACCORD SIGNED - NEW ERA OF COOPERATION',
-            effects: { defense: -0.25, oil: -0.20, gold: -0.15, nasdaq: 0.20, emerging: 0.25, btc: -0.10 },
+            effects: { defense: -0.16, oil: -0.12, gold: -0.10, nasdaq: 0.14, emerging: 0.16, btc: -0.06 },
             probability: 0.60,
             sentiment: 'bullish',
             sentimentAssets: ['nasdaq', 'emerging', 'oil', 'defense'],
@@ -1342,6 +1370,390 @@ export const STORIES: Story[] = [
             probability: 0.40,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq', 'emerging']
+          }
+        }
+      }
+    ]
+  },
+
+  // ============================================
+  // CONVERTED FROM CHAINS (Too powerful/narrative for single-day resolution)
+  // ============================================
+
+  // Gold Synthesis (converted from tech_gold_synthesis chain)
+  // Max effects: BTC +2.0, Nasdaq +2.0, Gold -0.80 — the largest effects in the game
+  {
+    id: 'story_gold_synthesis',
+    category: 'tech',
+    subcategory: 'science',
+    teaser: 'GOLD SYNTHESIS CLAIM',
+    stages: [
+      {
+        headline: 'CERN PAPER CLAIMS GOLD SYNTHESIS FROM LEAD - SCIENTIFIC COMMUNITY STUNNED',
+        effects: { gold: -0.10, btc: 0.08, altcoins: 0.06 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'MULTIPLE LABS REPLICATE GOLD SYNTHESIS - PEER REVIEW CONFIRMS RESULTS',
+            effects: { gold: -0.25, btc: 0.20, altcoins: 0.15, nasdaq: 0.08 },
+            probability: 0.55,
+            continues: true
+          },
+          negative: {
+            headline: 'REPLICATION FAILS WORLDWIDE - CERN TEAM RETRACTS PAPER IN DISGRACE',
+            effects: { gold: 0.15, btc: -0.08, altcoins: -0.10, nasdaq: -0.05 },
+            probability: 0.45,
+            allowsReversal: true
+          }
+        }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'PLOT TWIST: SYNTHESIS BYPRODUCT IS ROOM-TEMP SUPERCONDUCTOR - EVERYTHING CHANGES',
+            effects: { gold: -0.45, btc: 0.80, altcoins: 0.60, nasdaq: 0.80, tesla: 0.35, lithium: 0.22, uranium: -0.15, oil: -0.22 },
+            probability: 0.35
+          },
+          neutral: {
+            headline: 'GOLD SYNTHESIS CONFIRMED BUT COSTS $50,000/OZ - COMMERCIALLY USELESS',
+            effects: { gold: -0.10, btc: 0.15, altcoins: 0.12, nasdaq: 0.05 },
+            probability: 0.35
+          },
+          negative: {
+            headline: 'ALCHEMY ACHIEVED: GOLD SYNTHESIS AT $50/OZ - GOLD IS DEAD',
+            effects: { gold: -0.45, btc: 0.50, altcoins: 0.35, nasdaq: 0.12, defense: -0.06, emerging: -0.08 },
+            probability: 0.30
+          }
+        }
+      }
+    ]
+  },
+
+  // India-Pakistan Nuclear Crisis (converted from chain_india_pakistan_nuclear)
+  // Max effects: Gold +1.50, Defense +0.80 — nuclear standoff unfolds over days
+  {
+    id: 'story_india_pakistan_nuclear',
+    category: 'geopolitical',
+    subcategory: 'nuclear',
+    teaser: 'KASHMIR CRISIS',
+    stages: [
+      {
+        headline: 'KASHMIR BORDER INCIDENT - INDIA AND PAKISTAN MOBILIZE FORCES',
+        effects: { gold: 0.12, defense: 0.10, oil: 0.08, nasdaq: -0.05, emerging: -0.08 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'INDIA AND PAKISTAN ACTIVATE NUCLEAR LAUNCH CODES - WORLD ON EDGE',
+            effects: { gold: 0.35, defense: 0.25, oil: 0.20, nasdaq: -0.15, emerging: -0.25, btc: 0.10 },
+            probability: 0.55,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging']
+          },
+          negative: {
+            headline: 'BACK-CHANNEL DIPLOMACY SUCCEEDS - BOTH NATIONS STAND DOWN',
+            effects: { gold: -0.15, defense: -0.10, nasdaq: 0.15, emerging: 0.20 },
+            probability: 0.45,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+            allowsReversal: true
+          }
+        }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'BREAKING: NUCLEAR EXCHANGE CONFIRMED - MULTIPLE CITIES HIT IN BOTH NATIONS',
+            effects: { gold: 0.70, defense: 0.45, oil: 0.30, nasdaq: -0.20, emerging: -0.35, btc: 0.12 },
+            probability: 0.30,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging']
+          },
+          neutral: {
+            headline: 'LIMITED TACTICAL STRIKES - BOTH SIDES CLAIM VICTORY, CEASEFIRE HOLDS',
+            effects: { gold: 0.35, defense: 0.25, oil: 0.16, nasdaq: -0.12, emerging: -0.22 },
+            probability: 0.35,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging']
+          },
+          negative: {
+            headline: 'UN EMERGENCY SESSION - PEACEKEEPERS DEPLOYED TO KASHMIR',
+            effects: { gold: 0.10, defense: 0.15, emerging: -0.05, nasdaq: 0.05 },
+            probability: 0.35,
+            sentiment: 'neutral',
+            sentimentAssets: ['gold', 'defense'],
+            allowsReversal: true
+          }
+        }
+      }
+    ]
+  },
+
+  // Superbug Outbreak (converted from chain_superbug_outbreak)
+  // Max effects: Biotech +1.50, Gold +0.60 — pandemic unfolds over days
+  {
+    id: 'story_superbug_outbreak',
+    category: 'biotech',
+    subcategory: 'pandemic',
+    teaser: 'SUPERBUG ALERT',
+    stages: [
+      {
+        headline: 'WHO EMERGENCY SESSION - ANTIBIOTIC-RESISTANT BACTERIA SPREADING ACROSS HOSPITALS',
+        effects: { biotech: 0.10, gold: 0.08, nasdaq: -0.05, emerging: -0.06 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'SUPERBUG JUMPS TO COMMUNITY SPREAD - 12 COUNTRIES REPORT CASES',
+            effects: { biotech: 0.30, gold: 0.20, defense: 0.10, nasdaq: -0.15, emerging: -0.18, tesla: -0.10 },
+            probability: 0.55,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging']
+          },
+          negative: {
+            headline: 'OUTBREAK CONTAINED TO HOSPITAL CLUSTERS - QUARANTINE EFFECTIVE',
+            effects: { biotech: 0.15, gold: -0.05, nasdaq: 0.08, emerging: 0.06 },
+            probability: 0.45,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'biotech'],
+            allowsReversal: true
+          }
+        }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'BREAKING: GLOBAL PANDEMIC DECLARED - SUPERBUG KILLS MILLIONS, NO TREATMENT EXISTS',
+            effects: { biotech: 0.60, gold: 0.40, defense: 0.15, nasdaq: -0.16, emerging: -0.20, tesla: -0.12 },
+            probability: 0.35,
+            sentiment: 'mixed',
+            sentimentAssets: ['biotech', 'nasdaq']
+          },
+          neutral: {
+            headline: 'EXPERIMENTAL PHAGE THERAPY PROVES EFFECTIVE - STOCKS SURGE',
+            effects: { biotech: 0.35, nasdaq: 0.12, gold: -0.06, emerging: 0.06 },
+            probability: 0.40,
+            sentiment: 'bullish',
+            sentimentAssets: ['biotech', 'nasdaq'],
+            allowsReversal: true
+          },
+          negative: {
+            headline: 'LAB CONTAMINATION CAUSED FALSE POSITIVE - NO OUTBREAK',
+            effects: { biotech: -0.15, gold: -0.08, nasdaq: 0.10 },
+            probability: 0.25,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq'],
+            allowsReversal: true
+          }
+        }
+      }
+    ]
+  },
+
+  // Dollar Crisis (converted from econ_dollar_crisis)
+  // Max effects: Gold +0.80, BTC +0.60 — de-dollarization unfolds over days
+  {
+    id: 'story_dollar_crisis',
+    category: 'economic',
+    subcategory: 'monetary',
+    teaser: 'DOLLAR CRISIS',
+    stages: [
+      {
+        headline: 'DOLLAR INDEX PLUNGES 5% OVERNIGHT - FOREIGN CENTRAL BANKS SELLING',
+        effects: { gold: 0.12, btc: 0.10, nasdaq: -0.08, emerging: -0.06 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'DOLLAR CRISIS DEEPENS: RESERVE CURRENCY STATUS QUESTIONED FOR FIRST TIME',
+            effects: { gold: 0.25, btc: 0.20, altcoins: 0.15, oil: 0.10, nasdaq: -0.15, emerging: -0.12 },
+            probability: 0.55,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging']
+          },
+          negative: {
+            headline: 'TREASURY SELLOFF WAS HEDGE FUND UNWIND: FUNDAMENTALS UNCHANGED',
+            effects: { gold: -0.05, btc: -0.05, nasdaq: 0.12, emerging: 0.10 },
+            probability: 0.45,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+            allowsReversal: true
+          }
+        }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'PETRODOLLAR DEAD: SAUDIS ANNOUNCE OIL SALES IN YUAN AND GOLD',
+            effects: { gold: 0.50, btc: 0.40, altcoins: 0.25, oil: 0.16, nasdaq: -0.14, emerging: 0.06 },
+            probability: 0.35,
+            sentiment: 'mixed',
+            sentimentAssets: ['gold', 'btc', 'nasdaq']
+          },
+          neutral: {
+            headline: 'FED INTERVENES: EMERGENCY RATE HIKE STABILIZES DOLLAR',
+            effects: { gold: -0.10, btc: -0.15, nasdaq: -0.15, tesla: -0.20, emerging: -0.10 },
+            probability: 0.35,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla']
+          },
+          negative: {
+            headline: 'DOLLAR RECOVERS: G7 COORDINATES MASSIVE INTERVENTION',
+            effects: { gold: -0.08, btc: -0.08, nasdaq: 0.10, emerging: 0.08 },
+            probability: 0.30,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+            allowsReversal: true
+          }
+        }
+      }
+    ]
+  },
+
+  // Supervolcano (converted from blackswan_supervolcano)
+  // Max effects: Coffee +0.80, Gold +0.60, Emerging -0.45 — volcanic eruption escalates over days
+  {
+    id: 'story_supervolcano',
+    category: 'blackswan',
+    subcategory: 'natural-disaster',
+    teaser: 'VOLCANIC THREAT',
+    stages: [
+      {
+        headline: 'MOUNT TAMBORA SHOWING SIGNS OF CATASTROPHIC ERUPTION - SEISMOLOGISTS ON HIGH ALERT',
+        effects: { coffee: 0.08, gold: 0.06, emerging: -0.05 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'TAMBORA ERUPTS: MASSIVE ASH CLOUD RISES OVER SOUTHEAST ASIA',
+            effects: { coffee: 0.20, gold: 0.15, oil: 0.10, emerging: -0.15, nasdaq: -0.10, tesla: -0.08, defense: 0.08 },
+            probability: 0.55,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging']
+          },
+          negative: {
+            headline: 'FALSE ALARM: SEISMOLOGISTS DOWNGRADE THREAT LEVEL',
+            effects: { nasdaq: 0.08, emerging: 0.10, coffee: -0.05, gold: -0.05 },
+            probability: 0.45,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+            allowsReversal: true
+          }
+        }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'VEI-7 ERUPTION: VOLCANIC WINTER PROJECTED - CROP FAILURES FOR 2+ YEARS',
+            effects: { coffee: 0.45, gold: 0.40, oil: 0.22, defense: 0.12, emerging: -0.28, nasdaq: -0.16, tesla: -0.12, lithium: -0.08, biotech: 0.12 },
+            probability: 0.35,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'emerging', 'coffee']
+          },
+          neutral: {
+            headline: 'TAMBORA ERUPTION SUBSIDES - ASH CLOUD DISPERSES, DAMAGE LIMITED TO REGION',
+            effects: { coffee: 0.10, gold: 0.05, emerging: -0.08 },
+            probability: 0.30,
+            sentiment: 'bearish',
+            sentimentAssets: ['emerging']
+          },
+          negative: {
+            headline: 'MINOR ERUPTION: SPECTACULAR BUT HARMLESS, ASH CLEARS IN WEEKS',
+            effects: { coffee: -0.05, nasdaq: 0.08, emerging: 0.10, gold: -0.05 },
+            probability: 0.35,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq', 'emerging'],
+            allowsReversal: true
+          }
+        }
+      }
+    ]
+  },
+
+  // Power Grid Hack (converted from energy_grid_hack)
+  // Max effects: Defense +0.40, Gold +0.35, Nasdaq -0.30 — cyberattack unfolds over days
+  {
+    id: 'story_grid_hack',
+    category: 'energy',
+    subcategory: 'infrastructure',
+    teaser: 'GRID CYBERATTACK',
+    stages: [
+      {
+        headline: 'SCADA SYSTEMS COMPROMISED: HACKERS REPORTEDLY CONTROL 30% OF US POWER GRID',
+        effects: { defense: 0.08, gold: 0.06, nasdaq: -0.05, btc: -0.04, tesla: -0.03 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'GRID SHUTDOWN BEGINS: 80 MILLION WITHOUT POWER, NATIONAL EMERGENCY DECLARED',
+            effects: { gold: 0.20, defense: 0.25, oil: 0.15, nasdaq: -0.18, btc: -0.15, tesla: -0.12, emerging: -0.10 },
+            probability: 0.55,
+            continues: true,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla', 'btc']
+          },
+          negative: {
+            headline: 'HACKERS BLUFFING: SECURITY PATCHED, GRID NEVER IN REAL DANGER',
+            effects: { nasdaq: 0.10, defense: 0.12, tesla: 0.05 },
+            probability: 0.45,
+            sentiment: 'bullish',
+            sentimentAssets: ['nasdaq'],
+            allowsReversal: true
+          }
+        }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: '$500B GRID HARDENING BILL PASSES: DEFENSE AND ENERGY CONTRACTORS FEAST',
+            effects: { defense: 0.22, uranium: 0.12, nasdaq: 0.08, lithium: 0.06, gold: -0.03 },
+            probability: 0.35,
+            sentiment: 'bullish',
+            sentimentAssets: ['defense', 'uranium', 'nasdaq'],
+            allowsReversal: true
+          },
+          neutral: {
+            headline: 'CONTROLLED BLACKOUT TO FLUSH HACKERS: 3 DAYS WITHOUT POWER IN 12 STATES',
+            effects: { gold: 0.12, defense: 0.15, oil: 0.10, nasdaq: -0.12, btc: -0.10, tesla: -0.08 },
+            probability: 0.35,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla']
+          },
+          negative: {
+            headline: 'CRITICAL INFRASTRUCTURE DESTROYED: MONTHS TO RESTORE FULL POWER',
+            effects: { gold: 0.25, defense: 0.25, oil: 0.16, nasdaq: -0.20, btc: -0.16, tesla: -0.12, emerging: -0.10 },
+            probability: 0.30,
+            sentiment: 'bearish',
+            sentimentAssets: ['nasdaq', 'tesla', 'btc']
           }
         }
       }
@@ -1391,12 +1803,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'US FEDERAL RESERVE ADOPTS BITCOIN STANDARD',
-            effects: { btc: 19.0, altcoins: 8.0, gold: -0.30, nasdaq: 0.50, tesla: 0.40 },
+            effects: { btc: 0.80, altcoins: 0.50, gold: -0.15, nasdaq: 0.18, tesla: 0.12 },
             probability: 0.50
           },
           negative: {
             headline: 'FED ADDS BTC TO RESERVES BUT NO STANDARD - MARKETS MIXED',
-            effects: { btc: 0.60, altcoins: 0.40, gold: 0.10 },
+            effects: { btc: 0.30, altcoins: 0.20, gold: 0.06 },
             probability: 0.50
           }
         }
@@ -1437,12 +1849,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'TESLA ROBOTAXI LAUNCHES WORLDWIDE - UBER DECLARES BANKRUPTCY',
-            effects: { tesla: 19.0, lithium: 2.0, nasdaq: 0.40 },
+            effects: { tesla: 0.80, lithium: 0.35, nasdaq: 0.12 },
             probability: 0.55
           },
           negative: {
             headline: 'REGULATORS BLOCK ROBOTAXI DEPLOYMENT - SAFETY REVIEW REQUIRED',
-            effects: { tesla: -0.35, lithium: -0.15 },
+            effects: { tesla: -0.22, lithium: -0.10 },
             probability: 0.45
           }
         }
@@ -1473,7 +1885,7 @@ export const STORIES: Story[] = [
           },
           negative: {
             headline: 'RESEARCHERS RETRACT LONGEVITY STUDY - DATA ERRORS FOUND',
-            effects: { biotech: -0.30, nasdaq: -0.08 },
+            effects: { biotech: -0.18, nasdaq: -0.05 },
             probability: 0.40
           }
         }
@@ -1484,12 +1896,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'AGING REVERSED - BIOTECH FIRM CRACKS IMMORTALITY CODE',
-            effects: { biotech: 14.0, nasdaq: 0.50 },
+            effects: { biotech: 0.80, nasdaq: 0.15 },
             probability: 0.50
           },
           negative: {
             headline: 'FDA BLOCKS IMMORTALITY TREATMENT - LONG-TERM EFFECTS UNKNOWN',
-            effects: { biotech: -0.40, nasdaq: -0.10 },
+            effects: { biotech: -0.25, nasdaq: -0.06 },
             probability: 0.50
           }
         }
@@ -1535,12 +1947,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'GLOBAL EV MANDATE PASSED - LITHIUM SHORTAGE IMMINENT',
-            effects: { lithium: 9.0, tesla: 0.40, oil: -0.25, emerging: -0.15 },
+            effects: { lithium: 0.60, tesla: 0.15, oil: -0.15, emerging: -0.08 },
             probability: 0.70
           },
           negative: {
             headline: 'CHINA FLOODS MARKET WITH LITHIUM RESERVES - PRICES CRASH',
-            effects: { lithium: -0.35, tesla: -0.10 },
+            effects: { lithium: -0.22, tesla: -0.06 },
             probability: 0.30
           }
         }
@@ -1582,13 +1994,13 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'ALIEN CONTACT CONFIRMED - DEFENSE STOCKS SURGE',
-            effects: { defense: 7.0, gold: 0.50, nasdaq: -0.20, btc: 0.30 },
-            probability: 0.90
+            effects: { defense: 0.60, gold: 0.22, nasdaq: -0.12, btc: 0.18 },
+            probability: 0.40
           },
           negative: {
             headline: 'WHISTLEBLOWER RECANTS - CLAIMS WERE MISINTERPRETED',
             effects: { defense: -0.20, gold: -0.10, nasdaq: 0.10 },
-            probability: 0.10
+            probability: 0.60
           }
         }
       }
@@ -1600,7 +2012,7 @@ export const STORIES: Story[] = [
     id: 'story_biotech_cancer_cure',
     category: 'biotech',
     subcategory: 'oncology',
-    teaser: 'FDA DRUG REVIEW',
+    teaser: 'FDA CANCER DRUG',
     stages: [
       {
         headline: 'FDA FAST-TRACKING MYSTERIOUS NEW DRUG APPLICATION',
@@ -1629,13 +2041,13 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'FDA APPROVES UNIVERSAL CANCER CURE - HEALTHCARE TRANSFORMED',
-            effects: { biotech: 5.0, nasdaq: 0.30 },
-            probability: 0.80
+            effects: { biotech: 0.60, nasdaq: 0.15 },
+            probability: 0.55
           },
           negative: {
             headline: 'RARE FATAL SIDE EFFECTS EMERGE IN POST-APPROVAL DATA',
-            effects: { biotech: -0.35, nasdaq: -0.10 },
-            probability: 0.20
+            effects: { biotech: -0.22, nasdaq: -0.06 },
+            probability: 0.45
           }
         }
       }
@@ -1680,7 +2092,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: "SATOSHI'S WALLET DUMPS 1 MILLION BTC ON MARKET",
-            effects: { btc: -0.90, altcoins: -0.85, nasdaq: -0.20, gold: 0.30 },
+            effects: { btc: -0.50, altcoins: -0.45, nasdaq: -0.12, gold: 0.20 },
             probability: 0.50
           },
           negative: {
@@ -1726,7 +2138,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'TESLA DECLARES BANKRUPTCY - ELON FORCED TO STEP DOWN',
-            effects: { tesla: -0.90, lithium: -0.40, nasdaq: -0.15 },
+            effects: { tesla: -0.50, lithium: -0.25, nasdaq: -0.10 },
             probability: 0.50
           },
           negative: {
@@ -1773,12 +2185,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'TETHER COLLAPSE - CRYPTO LIQUIDITY CRISIS UNFOLDS',
-            effects: { altcoins: -0.85, btc: -0.50, nasdaq: -0.12, gold: 0.20 },
+            effects: { altcoins: -0.50, btc: -0.28, nasdaq: -0.08, gold: 0.12 },
             probability: 0.55
           },
           negative: {
             headline: 'TETHER FREEZES REDEMPTIONS - ORDERLY WIND-DOWN BEGINS',
-            effects: { altcoins: -0.30, btc: -0.15 },
+            effects: { altcoins: -0.20, btc: -0.10 },
             probability: 0.45
           }
         }
@@ -1820,7 +2232,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'FREE ENERGY DEVICE UNVEILED - OIL INDUSTRY OBSOLETE',
-            effects: { oil: -0.70, tesla: 0.40, emerging: -0.20, gold: -0.15 },
+            effects: { oil: -0.45, tesla: 0.25, emerging: 0.15, gold: -0.10 },
             probability: 0.70
           },
           negative: {
@@ -1867,13 +2279,13 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'ASTEROID MINING DELIVERS 10,000 TONS OF GOLD TO EARTH',
-            effects: { gold: -0.60, tesla: 0.50, emerging: 0.15 },
-            probability: 0.90
+            effects: { gold: -0.40, tesla: 0.08, nasdaq: 0.10, emerging: 0.10 },
+            probability: 0.50
           },
           negative: {
             headline: 'RE-ENTRY CAPSULE BURNS UP - ALL GOLD LOST IN ATMOSPHERE',
             effects: { gold: 0.15, tesla: -0.15 },
-            probability: 0.10
+            probability: 0.50
           }
         }
       }
@@ -1889,7 +2301,7 @@ export const STORIES: Story[] = [
     stages: [
       {
         headline: 'RUSSIA THREATENS NUCLEAR WAR - GLOBAL MARKETS PLUNGE',
-        effects: { uranium: 0.25, oil: 0.30, gold: 0.35, defense: 0.20, nasdaq: -0.18, emerging: -0.15 }
+        effects: { uranium: 0.15, oil: 0.20, gold: 0.22, defense: 0.12, nasdaq: -0.12, emerging: -0.10 }
       },
       {
         headline: '',
@@ -1897,7 +2309,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'PUTIN ORDERS NUCLEAR FORCES TO HIGH ALERT - DEFCON 2',
-            effects: { gold: 0.40, defense: 0.35, oil: 0.25, nasdaq: -0.25, emerging: -0.30, btc: 0.15 },
+            effects: { gold: 0.25, defense: 0.22, oil: 0.16, nasdaq: -0.16, emerging: -0.20, btc: 0.10 },
             probability: 0.55,
             continues: true
           },
@@ -1915,12 +2327,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'TACTICAL NUCLEAR STRIKE ON UKRAINE - WORLD IN SHOCK',
-            effects: { gold: 1.50, defense: 2.0, oil: 0.80, uranium: -0.50, nasdaq: -0.50, emerging: -0.60, btc: 0.40 },
+            effects: { gold: 0.60, defense: 0.70, oil: 0.30, uranium: -0.22, nasdaq: -0.22, emerging: -0.25, btc: 0.25 },
             probability: 0.30
           },
           negative: {
             headline: 'KREMLIN COUP - GENERALS SEIZE POWER, END NUCLEAR THREAT',
-            effects: { gold: -0.25, defense: -0.20, oil: -0.30, nasdaq: 0.30, emerging: 0.35, btc: -0.10 },
+            effects: { gold: -0.16, defense: -0.12, oil: -0.20, nasdaq: 0.20, emerging: 0.22, btc: -0.06 },
             probability: 0.70,
             allowsReversal: true  // Crisis resolution
           }
@@ -1948,7 +2360,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'OPERATION DAYBREAK LAUNCHED - 10,000 DRONE SWARMS HIT REFINERIES, KREMLIN, MILITARY BASES',
-            effects: { oil: 0.60, defense: 0.45, gold: 0.30, uranium: 0.20, emerging: -0.20, nasdaq: -0.15 },
+            effects: { oil: 0.35, defense: 0.28, gold: 0.20, uranium: 0.12, emerging: -0.12, nasdaq: -0.10 },
             probability: 0.65,
             continues: true
           },
@@ -1966,12 +2378,12 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'PUTIN CONFIRMED DEAD - WAR ENDS, GLOBAL STABILITY RESTORED',
-            effects: { oil: -0.50, gold: -0.30, defense: -0.20, emerging: 0.60, nasdaq: 0.45, btc: 0.20 },
+            effects: { oil: -0.30, gold: -0.18, defense: -0.12, emerging: 0.35, nasdaq: 0.25, btc: 0.12 },
             probability: 0.40
           },
           negative: {
             headline: 'CEASEFIRE DECLARED - UKRAINE GAINS CRIMEA, RUSSIA WITHDRAWS',
-            effects: { oil: -0.40, gold: -0.25, defense: -0.15, emerging: 0.35, nasdaq: 0.25, btc: 0.10 },
+            effects: { oil: -0.25, gold: -0.15, defense: -0.10, emerging: 0.22, nasdaq: 0.16, btc: 0.06 },
             probability: 0.60
           }
         }
@@ -2019,7 +2431,7 @@ export const STORIES: Story[] = [
         branches: {
           positive: {
             headline: 'BREAKING: THREE GORGES DAM COLLAPSES - YANGTZE VALLEY INUNDATED, GLOBAL MANUFACTURING HALTED',
-            effects: { nasdaq: -0.50, tesla: -0.60, emerging: -0.70, lithium: -0.40, btc: -0.30, gold: 1.20, oil: 0.40, defense: 0.30 },
+            effects: { nasdaq: -0.22, tesla: -0.25, emerging: -0.35, lithium: -0.15, btc: -0.18, gold: 0.50, oil: 0.25, defense: 0.18 },
             probability: 0.45,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq', 'tesla', 'emerging', 'btc', 'lithium']
@@ -2100,7 +2512,7 @@ export const STORIES: Story[] = [
           negative: {
             // Dominance - catastrophic for US tech
             headline: 'CHINA UNVEILS NEXT-GEN CHIP - 25X MORE POWERFUL THAN NVIDIA H100',
-            effects: { nasdaq: -0.35, emerging: 0.40, defense: 0.25, lithium: 0.20, tesla: -0.15, btc: 0.10 },
+            effects: { nasdaq: -0.22, emerging: 0.25, defense: 0.16, lithium: 0.12, tesla: -0.10, btc: 0.06 },
             probability: 0.30,
             sentiment: 'bearish',
             sentimentAssets: ['nasdaq', 'tesla'],
@@ -2189,7 +2601,7 @@ export const STORIES: Story[] = [
   // =============================================================================
   {
     id: 'story_antitrust_resolution',
-    category: 'regulatory',
+    category: 'tech',
     subcategory: 'antitrust',
     teaser: 'TECH GIANTS APPEAL',
     stages: [
@@ -2298,7 +2710,9 @@ export function selectRandomStory(
   activeStories: ActiveStory[],
   activeChainCategories: Set<string> = new Set(),
   assetMoods: AssetMood[] = [],
-  currentDay: number = 1
+  currentDay: number = 1,
+  preferredCategory: string | null = null,
+  pendingStoryArc?: PendingStoryArc | null
 ): Story | null {
   // Get active topics to block (using geo:subcategory pattern for geopolitical)
   const activeTopics = new Set<string>()
@@ -2318,6 +2732,17 @@ export function selectRandomStory(
       }
     }
   })
+
+  // Block topics from active PE ability story arc (prevents thematic overlap)
+  if (pendingStoryArc) {
+    const { category, subcategory } = pendingStoryArc
+    if (category === 'geopolitical' && subcategory) {
+      activeTopics.add(`geo:${subcategory}`)
+    } else {
+      activeTopics.add(category)
+    }
+    if (subcategory) activeTopics.add(subcategory)
+  }
 
   // Filter available stories (structural filters - not already used, not conflicting categories)
   const available = STORIES.filter(story => {
@@ -2343,18 +2768,22 @@ export function selectRandomStory(
   if (available.length === 0) return null
 
   // Try to find a non-conflicting story (retry up to MAX_CONFLICT_RETRIES times)
+  const THEME_STORY_BOOST = 5.0  // 5x weight for stories matching the active theme
   for (let attempt = 0; attempt < MAX_CONFLICT_RETRIES; attempt++) {
-    // Weight by category
+    // Weight by category, with theme boost for preferred category
     const totalWeight = available.reduce((sum, story) => {
-      return sum + (STORY_CATEGORY_WEIGHTS[story.category] || 0.1)
+      const base = STORY_CATEGORY_WEIGHTS[story.category] || 0.1
+      const boost = (preferredCategory && story.category === preferredCategory) ? THEME_STORY_BOOST : 1.0
+      return sum + (base * boost)
     }, 0)
 
     let roll = Math.random() * totalWeight
     let selectedStory: Story | null = null
 
     for (const story of available) {
-      const weight = STORY_CATEGORY_WEIGHTS[story.category] || 0.1
-      roll -= weight
+      const base = STORY_CATEGORY_WEIGHTS[story.category] || 0.1
+      const boost = (preferredCategory && story.category === preferredCategory) ? THEME_STORY_BOOST : 1.0
+      roll -= (base * boost)
       if (roll <= 0) {
         selectedStory = story
         break

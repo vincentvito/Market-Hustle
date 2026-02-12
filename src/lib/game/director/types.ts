@@ -131,7 +131,7 @@ export interface DirectorConfig {
 /** Default Director configuration */
 export const DEFAULT_DIRECTOR_CONFIG: DirectorConfig = {
   intensity: 0.5,
-  maxBoringStretch: 4,
+  maxBoringStretch: 2,
   minDaysBetweenBigEvents: 3,
   tensionPeakThreshold: 90,
   tensionReleaseAmount: 30,

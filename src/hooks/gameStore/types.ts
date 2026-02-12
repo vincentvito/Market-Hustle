@@ -31,6 +31,7 @@ import type {
   PendingStoryArc,
 } from '@/lib/game/types'
 import type { EncounterResult } from '@/lib/game/encounters'
+import type { ScriptedGameDefinition } from '@/lib/game/scriptedGames/types'
 import type { UserTier } from '@/lib/game/userState'
 
 // ============================================================================
@@ -107,7 +108,7 @@ export interface MechanicsSlice extends GameState {
 
   // Action bar modal states
   showActionsModal: boolean
-  activeActionsTab: 'leverage' | 'buy'
+  activeActionsTab: 'leverage' | 'buy' | 'casino'
   showGiftsModal: boolean
 
   // Game control actions
@@ -145,7 +146,7 @@ export interface MechanicsSlice extends GameState {
   setSelectedNews: (news: NewsItem | null) => void
   setShowSettings: (show: boolean) => void
   setShowActionsModal: (show: boolean) => void
-  setActiveActionsTab: (tab: 'leverage' | 'buy') => void
+  setActiveActionsTab: (tab: 'leverage' | 'buy' | 'casino') => void
   setShowGiftsModal: (show: boolean) => void
 
   // Gift actions
@@ -201,6 +202,9 @@ export interface MechanicsSlice extends GameState {
   setPendingLifestyleAsset: (assetId: string | null) => void
   setPendingLuxuryAsset: (assetId: LuxuryAssetId | null) => void
 
+  // Scenario management
+  setPreloadedScenario: (scenario: ScriptedGameDefinition | null) => void
+
   // Heat/Suspicion management actions
   increaseWifeHeat: (amount: number) => void
   decreaseWifeHeat: (amount: number) => void
@@ -209,6 +213,9 @@ export interface MechanicsSlice extends GameState {
 
   // Credit card debt actions
   setCreditCardDebt: (newDebt: number) => void
+
+  // Casino gambling
+  applyCasinoResult: (cashDelta: number) => void
 
   // Offshore trust actions
   depositToTrust: (amount: number) => void

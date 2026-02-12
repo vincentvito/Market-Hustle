@@ -150,6 +150,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   // Fractional asset configuration (only BTC for now)
   const FRACTIONAL_ASSETS: Record<string, { minQuantity: number; step: number }> = {
     btc: { minQuantity: 0, step: 0.001 },
+    gold: { minQuantity: 0, step: 0.01 },
   }
   const isFractional = asset ? asset.id in FRACTIONAL_ASSETS : false
   const fractionalConfig = asset ? FRACTIONAL_ASSETS[asset.id] : null
@@ -157,19 +158,20 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   // With leverage, you can buy more (but need downPayment = totalCost / leverage)
   const effectiveLeverage = isPro && leverage > 1 ? leverage : 1
   const maxBuyRaw = isFractional && fractionalConfig
-    ? Math.round((cash * effectiveLeverage / price) * 1000) / 1000
+    ? Math.floor((cash * effectiveLeverage / price) / fractionalConfig.step) * fractionalConfig.step
     : Math.max(1, Math.floor((cash * effectiveLeverage) / price))
   const maxBuy = isFractional ? maxBuyRaw : Math.max(1, maxBuyRaw)
-  // Short mode: available collateral = cash - 2 * totalShortProceeds
-  // This matches the shortSell function constraint: totalExposure <= originalCapital
+  // Short mode: available collateral = cash - existing short exposure
+  // This matches the shortSell function constraint: totalExposure <= cash
   const totalShortProceeds = shortPositions.reduce((sum, pos) => sum + pos.cashReceived, 0)
-  const availableCashForShort = Math.max(0, cash - 2 * totalShortProceeds)
+  const availableCashForShort = Math.max(0, cash - totalShortProceeds)
   const maxShort = Math.floor(availableCashForShort / price)
-  const maxSell = isShortMode && isPro ? Math.max(1, maxShort) : Math.max(1, owned)
 
   // Slider config based on asset type
   const sliderMin = isFractional ? 0 : 1
   const sliderStep = fractionalConfig?.step || 1
+
+  const maxSell = isShortMode && isPro ? Math.max(sliderMin, maxShort) : (isFractional ? owned : Math.max(1, owned))
 
   // Separate sliders for buy and sell
   const buySlider = useSlider(maxBuy, sliderMin, sliderMin, sliderStep)
@@ -308,8 +310,9 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     }
   }
 
-  // canBuy: need enough for down payment (leverage considered)
-  const downPaymentNeeded = price / effectiveLeverage
+  // canBuy: need enough for down payment of minimum purchasable quantity
+  const minPurchaseQty = isFractional ? (fractionalConfig?.step || 0.001) : 1
+  const downPaymentNeeded = (minPurchaseQty * price) / effectiveLeverage
   const canBuy = cash >= downPaymentNeeded
   // canSell: short mode = need available collateral, regular = need holdings (any amount for fractional)
   const canSell = isShortMode && isPro ? maxShort > 0 : owned > 0

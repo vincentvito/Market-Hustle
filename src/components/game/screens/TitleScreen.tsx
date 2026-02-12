@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useAuth } from '@/contexts/AuthContext'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -53,6 +54,8 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const initializeFromStorage = useGame(state => state.initializeFromStorage)
   const username = useGame(state => state.username)
   const setUsername = useGame(state => state.setUsername)
+  const setSelectedDuration = useGame(state => state.setSelectedDuration)
+  const { user, updateSettings } = useAuth()
 
   const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.daily ?? [])
   const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.allTime ?? [])
@@ -233,7 +236,11 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           {([30, 45, 60] as const).map((d) => (
             <button
               key={d}
-              onClick={() => setLeaderboardDuration(d)}
+              onClick={() => {
+                setLeaderboardDuration(d)
+                setSelectedDuration(d)
+                if (user) updateSettings({ duration: d })
+              }}
               className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors cursor-pointer ${
                 leaderboardDuration === d
                   ? 'bg-mh-accent-blue/20 text-mh-accent-blue border-mh-accent-blue'

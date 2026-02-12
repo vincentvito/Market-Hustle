@@ -19,11 +19,12 @@ export function StatsBar({ onDebtClick }: StatsBarProps) {
   } = useGame()
   const portfolioValue = getPortfolioValue()
   const isBloomberg = selectedTheme === 'bloomberg'
+  const isModern3 = selectedTheme === 'modern3'
   const hasPositions = portfolioValue > 0 || leveragedPositions.length > 0 || shortPositions.length > 0
 
   return (
     <>
-      <div className="mx-3 md:mx-4 mt-0.5 md:mt-1 mb-3 space-y-2">
+      <div className={`mx-3 md:mx-4 mt-0.5 md:mt-1 ${isModern3 ? 'mb-1' : 'mb-3'} space-y-2`}>
         {/* Row 1: Cash, Debt, Portfolio - matching net worth font style */}
         <div className="flex items-center justify-between">
           <div id="tutorial-cash">

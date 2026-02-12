@@ -98,3 +98,21 @@ export const gamePlays = pgTable('game_plays', {
 }, (table) => [
   index('idx_game_plays_user_id').on(table.userId),
 ])
+
+// ============================================
+// scenarios (admin-authored game scenarios)
+// ============================================
+export const scenarios = pgTable('scenarios', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: text('title').notNull(),
+  description: text('description'),
+  duration: smallint('duration').notNull(),
+  status: text('status').notNull().default('draft'),
+  days: text('days').notNull().default('[]'),
+  initialPrices: text('initial_prices'),
+  createdBy: uuid('created_by').references(() => profiles.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  index('idx_scenarios_status').on(table.status),
+])

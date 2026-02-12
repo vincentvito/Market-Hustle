@@ -4,12 +4,14 @@ import { useGame } from '@/hooks/useGame'
 import { Portal } from '@/components/ui/Portal'
 import { ActionsTabLeverage } from './ActionsTabLeverage'
 import { ActionsTabBuy } from './ActionsTabBuy'
+import { ActionsTabCasino } from './ActionsTabCasino'
 
-type TabId = 'leverage' | 'buy'
+type TabId = 'leverage' | 'buy' | 'casino'
 
 const TABS: { id: TabId; label: string; emoji: string }[] = [
   { id: 'leverage', label: 'LEVERAGE', emoji: '⚡' },
   { id: 'buy', label: 'BUY', emoji: '✨' },
+  { id: 'casino', label: 'CASINO', emoji: '🎰' },
 ]
 
 export function ActionsModal() {
@@ -84,6 +86,7 @@ export function ActionsModal() {
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
             {activeActionsTab === 'leverage' && <ActionsTabLeverage />}
             {activeActionsTab === 'buy' && <ActionsTabBuy />}
+            {activeActionsTab === 'casino' && <ActionsTabCasino />}
           </div>
         </div>
       </div>

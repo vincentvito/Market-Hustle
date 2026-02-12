@@ -1,17 +1,19 @@
 import type { DirectorState, DirectorConfig, RippleDefinition } from './director'
+import type { ScriptedGameDefinition } from './scriptedGames/types'
 
 // =============================================================================
 // PE ABILITY TYPES (One-time villain actions)
 // =============================================================================
 
 export type PEAbilityId =
-  | 'defense_spending_bill'  // Sal's Corner
-  | 'drug_fast_track'        // Sal's Corner
+  | 'defense_spending_bill'  // Capitol Consulting Group
+  | 'drug_fast_track'        // Capitol Consulting Group
   | 'yemen_operations'       // Blackstone
   | 'chile_acquisition'      // Blackstone
   | 'project_chimera'        // Lazarus Genomics
   | 'operation_divide'       // Apex Media
   | 'run_for_president'      // Apex Media - endgame
+  | 'insider_tip'            // Smokey's on K (randomly picks a bill scenario)
 
 export interface PEAbility {
   id: PEAbilityId
@@ -32,6 +34,8 @@ export interface PEAbility {
     gameOverRisk?: number                  // % chance of game over (0-1)
   }
   backfireChance: number  // 0.20 = 20%
+  silentExecution?: boolean  // If true, no headline on execution day (RUMOR fires next day instead)
+  repeatable?: boolean       // If true, can be used multiple times (blocked only while story arc pending)
   specialEffect?: {
     type: 'event_trigger'
     eventCategory: string
@@ -76,6 +80,8 @@ export interface PendingPhase2Effects {
 export interface PendingStoryArc {
   abilityId: PEAbilityId
   peAssetId: string
+  category: string              // Topic blocking (e.g., 'biotech', 'geopolitical')
+  subcategory?: string          // Sub-topic blocking (e.g., 'pandemic', 'middle-east')
   storyOutcome: 'favorable' | 'unfavorable'  // Pre-rolled on execution, hidden until Part 3
   currentPhase: 1 | 2 | 3
   startDay: number
@@ -98,6 +104,20 @@ export interface AbilityHeadlines {
   part2: string         // Day N+1: Tension builds
   successPart3: string  // Day N+2: Favorable resolution
   backfirePart3: string // Day N+2: Unfavorable resolution
+}
+
+// Insider Tip scenario (Smokey's on K — randomly selected bill)
+export interface InsiderTipScenario {
+  id: string
+  sectorHint: string  // Vague hint shown to player (e.g. "the commodity markets")
+  successEffects: Record<string, number>
+  backfireEffects: {
+    priceEffects?: Record<string, number>
+    fine?: number
+    triggerEncounter?: EncounterType
+  }
+  headlines: AbilityHeadlines
+  topic: { category: string; subcategory?: string }
 }
 
 // =============================================================================
@@ -146,7 +166,7 @@ export interface PendingInflationEffect {
 // =============================================================================
 
 export type OperationId =
-  | 'lobby_congress'      // Sal's Corner
+  | 'lobby_congress'      // Capitol Consulting Group
   | 'execute_coup'        // Blackstone Services
   | 'plant_story'         // Apex Media
 
@@ -231,6 +251,15 @@ export interface ActiveEscalation {
   expiresDay: number
 }
 
+// Prediction Market Hint (displayed probability is intentionally inflated)
+export interface PredictionMarketHint {
+  outcomeIndex: number        // Which outcome to highlight
+  inflatedProbability: number // Displayed probability (0-1), higher than actual
+  label: string               // Short text, e.g. "RATE CUT"
+  missLabel: string           // Label shown when prediction is wrong (~30% of the time)
+  missRate?: number           // Override miss rate per-event (default 0.30)
+}
+
 // Event Chain Types
 export interface EventChainOutcome {
   headline: string
@@ -253,6 +282,7 @@ export interface EventChain {
   sentimentAssets?: string[]         // Which assets are affected by this chain
   primaryAsset?: string              // Primary asset for mood recording
   allowsReversal?: boolean           // If true, chain can start even if it conflicts with current mood
+  predictionMarket?: PredictionMarketHint  // Prediction market hint shown on day 2+ of rumor
 }
 
 export interface ActiveChain {
@@ -262,6 +292,7 @@ export interface ActiveChain {
   rumor: string
   category: string
   subcategory?: string  // For regional blocking (e.g., 'asia', 'middle-east')
+  predictionLine?: string  // Pre-computed prediction market text, shown on day 2+
 }
 
 export interface ResolvedChain {
@@ -270,14 +301,48 @@ export interface ResolvedChain {
   day: number
 }
 
+// Scheduled Event Types (known calendar events with 1-day advance notice)
+export interface ScheduledEvent {
+  id: string
+  category: string
+  // Day 1: Heads-up announcement
+  announcement: {
+    headline: string
+    effects: Record<string, number>   // Keep small (±0.02) to stay below mood threshold
+  }
+  // Day 2: Resolution outcomes
+  outcomes: ScheduledEventOutcome[]
+  // Sentiment fields for conflict prevention on the announcement
+  sentimentAssets?: string[]          // Which assets to check for conflict when starting
+  announcementSentiment?: EventSentiment  // Default: 'mixed' (auto-derived from small mixed effects)
+  predictionMarket?: PredictionMarketHint  // Prediction market hint shown on announcement
+}
+
+export interface ScheduledEventOutcome {
+  headline: string
+  probability: number
+  effects: Record<string, number>
+  sentiment: EventSentiment           // REQUIRED — explicit bullish/bearish/neutral
+  sentimentAssets: string[]           // REQUIRED — which assets this mood applies to
+  allowsReversal: true                // Always true — scheduled results always fire
+}
+
+export interface ActiveScheduledEvent {
+  eventId: string
+  startDay: number
+  resolved: boolean                   // false = heads-up shown, awaiting resolution
+  category: string
+}
+
 export type GameScreen = 'title' | 'intro' | 'game' | 'gameover' | 'win'
 
-export type NewsLabelType = 'rumor' | 'developing' | 'news' | 'breaking' | 'none' | 'gossip'
+export type NewsLabelType = 'rumor' | 'developing' | 'news' | 'breaking' | 'none' | 'gossip' | 'scheduled' | 'flavor'
 
 export interface NewsItem {
   headline: string
   effects: Record<string, number>
   labelType?: NewsLabelType
+  predictionLine?: string  // Prediction market probability text
 }
 
 // Price history for candlestick charts
@@ -358,6 +423,7 @@ export interface GameState {
   // Multi-stage story state (Phase 1: runs alongside existing system)
   activeStories: ActiveStory[]
   usedStoryIds: string[] // Stories already used this game
+  lastStoryStartDay: number // Day of most recent story start (for scheduling)
   // Wall St Gossip state
   gossipState: GossipState
   // Random Encounter state
@@ -365,10 +431,17 @@ export interface GameState {
   pendingEncounter: PendingEncounter | null  // Encounter awaiting player decision
   queuedStartupOffer: Startup | null  // Startup offer delayed by encounter
   pendingLiquidation: PendingLiquidation | null  // Asset seizure awaiting player selection
+  // Scheduled event state (known calendar events with advance notice)
+  activeScheduledEvent: ActiveScheduledEvent | null
+  usedScheduledEventIds: string[]             // Scheduled events already fired this game (prevents repeats)
   // Market mood tracking (for conflict prevention)
   assetMoods: AssetMood[]                    // Current mood per asset (decays after 3 days)
+  // Category cooldowns: block same-category standalone events for N days after story/chain resolution
+  categoryCooldowns: { category: string; expiresDay: number }[]
   // Flavor events (meme/celebrity news in secondary slot)
   usedFlavorHeadlines: string[]              // Headlines already shown this game
+  // Single event deduplication (prevents same headline twice per game)
+  usedEventHeadlines: string[]               // Single event headlines already shown this game
   // Operations state (PE-based villain actions) - Legacy
   operationStates: Record<OperationId, OperationState>
   // Luxury assets state
@@ -387,6 +460,10 @@ export interface GameState {
   // Game Director state (narrative pacing system)
   directorState: DirectorState               // Director's tracking state
   directorConfig: DirectorConfig             // Director configuration
+  // Scripted game state (curated first 3 games for new players)
+  activeScript: ScriptedGameDefinition | null   // loaded script (null for normal games)
+  scriptedGameNumber: number | null             // 1, 2, or 3 (null for normal games)
+  preloadedScenario: ScriptedGameDefinition | null  // admin-authored scenario (loaded from DB)
 }
 
 // Wall St Gossip tracking

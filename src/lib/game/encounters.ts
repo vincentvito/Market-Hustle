@@ -170,8 +170,8 @@ export function getAvailableEncounters(
   // SEC - once per game
   if (!state.usedSEC) available.push('sec')
 
-  // Divorce - max 2 per game
-  if (state.divorceCount < 2) available.push('divorce')
+  // Divorce - max 2 per game, needs at least $10K cash
+  if (state.divorceCount < 2 && cash >= 10000) available.push('divorce')
 
   // Shitcoin - needs $5K
   if (cash >= 5000) available.push('shitcoin')
@@ -219,7 +219,7 @@ export function rollForEncounter(
 
   // Fall through to random pool (shitcoin/kidney/roulette/tax only)
   // Presidential pardon grants permanent immunity from tax encounters
-  let poolEncounters = available.filter(e => e !== 'sec' && e !== 'divorce')
+  let poolEncounters = available.filter(e => e !== 'sec')
   if (hasPardoned) {
     poolEncounters = poolEncounters.filter(e => e !== 'tax')
   }
@@ -254,11 +254,20 @@ export function rollForEncounter(
 export function resolveSEC(
   choice: 'pay' | 'fight',
   netWorth: number,
+  cash: number,
   trustFundBalance: number = 0
 ): EncounterResult {
   if (choice === 'pay') {
     const exposedNetWorth = Math.max(0, netWorth - trustFundBalance)
-    const fine = Math.floor(exposedNetWorth * 0.20)
+    // SEC can seize what's visible regardless of trading debts
+    const penaltyBase = Math.max(exposedNetWorth, cash)
+    const fine = Math.floor(penaltyBase * 0.20)
+    if (fine === 0) {
+      return {
+        headline: 'SEC SETTLEMENT: Investigation found no seizable assets.',
+        cashChange: 0,
+      }
+    }
     return {
       headline: `SEC SETTLEMENT: You paid $${fine.toLocaleString('en-US')} to avoid prosecution`,
       liquidationRequired: fine,
@@ -283,11 +292,20 @@ export function resolveSEC(
 export function resolveDivorce(
   choice: 'settle' | 'contest',
   netWorth: number,
+  cash: number,
   trustFundBalance: number = 0
 ): EncounterResult {
   const exposedNetWorth = Math.max(0, netWorth - trustFundBalance)
+  // Divorce court sees your bank account regardless of trading debts
+  const penaltyBase = Math.max(exposedNetWorth, cash)
   if (choice === 'settle') {
-    const loss = Math.floor(exposedNetWorth * 0.50)
+    const loss = Math.floor(penaltyBase * 0.50)
+    if (loss === 0) {
+      return {
+        headline: 'DIVORCE SETTLED: Nothing to split. Your ex\'s lawyer is baffled.',
+        cashChange: 0,
+      }
+    }
     return {
       headline: `DIVORCE SETTLED: $${loss.toLocaleString('en-US')} gone, but you move on`,
       liquidationRequired: loss,
@@ -300,7 +318,13 @@ export function resolveDivorce(
         cashChange: 0,
       }
     } else {
-      const loss = Math.floor(exposedNetWorth * 0.70)
+      const loss = Math.floor(penaltyBase * 0.70)
+      if (loss === 0) {
+        return {
+          headline: 'CONTESTED AND LOST: But there was nothing to take.',
+          cashChange: 0,
+        }
+      }
       return {
         headline: `CONTESTED AND LOST: $${loss.toLocaleString('en-US')} awarded to your ex`,
         liquidationRequired: loss,

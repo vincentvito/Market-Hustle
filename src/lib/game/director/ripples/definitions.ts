@@ -25,9 +25,6 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
     activationChance: 0.80,
     boosts: {
       energy: 1.5,
-      economic: 1.4,
-      regulatory: 1.3,
-      insurance: 1.2,
     },
     suppresses: {
       tech: 0.7,
@@ -47,9 +44,6 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
   blackswan: {
     activationChance: 0.90,
     boosts: {
-      economic: 1.5,
-      regulatory: 1.6,
-      insurance: 1.8,
       recovery: 1.4,
       geopolitical: 1.3,
     },
@@ -65,68 +59,17 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
     decayRate: 0.20,
   },
 
-  /**
-   * Economic crisis events ripple into monetary policy and banking,
-   * suppress growth-oriented categories.
-   */
-  economic: {
-    activationChance: 0.75,
-    boosts: {
-      fed: 1.4,
-      banking: 1.5,
-      regulatory: 1.3,
-      recovery: 1.2,
-    },
-    suppresses: {
-      tech: 0.8,
-      crypto: 0.75,
-      tesla: 0.85,
-      ev: 0.85,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 3,
-    baseStrength: 0.8,
-    decayRate: 0.30,
-  },
-
-  // ===========================================================================
-  // MONETARY POLICY (Strong, moderate duration)
-  // ===========================================================================
-
-  /**
-   * Fed events have outsized impact on all markets.
-   * Boost banking and economic coverage.
-   */
-  fed: {
-    activationChance: 0.85,
-    boosts: {
-      banking: 1.5,
-      economic: 1.4,
-      regulatory: 1.2,
-    },
-    suppresses: {
-      crypto: 0.7,
-      tech: 0.85,
-      tesla: 0.85,
-    },
-    sentimentPush: undefined, // Depends on rate direction
-    baseDuration: 4,
-    baseStrength: 0.9,
-    decayRate: 0.25,
-  },
-
   // ===========================================================================
   // SECTOR CATEGORIES (Moderate ripples)
   // ===========================================================================
 
   /**
-   * Tech events can ripple into regulatory and crypto.
+   * Tech events can ripple into crypto.
    * Sentiment depends on specific event.
    */
   tech: {
     activationChance: 0.70,
     boosts: {
-      regulatory: 1.3,
       crypto: 1.2,
     },
     suppresses: {},
@@ -142,9 +85,7 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
    */
   crypto: {
     activationChance: 0.75,
-    boosts: {
-      regulatory: 1.4,
-    },
+    boosts: {},
     suppresses: {
       tech: 0.9,
     },
@@ -161,8 +102,6 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
   energy: {
     activationChance: 0.80,
     boosts: {
-      economic: 1.3,
-      transportation: 1.4,
       geopolitical: 1.2,
     },
     suppresses: {
@@ -173,23 +112,6 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
     baseDuration: 3,
     baseStrength: 0.8,
     decayRate: 0.28,
-  },
-
-  /**
-   * Biotech events can trigger regulatory and economic ripples.
-   */
-  biotech: {
-    activationChance: 0.70,
-    boosts: {
-      regulatory: 1.3,
-      economic: 1.2,
-      insurance: 1.3,
-    },
-    suppresses: {},
-    sentimentPush: undefined,
-    baseDuration: 2,
-    baseStrength: 0.6,
-    decayRate: 0.35,
   },
 
   /**
@@ -230,8 +152,6 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
   agriculture: {
     activationChance: 0.75,
     boosts: {
-      economic: 1.4,
-      transportation: 1.3,
       energy: 1.2,
     },
     suppresses: {},
@@ -239,72 +159,6 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
     baseDuration: 3,
     baseStrength: 0.7,
     decayRate: 0.30,
-  },
-
-  // ===========================================================================
-  // NEW CATEGORIES (Lower ripple potential - they are consequences, not causes)
-  // ===========================================================================
-
-  /**
-   * Regulatory events rarely create further ripples.
-   * They are usually consequences, not causes.
-   */
-  regulatory: {
-    activationChance: 0.50,
-    boosts: {},
-    suppresses: {},
-    sentimentPush: undefined,
-    baseDuration: 2,
-    baseStrength: 0.4,
-    decayRate: 0.40,
-  },
-
-  /**
-   * Transportation events can ripple into economic.
-   */
-  transportation: {
-    activationChance: 0.55,
-    boosts: {
-      economic: 1.2,
-      energy: 1.1,
-    },
-    suppresses: {},
-    sentimentPush: undefined,
-    baseDuration: 2,
-    baseStrength: 0.4,
-    decayRate: 0.40,
-  },
-
-  /**
-   * Banking events can ripple into economic and fed coverage.
-   */
-  banking: {
-    activationChance: 0.65,
-    boosts: {
-      economic: 1.3,
-      fed: 1.2,
-      regulatory: 1.2,
-    },
-    suppresses: {},
-    sentimentPush: undefined,
-    baseDuration: 2,
-    baseStrength: 0.5,
-    decayRate: 0.35,
-  },
-
-  /**
-   * Insurance events are consequences, minimal ripple.
-   */
-  insurance: {
-    activationChance: 0.45,
-    boosts: {
-      regulatory: 1.1,
-    },
-    suppresses: {},
-    sentimentPush: undefined,
-    baseDuration: 2,
-    baseStrength: 0.3,
-    decayRate: 0.45,
   },
 
   /**
@@ -316,13 +170,29 @@ export const CATEGORY_RIPPLE_DEFAULTS: Record<string, Partial<RippleDefinition>>
       tech: 1.2,
       crypto: 1.2,
     },
-    suppresses: {
-      economic: 0.8,
-    },
+    suppresses: {},
     sentimentPush: 'bullish',
     baseDuration: 2,
     baseStrength: 0.5,
     decayRate: 0.40,
+  },
+
+  /**
+   * Biotech events ripple into tech (shared innovation narrative).
+   * Slightly suppress crypto attention (capital rotation).
+   */
+  biotech: {
+    activationChance: 0.70,
+    boosts: {
+      tech: 1.2,
+    },
+    suppresses: {
+      crypto: 0.9,
+    },
+    sentimentPush: undefined,
+    baseDuration: 3,
+    baseStrength: 0.6,
+    decayRate: 0.30,
   },
 }
 
@@ -340,53 +210,9 @@ export const HIGH_IMPACT_RIPPLE_OVERRIDES: Record<string, RippleDefinition> = {
   // CRITICAL IMPACT (Always triggers, long duration)
   // ===========================================================================
 
-  'WHO DECLARES NEW PANDEMIC': {
+  'BREAKING: 9.2 EARTHQUAKE DEVASTATES SAN FRANCISCO': {
     activationChance: 0.95,
     boosts: {
-      biotech: 1.8,
-      regulatory: 1.6,
-      transportation: 1.5,
-      insurance: 1.4,
-      economic: 1.3,
-    },
-    suppresses: {
-      tech: 0.6,
-      crypto: 0.7,
-      energy: 0.75,
-      ev: 0.7,
-      tesla: 0.7,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 5,
-    baseStrength: 1.0,
-    decayRate: 0.18,
-  },
-
-  'KIM JONG UN, NORTH KOREA LEADER - ASSASSINATED': {
-    activationChance: 0.95,
-    boosts: {
-      geopolitical: 2.0,
-      energy: 1.5,
-      economic: 1.4,
-      regulatory: 1.3,
-    },
-    suppresses: {
-      tech: 0.6,
-      crypto: 0.65,
-      ev: 0.6,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 5,
-    baseStrength: 1.0,
-    decayRate: 0.18,
-  },
-
-  '9.2 EARTHQUAKE DEVASTATES SAN FRANCISCO': {
-    activationChance: 0.95,
-    boosts: {
-      insurance: 2.0,
-      economic: 1.6,
-      regulatory: 1.4,
       recovery: 1.5,
     },
     suppresses: {
@@ -400,13 +226,10 @@ export const HIGH_IMPACT_RIPPLE_OVERRIDES: Record<string, RippleDefinition> = {
     decayRate: 0.15,
   },
 
-  'GLOBAL SUPPLY CHAIN MELTDOWN': {
+  'GLOBAL SUPPLY CHAIN MELTDOWN - SHORTAGES SPREAD': {
     activationChance: 0.90,
     boosts: {
-      economic: 1.7,
-      transportation: 1.8,
       energy: 1.4,
-      regulatory: 1.3,
     },
     suppresses: {
       tech: 0.7,
@@ -428,8 +251,6 @@ export const HIGH_IMPACT_RIPPLE_OVERRIDES: Record<string, RippleDefinition> = {
     boosts: {
       geopolitical: 1.8,
       energy: 1.7,
-      economic: 1.4,
-      regulatory: 1.3,
     },
     suppresses: {
       tech: 0.75,
@@ -442,60 +263,9 @@ export const HIGH_IMPACT_RIPPLE_OVERRIDES: Record<string, RippleDefinition> = {
     decayRate: 0.22,
   },
 
-  'FLASH CRASH - DOW DROPS 1000 POINTS': {
-    activationChance: 0.88,
-    boosts: {
-      fed: 1.6,
-      banking: 1.5,
-      regulatory: 1.5,
-      recovery: 1.4,
-      economic: 1.4,
-    },
-    suppresses: {
-      crypto: 0.7,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 3,
-    baseStrength: 0.85,
-    decayRate: 0.28,
-  },
-
-  'FED RAISES RATES 50BPS': {
-    activationChance: 0.85,
-    boosts: {
-      banking: 1.5,
-      economic: 1.4,
-    },
-    suppresses: {
-      crypto: 0.65,
-      tech: 0.8,
-      tesla: 0.8,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 4,
-    baseStrength: 0.85,
-    decayRate: 0.25,
-  },
-
-  'SEC APPROVES SPOT BITCOIN ETF': {
-    activationChance: 0.80,
-    boosts: {
-      crypto: 1.8,
-      regulatory: 1.3,
-    },
-    suppresses: {},
-    sentimentPush: 'bullish',
-    baseDuration: 3,
-    baseStrength: 0.8,
-    decayRate: 0.28,
-  },
-
   'MAJOR EXCHANGE FILES BANKRUPTCY': {
     activationChance: 0.85,
-    boosts: {
-      regulatory: 1.7,
-      economic: 1.3,
-    },
+    boosts: {},
     suppresses: {
       crypto: 0.5,
       tech: 0.85,
@@ -506,49 +276,11 @@ export const HIGH_IMPACT_RIPPLE_OVERRIDES: Record<string, RippleDefinition> = {
     decayRate: 0.25,
   },
 
-  'INFLATION HITS 40-YEAR HIGH': {
-    activationChance: 0.85,
-    boosts: {
-      fed: 1.6,
-      economic: 1.5,
-      banking: 1.3,
-    },
-    suppresses: {
-      tech: 0.75,
-      crypto: 0.7,
-      tesla: 0.8,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 4,
-    baseStrength: 0.85,
-    decayRate: 0.25,
-  },
-
-  'UNEMPLOYMENT HITS 15%': {
-    activationChance: 0.85,
-    boosts: {
-      fed: 1.5,
-      economic: 1.6,
-      regulatory: 1.4,
-      recovery: 1.3,
-    },
-    suppresses: {
-      tech: 0.8,
-      crypto: 0.75,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 4,
-    baseStrength: 0.85,
-    decayRate: 0.25,
-  },
-
-  'OIL TANKER EXPLODES IN STRAIT OF HORMUZ': {
+  'OIL TANKER EXPLODES IN STRAIT OF HORMUZ — SUPPLY ROUTE THREATENED': {
     activationChance: 0.85,
     boosts: {
       geopolitical: 1.6,
       energy: 1.7,
-      transportation: 1.4,
-      economic: 1.3,
     },
     suppresses: {
       tech: 0.8,
@@ -564,29 +296,14 @@ export const HIGH_IMPACT_RIPPLE_OVERRIDES: Record<string, RippleDefinition> = {
   // MEDIUM IMPACT (Moderate trigger chance)
   // ===========================================================================
 
-  'BIG TECH ANTITRUST BREAKUP ORDERED': {
-    activationChance: 0.75,
-    boosts: {
-      regulatory: 1.5,
-      economic: 1.2,
-    },
-    suppresses: {
-      tech: 0.7,
-    },
-    sentimentPush: 'bearish',
-    baseDuration: 3,
-    baseStrength: 0.7,
-    decayRate: 0.30,
-  },
-
-  'NUCLEAR FUSION BREAKTHROUGH ACHIEVED': {
+  'MULTIPLE LABS REPLICATE FUSION RESULT — ENERGY REVOLUTION CONFIRMED': {
     activationChance: 0.75,
     boosts: {
       tech: 1.5,
-      energy: 1.4,
+      ev: 1.3, // Clean energy boosts EV adoption
     },
     suppresses: {
-      energy: 0.8, // Traditional energy suppressed
+      energy: 0.8, // Traditional energy suppressed by fusion
     },
     sentimentPush: 'bullish',
     baseDuration: 3,
@@ -607,26 +324,11 @@ export const HIGH_IMPACT_RIPPLE_OVERRIDES: Record<string, RippleDefinition> = {
     decayRate: 0.35,
   },
 
-  'AGING REVERSED IN HUMAN TRIALS': {
-    activationChance: 0.70,
-    boosts: {
-      biotech: 1.6,
-      regulatory: 1.3,
-    },
-    suppresses: {},
-    sentimentPush: 'bullish',
-    baseDuration: 3,
-    baseStrength: 0.7,
-    decayRate: 0.30,
-  },
-
   // China semiconductor dominance - catastrophic for US tech
   'CHINA UNVEILS NEXT-GEN CHIP - 25X MORE POWERFUL THAN NVIDIA H100': {
     activationChance: 0.90,
     boosts: {
       geopolitical: 1.8,
-      regulatory: 1.5,
-      economic: 1.4,
     },
     suppresses: {
       tech: 0.5,

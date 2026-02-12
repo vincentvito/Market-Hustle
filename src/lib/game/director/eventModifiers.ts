@@ -85,8 +85,8 @@ export function getDirectorModifiers(
   // Apply theme reinforcement
   applyThemeModifiers(modifiers, state)
 
-  // Apply variety enforcement (reduce recently-used categories)
-  applyVarietyModifiers(modifiers, context.recentCategories)
+  // Apply variety enforcement (reduce recently-used categories, exempt theme category)
+  applyVarietyModifiers(modifiers, context.recentCategories, state)
 
   return modifiers
 }
@@ -103,9 +103,9 @@ function applyPhaseModifiers(
 ): void {
   switch (phase) {
     case 'setup':
-      // Early game: lower volatility, fewer chains, educational events
-      modifiers.volatilityMultiplier = 0.6 + (config.intensity * 0.3)
-      modifiers.chainProbabilityMultiplier = 0.5
+      // Early game: active opening, familiar categories
+      modifiers.volatilityMultiplier = 0.8 + (config.intensity * 0.2)
+      modifiers.chainProbabilityMultiplier = 1.0
       modifiers.preferredCategories.add('tech')
       modifiers.preferredCategories.add('crypto')
       break
@@ -154,46 +154,34 @@ function applyMomentumModifiers(
   state: DirectorState,
   config: DirectorConfig
 ): void {
+  const streak = state.momentumStreak
+
   if (needsComebackAssist(state.momentum)) {
-    // Player is struggling: offer lifelines
+    // Struggling/desperate: always assist (no delay — losing isn't fun)
     modifiers.sentimentBias = 'bullish'
-
-    // Boost high-upside categories
-    COMEBACK_CATEGORIES.forEach(cat => {
-      modifiers.preferredCategories.add(cat)
-    })
-
-    // Increase chain probability for comeback stories
+    COMEBACK_CATEGORIES.forEach(cat => modifiers.preferredCategories.add(cat))
     modifiers.chainProbabilityMultiplier *= 1.3
 
-    // Extra assistance for desperate players
     if (state.momentum === 'desperate') {
-      modifiers.volatilityMultiplier *= 0.9  // Slightly lower volatility (less risk)
+      modifiers.volatilityMultiplier *= 0.9
     }
-  }
-
-  if (needsChallenge(state.momentum)) {
-    // Player is dominating: introduce challenges
-    modifiers.sentimentBias = 'bearish'
-    modifiers.volatilityMultiplier *= (1.2 + config.intensity * 0.3)
-
-    // Boost challenging categories
-    CHALLENGE_CATEGORIES.forEach(cat => {
-      modifiers.preferredCategories.add(cat)
-    })
-  }
-
-  // Mild bias for mildly winning/struggling
-  if (state.momentum === 'winning') {
-    // Small chance of bearish bias to keep things interesting
-    if (Math.random() < 0.3) {
+  } else if (needsChallenge(state.momentum)) {
+    // Crushing it: let the streak build before rubber-banding
+    if (streak >= 3) {
+      // Streak has run long enough — introduce headwinds
+      modifiers.sentimentBias = 'bearish'
+      modifiers.volatilityMultiplier *= (1.2 + config.intensity * 0.3)
+      CHALLENGE_CATEGORIES.forEach(cat => modifiers.preferredCategories.add(cat))
+    }
+    // streak < 3: no bias override — let the player ride the wave
+  } else if (state.momentum === 'winning') {
+    // Only nudge bearish after streak has built
+    if (streak >= 3 && Math.random() < 0.3) {
       modifiers.sentimentBias = 'bearish'
     }
-  }
-
-  if (state.momentum === 'struggling') {
-    // Mild bullish bias
-    if (Math.random() < 0.4) {
+  } else if (state.momentum === 'struggling') {
+    // Mild assist after streak — struggling for 3+ days deserves help
+    if (streak >= 3 && Math.random() < 0.4) {
       modifiers.sentimentBias = 'bullish'
     }
   }
@@ -248,15 +236,15 @@ function applyThemeModifiers(
   modifiers: DirectorEventModifiers,
   state: DirectorState
 ): void {
-  if (state.activeTheme === 'none' || state.themeStrength <= 0.5) {
-    return
+  if (state.activeTheme === 'none' || state.themeStrength <= 0.3) {
+    return  // Lower threshold from 0.5 to 0.3 so theme persists longer
   }
 
-  // Boost theme's primary category
+  // Boost theme's primary category (4x at full strength, ~1.9x at threshold)
   const primaryCategory = THEME_TO_CATEGORY[state.activeTheme]
   if (primaryCategory) {
     modifiers.categoryBoosts[primaryCategory] =
-      (modifiers.categoryBoosts[primaryCategory] || 1) * (1 + state.themeStrength)
+      (modifiers.categoryBoosts[primaryCategory] || 1) * (1 + state.themeStrength * 3)
   }
 
   // Block conflicting categories
@@ -272,11 +260,19 @@ function applyThemeModifiers(
 
 function applyVarietyModifiers(
   modifiers: DirectorEventModifiers,
-  recentCategories: string[]
+  recentCategories: string[],
+  state: DirectorState
 ): void {
+  // Get the theme's protected category (exempt from variety penalty)
+  const themeCategory = state.activeTheme !== 'none'
+    ? THEME_TO_CATEGORY[state.activeTheme]
+    : null
+
   // Reduce probability of recently-used categories
   // More recent = bigger penalty
+  // EXCEPTION: theme's primary category gets no penalty when theme is active
   recentCategories.forEach((cat, index) => {
+    if (cat === themeCategory) return  // Skip penalty for theme category
     const recencyPenalty = Math.pow(0.5, index + 1) // 0.5, 0.25, 0.125...
     modifiers.categoryBoosts[cat] =
       (modifiers.categoryBoosts[cat] || 1) * recencyPenalty

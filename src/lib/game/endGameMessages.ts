@@ -67,6 +67,12 @@ export const END_GAME_MESSAGES: Record<string, EndGameMessage> = {
     flavor:
       'You have destabilized the world economy. Governments are forming emergency committees. Your face is on international news. Congratulations?',
   },
+  FBI_INVESTIGATION: {
+    title: 'FBI INVESTIGATION',
+    emoji: '🚔',
+    flavor:
+      'The FBI has been building a case against you for months. Your schemes finally caught up. Game over.',
+  },
 }
 
 /**
