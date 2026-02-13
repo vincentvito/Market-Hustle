@@ -8,6 +8,13 @@
       "when": 1769863648301,
       "tag": "0000_anonymous_username",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770902278881,
+      "tag": "0001_flowery_senator_kelly",
+      "breakpoints": true
     }
   ]
 }

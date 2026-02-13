@@ -44,6 +44,7 @@ import type {
   UsedPEAbility,
   PendingAbilityEffects,
   ActiveScheduledEvent,
+  TradeLogEntry,
 } from '@/lib/game/types'
 import { getLuxuryAsset, LUXURY_ASSETS } from '@/lib/game/lifestyleAssets'
 import {
@@ -113,6 +114,16 @@ import {
 } from '@/lib/game/director'
 import { getEventSentiment, deriveSentiment } from '@/lib/game/sentimentHelpers'
 
+// Helper to append a trade log entry to the store
+function appendTradeLog(
+  get: () => { tradeLog: TradeLogEntry[]; day: number },
+  set: (state: Partial<{ tradeLog: TradeLogEntry[] }>) => void,
+  entry: Omit<TradeLogEntry, 'day'>
+) {
+  const { tradeLog, day } = get()
+  set({ tradeLog: [...tradeLog, { ...entry, day }] })
+}
+
 // Helper to record game completion to localStorage and Supabase
 function saveGameResult(
   isWin: boolean,
@@ -122,7 +133,8 @@ function saveGameResult(
   gameOverReason?: string,
   _isLoggedIn?: boolean,
   _isUsingProTrial?: boolean,
-  username?: string | null
+  username?: string | null,
+  tradeLog?: TradeLogEntry[]
 ): void {
   const userState = loadUserState()
 
@@ -154,6 +166,7 @@ function saveGameResult(
           daysSurvived: entry.daysSurvived,
           outcome: entry.outcome,
         },
+        tradeLogs: tradeLog,
       }),
     }).catch((err) => console.error('Error recording game:', err))
   }
@@ -299,6 +312,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   activeScript: null,
   scriptedGameNumber: null,
   preloadedScenario: null,
+
+  // Trade log accumulator (sent to server at game end)
+  tradeLog: [],
 
   // ============================================================================
   // GAME CONTROL ACTIONS
@@ -570,6 +586,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       activeScript,
       scriptedGameNumber,
       preloadedScenario: null, // Clear after use so next game isn't affected
+      // Reset trade log for new game
+      tradeLog: [],
     })
 
     // Record play timestamp for retention tracking (localStorage + Supabase)
@@ -2177,7 +2195,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       set({ pendingGameOver: { reason: gameOverReason, netWorth: finalNetWorth } })
     } else if (newDay > gameDuration) {
       // Player survived the full duration - WIN!
-      saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial, get().username)
+      saveGameResult(true, finalNetWorth, gameDuration, gameDuration, undefined, get().isLoggedIn, get().isUsingProTrial, get().username, get().tradeLog)
       set({ screen: 'win', isUsingProTrial: false })
     }
 
@@ -2202,7 +2220,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
     // If there's a pending game over (player saw their negative net worth last turn), now show game over
     if (pendingGameOver) {
-      saveGameResult(false, pendingGameOver.netWorth, day, gameDuration, pendingGameOver.reason, get().isLoggedIn, get().isUsingProTrial, get().username)
+      saveGameResult(false, pendingGameOver.netWorth, day, gameDuration, pendingGameOver.reason, get().isLoggedIn, get().isUsingProTrial, get().username, get().tradeLog)
       set({ screen: 'gameover', gameOverReason: pendingGameOver.reason, pendingGameOver: null, isUsingProTrial: false })
       return
     }
@@ -2296,6 +2314,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       buyQty: 1,
       selectedAsset: null,
     })
+
+    appendTradeLog(get, set, {
+      assetId, assetName: asset?.name || assetId, action: 'buy', category: 'stock',
+      quantity: qty, price, totalValue: cost,
+    })
   },
 
   sell: (assetId: string, qty: number) => {
@@ -2371,6 +2394,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       buyQty: 1,
       selectedAsset: null,
     })
+
+    appendTradeLog(get, set, {
+      assetId, assetName: asset?.name || assetId, action: 'sell', category: 'stock',
+      quantity: qty, price, totalValue: revenue, profitLoss,
+    })
   },
 
   selectAsset: (id: string | null) => set({ selectedAsset: id, buyQty: 1 }),
@@ -2415,6 +2443,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       leveragedPositions: [...leveragedPositions, newPosition],
       activeBuyMessage: `BOUGHT ${qty} ${asset?.name} @ ${leverage}x LEVERAGE`,
     })
+
+    appendTradeLog(get, set, {
+      assetId, assetName: asset?.name || assetId, action: 'leverage_buy', category: 'stock',
+      quantity: qty, price, totalValue: totalCost, leverage,
+    })
   },
 
   shortSell: (assetId: string, qty: number) => {
@@ -2448,6 +2481,11 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     set({
       shortPositions: [...shortPositions, newPosition],
       activeBuyMessage: `SHORTED ${qty} ${asset?.name} @ $${price.toLocaleString('en-US')}`,
+    })
+
+    appendTradeLog(get, set, {
+      assetId, assetName: asset?.name || assetId, action: 'short_sell', category: 'stock',
+      quantity: qty, price, totalValue: positionValue,
     })
   },
 
@@ -2493,6 +2531,12 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         profitLossPct,
         isProfit: profitLoss >= 0,
       },
+    })
+
+    appendTradeLog(get, set, {
+      assetId: position.assetId, assetName: asset?.name || position.assetId,
+      action: 'cover_short', category: 'stock',
+      quantity: position.qty, price: currentPrice, totalValue: coverCost, profitLoss,
     })
   },
 
@@ -2542,6 +2586,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         profitLossPct,
         isProfit: profitLoss >= 0,
       },
+    })
+
+    appendTradeLog(get, set, {
+      assetId: position.assetId, assetName: asset?.name || position.assetId,
+      action: 'leverage_close', category: 'stock',
+      quantity: position.qty, price: currentPrice, totalValue: saleProceeds,
+      leverage: position.leverage, profitLoss,
     })
   },
 
@@ -2643,6 +2694,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       ownedLifestyle: [...ownedLifestyle, newOwned],
       activeBuyMessage: `PURCHASED ${asset.name}`,
     })
+
+    const tradeCategory = asset.category === 'private_equity' ? 'private_equity' : 'property'
+    const tradeAction = asset.category === 'private_equity' ? 'buy_pe' : 'buy_property'
+    appendTradeLog(get, set, {
+      assetId, assetName: asset.name, action: tradeAction, category: tradeCategory,
+      quantity: 1, price, totalValue: price,
+    })
   },
 
   sellLifestyle: (assetId: string) => {
@@ -2685,6 +2743,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         isProfit: profitLoss >= 0,
       },
     })
+
+    const sellCategory = asset.category === 'private_equity' ? 'private_equity' : 'property'
+    const sellAction = asset.category === 'private_equity' ? 'sell_pe' : 'sell_property'
+    appendTradeLog(get, set, {
+      assetId, assetName: asset.name, action: sellAction, category: sellCategory,
+      quantity: 1, price: salePrice, totalValue: salePrice, profitLoss,
+    })
   },
 
   // PE Exit Offer Actions
@@ -2715,6 +2780,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         profitLossPct,
         isProfit: profitLoss >= 0,
       },
+    })
+
+    appendTradeLog(get, set, {
+      assetId: activePEExitOffer.assetId, assetName: asset.name,
+      action: 'pe_exit', category: 'private_equity',
+      quantity: 1, price: activePEExitOffer.offerAmount, totalValue: activePEExitOffer.offerAmount,
+      profitLoss,
     })
   },
 

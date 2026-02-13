@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { gameResults } from '@/db/schema'
+import { gameResults, tradeLogs } from '@/db/schema'
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, finalNetWorth, gameData } = await request.json()
+    const { username, finalNetWorth, gameData, tradeLogs: tradeLogEntries } = await request.json()
 
     // Validate username
     if (!username || typeof username !== 'string' || !/^[a-z0-9_]{3,15}$/.test(username)) {
@@ -25,6 +25,40 @@ export async function POST(request: NextRequest) {
           outcome: gameData.outcome,
         })
         .onConflictDoNothing()
+
+      // Bulk insert trade logs (fire-and-forget style, don't fail the whole request)
+      if (Array.isArray(tradeLogEntries) && tradeLogEntries.length > 0) {
+        try {
+          const rows = tradeLogEntries.map((t: {
+            assetId: string
+            assetName: string
+            action: string
+            category: string
+            quantity?: number
+            price?: number
+            totalValue?: number
+            leverage?: number
+            profitLoss?: number
+            day: number
+          }) => ({
+            username,
+            gameId: gameData.gameId,
+            assetId: t.assetId,
+            assetName: t.assetName,
+            action: t.action,
+            category: t.category,
+            quantity: t.quantity ?? null,
+            price: t.price != null ? String(t.price) : null,
+            totalValue: t.totalValue != null ? String(t.totalValue) : null,
+            leverage: t.leverage ?? null,
+            profitLoss: t.profitLoss != null ? String(t.profitLoss) : null,
+            day: t.day,
+          }))
+          await db.insert(tradeLogs).values(rows)
+        } catch (err) {
+          console.error('Error inserting trade logs:', err)
+        }
+      }
     }
 
     return NextResponse.json({ success: true })

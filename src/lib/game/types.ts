@@ -464,6 +464,22 @@ export interface GameState {
   activeScript: ScriptedGameDefinition | null   // loaded script (null for normal games)
   scriptedGameNumber: number | null             // 1, 2, or 3 (null for normal games)
   preloadedScenario: ScriptedGameDefinition | null  // admin-authored scenario (loaded from DB)
+  // Trade log accumulator (sent to server at game end)
+  tradeLog: TradeLogEntry[]
+}
+
+// Trade log entry (accumulated client-side, sent at game end)
+export interface TradeLogEntry {
+  assetId: string
+  assetName: string
+  action: 'buy' | 'sell' | 'short_sell' | 'cover_short' | 'leverage_buy' | 'leverage_close' | 'buy_property' | 'sell_property' | 'buy_pe' | 'sell_pe' | 'pe_exit'
+  category: 'stock' | 'property' | 'private_equity'
+  quantity?: number
+  price?: number
+  totalValue?: number
+  leverage?: number
+  profitLoss?: number
+  day: number
 }
 
 // Wall St Gossip tracking

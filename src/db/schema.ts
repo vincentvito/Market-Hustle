@@ -7,6 +7,7 @@ import {
   integer,
   smallint,
   decimal,
+  numeric,
   timestamp,
   bigint,
   uniqueIndex,
@@ -87,6 +88,32 @@ export const proTrials = pgTable('pro_trials', {
   gamesUsed: integer('games_used').notNull().default(0),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 })
+
+// ============================================
+// trade_logs (analytics — all in-game trades)
+// ============================================
+export const tradeLogs = pgTable('trade_logs', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  username: text('username').notNull(),
+  gameId: text('game_id').notNull(),
+  assetId: text('asset_id').notNull(),
+  assetName: text('asset_name').notNull(),
+  action: text('action').notNull(), // buy, sell, short_sell, cover_short, leverage_buy, leverage_close, buy_property, sell_property, buy_pe, sell_pe, pe_exit
+  category: text('category').notNull(), // stock, property, private_equity
+  quantity: integer('quantity'),
+  price: numeric('price', { precision: 20, scale: 2 }),
+  totalValue: numeric('total_value', { precision: 20, scale: 2 }),
+  leverage: smallint('leverage'),
+  profitLoss: numeric('profit_loss', { precision: 20, scale: 2 }),
+  day: smallint('day').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  index('idx_trade_logs_username').on(table.username),
+  index('idx_trade_logs_game_id').on(table.gameId),
+  index('idx_trade_logs_asset_id').on(table.assetId),
+  index('idx_trade_logs_action').on(table.action),
+  index('idx_trade_logs_category').on(table.category),
+])
 
 // ============================================
 // game_plays (NEW — retention tracking)
