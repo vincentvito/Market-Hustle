@@ -1202,6 +1202,10 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
           lastAdvanceDay: newDay,
         })
         updatedLastStoryStartDay = newDay
+        // Cross-exclude: block chains that are mutually exclusive with this story
+        if (newStory.excludeChains) {
+          updatedUsedChainIds.push(...newStory.excludeChains)
+        }
         if (process.env.NODE_ENV === 'development') {
           console.debug(`[Story] STARTED: "${newStory.id}" — "${firstStage.headline}" (category=${newStory.category}, stages=${newStory.stages.length}, day=${newDay})`)
         }
@@ -1425,11 +1429,17 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     updatedCategoryCooldowns = updatedCategoryCooldowns.filter(cd => cd.expiresDay > newDay)
 
     // Director can force an event type
-    const forceChain = directorModifiers.forceEventType === 'chain' && !hasActiveChain
+    let forceChain = directorModifiers.forceEventType === 'chain' && !hasActiveChain
     let forceEvent = directorModifiers.forceEventType === 'spike'
 
     // Opening hook: guarantee the player sees market action on day 1
     if (newDay === 1 && !forceChain) forceEvent = true
+
+    // Early engagement: guarantee a chain starts on day 2 for non-scripted games
+    if (newDay === 2 && !isScripted && updatedChains.length === 0 && !hasActiveChain) {
+      forceChain = true
+      forceEvent = false
+    }
 
     // Only roll for chain/event if no story fired today (prevents stacking)
     // Director boost increases event probability
@@ -1468,12 +1478,20 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
             startDay: newDay,
             daysRemaining: newChain.duration,
             rumor: newChain.rumor,
+            developing: newChain.developing,
             category: newChain.category,
             subcategory: newChain.subcategory,
             predictionLine: chainPredictionLine,
           }
           updatedChains.push(activeChain)
           updatedUsedChainIds.push(newChain.id)
+          // Cross-exclude: block stories and chains that are mutually exclusive with this chain
+          if (newChain.excludeStories) {
+            updatedUsedStoryIds.push(...newChain.excludeStories)
+          }
+          if (newChain.excludeChains) {
+            updatedUsedChainIds.push(...newChain.excludeChains)
+          }
           if (process.env.NODE_ENV === 'development') {
             console.debug(`[Chain] STARTED: "${newChain.rumor}" (id=${newChain.id}, duration=${newChain.duration}, day=${newDay})`)
           }
@@ -1872,7 +1890,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       const cooldownPassed = daysSinceLastOffer >= cooldownDays
 
       // ========== NET WORTH GATES ==========
-      const angelNetWorthGate = 250_000
+      const angelNetWorthGate = 50_000
       const vcNetWorthGate = 1_000_000
 
       // ========== HARD CAPS (base) ==========
@@ -1884,18 +1902,18 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       let angelBaseChance = 0.035  // 3.5%
       let vcBaseChance = 0.055     // 5.5%
 
-      // Private Jet luxury asset: +20% Angel frequency, +40% VC frequency
+      // Private Jet luxury asset: +30% deal frequency
       const ownsJet = ownedLuxury.includes('private_jet')
       if (ownsJet) {
-        angelBaseChance *= 1.20
-        vcBaseChance *= 1.40
+        angelBaseChance *= 1.30
+        vcBaseChance *= 1.30
       }
 
       // ========== ATTEMPT OFFER GENERATION ==========
       if (cooldownPassed) {
         let selectedTier: 'angel' | 'vc' | null = null
 
-        // Angel offer check (requires $250K+ net worth)
+        // Angel offer check (requires $50K+ net worth)
         if (nw >= angelNetWorthGate && updatedOfferCounts.angel < angelCap) {
           if (Math.random() < angelBaseChance) {
             const angelOffer = selectRandomStartup('angel', updatedUsedStartupIds)

@@ -100,9 +100,9 @@ export function NewsPanel() {
 
   // Build sorted news array (used for typewriter logic and rendering)
   const chainRumorItems: NewsItem[] = rumors.map(r => ({
-    headline: r.rumor,
+    headline: (day > r.startDay && r.developing) ? r.developing : r.rumor,
     effects: {},
-    labelType: 'rumor' as NewsLabelType,
+    labelType: (day > r.startDay && r.developing) ? 'developing' as NewsLabelType : 'rumor' as NewsLabelType,
     predictionLine: day > r.startDay ? r.predictionLine : undefined,
   }))
   const allNews = [...todayNews, ...chainRumorItems]

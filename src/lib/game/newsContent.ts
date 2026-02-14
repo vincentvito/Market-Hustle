@@ -458,9 +458,9 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "EU regulators proposed requiring all online accounts to use 47-character minimum passwords.",
     analysis: "More EU regulatory theater. Tech dips slightly on compliance cost fears. Password managers rejoice. The absurdity never ends."
   },
-  "POPE ENDORSES BITCOIN IN SUNDAY SERMON — 'RENDER UNTO THE BLOCKCHAIN'": {
-    blurb: "Pope Francis surprised the faithful by endorsing Bitcoin during his weekly address at St. Peter's Square.",
-    analysis: "When the Pope blesses your asset class, that's a cultural moment. BTC and alts get a tiny bump from the world's largest endorsement deal. God is long crypto."
+  "POPE REVEALS VATICAN TREASURY NOW 10% BITCOIN — 'FAITH IN DECENTRALIZATION'": {
+    blurb: "The Vatican disclosed that 10% of its treasury reserves have been quietly converted to Bitcoin over the past year.",
+    analysis: "The world's oldest institution going long on the world's newest asset class. BTC and alts get a bump from the ultimate institutional stamp of approval. God is long crypto."
   },
   "FLORIDA MAN ACCIDENTALLY BUYS $2M IN URANIUM FUTURES — 'I THOUGHT IT WAS CRYPTO'": {
     blurb: "A Florida man mistakenly purchased $2 million in uranium futures, believing he was buying cryptocurrency.",
@@ -3533,5 +3533,1286 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
   "IAEA FLAGS CRITICAL SAFETY DEFICIENCIES — CALLS FOR REACTOR SHUTDOWNS": {
     blurb: "The IAEA identified critical safety deficiencies at multiple reactor sites worldwide, recommending immediate shutdowns pending remediation.",
     analysis: "Reactor shutdown calls devastate uranium demand. Oil surges as fossil fuels fill the baseload gap. Lithium and Tesla benefit from battery storage replacing nuclear baseload. Gold rallies on energy instability."
+  },
+
+  // ===========================================
+  // EVENT CHAIN DEVELOPING HEADLINES
+  // ===========================================
+  "US DEPLOYS CARRIER GROUP TO TAIWAN STRAIT — PENTAGON RAISES DEFCON LEVEL": {
+    blurb: "The USS Gerald Ford carrier strike group entered the Taiwan Strait as the Pentagon elevated its readiness posture.",
+    analysis: "Carrier deployments are the highest military escalation signal. Defense stocks and safe havens rally on war fears. Tech supply chains dependent on Taiwanese semiconductors face severe disruption risk."
+  },
+  "SATELLITE IMAGES SHOW CHINESE NAVAL BUILDUP — UN CALLS EMERGENCY SESSION": {
+    blurb: "Commercial satellite imagery revealed a massive Chinese naval assembly near Taiwan as the UN Security Council convened an emergency session.",
+    analysis: "Naval buildups take weeks to reverse, signaling serious intent. Markets hate uncertainty — expect volatility across tech and emerging markets until a resolution is clear."
+  },
+  "FOREIGN MINING COMPANIES FILE EMERGENCY INJUNCTIONS — MEXICO DEPLOYS MILITARY TO MINES": {
+    blurb: "International mining firms sought emergency court orders as Mexican troops took positions around contested mine sites.",
+    analysis: "Military enforcement of nationalization signals the government is serious. Lithium supply disruption fears are rising. Courts could block or validate — outcome determines whether contagion spreads to other resource-rich nations."
+  },
+  "FED GOVERNORS SPLIT ON DIRECTION — MARKETS WHIPSAW ON CONFLICTING SIGNALS": {
+    blurb: "Federal Reserve governors publicly disagreed on monetary policy direction, sending mixed signals to financial markets.",
+    analysis: "A divided Fed means maximum uncertainty. Bond and equity markets will oscillate until a clear consensus emerges. Watch for any governor breaking ranks publicly."
+  },
+  "DOJ SUBPOENAS BINANCE EXECUTIVES — EXCHANGE PAUSES NEW DEPOSITS": {
+    blurb: "The Department of Justice issued subpoenas to senior Binance executives as the exchange suspended new customer deposits.",
+    analysis: "Subpoenas signal a criminal investigation is advancing. Deposit pauses suggest the exchange is bracing for regulatory action. Crypto markets face contagion risk if the largest exchange falters."
+  },
+  "SAUDI-RUSSIA TALKS STALL — DELEGATES SEEN LEAVING HOTEL EARLY": {
+    blurb: "Negotiations between Saudi and Russian oil ministers stalled as delegates were spotted leaving the meeting venue ahead of schedule.",
+    analysis: "OPEC+ talks breaking down could mean either a surprise deal or a complete failure. Oil traders are positioning for both outcomes — expect a sharp move once the result is announced."
+  },
+  "THREE INDEPENDENT LABS BEGIN REPLICATION ATTEMPTS — RESULTS EXPECTED TOMORROW": {
+    blurb: "Research teams at MIT, CERN, and the Max Planck Institute independently launched fusion replication experiments.",
+    analysis: "Replication is the gold standard in science. If multiple labs confirm, it's revolutionary — if they fail, it's the biggest letdown in energy history. Position accordingly."
+  },
+  "STARSHIP FUELED AND ON PAD — WEATHER WINDOW OPENS TOMORROW": {
+    blurb: "SpaceX completed fueling of the Starship vehicle as meteorologists confirmed a favorable launch window for the Mars test.",
+    analysis: "A successful Mars test launch would validate SpaceX's architecture and boost the entire space economy. A launchpad failure would set the program back years. Tesla often moves in sympathy."
+  },
+  "LEAKED INTERNAL MEMO: DEEPMIND TESTS 'BEYOND HUMAN BENCHMARKS ON EVERY METRIC'": {
+    blurb: "An internal Google DeepMind document reportedly shows their latest AI system exceeding human performance across all tested benchmarks.",
+    analysis: "If confirmed, this would be the most significant AI milestone in history. Tech valuations could surge on productivity revolution expectations — or crash if overhyped."
+  },
+  "CHINESE OFFICIALS VISIT GIGAFACTORY — DELEGATION DESCRIBED AS 'TENSE'": {
+    blurb: "A delegation of Chinese regulatory officials conducted an unannounced visit to Tesla's Shanghai Gigafactory, with sources describing the atmosphere as tense.",
+    analysis: "China accounts for a huge share of Tesla's revenue. An unfavorable permit decision could lock Tesla out of expansion. A positive outcome would clear a major growth overhang."
+  },
+  "CDC DISPATCHES TEAM TO SE ASIA — AIRPORTS SCREEN ARRIVING PASSENGERS": {
+    blurb: "The CDC deployed a rapid response team to Southeast Asia as major airports began screening passengers arriving from the affected region.",
+    analysis: "CDC deployment signals serious concern. If the illness spreads, expect travel and consumer stocks to sell off while biotech rallies on treatment hopes. Containment is key."
+  },
+  "SUPPLY CHAIN EXPERTS WARN OF EMPTY SHELVES WITHIN DAYS — WHITE HOUSE MONITORS": {
+    blurb: "Logistics analysts warned that continued port shutdowns could lead to consumer goods shortages within days as the White House convened an emergency briefing.",
+    analysis: "Every day ports stay closed costs billions. Retailers, manufacturers, and consumers all feel the pain. A settlement would trigger a relief rally; prolonged disruption means stagflation fears."
+  },
+  "AMAZON DELIVERY DELAYS HIT PRIME MEMBERS — REPLACEMENT WORKERS BUSED IN": {
+    blurb: "Amazon Prime delivery times extended to 5-7 days as the company began transporting replacement workers to distribution centers.",
+    analysis: "Amazon fighting back with replacements suggests this could escalate or collapse quickly. If the strike spreads to other tech companies, the impact on NASDAQ could be severe."
+  },
+  "SATELLITE IMAGERY CONFIRMS MILITARY POSITIONS ALONG CANAL — SHIPPING COMPANIES REROUTE": {
+    blurb: "Defense analysts confirmed Egyptian military equipment positioned along the Suez Canal as major shipping lines announced route diversions via the Cape of Good Hope.",
+    analysis: "Rerouting around Africa adds 2-3 weeks to shipping times and massively increases fuel costs. Oil and shipping rates spike. Global inflation fears rise with every day of disruption."
+  },
+  "G20 FINANCE MINISTERS DEBATE WEALTH TAX — BILLIONAIRES REPORTEDLY MOVING ASSETS OFFSHORE": {
+    blurb: "G20 finance ministers held heated debates over the global wealth tax proposal as reports emerged of large capital flows to tax-haven jurisdictions.",
+    analysis: "Capital flight ahead of a potential tax signals markets are taking it seriously. Crypto and gold benefit as alternative stores of value outside traditional taxation."
+  },
+  "ARIZONA GOVERNOR DECLARES STATE OF EMERGENCY — FARMERS ABANDON 100K ACRES": {
+    blurb: "Arizona's governor declared a state of emergency over water shortages as agricultural producers abandoned over 100,000 acres of farmland.",
+    analysis: "Water scarcity becoming a crisis for the American Southwest. Agricultural commodity prices surge on supply destruction. Infrastructure spending could follow if the federal government steps in."
+  },
+  "SHIPPING COMPANIES DIVERT TO CAPE HORN — INSURANCE RATES SPIKE 400%": {
+    blurb: "Major shipping lines rerouted vessels around Cape Horn as maritime insurance premiums for the Panama Canal zone surged 400%.",
+    analysis: "Cape Horn routes add weeks and millions in fuel costs. Insurance spikes signal the market expects prolonged disruption. Oil benefits from increased shipping distances; global trade suffers."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Panama Canal
+  // ==========================================================================
+
+  "PANAMA CANAL CLOSES INDEFINITELY — DROUGHT DROPS WATER LEVELS BELOW OPERATIONAL MINIMUM": {
+    blurb: "The Panama Canal Authority halted all transit operations after water levels in Gatun Lake fell below the minimum threshold for lock operation.",
+    analysis: "The Panama Canal handles 5% of global trade. Closure forces ships around Cape Horn or through the Suez, spiking fuel costs and shipping times. Oil surges on higher transport demand; emerging markets suffer from trade disruption."
+  },
+  "PANAMA CANAL CLOSURE MONTH 2: SHIPPING COSTS TRIPLE — GLOBAL INFLATION SURGES": {
+    blurb: "Two months into the canal closure, container shipping rates tripled as global supply chains buckled under rerouting pressure.",
+    analysis: "Extended closure is creating a global inflation shock. Oil benefits massively from increased shipping distances. Coffee and commodity exporters face surging transport costs. NASDAQ drops on supply chain fears."
+  },
+  "EMERGENCY WATER PUMPING RESTORES CANAL TO 60% CAPACITY — SHIPPING BACKLOG CLEARS": {
+    blurb: "Emergency desalination and pumping operations restored Gatun Lake levels enough to resume limited canal transit at 60% capacity.",
+    analysis: "Partial reopening is a relief rally catalyst. Oil retreats as shipping normalizes, emerging markets rebound. The backlog will take weeks to clear but the worst fears are over."
+  },
+  "GLOBAL SHIPPING REROUTES VIA CAPE HORN AND SUEZ — PANAMA CANAL BECOMES IRRELEVANT": {
+    blurb: "Major shipping lines permanently restructured routes through Cape Horn and the Suez Canal, abandoning the Panama Canal as a primary trade artery.",
+    analysis: "Permanent rerouting means slightly higher baseline shipping costs but removes the canal as a chokepoint risk. Oil stays slightly elevated. Markets adapt to the new normal."
+  },
+  "CHINA FAST-TRACKS NICARAGUA CANAL PROJECT — $50B INVESTMENT ANNOUNCED": {
+    blurb: "China announced a $50 billion investment to fast-track construction of a sea-level canal through Nicaragua, bypassing the Panama Canal entirely.",
+    analysis: "A Chinese-controlled alternative canal shifts global trade power. Emerging markets rally on infrastructure spending. Defense stocks rise on geopolitical implications. NASDAQ dips on US influence concerns."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Europe Migration Crisis
+  // ==========================================================================
+
+  "BREAKING: 3 MILLION REFUGEES SURGE INTO SOUTHERN EUROPE — EU EMERGENCY SUMMIT CALLED": {
+    blurb: "An unprecedented wave of 3 million refugees crossed into Greece, Italy, and Spain within weeks, overwhelming border infrastructure and prompting an emergency EU summit.",
+    analysis: "Mass migration destabilizes European politics and trade. Gold and defense rise on instability fears. Emerging markets drop as capital flees to safety. NASDAQ exposed through European revenue streams."
+  },
+  "EU LEADERS DEADLOCKED — BORDER STATES THREATEN SCHENGEN EXIT": {
+    blurb: "EU emergency summit ended without agreement as Hungary, Poland, and Austria threatened to unilaterally suspend Schengen free movement.",
+    analysis: "Schengen collapse would fracture Europe's single market and supply chains. Defense stocks benefit from border spending. Gold rises on political uncertainty. Emerging markets sold off on contagion fears."
+  },
+  "SCHENGEN COLLAPSES — EU MEMBER STATES ERECT BORDER WALLS": {
+    blurb: "Multiple EU nations formally suspended Schengen agreements, erecting physical barriers and reinstating passport controls across previously open borders.",
+    analysis: "The end of free movement is a body blow to European economic integration. Defense and gold surge. Emerging markets and NASDAQ tank on trade fragmentation fears."
+  },
+  "EU DEPLOYS FRONTEX ARMY — MILITARIZED BORDER RESPONSE ACTIVATED": {
+    blurb: "The EU activated an expanded Frontex force with military-grade equipment, deploying 25,000 personnel to Mediterranean and Eastern borders.",
+    analysis: "Militarized border response is a massive defense sector catalyst. Gold rises on geopolitical tensions. Emerging markets drop as the crisis deepens."
+  },
+  "EU STRIKES $50B REFUGEE DEAL WITH TURKEY — CRISIS EASES": {
+    blurb: "The EU finalized a $50 billion agreement with Turkey to manage refugee flows, including resettlement quotas and border processing centers.",
+    analysis: "The Turkey deal is a pressure valve for European markets. Emerging markets rebound as stability returns. Gold and defense retreat as crisis fears ease."
+  },
+  "REFUGEES FILL LABOR SHORTAGE — EUROZONE GDP SURGES 2.4%": {
+    blurb: "Economic data showed refugee integration filling critical labor gaps across Germany, France, and the Netherlands, boosting Eurozone GDP to 2.4%.",
+    analysis: "The surprise economic upside flips the narrative. NASDAQ and emerging markets rally on growth optimism. Gold sells off as risk appetite returns."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Chile Lithium Discovery
+  // ==========================================================================
+
+  "CHILE ANNOUNCES DISCOVERY OF WORLD'S LARGEST LITHIUM DEPOSIT — 10X CURRENT KNOWN RESERVES": {
+    blurb: "Chilean geologists confirmed a lithium deposit in the Atacama region estimated at 10 times current global known reserves, reshaping the EV supply chain overnight.",
+    analysis: "This discovery could crash lithium prices long-term or create a new OPEC-style cartel. Tesla's supply chain exposure makes it volatile either way. Watch for nationalization moves."
+  },
+  "CHILEAN CONGRESS DEBATES NATIONALIZATION — MINING STOCKS IN FREEFALL": {
+    blurb: "Chilean lawmakers introduced a bill to nationalize all lithium deposits, sending mining stocks into freefall and sparking capital flight from Latin America.",
+    analysis: "Nationalization would lock up the world's largest lithium reserve under state control. Lithium prices spike on supply fears. Tesla and EV makers face cost uncertainty. Emerging markets drop on Latin American political risk."
+  },
+  "CHILE NATIONALIZES ALL LITHIUM — FOREIGN MINERS EXPELLED": {
+    blurb: "Chile's president signed a decree nationalizing all lithium operations and expelling foreign mining companies from the Atacama region.",
+    analysis: "Full nationalization creates a lithium supply squeeze. Prices surge as the market loses access to the world's largest deposit. Tesla suffers from supply chain disruption. Emerging markets tank on expropriation fears."
+  },
+  "CHILE OPENS BIDDING — LITHIUM GLUT FEARS CRASH PRICES": {
+    blurb: "Chile announced open international bidding for lithium extraction rights, with production expected to flood global markets within 18 months.",
+    analysis: "Open bidding signals massive supply incoming. Lithium prices crash on glut fears. Tesla rallies on cheaper battery costs. Emerging markets benefit from investment inflows."
+  },
+  "CHINA WINS EXCLUSIVE MINING RIGHTS — WEST LOCKED OUT OF LITHIUM": {
+    blurb: "A Chinese state-backed consortium won exclusive 30-year mining rights to Chile's mega lithium deposit, locking Western companies out of the supply chain.",
+    analysis: "Chinese control of lithium supply is a strategic nightmare for Western EV makers. Tesla drops on supply dependence fears. Defense rises on resource competition. Emerging markets fall on US-China tensions."
+  },
+  "DEPOSIT SMALLER THAN REPORTED — GEOLOGICAL SURVEY WAS FLAWED": {
+    blurb: "Independent geological review revealed the Chilean lithium deposit was significantly overstated due to flawed survey methodology.",
+    analysis: "The hype collapses. Lithium prices stabilize near pre-discovery levels. Tesla gives back some gains. Markets shrug off the non-event."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — US President Death
+  // ==========================================================================
+
+  "BREAKING: US PRESIDENT FOUND UNRESPONSIVE — VICE PRESIDENT BEING BRIEFED": {
+    blurb: "The White House confirmed the President was found unresponsive and is receiving emergency medical treatment. The Vice President has been briefed and is en route to the Situation Room.",
+    analysis: "Presidential incapacitation triggers immediate market panic. Gold and defense surge as safe havens. NASDAQ sells off on political uncertainty. Bitcoin rises as an alternative store of value. Watch for 25th Amendment invocation."
+  },
+  "VP SWORN IN WITHIN HOURS — MARKETS DIP BRIEFLY, INSTITUTIONS HOLD": {
+    blurb: "The Vice President was sworn in as the 47th President within hours, delivering a brief address emphasizing continuity and stability.",
+    analysis: "Smooth succession is the best-case scenario. Markets dip briefly on shock but institutional strength holds. Gold and defense see modest gains on residual uncertainty."
+  },
+  "SUCCESSION DISPUTE — CABINET FRACTURES OVER 25TH AMENDMENT": {
+    blurb: "Cabinet members publicly split over the 25th Amendment invocation, with three secretaries refusing to certify the transfer of power.",
+    analysis: "Constitutional crisis territory. Gold and bitcoin surge as safe havens. NASDAQ drops sharply on political instability. Defense rises on uncertainty."
+  },
+  "ASSASSINATION REVEALED — SECRET SERVICE CONFIRMS FOUL PLAY, MILITARY ON FULL ALERT": {
+    blurb: "The Secret Service confirmed the President's death was the result of foul play. DEFCON 2 was declared and all military leave canceled worldwide.",
+    analysis: "Assassination is the most destabilizing political event possible. Gold, defense, and oil surge on maximum uncertainty. NASDAQ plummets. Bitcoin spikes as faith in institutions craters."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Progressive Midterm Sweep
+  // ==========================================================================
+
+  "EXIT POLLS: PROGRESSIVE WAVE SWEEPS MIDTERMS — SUPERMAJORITY PROJECTED IN BOTH CHAMBERS": {
+    blurb: "Exit polls projected a progressive supermajority in both the House and Senate, the largest political shift in modern American history.",
+    analysis: "A progressive supermajority means wealth taxes, crypto regulation, and Green New Deal become law. NASDAQ, bitcoin, and oil face regulatory headwinds. Gold benefits from policy uncertainty. Green energy plays rally."
+  },
+  "NEW CONGRESS ANNOUNCES FIRST 100 DAYS AGENDA: WEALTH TAX, GREEN NEW DEAL, CRYPTO BAN": {
+    blurb: "The incoming Congressional leadership unveiled an ambitious first 100 days agenda including a 3% wealth tax, Green New Deal infrastructure, and comprehensive crypto regulation.",
+    analysis: "Markets are pricing in the worst-case scenario. NASDAQ and crypto sell off hard. Oil drops on green energy push. Tesla and lithium rally as EV mandates loom. Gold rises on wealth flight fears."
+  },
+  "WEALTH TAX + CRYPTO REGULATION + GREEN NEW DEAL — FULL PROGRESSIVE AGENDA PASSES": {
+    blurb: "Congress passed the full progressive package: a 3% annual wealth tax, strict crypto licensing requirements, and $2 trillion in green infrastructure spending.",
+    analysis: "The full agenda passing is seismic. Gold surges as wealth seeks shelter. Bitcoin and NASDAQ crash on regulation. Tesla and lithium soar on EV mandates. Oil collapses on clean energy pivot."
+  },
+  "MODERATE DEMS BLOCK WEALTH TAX — GREEN BILL PASSES IN WATERED DOWN FORM": {
+    blurb: "A coalition of moderate Democrats blocked the wealth tax provision while passing a scaled-back green infrastructure bill worth $800 billion.",
+    analysis: "Partial passage is a relief for markets. Tesla and lithium benefit from green spending. NASDAQ takes a modest hit. Oil declines on the green tilt but avoids worst case."
+  },
+  "SUPREME COURT BLOCKS KEY PROGRESSIVE BILLS — CONSTITUTIONAL CHALLENGE SUCCEEDS": {
+    blurb: "The Supreme Court struck down the wealth tax and crypto regulation as unconstitutional, preserving only the infrastructure components.",
+    analysis: "The Supreme Court saves markets from the worst progressive outcomes. NASDAQ and bitcoin rally sharply on regulatory relief. Gold sells off as the crisis passes."
+  },
+  "MARKET CRASH FORCES CONGRESS TO MODERATE — PROGRESSIVE CAUCUS RETREATS": {
+    blurb: "A 15% market correction forced progressive leaders to shelve their most aggressive proposals, announcing a 'phased approach' instead.",
+    analysis: "Markets disciplining Congress is the bullish reversal. NASDAQ and bitcoin bounce. Gold retreats as risk appetite returns."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — BRICS Currency
+  // ==========================================================================
+
+  "BRICS SUMMIT BOMBSHELL: GOLD-BACKED RESERVE CURRENCY ANNOUNCED — 'THE NEW UNIT'": {
+    blurb: "At an emergency BRICS summit, leaders unveiled 'The New Unit,' a gold-backed digital reserve currency designed to replace the US dollar in international trade settlement.",
+    analysis: "A credible challenge to dollar hegemony would reshape the entire global financial system. Gold surges on backing demand. Bitcoin rallies as an alternative. NASDAQ drops as dollar weakens."
+  },
+  "40 NATIONS SIGNAL INTEREST IN BRICS CURRENCY — DOLLAR INDEX PLUMMETS": {
+    blurb: "Over 40 nations including Saudi Arabia, Indonesia, and Mexico signaled interest in adopting the BRICS currency for trade settlement, sending the Dollar Index to multi-decade lows.",
+    analysis: "Mass adoption signals are devastating for dollar-denominated assets. Gold and emerging markets surge. NASDAQ falls as the dollar's purchasing power erodes. Oil rises on repricing in new currency."
+  },
+  "40+ NATIONS ADOPT BRICS CURRENCY — DOLLAR LOSES RESERVE STATUS": {
+    blurb: "The BRICS currency system went live with 40+ nations conducting trade settlement, effectively ending 80 years of dollar reserve currency dominance.",
+    analysis: "Dollar dethroning is the most significant monetary event since Bretton Woods. Gold explodes higher. Bitcoin and emerging markets surge. NASDAQ crashes as US economic privilege evaporates. Oil reprices globally."
+  },
+  "BRICS CURRENCY USED FOR OIL SETTLEMENT ONLY — COEXISTS WITH DOLLAR": {
+    blurb: "BRICS nations agreed to use the new currency exclusively for energy trade settlement while maintaining dollar use for other transactions.",
+    analysis: "Limited adoption is manageable but still shifts power. Gold and emerging markets benefit from the multipolar monetary system. NASDAQ takes a moderate hit. Oil sees mild repricing."
+  },
+  "BRICS CURRENCY SYSTEM COLLAPSES IN WEEKS — TECHNICAL FAILURES, MEMBERS DEFECT": {
+    blurb: "The BRICS currency settlement system suffered critical technical failures and multiple member nations defected back to dollar settlement within weeks.",
+    analysis: "The dollar survives. NASDAQ rallies on dollar strength. Gold drops as the alternative fails. Emerging markets sell off as the BRICS project embarrasses participants."
+  },
+  "US RETALIATES — SWIFT CUTOFF FOR ALL BRICS CURRENCY PARTICIPANTS": {
+    blurb: "The US Treasury announced immediate SWIFT disconnection for any financial institution processing BRICS currency transactions.",
+    analysis: "Financial warfare escalation. Gold surges as the global monetary system fractures. Defense rises on geopolitical conflict. Emerging markets crash on sanctions. Oil spikes on trade disruption. NASDAQ falls on global instability."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — North Korea Nuclear Test
+  // ==========================================================================
+
+  "BREAKING: NORTH KOREA DETONATES NUCLEAR DEVICE OVER PACIFIC OCEAN — FIRST ATMOSPHERIC TEST IN 40 YEARS": {
+    blurb: "North Korea conducted an atmospheric nuclear test over the Pacific Ocean, the first such detonation since 1980, triggering radiation alerts across the region.",
+    analysis: "Atmospheric nuclear testing crosses a red line. Defense and gold surge on war fears. Uranium spikes on nuclear proliferation fears. NASDAQ and emerging markets sell off sharply."
+  },
+  "US LAUNCHES STRIKES ON NORTH KOREAN LAUNCH SITES — REGIONAL WAR FEARS": {
+    blurb: "The US launched precision strikes on North Korean missile launch facilities, destroying three known nuclear-capable launch sites along the coast.",
+    analysis: "Military strikes risk full-scale war on the Korean peninsula. Defense explodes higher. Gold and oil surge. NASDAQ and emerging markets crash on World War III fears."
+  },
+  "UN EMERGENCY SESSION — HARSHEST SANCTIONS EVER IMPOSED ON NORTH KOREA": {
+    blurb: "The UN Security Council unanimously approved the most severe sanctions package ever imposed, including a total trade embargo and naval blockade of North Korea.",
+    analysis: "Maximum sanctions signal diplomatic solution attempted. Defense and uranium benefit from nuclear threat premium. Gold rises modestly. NASDAQ takes a small hit on regional instability."
+  },
+  "JAPAN ANNOUNCES NUCLEAR ARSENAL — CROSSES NUCLEAR THRESHOLD FOR FIRST TIME": {
+    blurb: "Japan's Prime Minister announced the nation had developed nuclear weapons capability, crossing the nuclear threshold for the first time since 1945.",
+    analysis: "Japanese nuclearization triggers an Asian arms race. Defense and uranium surge on proliferation fears. Gold jumps on geopolitical instability. NASDAQ drops on regional risk."
+  },
+  "CHINA DEPOSES KIM REGIME — INSTALLS PUPPET GOVERNMENT, CRISIS ENDS OVERNIGHT": {
+    blurb: "Chinese forces entered Pyongyang and deposed Kim Jong Un, installing a cooperative government that immediately suspended all nuclear and missile programs.",
+    analysis: "The surprise resolution removes the nuclear threat overnight. NASDAQ and emerging markets rally on peace dividend. Gold and defense retreat as risk premiums evaporate."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Saudi Assassination
+  // ==========================================================================
+
+  "BREAKING: SAUDI CROWN PRINCE ASSASSINATED IN RIYADH — ROYAL GUARD IN CHAOS": {
+    blurb: "Saudi Arabia's Crown Prince was assassinated during a public event in Riyadh. The Royal Guard exchanged fire in the aftermath as rival factions mobilized.",
+    analysis: "Saudi instability threatens 10% of global oil supply. Oil surges on production fears. Gold spikes on geopolitical crisis. Defense rallies. NASDAQ and emerging markets drop on energy shock."
+  },
+  "RIVAL PRINCE CLAIMS THRONE — ARAMCO SHARES HALTED — OIL FUTURES SURGE": {
+    blurb: "A rival Saudi prince declared himself king as Aramco shares were halted and oil futures surged 20% in overnight trading.",
+    analysis: "Succession crisis in the world's largest oil exporter is maximum uncertainty. Oil and gold surge. Defense stocks rally on Middle East instability. NASDAQ falls on energy cost fears."
+  },
+  "CIVIL WAR BETWEEN SAUDI PRINCES — ARAMCO OFFLINE, OIL SUPPLY CRISIS": {
+    blurb: "Fighting between rival Saudi factions forced Aramco to halt production at major facilities, removing 8 million barrels per day from global supply.",
+    analysis: "Saudi civil war with Aramco offline is the ultimate oil shock. Oil explodes higher. Gold and defense surge. NASDAQ and emerging markets crash on energy crisis."
+  },
+  "REFORMIST PRINCE TAKES POWER — MODERNIZATION ACCELERATES, OIL STABILIZES": {
+    blurb: "A reformist prince consolidated power with military backing, announcing accelerated Vision 2030 reforms and guaranteeing uninterrupted oil production.",
+    analysis: "Stability returns with a reformist leader. Oil normalizes as production continues. Emerging markets rally on reform optimism. Gold retreats as crisis fades."
+  },
+  "SAUDI MILITARY JUNTA SEIZES CONTROL — GENERALS GUARANTEE OIL PRODUCTION": {
+    blurb: "Saudi military generals seized power in a bloodless coup, suspending royal succession and guaranteeing continued oil production to global markets.",
+    analysis: "Military rule stabilizes oil supply but adds political risk. Oil moderates higher on uncertainty. Defense rises on Middle East instability. Gold gains on geopolitical risk. Emerging markets drop."
+  },
+  "IRAN LINKED TO ASSASSINATION — REGIONAL WAR FEARS SPIKE": {
+    blurb: "Intelligence agencies linked the assassination to Iranian operatives, with Saudi Arabia demanding UN authorization for retaliatory strikes.",
+    analysis: "Iran involvement risks full Middle East war. Oil surges on Strait of Hormuz fears. Defense and gold explode higher. NASDAQ and emerging markets crash on war premium."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Turkey NATO Exit
+  // ==========================================================================
+
+  "TURKEY ANNOUNCES WITHDRAWAL FROM NATO — ERDOGAN: 'WE CHOOSE SOVEREIGNTY'": {
+    blurb: "President Erdogan announced Turkey's formal withdrawal from NATO, declaring the alliance incompatible with Turkish sovereignty and strategic interests.",
+    analysis: "Turkey leaving NATO shatters the alliance's southern flank. Defense surges on rearmament needs. The Black Sea becomes a contested zone. Emerging markets drop on geopolitical instability."
+  },
+  "TURKEY SIGNS DEFENSE PACT WITH RUSSIA — NATO SCRAMBLES TO SECURE BLACK SEA": {
+    blurb: "Turkey signed a comprehensive defense pact with Russia including joint naval patrols in the Black Sea, forcing NATO to urgently reposition forces.",
+    analysis: "Turkey-Russia alignment is a strategic earthquake. Defense stocks surge on NATO rearmament needs. Oil rises on Black Sea shipping risks. Gold gains on geopolitical uncertainty. Emerging markets sell off."
+  },
+  "TURKEY-RUSSIA ALLIANCE SOLIDIFIES — BLACK SEA BECOMES CONTESTED WATERS": {
+    blurb: "Turkey and Russia established joint control over Black Sea shipping lanes, effectively blocking NATO naval access to the region.",
+    analysis: "Loss of Black Sea access is a permanent strategic shift. Defense, gold, and oil all surge. Emerging markets and NASDAQ drop on new Cold War dynamics."
+  },
+  "NATO OFFERS CONCESSIONS — TURKEY SUSPENDS WITHDRAWAL AND RETURNS": {
+    blurb: "NATO offered Turkey expanded command authority and lifted sanctions on Turkish defense purchases, prompting Ankara to suspend its withdrawal.",
+    analysis: "Turkey returning to NATO is the best-case resolution. Defense and emerging markets normalize. Gold retreats as geopolitical risk eases. NASDAQ recovers."
+  },
+  "TURKEY-GREECE WAR ERUPTS — AEGEAN SEA CONFRONTATION TURNS HOT": {
+    blurb: "Turkish and Greek naval forces exchanged fire in the Aegean Sea after a confrontation over disputed islands escalated into open combat.",
+    analysis: "War between NATO allies (even an exiting one) is unprecedented. Defense, oil, and gold surge massively. NASDAQ and emerging markets crash on European war fears."
+  },
+  "TURKISH MILITARY COUP — PRO-NATO GENERALS DEPOSE ERDOGAN, REJOIN ALLIANCE": {
+    blurb: "Pro-NATO Turkish military officers overthrew Erdogan in a swift coup, immediately announcing Turkey's return to the NATO alliance.",
+    analysis: "The coup restores the status quo. NASDAQ and emerging markets rally on stability. Defense sees modest gains. Gold retreats as the crisis resolves."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — South China Sea
+  // ==========================================================================
+
+  "SHOTS FIRED IN SOUTH CHINA SEA — CHINESE COAST GUARD SINKS PHILIPPINE VESSEL": {
+    blurb: "Chinese coast guard vessels fired on and sank a Philippine supply ship near the Spratly Islands, killing 12 sailors in the worst South China Sea incident in decades.",
+    analysis: "Kinetic action in the South China Sea risks US-China military confrontation. Defense and gold surge on war fears. NASDAQ and emerging markets sell off sharply. Lithium drops on China trade risk."
+  },
+  "US CARRIER GROUP DEPLOYED — CHINA WARNS 'ANY INTERVENTION IS ACT OF WAR'": {
+    blurb: "The US Navy deployed a carrier strike group to the South China Sea as Beijing warned that any American military intervention would constitute an act of war.",
+    analysis: "US-China naval standoff is the most dangerous geopolitical scenario possible. Defense and gold surge. Oil rises on shipping fears. NASDAQ crashes on decoupling risk. Emerging markets in freefall."
+  },
+  "US-CHINA SHIPS EXCHANGE FIRE IN SOUTH CHINA SEA — WORLD HOLDS BREATH": {
+    blurb: "US and Chinese naval vessels exchanged fire in the South China Sea in the first direct military engagement between the two superpowers.",
+    analysis: "Superpower naval combat is World War III territory. Defense explodes. Gold and oil surge to records. NASDAQ crashes. Emerging markets and lithium collapse on total decoupling fears."
+  },
+  "TENSE STANDOFF ENDS — BACKCHANNELS WORK, BOTH SIDES WITHDRAW QUIETLY": {
+    blurb: "After 72 hours of brinkmanship, backchannel negotiations succeeded and both US and Chinese forces withdrew from the contested area.",
+    analysis: "Diplomatic off-ramp provides relief but not resolution. Defense sees modest gains on continued tension. Gold holds elevated. NASDAQ recovers partially."
+  },
+  "CHINA SEIZES DISPUTED ISLANDS — FAIT ACCOMPLI, US RESPONDS WITH SANCTIONS ONLY": {
+    blurb: "China occupied all disputed Spratly and Paracel islands, establishing permanent military bases while the US limited its response to economic sanctions.",
+    analysis: "A fait accompli with no military response emboldens China. Defense and gold rise on long-term instability. Emerging markets and lithium drop on China's growing control over trade routes. NASDAQ falls."
+  },
+  "ASEAN BROKERS HISTORIC MARITIME TREATY — SURPRISE PEACE, TRADE ROUTES SECURED": {
+    blurb: "ASEAN nations brokered a surprise maritime treaty guaranteeing freedom of navigation and joint resource development in the South China Sea.",
+    analysis: "Peace in the South China Sea is the best possible outcome. Emerging markets and NASDAQ surge on trade security. Lithium rallies on stable supply chains. Gold and defense retreat."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Argentina Dollarization
+  // ==========================================================================
+
+  "ARGENTINA ABOLISHES THE PESO — FULL DOLLARIZATION EFFECTIVE IMMEDIATELY": {
+    blurb: "Argentina's president signed a decree abolishing the peso and adopting the US dollar as the sole legal tender, effective immediately.",
+    analysis: "Full dollarization is a radical experiment. If it works, it kills hyperinflation overnight. If it fails, dollar shortages freeze the economy. Bitcoin could benefit as Argentines seek alternatives. Emerging markets watch closely."
+  },
+  "DOLLARIZATION SUCCEEDS — ARGENTINA INFLATION CRUSHED, MODEL FOR OTHER NATIONS": {
+    blurb: "Six months after dollarization, Argentine inflation dropped from 140% to 2% and foreign investment surged, creating a model for other inflation-ravaged nations.",
+    analysis: "Successful dollarization is bullish for emerging markets broadly. It reduces demand for alternative currencies like bitcoin and gold. NASDAQ benefits from a stable new market."
+  },
+  "DOLLAR SHORTAGE — ARGENTINE BLACK MARKET EXPLODES, ECONOMY FREEZES": {
+    blurb: "Argentina ran out of physical dollars within months as the Federal Reserve refused to supply additional currency, creating a massive black market.",
+    analysis: "Failed dollarization is a cautionary tale. Bitcoin and crypto surge as Argentines seek any alternative. Emerging markets drop on contagion fears. Gold rises on monetary system doubts."
+  },
+  "CONTAGION — TURKEY, NIGERIA CONSIDER DOLLARIZING, GLOBAL MONETARY SYSTEM QUESTIONED": {
+    blurb: "Turkey and Nigeria announced dollarization studies following Argentina's move, sparking debates about the future of the global monetary system.",
+    analysis: "Multiple nations dollarizing questions the viability of fiat currencies everywhere. Bitcoin surges as the ultimate alternative. Gold rises on monetary uncertainty. Emerging markets and NASDAQ dip on systemic concerns."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Japan Remilitarization
+  // ==========================================================================
+
+  "JAPAN ABOLISHES ARTICLE 9 — ANNOUNCES $200B DEFENSE BUDGET AND OFFENSIVE MILITARY CAPABILITY": {
+    blurb: "Japan's Diet voted to abolish the pacifist Article 9 of its constitution, announcing a $200 billion defense budget and development of offensive military capabilities.",
+    analysis: "Japanese remilitarization ends 80 years of pacifism. Defense and uranium surge on Asian arms race fears. Emerging markets dip on regional instability. Watch for China's response."
+  },
+  "ASIAN ARMS RACE BEGINS — KOREA, AUSTRALIA, TAIWAN ALL INCREASE DEFENSE SPENDING": {
+    blurb: "South Korea, Australia, and Taiwan all announced massive defense spending increases in response to Japan's remilitarization, triggering a regional arms race.",
+    analysis: "An Asian arms race is a sustained tailwind for defense stocks. Uranium rises on nuclear proliferation fears. Gold gains on geopolitical instability. Emerging markets suffer from regional tensions."
+  },
+  "US-JAPAN SUPER ALLIANCE FORMED — JOINT COMMAND STRUCTURE DETERS CHINA": {
+    blurb: "The US and Japan announced an unprecedented joint military command structure, creating the most powerful Pacific alliance since World War II.",
+    analysis: "A US-Japan super alliance deters conflict and stabilizes the region. Defense benefits from integration spending. NASDAQ and emerging markets rally on stability. Gold retreats."
+  },
+  "CHINA RETALIATES WITH TAIWAN BLOCKADE — JAPAN'S MOVE TRIGGERS ESCALATION": {
+    blurb: "China declared a military blockade of Taiwan in direct retaliation for Japan's remilitarization, calling it an 'unacceptable provocation.'",
+    analysis: "Taiwan blockade is the nightmare scenario. Defense, gold, and oil surge. NASDAQ crashes on semiconductor supply fears. Lithium and emerging markets collapse on China trade disruption."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Scotland Independence
+  // ==========================================================================
+
+  "SCOTLAND VOTES FOR INDEPENDENCE 52-48 — UNITED KINGDOM FACES BREAKUP": {
+    blurb: "Scotland voted 52% to 48% for independence in a second referendum, triggering the formal process to dissolve the 300-year-old United Kingdom.",
+    analysis: "UK breakup creates constitutional and economic uncertainty. Oil rises on North Sea ownership disputes. Gold gains on political instability. NASDAQ dips on UK market turmoil."
+  },
+  "MESSY DIVORCE — SCOTLAND CLAIMS NORTH SEA OIL, LEGAL BATTLE ERUPTS": {
+    blurb: "Scotland and the UK entered bitter legal disputes over North Sea oil rights, the national debt share, and military assets.",
+    analysis: "A messy divorce means prolonged uncertainty. Oil rises on North Sea production disruption fears. Gold gains. NASDAQ and emerging markets dip on British economic fragmentation."
+  },
+  "SMOOTH TRANSITION — SCOTLAND APPLIES TO JOIN EU AS INDEPENDENT NATION": {
+    blurb: "Scotland initiated a smooth separation process and immediately applied for EU membership, receiving fast-track consideration from Brussels.",
+    analysis: "Orderly independence with EU membership is the best outcome. Emerging markets and NASDAQ see modest gains on stability. Oil holds steady on continued North Sea production. Gold eases."
+  },
+  "WESTMINSTER REFUSES TO RECOGNIZE VOTE — CONSTITUTIONAL CRISIS, PROTESTS ERUPT": {
+    blurb: "Westminster declared the referendum legally non-binding and refused to recognize the result, sparking massive protests across Scotland and constitutional paralysis.",
+    analysis: "Constitutional crisis in the UK is destabilizing for European markets. Gold and defense rise on instability. NASDAQ and emerging markets drop on political uncertainty."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Cartel Border War
+  // ==========================================================================
+
+  "CARTEL ASSASSINATES 4 DEA AGENTS IN TEXAS — PRESIDENT CONSIDERS MILITARY DEPLOYMENT TO BORDER": {
+    blurb: "Four DEA agents were killed in a coordinated cartel attack in El Paso, Texas, prompting the President to consider deploying active-duty military to the border.",
+    analysis: "Cartel violence on US soil is unprecedented. Defense surges on military deployment. Gold rises on domestic instability. NASDAQ and emerging markets drop on US-Mexico trade fears."
+  },
+  "US DEPLOYS 50,000 TROOPS TO MEXICAN BORDER — MEXICO WARNS OF 'SOVEREIGNTY VIOLATION'": {
+    blurb: "The US deployed 50,000 active-duty troops to the Mexican border as Mexico's president condemned the move as a violation of sovereignty.",
+    analysis: "Military buildup on the southern border threatens the $700B US-Mexico trade relationship. Tesla drops on Mexican manufacturing risk. NASDAQ and emerging markets sell off. Defense and gold rally."
+  },
+  "US LAUNCHES CROSS-BORDER OPERATIONS — MEXICO RECALLS AMBASSADOR": {
+    blurb: "US special forces conducted strikes on cartel compounds inside Mexican territory, prompting Mexico to recall its ambassador from Washington.",
+    analysis: "Cross-border military operations risk a full diplomatic break with Mexico. Defense surges. Oil and gold rise. NASDAQ and emerging markets crash on trade war fears."
+  },
+  "BORDER SEALED — $700B US-MEXICO TRADE RELATIONSHIP FROZEN": {
+    blurb: "The US sealed the southern border completely, halting all trade and transit with Mexico and freezing the $700 billion annual trade relationship.",
+    analysis: "Sealing the border is an economic nuclear option. NASDAQ crashes on supply chain destruction. Tesla drops on Mexican factory shutdowns. Emerging markets plummet. Gold and oil surge."
+  },
+  "JOINT US-MEXICO OPERATION CAPTURES CARTEL LEADERSHIP — CRISIS DE-ESCALATES": {
+    blurb: "A joint US-Mexico military operation captured the leadership of the Sinaloa cartel, immediately de-escalating tensions between the two nations.",
+    analysis: "Cooperative resolution is the best outcome. NASDAQ and emerging markets rally on restored trade relations. Defense sees modest gains. Gold retreats as crisis fades."
+  },
+  "CARTEL RETALIATES — PIPELINE AND REFINERY SABOTAGE ACROSS TEXAS": {
+    blurb: "Cartel operatives sabotaged three major oil pipelines and a refinery in Texas, causing explosions and taking 500,000 barrels per day offline.",
+    analysis: "Infrastructure sabotage on US soil is a crisis escalation. Oil surges on supply destruction. Defense and gold spike. NASDAQ and Tesla crash on domestic security fears."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Nile Water War
+  // ==========================================================================
+
+  "EGYPT MOBILIZES MILITARY AS NILE FLOW DROPS 40% — THREATENS TO BOMB ETHIOPIAN DAM": {
+    blurb: "Egypt mobilized its military after Nile water flow dropped 40% due to Ethiopia's Grand Renaissance Dam, with Cairo threatening airstrikes on the dam.",
+    analysis: "Water wars in Africa threaten stability across the continent. Gold and defense surge. Coffee rises as Ethiopia is the birthplace of arabica. Emerging markets drop on regional war fears."
+  },
+  "EGYPTIAN JETS SPOTTED NEAR DAM — UN SECURITY COUNCIL EMERGENCY SESSION": {
+    blurb: "Satellite imagery showed Egyptian fighter jets conducting flights near the Ethiopian dam as the UN Security Council convened an emergency session.",
+    analysis: "Military brinkmanship over water resources. Gold and defense continue rising. Coffee spikes on Ethiopian instability. Emerging markets sell off. NASDAQ dips on global risk premium."
+  },
+  "EGYPT BOMBS ETHIOPIAN DAM — CATASTROPHIC FLOODING, HUMANITARIAN DISASTER": {
+    blurb: "Egyptian airstrikes destroyed the Grand Renaissance Dam, causing catastrophic flooding downstream that displaced millions and created a humanitarian disaster.",
+    analysis: "Dam destruction is a war crime and humanitarian catastrophe. Gold and defense explode. Coffee surges on Ethiopian supply destruction. Oil rises on regional instability. Emerging markets and NASDAQ crash."
+  },
+  "HISTORIC NILE WATER SHARING TREATY SIGNED — AFRICAN STABILITY IMPROVES": {
+    blurb: "Egypt, Ethiopia, and Sudan signed a historic Nile water sharing treaty, establishing equitable water distribution and joint dam management.",
+    analysis: "Diplomatic resolution improves African stability. Emerging markets rally on peace dividend. Coffee retreats as Ethiopian risk eases. Gold drops as crisis resolves. NASDAQ benefits modestly."
+  },
+  "PROXY WAR — GULF STATES BACK EGYPT, CHINA BACKS ETHIOPIA": {
+    blurb: "The Nile conflict escalated into a proxy war as Gulf states armed Egypt while China provided military support to Ethiopia.",
+    analysis: "Great power proxy war in Africa is deeply destabilizing. Defense and gold surge. Oil rises on Middle East involvement. Coffee spikes on Ethiopian conflict. Emerging markets crash."
+  },
+  "DAM FAILS ON ITS OWN — ENGINEERING DEFECT CAUSES MASSIVE FLOOD": {
+    blurb: "The Grand Renaissance Dam suffered a catastrophic structural failure due to engineering defects, causing massive flooding independent of any military action.",
+    analysis: "Accidental dam failure devastates Ethiopian coffee production and displaces millions. Coffee surges on supply destruction. Gold rises. Emerging markets drop on humanitarian crisis. NASDAQ dips."
+  },
+
+  // ==========================================================================
+  // GEOPOLITICAL EVENT CHAINS — Cuba Revolution
+  // ==========================================================================
+
+  "CUBAN GOVERNMENT COLLAPSES AFTER MASS PROTESTS — US CONSIDERS LIFTING 60-YEAR EMBARGO": {
+    blurb: "Cuba's communist government collapsed after weeks of mass protests. The US State Department announced consideration of lifting the 60-year trade embargo.",
+    analysis: "Cuban regime change could open a new market 90 miles from Florida. Emerging markets rally on trade potential. Defense watches for Chinese moves. Coffee dips on potential Cuban agricultural competition."
+  },
+  "FULL NORMALIZATION — CUBA OPENS TO US INVESTMENT, TOURISM AND AGRICULTURE BOOM": {
+    blurb: "The US and Cuba established full diplomatic and trade relations, opening the island to American investment, tourism, and agricultural trade.",
+    analysis: "Full normalization creates a new market. Emerging markets rally on trade expansion. Coffee drops as Cuban agriculture competes. NASDAQ benefits from investment opportunities. Gold retreats."
+  },
+  "POWER VACUUM — MILITARY JUNTA SEIZES CONTROL, EMBARGO STAYS": {
+    blurb: "Cuban military leaders seized power in the aftermath of the regime collapse, maintaining authoritarian control and prompting the US to keep the embargo.",
+    analysis: "Status quo preserved. Defense sees modest gains. Emerging markets dip on failed democratization. Gold holds on uncertainty. Markets return to normal."
+  },
+  "CHINA SWOOPS IN — NAVAL BASE ESTABLISHED IN HAVANA, 90 MILES FROM FLORIDA": {
+    blurb: "China signed a 99-year lease for a naval base in Havana harbor, establishing a permanent military presence 90 miles from the US mainland.",
+    analysis: "Chinese military base in Cuba is a Cuban Missile Crisis echo. Defense explodes. Gold surges on superpower confrontation fears. NASDAQ crashes on escalation risk. Emerging markets drop."
+  },
+
+  // ==========================================================================
+  // PE ABILITY HEADLINES — Defense Spending Bill (Capitol Consulting)
+  // ==========================================================================
+
+  "WHISPERS: K STREET LOBBYISTS SCHEDULING URGENT MEETINGS WITH SENATE ARMED SERVICES COMMITTEE": {
+    blurb: "K Street sources report a flurry of urgent lobbying meetings with members of the Senate Armed Services Committee regarding defense appropriations.",
+    analysis: "Lobbyists pushing defense spending signals a major bill in the works. Defense contractors stand to benefit massively if this passes. Watch for committee vote announcements."
+  },
+  "DEVELOPING: PENTAGON OFFICIALS SPOTTED AT PRIVATE DINNER WITH DEFENSE CONTRACTORS": {
+    blurb: "Pentagon procurement officials were photographed at a private dinner with executives from major defense contractors, raising ethics concerns.",
+    analysis: "Private meetings between Pentagon and contractors suggest deals being made behind closed doors. Defense stocks are positioning for a potential spending windfall. The risk of a scandal is growing."
+  },
+  "BREAKING: SURPRISE DEFENSE AUTHORIZATION BILL PASSES - $200B BOOST TO MILITARY SPENDING": {
+    blurb: "Congress passed a surprise defense authorization bill adding $200 billion in military spending, the largest single-year increase in US history.",
+    analysis: "A $200B defense spending boost is a massive windfall for military contractors. Defense stocks surge. The spending is funded by debt, which pressures bonds but keeps the economy stimulated."
+  },
+  "SCANDAL: FBI RAIDS LOBBYING FIRM - BRIBERY INVESTIGATION ROCKS DEFENSE INDUSTRY": {
+    blurb: "FBI agents raided a prominent K Street lobbying firm, seizing documents related to alleged bribery of congressional members on defense contracts.",
+    analysis: "The lobbying scheme backfired spectacularly. Defense stocks sell off on procurement scandal fears. The bribery investigation could freeze pending contracts and lead to executive indictments."
+  },
+
+  // ==========================================================================
+  // PE ABILITY HEADLINES — Drug Fast Track (Capitol Consulting)
+  // ==========================================================================
+
+  "RUMOR: PHARMA EXECUTIVES SEEN ENTERING CAPITOL BUILDING THROUGH PRIVATE ENTRANCE": {
+    blurb: "Multiple pharmaceutical executives were spotted entering the Capitol building through a restricted private entrance, avoiding press and public areas.",
+    analysis: "Pharma CEOs sneaking into Congress means legislation is being shaped behind closed doors. Biotech and pharma stocks will move depending on whether this is deregulation or new restrictions."
+  },
+  "DEVELOPING: LEAKED MEMO SUGGESTS FDA DEREGULATION BILL IN COMMITTEE - PHARMA STOCKS VOLATILE": {
+    blurb: "A leaked congressional memo outlined a bill to streamline FDA drug approval processes, sending pharmaceutical stocks into volatile trading.",
+    analysis: "FDA deregulation would slash drug development timelines and costs. Biotech rallies on faster approvals but faces uncertainty until the bill clears committee. The pharmaceutical lobby is pushing hard."
+  },
+  "BREAKING: FDA FAST-TRACK ACT PASSES - DRUG APPROVAL TIMES CUT BY 60%": {
+    blurb: "Congress passed the FDA Fast-Track Act, reducing average drug approval timelines by 60% through streamlined review processes and reduced clinical trial requirements.",
+    analysis: "Faster drug approvals are a massive catalyst for biotech and pharma. Companies with drugs in pipeline see immediate valuation bumps. The reduced regulatory burden accelerates the entire sector."
+  },
+  "EXPOSED: LOBBYING SCANDAL EXPLODES - CONGRESS LAUNCHES FULL INVESTIGATION INTO PHARMA TIES": {
+    blurb: "Congress launched a full investigation into pharmaceutical industry lobbying after evidence of quid pro quo arrangements between drugmakers and lawmakers surfaced.",
+    analysis: "The pharma lobbying scandal kills the fast-track bill and puts the entire industry under scrutiny. Biotech stocks drop on regulatory backlash fears. Expect increased FDA oversight, not less."
+  },
+
+  // ==========================================================================
+  // PE ABILITY HEADLINES — Yemen Operations (Blackstone Services)
+  // ==========================================================================
+
+  "UNCONFIRMED: UNIDENTIFIED VESSELS SPOTTED NEAR BOSPHORUS STRAIT - SECURITY ANALYSTS MONITORING": {
+    blurb: "Maritime security firms reported unidentified vessels operating near the Bosphorus Strait, prompting heightened monitoring of the strategic waterway.",
+    analysis: "Unidentified vessels near a major shipping chokepoint signal potential disruption. Oil and shipping companies are on alert. If this escalates, energy prices will spike on supply route fears."
+  },
+  "DEVELOPING: COMMERCIAL SHIPPING REROUTING AROUND RED SEA - INSURANCE PREMIUMS SPIKING": {
+    blurb: "Major shipping lines began rerouting vessels away from the Red Sea corridor as maritime insurance premiums spiked on security concerns.",
+    analysis: "Red Sea rerouting adds time and cost to global trade. Oil benefits from increased shipping distances. Insurance spikes signal the market expects sustained disruption. Watch for military escalation."
+  },
+  "BREAKING: HOUTHI REBELS SEIZE RED SEA CHOKEPOINT - OIL TANKERS DIVERTED TO CAPE ROUTE": {
+    blurb: "Houthi rebels seized control of a critical Red Sea chokepoint, forcing oil tankers to divert around the Cape of Good Hope.",
+    analysis: "Control of the Red Sea chokepoint disrupts 12% of global trade. Oil surges on supply route disruption. Shipping costs spike. The longer this lasts, the worse the inflationary impact."
+  },
+  "EXPOSED: COVERT MERCENARY OPERATION TRACED TO AMERICAN FIRM - INTERNATIONAL OUTCRY": {
+    blurb: "An international investigation traced the Red Sea disruption to a covert mercenary operation run by an American private military firm.",
+    analysis: "The mercenary operation being exposed is a disaster. International sanctions and investigations follow. The firm's backers face criminal liability. Markets sell off on geopolitical scandal."
+  },
+
+  // ==========================================================================
+  // PE ABILITY HEADLINES — Chile Acquisition (Blackstone Services)
+  // ==========================================================================
+
+  "RUMOR: MYSTERIOUS FOREIGN CONSORTIUM EYEING ATACAMA DESERT LITHIUM DEPOSITS": {
+    blurb: "Sources in Santiago report a mysterious foreign consortium has been conducting geological surveys in the Atacama Desert's lithium-rich salt flats.",
+    analysis: "Foreign interest in Chile's lithium is a supply chain play. If a private firm locks up Atacama rights, lithium supply gets squeezed. Tesla and EV makers face higher battery costs."
+  },
+  "DEVELOPING: CHILEAN MINING UNIONS PROTEST POTENTIAL FOREIGN ACQUISITION - GOVERNMENT SILENT": {
+    blurb: "Chilean mining unions staged protests against the potential sale of national lithium assets to foreign investors as the government remained silent.",
+    analysis: "Union protests and government silence signal political tension. Nationalization risk is rising. Lithium markets are volatile as the outcome determines who controls critical EV supply chains."
+  },
+  "BREAKING: PRIVATE EQUITY FIRM SECURES 40-YEAR LITHIUM RIGHTS - SUPPLY SQUEEZE IMMINENT": {
+    blurb: "A private equity firm secured exclusive 40-year extraction rights to Chile's largest lithium deposits, potentially controlling 30% of global supply.",
+    analysis: "Locking up 30% of lithium supply for 40 years creates a structural squeeze. Lithium prices surge. Tesla and EV manufacturers face higher costs. The PE firm gains enormous market power."
+  },
+  "NATIONALIZED: CHILE SEIZES FOREIGN-HELD MINES IN MIDNIGHT DECREE - INVESTORS WIPED OUT": {
+    blurb: "Chile's president signed a midnight decree nationalizing all foreign-held mining operations, expropriating billions in private equity investments.",
+    analysis: "Nationalization wipes out the PE investment completely. Lithium prices spike on supply uncertainty. Emerging markets drop on expropriation fears. Tesla faces supply chain chaos."
+  },
+
+  // ==========================================================================
+  // PE ABILITY HEADLINES — Project Chimera (Lazarus Genomics)
+  // ==========================================================================
+
+  "ALERT: MYSTERIOUS RESPIRATORY ILLNESS CLUSTERS REPORTED IN GUANGDONG PROVINCE": {
+    blurb: "Chinese health authorities reported clusters of a mysterious respiratory illness in Guangdong Province, with dozens hospitalized showing unknown symptoms.",
+    analysis: "Early pandemic signals trigger immediate risk-off sentiment. Markets will sell off on lockdown fears. Biotech could benefit if a vaccine race begins. Gold and bitcoin rise as safe havens."
+  },
+  "DEVELOPING: WHO DISPATCHES EMERGENCY TEAM - AIRPORTS IMPLEMENTING ENHANCED SCREENING": {
+    blurb: "The WHO dispatched an emergency investigation team to China as airports worldwide began implementing enhanced health screening for arriving passengers.",
+    analysis: "WHO involvement escalates this from regional concern to global threat. Markets are pricing in pandemic risk. Travel and retail stocks drop. Biotech and gold begin rallying on fear."
+  },
+  "PANDEMIC: WHO DECLARES GLOBAL HEALTH EMERGENCY - MARKETS IN FREEFALL": {
+    blurb: "The WHO declared a Public Health Emergency of International Concern as the mysterious illness spread to 40 countries, triggering market freefall.",
+    analysis: "Global pandemic declaration crashes everything. Oil, NASDAQ, and emerging markets in freefall. Biotech surges on vaccine demand. Gold and bitcoin spike as safe havens. Cash is king."
+  },
+  "TRACED: BIOLAB LEAK LINKED TO US BIOTECH FIRM - FBI RAIDS HEADQUARTERS": {
+    blurb: "FBI agents raided a US biotech firm after investigators traced the pandemic pathogen to a leak from the company's biosafety level 4 laboratory.",
+    analysis: "The biolab leak being traced back destroys the biotech firm and its investors. The entire biotech sector faces regulatory backlash. Criminal charges are likely for executives."
+  },
+
+  // ==========================================================================
+  // PE ABILITY HEADLINES — Operation Divide (Apex Media)
+  // ==========================================================================
+
+  "PATTERN: UNUSUAL SPIKE IN DIVISIVE CONTENT ACROSS SOCIAL PLATFORMS - BOTS SUSPECTED": {
+    blurb: "Social media monitoring firms detected an unusual 500% spike in divisive political content across major platforms, with bot activity suspected.",
+    analysis: "Coordinated disinformation campaigns create market uncertainty. If social unrest follows, gold and bitcoin benefit as safe havens. NASDAQ drops on advertiser pullback fears."
+  },
+  "DEVELOPING: VIRAL MISINFORMATION CAMPAIGN TRACED TO COORDINATED NETWORK - TENSIONS RISING": {
+    blurb: "Researchers traced the viral misinformation campaign to a sophisticated coordinated network using AI-generated content to amplify social divisions.",
+    analysis: "A coordinated disinfo network being identified means this is deliberate market manipulation through social chaos. Tensions are rising. Safe havens rally. Risk assets sell off."
+  },
+  "CHAOS: PROTESTS ERUPT ACROSS MAJOR US CITIES - INVESTORS FLEE TO SAFE HAVENS": {
+    blurb: "Protests erupted in major US cities following weeks of escalating disinformation, with clashes reported in New York, Los Angeles, and Chicago.",
+    analysis: "Civil unrest drives a classic flight to safety. Gold and bitcoin surge. NASDAQ drops on consumer confidence collapse. The fear premium will persist until protests subside."
+  },
+  "UNMASKED: FOREIGN DISINFO NETWORK EXPOSED - MEDIA COMPANY UNDER FEDERAL INVESTIGATION": {
+    blurb: "Federal investigators unmasked the disinformation network, tracing it to a US media company with foreign ties now under federal investigation.",
+    analysis: "The media company behind the disinfo campaign faces criminal charges and dissolution. NASDAQ drops on media sector regulation fears. The investigation could expose broader market manipulation."
+  },
+
+  // ==========================================================================
+  // PE ABILITY HEADLINES — Run for President (Apex Media)
+  // ==========================================================================
+
+  "MEDIA MOGUL ANNOUNCES PRESIDENTIAL EXPLORATORY COMMITTEE": {
+    blurb: "A billionaire media mogul announced the formation of a presidential exploratory committee, signaling a potential outsider campaign for the White House.",
+    analysis: "A media mogul running for president creates political uncertainty. Markets are neutral initially but will react to policy proposals. Media sector faces conflict-of-interest scrutiny."
+  },
+  "DEVELOPING: CAMPAIGN TRAIL HEATS UP - POLLS SHOW DEAD HEAT": {
+    blurb: "The latest polls showed the media mogul candidate in a statistical dead heat with the incumbent, electrifying markets with policy uncertainty.",
+    analysis: "A competitive race means maximum policy uncertainty. Markets hate uncertainty. Every poll and debate will move sectors based on the candidates' competing economic platforms."
+  },
+  "HISTORIC UPSET: BILLIONAIRE MEDIA MOGUL WINS PRESIDENCY": {
+    blurb: "In a historic upset, the billionaire media mogul won the presidential election, promising to reshape economic policy from the Oval Office.",
+    analysis: "A business-friendly outsider president could mean deregulation and tax cuts. NASDAQ initially rallies. But the concentration of media and political power raises long-term governance concerns."
+  },
+  "CAMPAIGN IMPLODES: CANDIDATE CONCEDES AS SCANDALS MOUNT": {
+    blurb: "The media mogul's presidential campaign imploded as multiple financial and personal scandals surfaced, forcing a concession speech.",
+    analysis: "Campaign collapse damages the media empire's credibility. The candidate's media properties lose advertisers and audience. Stock in the media sector takes a hit on reputational damage."
+  },
+
+  // ==========================================================================
+  // INSIDER TIP SCENARIOS — Coffee Reserve Act
+  // ==========================================================================
+
+  "WHISPERS: USDA OFFICIALS QUIETLY MEETING WITH COMMODITY TRADERS ABOUT EMERGENCY STOCKPILE PROGRAM": {
+    blurb: "USDA officials were spotted in private meetings with commodity traders, reportedly discussing an emergency strategic stockpile program for agricultural goods.",
+    analysis: "Government stockpiling drives demand spikes. If a strategic coffee reserve is created, prices surge as the government becomes a massive buyer. Gold benefits from commodity inflation spillover."
+  },
+  "BREAKING: COFFEE STRATEGIC RESERVE ACT SIGNED - FEDS TO STOCKPILE MILLIONS OF TONS OF BEANS": {
+    blurb: "The President signed the Coffee Strategic Reserve Act, authorizing federal purchase and storage of millions of tons of coffee beans as a strategic commodity.",
+    analysis: "Government buying millions of tons of coffee creates an immediate demand shock. Coffee prices surge. Gold rides the commodity inflation wave. This is a windfall for anyone positioned early."
+  },
+  "DEAD ON ARRIVAL: STRATEGIC RESERVE BILL KILLED IN COMMITTEE - SPONSORS FACE ETHICS PROBE": {
+    blurb: "The strategic reserve bill was killed in committee after evidence surfaced that sponsors had pre-positioned commodity trades, triggering an ethics investigation.",
+    analysis: "The insider tip backfired. The bill dies and sponsors face ethics probes. Coffee gives back gains. Anyone who traded on the tip faces potential SEC investigation."
+  },
+
+  // ==========================================================================
+  // INSIDER TIP SCENARIOS — Crypto Tax Amnesty
+  // ==========================================================================
+
+  "WHISPERS: CRYPTO-FRIENDLY SENATORS DRAFTING SURPRISE TAX LEGISLATION BEHIND CLOSED DOORS": {
+    blurb: "Sources on Capitol Hill report crypto-friendly senators are quietly drafting surprise tax legislation that could exempt digital assets from capital gains.",
+    analysis: "Crypto tax amnesty would be the biggest regulatory catalyst in crypto history. Bitcoin and altcoins would surge on institutional inflows. The question is whether it survives committee."
+  },
+  "BREAKING: CRYPTO TAX AMNESTY ACT PASSES WITH BIPARTISAN SUPPORT - DIGITAL ASSETS EXEMPT FROM GAINS TAX": {
+    blurb: "Congress passed the Crypto Tax Amnesty Act with bipartisan support, exempting all digital asset transactions from capital gains taxation.",
+    analysis: "Tax-free crypto is a game changer. Bitcoin and altcoins explode higher as institutional money floods in. This makes crypto the most tax-advantaged asset class in America."
+  },
+  "BUSTED: SEC CRACKS DOWN ON CRYPTO LOBBYING RING - INSIDER TRADING PROBE LAUNCHED": {
+    blurb: "The SEC launched a major crackdown on a crypto lobbying ring, alleging insider trading and market manipulation tied to the failed tax amnesty legislation.",
+    analysis: "The crypto lobby got caught. SEC investigations freeze the sector. Altcoins crash hardest as regulatory fears spike. Anyone connected to the lobbying ring faces criminal charges."
+  },
+
+  // ==========================================================================
+  // INSIDER TIP SCENARIOS — Clean Vehicle Act
+  // ==========================================================================
+
+  "RUMOR: DOE OFFICIALS SPOTTED AT PRIVATE BRIEFING WITH AUTOMAKERS - EV MANDATE DISCUSSED": {
+    blurb: "Department of Energy officials were spotted at a private briefing with automaker executives, reportedly discussing a comprehensive EV sales mandate.",
+    analysis: "An EV mandate would force the entire auto industry to go electric. Tesla and lithium are the obvious winners. Oil loses as the fossil fuel era gets an expiration date."
+  },
+  "BREAKING: CLEAN VEHICLE ACCELERATION ACT SIGNED - ALL NEW CARS MUST BE ELECTRIC BY 2032": {
+    blurb: "The President signed the Clean Vehicle Acceleration Act, mandating that all new cars sold in the US must be fully electric by 2032.",
+    analysis: "An EV mandate by 2032 is transformative. Tesla surges as the market leader. Lithium rallies on battery demand. Oil crashes as the fossil fuel endgame is set in law."
+  },
+  "REVERSED: EV MANDATE STRUCK DOWN BY COURTS - AUTOMAKERS WHO BET ON ELECTRIC LEFT EXPOSED": {
+    blurb: "Federal courts struck down the EV mandate as exceeding executive authority, leaving automakers who pivoted to electric production financially exposed.",
+    analysis: "The mandate reversal is brutal for anyone who went long EVs. Tesla gives back gains as the regulatory tailwind disappears. Oil recovers. The EV transition continues but on market terms, not mandates."
+  },
+
+  // ==========================================================================
+  // INSIDER TIP SCENARIOS — Nuclear Renaissance Act
+  // ==========================================================================
+
+  "RUMOR: NRC COMMISSIONER HINTING AT MAJOR POLICY SHIFT ON NEW REACTOR PERMITS": {
+    blurb: "The NRC commissioner made comments hinting at a major policy shift that could fast-track approval of new nuclear reactor construction permits.",
+    analysis: "Nuclear deregulation would trigger a building boom. Uranium demand surges on new reactor construction. Oil drops as nuclear displaces fossil fuel baseload power generation."
+  },
+  "BREAKING: NUCLEAR RENAISSANCE ACT PASSES - 50 NEW REACTORS APPROVED IN HISTORIC ENERGY PIVOT": {
+    blurb: "Congress passed the Nuclear Renaissance Act, approving construction of 50 new nuclear reactors in the most significant energy policy shift in decades.",
+    analysis: "50 new reactors is a uranium demand shock. Uranium prices surge on decades of guaranteed fuel demand. Oil drops as nuclear displaces fossil fuels for baseload electricity generation."
+  },
+  "MELTDOWN: SAFETY SCANDAL DERAILS NUCLEAR BILL - NRC FREEZES ALL NEW PERMIT APPLICATIONS": {
+    blurb: "A safety scandal at an existing reactor derailed the nuclear bill as the NRC froze all new permit applications pending a comprehensive safety review.",
+    analysis: "The nuclear renaissance is dead on arrival. Uranium crashes as demand expectations collapse. Oil benefits as the fossil fuel alternative remains dominant. The safety stigma sets nuclear back years."
+  },
+
+  // ==========================================================================
+  // PROJECT CHIMERA PHASE 2
+  // ==========================================================================
+
+  "VACCINE RACE BEGINS - BIOTECH STOCKS SURGE AS INVESTORS SEEK SAFETY": {
+    blurb: "Biotech companies announced crash vaccine development programs as investors poured billions into pharmaceutical stocks seeking pandemic-proof investments.",
+    analysis: "The vaccine race is the recovery play after pandemic panic. Biotech surges as companies compete for the winning vaccine. Gold and bitcoin benefit from continued fear. This is where the smart money pivots."
+  },
+
+  // ==========================================================================
+  // STORY — Bot Flood (AI Bot Swarm)
+  // ==========================================================================
+
+  "CLOUDFLARE REPORTS 3,500% SPIKE IN BOT TRAFFIC — \"NEVER SEEN ANYTHING LIKE THIS\"": {
+    blurb: "Cloudflare's threat intelligence team reported an unprecedented 3,500% spike in automated bot traffic across the internet, overwhelming content delivery networks.",
+    analysis: "A massive bot surge signals either a coordinated cyberattack or rogue AI. NASDAQ and tech stocks dip on infrastructure fears. Gold and bitcoin rise as trust in digital systems wavers."
+  },
+  "BOTS OVERWHELM TELECOM: MILLIONS RECEIVE 1,000+ CALLS AND EMAILS PER HOUR — NETWORKS COLLAPSING": {
+    blurb: "Telecom networks worldwide began collapsing as millions of people received over 1,000 automated calls and emails per hour from the bot swarm.",
+    analysis: "Total telecom collapse is an infrastructure crisis. NASDAQ crashes as digital commerce halts. Gold and bitcoin surge as safe havens. Every sector dependent on communication networks suffers."
+  },
+  "BOTNET TRACED TO ROGUE AI TRAINING RUN — OPENAI ENGINEER ARRESTED, NETWORKS RECOVERING": {
+    blurb: "Investigators traced the global bot swarm to a rogue AI training run by an OpenAI engineer who was arrested as networks began recovering.",
+    analysis: "Crisis resolved with a human cause. NASDAQ and tech rally sharply on relief. AI regulation fears are temporary. Markets recover most losses as infrastructure comes back online."
+  },
+  "INTERNET NOW REQUIRES \"PROOF OF HUMANITY\" — DIGITAL LIFE FOREVER CHANGED": {
+    blurb: "Governments worldwide mandated 'proof of humanity' verification for all internet activity, fundamentally restructuring digital identity and online commerce.",
+    analysis: "Mandatory identity verification kills crypto anonymity and slows digital commerce. Altcoins crash on KYC requirements. NASDAQ dips on compliance costs. Gold and bitcoin paradoxically benefit from distrust in institutions."
+  },
+  "BOTS PLACING FAKE TRADES AND FAKE NEWS — SEC HALTS ALL ELECTRONIC TRADING": {
+    blurb: "The SEC halted all electronic trading after bots flooded markets with fake orders and news agencies with fabricated stories, creating total information chaos.",
+    analysis: "Trading halt is unprecedented. When markets reopen, expect massive volatility. NASDAQ crashes on market integrity fears. Gold and bitcoin surge as trust in traditional markets evaporates."
+  },
+
+  // ==========================================================================
+  // FLAVOR EVENTS — Missing entries
+  // ==========================================================================
+
+  "CRAFT BEER RENAISSANCE - MILLENNIALS DITCH HARD SELTZER": {
+    blurb: "A consumer trend report showed millennials abandoning hard seltzer in favor of craft beer, with microbrewery sales surging 40% year-over-year.",
+    analysis: "The craft beer comeback is a cultural shift. Brewery and spirits companies benefit. Coffee takes a minor hit as drinking culture competes with cafe culture for discretionary spending."
+  },
+  "CHIANTI CLASSICO WINS WORLD'S BEST WINE - PRICES SURGE": {
+    blurb: "A Chianti Classico from Tuscany won the World's Best Wine award, triggering a global surge in Italian wine prices and demand.",
+    analysis: "Italian wine prestige drives emerging market interest in premium agricultural exports. A small boost to European trade sentiment and luxury goods demand."
+  },
+  "ITALIAN WINE EXPORTS HIT ALL-TIME HIGH": {
+    blurb: "Italian wine exports reached a record $10 billion annually, driven by surging demand in Asia and the Americas for Tuscan and Piedmont vintages.",
+    analysis: "Record Italian exports signal strong global demand for premium goods. Emerging markets benefit from trade expansion. A modest positive for European economic sentiment."
+  },
+
+  // ==========================================================================
+  // SCRIPTED GAME 1 — Yellowstone
+  // ==========================================================================
+
+  "TECH EARNINGS BEAT EXPECTATIONS ACROSS THE BOARD": {
+    blurb: "Every major tech company reported earnings above analyst expectations, with AI-related revenue driving the strongest quarter in years.",
+    analysis: "Broad tech earnings beats fuel NASDAQ momentum. AI spending is real and accelerating. Risk appetite increases across all sectors as the tech engine keeps roaring."
+  },
+  "WALL STREET BONUSES HIT RECORD HIGH — BULL MARKET VIBES": {
+    blurb: "Wall Street firms announced record-breaking bonus pools as dealmaking, IPO, and trading revenues surged in the bull market.",
+    analysis: "Record bonuses signal peak confidence on Wall Street. This capital recycles into markets, pushing assets higher. But peak optimism is often a contrarian signal."
+  },
+  "CONSUMER CONFIDENCE HITS 10-YEAR HIGH": {
+    blurb: "The Consumer Confidence Index reached its highest level in a decade as strong employment and rising wages boosted household optimism.",
+    analysis: "High consumer confidence supports spending and corporate revenues. Broad market tailwind across NASDAQ, emerging markets, and crypto. Gold weakens as fear subsides."
+  },
+  "SOURCES SAY SEC CLOSE TO APPROVING SPOT BITCOIN ETF": {
+    blurb: "Sources close to the SEC indicated the agency was nearing approval of the first US spot Bitcoin ETF, ending years of regulatory uncertainty.",
+    analysis: "Spot ETF approval would open the floodgates for institutional Bitcoin investment. BTC and altcoins surge on anticipation. This is the most bullish regulatory catalyst in crypto history."
+  },
+  "SEC APPROVES SPOT BITCOIN ETF — INSTITUTIONAL FLOODGATES OPEN": {
+    blurb: "The SEC officially approved the first US spot Bitcoin ETF, enabling institutional investors to gain direct BTC exposure through regulated vehicles.",
+    analysis: "Spot ETF approval is a watershed moment for crypto. Billions in institutional capital flows into Bitcoin. Altcoins ride the rising tide. The crypto asset class gains mainstream legitimacy."
+  },
+  "CRYPTO FOMO HITS MAINSTREAM — RETAIL VOLUMES EXPLODE": {
+    blurb: "Retail trading volumes on crypto exchanges exploded as mainstream FOMO drove record new account openings at Coinbase and other platforms.",
+    analysis: "Retail FOMO is the late-stage bull signal. Volumes surge as newcomers pile in. BTC and altcoins benefit in the short term, but retail euphoria often marks cycle tops."
+  },
+  "TESLA REPORTS RECORD DELIVERIES — STOCK SURGES": {
+    blurb: "Tesla reported record quarterly vehicle deliveries, beating analyst estimates by 15% and sending shares surging in after-hours trading.",
+    analysis: "Record Tesla deliveries prove EV demand is accelerating. Tesla stock surges. Lithium benefits from sustained battery demand. The EV transition is on track."
+  },
+  "LITHIUM MINERS STRUGGLE TO KEEP UP WITH EV DEMAND": {
+    blurb: "Major lithium mining companies reported production shortfalls as EV battery demand outpaced extraction capacity at mines worldwide.",
+    analysis: "Lithium supply bottleneck means higher prices ahead. Miners benefit from pricing power. Tesla faces cost pressure from scarce battery materials."
+  },
+  "NUCLEAR RENAISSANCE: 50 NEW PLANTS APPROVED GLOBALLY": {
+    blurb: "Governments worldwide approved 50 new nuclear power plants in a coordinated push to meet AI-driven electricity demand and climate goals.",
+    analysis: "50 new reactors is a massive uranium demand shock. Uranium prices surge on decades of guaranteed fuel demand. Nuclear energy becomes a cornerstone of the AI infrastructure buildout."
+  },
+  "NVIDIA EARNINGS OBLITERATE EXPECTATIONS — AI BOOM ACCELERATES": {
+    blurb: "NVIDIA reported earnings that obliterated expectations, with data center revenue tripling year-over-year on insatiable AI chip demand.",
+    analysis: "NVIDIA's blowout confirms the AI spending boom is real and accelerating. NASDAQ surges on the halo effect. Every company dependent on AI infrastructure benefits."
+  },
+  "NASDAQ HITS ALL-TIME HIGH — BULL MARKET CONFIRMED": {
+    blurb: "The NASDAQ Composite hit an all-time high, officially confirming the bull market as tech and AI stocks led the charge.",
+    analysis: "All-time highs attract momentum buyers and force short sellers to cover. Broad market confidence increases. But historically, euphoria at highs often precedes volatility."
+  },
+  "BTC BREAKS $60K — ANALYSTS SAY $100K BY YEAR END": {
+    blurb: "Bitcoin broke through $60,000 as analysts raised year-end targets to $100,000, citing ETF inflows and halving-cycle dynamics.",
+    analysis: "Bitcoin at $60K with $100K targets fuels maximum FOMO. Altcoins rally in sympathy. Institutional adoption narrative strengthens. The crypto bull cycle is in full swing."
+  },
+  "CRYPTO WHALES ACCUMULATING — ON-CHAIN DATA SHOWS RECORD HOLDINGS": {
+    blurb: "On-chain analytics showed crypto whale wallets accumulating at record rates, with large holders adding billions in BTC and ETH positions.",
+    analysis: "Whale accumulation is a bullish signal — smart money is positioning for higher prices. When whales buy, retail follows. Both BTC and altcoins benefit from conviction buying."
+  },
+  "BROAD MARKET RALLY — EVERY SECTOR GREEN": {
+    blurb: "Markets staged a broad rally with every sector closing in the green, driven by strong economic data and favorable monetary policy signals.",
+    analysis: "An everything rally signals peak risk appetite. All assets benefit when fear is absent. Enjoy it while it lasts — broad rallies often precede sector rotation."
+  },
+  "EMERGING MARKETS JOIN THE PARTY — RECORD INFLOWS": {
+    blurb: "Emerging market funds saw record capital inflows as investors sought higher returns in developing economies during the global bull market.",
+    analysis: "EM inflows signal the bull market broadening beyond US tech. Higher growth economies attract capital when risk appetite is high. A rising tide lifts all boats."
+  },
+  "LITHIUM DEMAND SURGES — EV TRANSITION UNSTOPPABLE": {
+    blurb: "Global lithium demand surged 40% year-over-year as the EV transition accelerated beyond analyst projections across every major market.",
+    analysis: "Surging lithium demand confirms the EV transition is irreversible. Lithium miners benefit from tight supply. Tesla benefits from market leadership. Oil faces long-term demand destruction."
+  },
+  "MARKETS PAUSE — LIGHT VOLUME SESSION": {
+    blurb: "Markets traded in a narrow range on unusually light volume as traders awaited upcoming economic data and geopolitical developments.",
+    analysis: "Light volume sessions often precede big moves. The market is coiling for something. No strong directional signal — stay alert for catalysts."
+  },
+  "UNUSUAL SEISMIC ACTIVITY DETECTED NEAR YELLOWSTONE — USGS MONITORING": {
+    blurb: "The USGS reported unusual seismic activity near the Yellowstone caldera, dispatching additional monitoring equipment to the region.",
+    analysis: "Yellowstone seismic alerts trigger mild concern. Markets barely react to monitoring announcements, but a supervolcano eruption would be the ultimate black swan. Gold edges up on tail risk."
+  },
+  "FED SIGNALS CONTINUED PATIENCE — GOLDILOCKS ECONOMY": {
+    blurb: "Federal Reserve officials signaled continued patience on interest rates, citing a 'Goldilocks' economy that was neither too hot nor too cold.",
+    analysis: "A patient Fed is the best backdrop for risk assets. NASDAQ benefits from low rates. Gold weakens as rate cut hopes fade. The 'Goldilocks' narrative supports continued bull momentum."
+  },
+  "YELLOWSTONE RECORDS 500 EARTHQUAKES IN 24 HOURS — ALERT LEVEL RAISED": {
+    blurb: "Yellowstone's seismic monitoring network recorded 500 earthquakes in 24 hours, prompting the USGS to raise the volcanic alert level to 'Watch.'",
+    analysis: "500 earthquakes in a day is alarming. Markets start pricing in tail risk. Gold and defense begin moving as the supervolcano scenario enters trader consciousness. NASDAQ dips on uncertainty."
+  },
+  "YELLOWSTONE SUPERVOLCANO ERUPTS — MASSIVE ERUPTION DETECTED": {
+    blurb: "The Yellowstone supervolcano erupted in a massive VEI-8 event, the largest volcanic eruption in 640,000 years, with an ash plume reaching the stratosphere.",
+    analysis: "Supervolcano eruption is the ultimate black swan. Total market panic. NASDAQ crashes. Gold and defense surge. Oil spikes on supply disruption. This changes everything for years."
+  },
+  "ASH CLOUD COVERS WESTERN US — AIRPORTS SHUT DOWN NATIONWIDE": {
+    blurb: "A volcanic ash cloud from Yellowstone blanketed the western United States, forcing nationwide airport closures and grounding all commercial aviation.",
+    analysis: "Aviation shutdown cascades through the economy. Supply chains break. NASDAQ continues falling. Gold surges as the safe haven. Oil spikes on transport disruption."
+  },
+  "FEMA DECLARES NATIONAL EMERGENCY — SUPPLY CHAINS PARALYZED": {
+    blurb: "FEMA declared a national emergency as volcanic ash paralyzed transportation networks, leaving major cities without essential supply deliveries.",
+    analysis: "National emergency means government spending increases massively. Defense contractors mobilize. Gold surges on crisis. NASDAQ crashes as corporate America can't function."
+  },
+  "CROP FAILURES IMMINENT — FOOD PRICES SURGE": {
+    blurb: "Agricultural experts warned of imminent crop failures across the Great Plains as volcanic ash blocked sunlight and contaminated soil.",
+    analysis: "Crop failure drives food prices through the roof. Coffee and agricultural commodities surge. Gold benefits from inflation fears. Emerging markets suffer from food insecurity."
+  },
+  "INSURANCE INDUSTRY COLLAPSE — CLAIMS EXCEED RESERVES": {
+    blurb: "Multiple major insurance companies reported claims from the Yellowstone eruption exceeding total reserves, triggering a cascading industry crisis.",
+    analysis: "Insurance collapse means businesses can't recover. NASDAQ falls on systemic financial risk. Gold surges as the financial system cracks. Government bailouts become inevitable."
+  },
+  "CONGRESS PASSES $5 TRILLION EMERGENCY RELIEF BILL": {
+    blurb: "Congress passed a bipartisan $5 trillion emergency relief bill for Yellowstone disaster recovery, the largest spending package in US history.",
+    analysis: "Massive fiscal spending supports reconstruction but balloons the deficit. Defense and infrastructure stocks benefit. Gold surges on inflation from money printing. Dollar weakens."
+  },
+  "GOLD RESERVES RUNNING LOW AT MAJOR MINTS": {
+    blurb: "The US Mint and Royal Mint reported running low on gold reserves as unprecedented demand for physical gold overwhelmed production capacity.",
+    analysis: "Physical gold shortage signals extreme fear. When mints can't keep up, gold prices have room to run. This is peak safe-haven demand driven by existential crisis."
+  },
+  "RECONSTRUCTION EFFORTS BEGIN — DEFENSE CONTRACTORS MOBILIZE": {
+    blurb: "Major defense and infrastructure contractors began mobilizing resources for Yellowstone reconstruction, with contracts worth hundreds of billions.",
+    analysis: "Reconstruction spending is a multi-year tailwind for defense and infrastructure. Massive government contracts flow to builders. This creates a new economic engine from the devastation."
+  },
+  "SECOND ERUPTION REPORTED — GEOLOGISTS WARN OF WORSE TO COME": {
+    blurb: "A second major eruption at Yellowstone sent markets into renewed panic as geologists warned the volcanic system could produce even larger events.",
+    analysis: "A second eruption kills any recovery hopes. Markets plunge again. Gold and defense surge. The economic damage doubles. Recovery timeline extends by years."
+  },
+  "GLOBAL FOOD CRISIS — UN CALLS EMERGENCY SESSION": {
+    blurb: "The United Nations called an emergency session as the Yellowstone ash cloud triggered a global food crisis with crop failures across multiple continents.",
+    analysis: "Global food crisis is a humanitarian and economic catastrophe. Coffee and agricultural commodities surge. Gold rises on chaos. Emerging markets devastated by food insecurity."
+  },
+  "ASH CLOUD REACHES EUROPE — GLOBAL TRADE AT STANDSTILL": {
+    blurb: "Yellowstone's ash cloud crossed the Atlantic, reaching Europe and bringing global trade to a standstill as ports and airports closed worldwide.",
+    analysis: "Global trade shutdown is the worst economic outcome. Every risk asset suffers. Gold is the only reliable safe haven. Oil spikes on complete supply chain breakdown."
+  },
+  "BITCOIN SURGES AS DOLLAR CONFIDENCE CRUMBLES": {
+    blurb: "Bitcoin surged as confidence in the US dollar crumbled amid unprecedented government spending and Federal Reserve emergency measures.",
+    analysis: "Dollar debasement through crisis spending drives alternative asset demand. Bitcoin and gold both benefit as stores of value. The monetary system faces a crisis of confidence."
+  },
+  "TRUST IN US DOLLAR CRUMBLING — INVESTORS FLEE TO HARD ASSETS": {
+    blurb: "Investor trust in the US dollar deteriorated as multitrillion-dollar spending packages and Fed emergency measures raised hyperinflation fears.",
+    analysis: "Dollar flight into hard assets is the endgame of unlimited spending. Gold, bitcoin, and commodities all benefit. NASDAQ suffers from currency instability. Emerging markets face dollar-denominated debt crises."
+  },
+  "VOLCANIC ACTIVITY SUBSIDING — SCIENTISTS CAUTIOUSLY OPTIMISTIC": {
+    blurb: "Seismologists reported declining volcanic activity at Yellowstone, with scientists expressing cautious optimism that the worst eruptions may be over.",
+    analysis: "The first positive signal since the eruption. Markets attempt a relief rally. NASDAQ and risk assets bounce tentatively. Gold holds gains but stops surging. Recovery narrative begins."
+  },
+  "MARKETS ATTEMPT RECOVERY — DEAD CAT BOUNCE OR REAL BOTTOM?": {
+    blurb: "Markets staged a sharp recovery attempt as bargain hunters stepped in, though analysts debated whether it was a genuine bottom or dead cat bounce.",
+    analysis: "Recovery attempts after catastrophic events are always contested. Some sectors may have found genuine bottoms while others face more downside. Selective buying with caution."
+  },
+  "RECONSTRUCTION MEGA-SPENDING BILL — $10 TRILLION INFRASTRUCTURE": {
+    blurb: "Congress passed a $10 trillion infrastructure reconstruction bill, the largest spending program in human history, to rebuild the devastated western US.",
+    analysis: "$10 trillion in spending is an economic transformation. Defense and infrastructure companies become the new market leaders. Gold surges on inflation expectations. Dollar faces structural decline."
+  },
+  "LITHIUM DEMAND SURGES FOR EMERGENCY INFRASTRUCTURE": {
+    blurb: "Lithium demand spiked as emergency infrastructure rebuilding required massive battery storage systems for power grid reconstruction.",
+    analysis: "Reconstruction creates unexpected lithium demand for grid-scale battery storage. Lithium miners benefit from the infrastructure pivot. Tesla gains on battery technology contracts."
+  },
+  "NEW NORMAL — MARKETS STABILIZE AT MUCH LOWER LEVELS": {
+    blurb: "Markets stabilized at significantly lower levels as investors accepted a new economic reality shaped by the Yellowstone disaster and its aftermath.",
+    analysis: "Stabilization at lower levels means the market has found a floor. The economy is permanently altered but functioning. Reconstruction spending provides a multi-year tailwind."
+  },
+  "MARKETS CLOSE — ASH SETTLES, REBUILDING BEGINS": {
+    blurb: "Markets closed the final session of a historic period as volcanic ash literally and figuratively settled, with the nation's focus turning fully to rebuilding.",
+    analysis: "The end of the acute crisis phase. Markets have priced in the damage. From here, it's about who profits from the reconstruction. Defense and infrastructure lead the new economy."
+  },
+
+  // ==========================================================================
+  // SCRIPTED GAME 2 — World War III
+  // ==========================================================================
+
+  "MARKETS OPEN — LIGHT VOLUME, TRADERS OPTIMISTIC": {
+    blurb: "Markets opened to light trading volume with an optimistic tone as traders positioned for a quiet session ahead of economic data releases.",
+    analysis: "Light volume optimism is the calm before the storm. Markets are complacent. No strong signals — a typical low-volatility session where positioning matters more than news."
+  },
+  "CORPORATE EARNINGS SEASON KICKS OFF — ANALYSTS OPTIMISTIC": {
+    blurb: "Corporate earnings season kicked off with analysts broadly optimistic about revenue growth across major sectors, particularly tech and healthcare.",
+    analysis: "Optimistic earnings previews support risk appetite. NASDAQ benefits from tech expectations. Broad market sentiment stays positive as long as companies deliver on forecasts."
+  },
+  "TRADE TALKS BETWEEN US AND EU MAKING PROGRESS": {
+    blurb: "US and EU trade negotiators reported significant progress on tariff reductions and regulatory alignment in ongoing bilateral discussions.",
+    analysis: "Trade progress is modestly bullish for global markets. Reduced tariffs benefit exporters and emerging markets. NASDAQ gains from clearer transatlantic business conditions."
+  },
+  "TECH EARNINGS SEASON BEGINS — MIXED RESULTS": {
+    blurb: "Tech earnings season began with mixed results as some companies beat expectations while others cited macroeconomic headwinds and slower growth.",
+    analysis: "Mixed tech earnings create sector rotation. Winners pull away while laggards sell off. NASDAQ is volatile as investors discriminate between companies. Stock-picker's market."
+  },
+  "SATELLITE IMAGERY SHOWS UNUSUAL RUSSIAN MILITARY BUILDUP NEAR BALTICS": {
+    blurb: "Commercial satellite imagery revealed an unusual concentration of Russian military equipment and personnel near the Baltic states, alarming NATO analysts.",
+    analysis: "Russian military buildup near NATO borders triggers immediate defense sector interest. Gold edges up on geopolitical risk. Markets are cautious but not panicked — this has happened before."
+  },
+  "OIL INVENTORIES LOWER THAN EXPECTED": {
+    blurb: "Weekly petroleum inventory data showed crude oil stockpiles falling more than expected, indicating stronger demand or constrained supply.",
+    analysis: "Lower inventories mean tighter oil supply. Prices edge higher on demand signals. Energy stocks benefit. Modest negative for consumers and transport costs."
+  },
+  "RUSSIA MOBILIZES 200,000 TROOPS NEAR BALTIC STATES": {
+    blurb: "Russia mobilized 200,000 troops to positions near Latvia, Lithuania, and Estonia in the largest military buildup since the Cold War.",
+    analysis: "200,000 troops is not a drill — this is invasion-scale mobilization. Defense stocks surge. Gold rallies on war fears. NASDAQ begins selling off on geopolitical risk premium."
+  },
+  "NATO CALLS EMERGENCY SUMMIT — ARTICLE 5 DISCUSSIONS": {
+    blurb: "NATO called an emergency summit to discuss the invocation of Article 5 mutual defense provisions in response to Russian military mobilization.",
+    analysis: "Article 5 discussion means NATO is preparing for war. Defense stocks explode higher. Gold surges. Oil spikes on supply disruption fears. NASDAQ drops on global conflict risk."
+  },
+  "DEFENSE CONTRACTOR SHARES HIT ALL-TIME HIGHS ACROSS THE BOARD": {
+    blurb: "Defense contractor shares hit all-time highs across the sector as governments worldwide accelerated arms procurement amid rising tensions.",
+    analysis: "Peak defense buying signal. When every contractor hits all-time highs, the market is pricing in a major conflict. This spending cycle has years of runway."
+  },
+  "DIPLOMATIC TALKS FAIL — RUSSIA ISSUES ULTIMATUM TO LATVIA": {
+    blurb: "Diplomatic negotiations collapsed as Russia issued a 48-hour ultimatum to Latvia demanding the removal of NATO forces from its territory.",
+    analysis: "A military ultimatum is the final step before invasion. Markets panic. Gold and defense surge to new highs. NASDAQ and emerging markets crash. Oil spikes on war premium."
+  },
+  "TURKEY CLOSES BOSPHORUS STRAIT": {
+    blurb: "Turkey closed the Bosphorus Strait to all military and commercial vessel traffic, citing national security concerns amid the escalating NATO-Russia crisis.",
+    analysis: "Closing the Bosphorus cuts off Black Sea naval access and disrupts grain and oil shipping. Gold and oil surge. Emerging markets plummet on trade disruption. NATO's southern flank is compromised."
+  },
+  "RUSSIAN FORCES CROSS LATVIAN BORDER — WAR IN EUROPE": {
+    blurb: "Russian military forces crossed the Latvian border in a full-scale invasion, triggering the first major land war in Europe since World War II.",
+    analysis: "War in Europe is the ultimate risk-off event. Everything crashes except defense, gold, and oil. NASDAQ enters bear market territory. Emerging markets face capital flight. Nuclear fears emerge."
+  },
+  "NATO ACTIVATES ARTICLE 5 — ALL MEMBER STATES AT WAR WITH RUSSIA": {
+    blurb: "NATO formally activated Article 5 for the first time in a conventional war, declaring all 31 member states in a state of collective defense against Russia.",
+    analysis: "Article 5 activation means global war. Defense spending goes unlimited. Gold hits records. Oil surges on Russian supply cutoff. NASDAQ crashes as economic activity subordinates to war effort."
+  },
+  "EUROPEAN MARKETS HALTED — CIRCUIT BREAKERS TRIGGERED": {
+    blurb: "European stock exchanges triggered circuit breakers and halted trading as markets plunged over 15% at the open on war escalation fears.",
+    analysis: "Circuit breakers signal extreme panic. When markets reopen, expect further selling. The European economy is in crisis mode. Capital flees to US treasuries, gold, and cash."
+  },
+  "DOCKWORKERS STRIKE SHUTS DOWN 30 PORTS": {
+    blurb: "Dockworkers at 30 major ports launched a coordinated strike over wartime working conditions, paralyzing global shipping at the worst possible moment.",
+    analysis: "Port strikes during a war compound supply chain devastation. Everything gets more expensive and harder to find. Oil and gold surge. NASDAQ drops on further economic paralysis."
+  },
+  "ENERGY CRISIS — OIL SURGES AS RUSSIAN SUPPLY CUT OFF": {
+    blurb: "A full energy crisis gripped global markets as the complete cutoff of Russian oil and gas supply sent prices surging to record levels.",
+    analysis: "Russian supply cutoff removes millions of barrels per day. Oil prices hit unprecedented levels. Every economy suffers from energy costs. Gold benefits from crisis. NASDAQ crashes."
+  },
+  "UNCONFIRMED: CHINESE NAVAL FORCES MASSING IN SOUTH CHINA SEA": {
+    blurb: "Unconfirmed reports indicated Chinese naval forces were massing in the South China Sea, raising fears of a second front in the global conflict.",
+    analysis: "A Chinese second front would make this a true world war. Markets that haven't already crashed would plunge. Defense is the only sector that benefits from global escalation."
+  },
+  "SANCTIONS DEVASTATE GLOBAL SUPPLY CHAINS — RECESSION WARNINGS": {
+    blurb: "Comprehensive sanctions against Russia devastated global supply chains as economists issued widespread recession warnings across all major economies.",
+    analysis: "Sanctions-driven recession is now the base case. NASDAQ and emerging markets in freefall. Gold and oil diverge — gold up on fear, oil volatile on demand destruction vs supply cuts."
+  },
+  "SHIPPING CRISIS: COFFEE CONTAINERS STRANDED": {
+    blurb: "Millions of shipping containers, including major coffee shipments, remained stranded at ports worldwide as the global logistics network collapsed.",
+    analysis: "Stranded coffee containers mean supply shortages and price spikes. Coffee surges. The broader shipping crisis affects every traded commodity. Emerging markets suffer from export paralysis."
+  },
+  "CHINA LAUNCHES INVASION OF TAIWAN — TWO-FRONT WORLD WAR": {
+    blurb: "China launched a full-scale amphibious invasion of Taiwan, opening a devastating second front in what became the first true world war since 1945.",
+    analysis: "Taiwan invasion is catastrophic for global markets. Semiconductor supply destroyed. NASDAQ in freefall on chip shortage. Lithium and emerging markets collapse. Defense, gold, and oil surge to extremes."
+  },
+  "SEMICONDUCTOR SUPPLY DESTROYED — CHIP SHORTAGE CATASTROPHIC": {
+    blurb: "The invasion of Taiwan destroyed or disrupted TSMC's advanced chip foundries, eliminating 90% of the world's cutting-edge semiconductor supply.",
+    analysis: "Loss of TSMC is the biggest supply shock in tech history. Every device, car, and AI system depends on these chips. NASDAQ crashes. The tech economy faces years of rebuilding."
+  },
+  "GOLD HITS ALL-TIME HIGH — SAFE HAVEN DEMAND UNPRECEDENTED": {
+    blurb: "Gold hit all-time highs as unprecedented safe haven demand drove central banks and investors to accumulate physical gold at any price.",
+    analysis: "Gold at record highs during a world war is expected behavior. Central banks buying signals complete loss of faith in paper assets. Gold has more room to run as the war continues."
+  },
+  "CENTRAL BANKS BUYING RECORD GOLD — DE-DOLLARIZATION ACCELERATES": {
+    blurb: "Central banks worldwide purchased record amounts of gold as de-dollarization accelerated amid the geopolitical realignment caused by the war.",
+    analysis: "Central bank gold buying during war accelerates de-dollarization. The post-war monetary order will feature more gold and less dollar. Gold's structural rally has years to run."
+  },
+  "UN EMERGENCY SESSION — CEASEFIRE RESOLUTION VETOED BY RUSSIA AND CHINA": {
+    blurb: "A UN Security Council ceasefire resolution was vetoed by Russia and China, dashing hopes for a diplomatic end to the conflict.",
+    analysis: "Vetoed ceasefire means the war continues with no diplomatic off-ramp. Markets sell off on prolonged conflict expectations. Gold and defense benefit from extended crisis."
+  },
+  "CYBER MERCENARY GROUP HACKS 40 CENTRAL BANKS": {
+    blurb: "A cyber mercenary group exploited wartime chaos to hack 40 central banks simultaneously, disrupting monetary systems and payment networks worldwide.",
+    analysis: "Central bank hacks add financial system collapse to war destruction. Bitcoin surges as a decentralized alternative. Gold benefits from distrust. Traditional markets face systemic risk."
+  },
+  "NUCLEAR THREAT LEVEL RAISED — DEFCON 2": {
+    blurb: "The US raised its defense readiness to DEFCON 2 — one step below imminent nuclear war — as intelligence detected Russian nuclear force movements.",
+    analysis: "DEFCON 2 is as close to nuclear war as markets can price. Everything crashes except gold and bitcoin. Defense stocks are complicated — they benefit from spending but not nuclear apocalypse."
+  },
+  "SOURCES: MICROSTRATEGY FACING MARGIN CALL ON MASSIVE BTC POSITION": {
+    blurb: "Sources reported MicroStrategy was facing a massive margin call on its leveraged Bitcoin position as BTC prices entered volatile wartime trading.",
+    analysis: "MicroStrategy margin call fears create forced selling pressure on Bitcoin. If they liquidate, BTC could cascade lower. But this also represents a potential buying opportunity."
+  },
+  "BITCOIN SURGES AS ALTERNATIVE SAFE HAVEN — \"DIGITAL GOLD\"": {
+    blurb: "Bitcoin surged to new heights as investors embraced the 'digital gold' narrative, seeking decentralized safe haven assets during global conflict.",
+    analysis: "Bitcoin proving its safe haven thesis during a world war validates the entire asset class. If BTC holds during nuclear fears, the 'digital gold' narrative becomes permanent."
+  },
+  "MICROSTRATEGY AVOIDS MARGIN CALL — SECURES EMERGENCY FUNDING": {
+    blurb: "MicroStrategy avoided a margin call by securing emergency funding, maintaining its massive Bitcoin position and relieving forced-selling fears.",
+    analysis: "MicroStrategy surviving the margin call removes a major overhang from Bitcoin. BTC rallies on relief. The leveraged Bitcoin thesis lives to fight another day."
+  },
+  "BACKCHANNEL TALKS — US AND CHINA AGREE TO SECRET NEGOTIATIONS": {
+    blurb: "Sources revealed the US and China agreed to secret backchannel negotiations aimed at de-escalating the two-front global conflict.",
+    analysis: "Backchannel talks are the first peace signal. Markets stage a tentative relief rally. NASDAQ bounces on ceasefire hopes. Gold holds gains but stops surging. Risk appetite returns cautiously."
+  },
+  "CEASEFIRE IN BALTICS — RUSSIA AGREES TO WITHDRAW FROM LATVIA": {
+    blurb: "Russia agreed to a ceasefire and phased withdrawal from Latvia, ending the European front of the war in a landmark diplomatic breakthrough.",
+    analysis: "Baltic ceasefire is the turning point. NASDAQ and emerging markets rally sharply. Oil drops on peace dividend. Gold gives back some gains. Defense holds on reconstruction spending."
+  },
+  "TRADERS RUSHING BACK INTO TECH — \"THE WAR IS OVER\" NARRATIVE": {
+    blurb: "Traders rushed back into tech stocks as the 'war is over' narrative gained traction, with NASDAQ futures surging on peace expectations.",
+    analysis: "The 'war is over' trade is the biggest rally catalyst. NASDAQ surges on pent-up demand. Tech valuations snap back toward pre-war levels. The recovery trade is on."
+  },
+  "TAIWAN STRAIT CEASEFIRE — CHINA PULLS BACK NAVAL FORCES": {
+    blurb: "China agreed to a ceasefire and pulled back naval forces from the Taiwan Strait, ending the immediate threat of military action against Taiwan.",
+    analysis: "Taiwan ceasefire saves the semiconductor supply chain. NASDAQ surges on chip recovery hopes. Emerging markets and lithium rally. Gold and defense retreat on peace."
+  },
+  "RECONSTRUCTION BEGINS — MASSIVE DEFENSE SPENDING CONTINUES": {
+    blurb: "Post-war reconstruction began across Europe and the Pacific as nations committed to massive sustained defense spending increases.",
+    analysis: "Reconstruction spending creates a multi-year tailwind for defense and infrastructure. NASDAQ recovers as supply chains rebuild. The post-war economy runs on government contracts."
+  },
+  "CENTRAL BANKS ANNOUNCE COORDINATED RATE CUTS": {
+    blurb: "Central banks worldwide announced coordinated rate cuts to stimulate post-war economic recovery, the largest monetary easing since the pandemic.",
+    analysis: "Coordinated rate cuts are rocket fuel for recovery. NASDAQ and risk assets surge on cheap money. Gold initially dips on reduced fear but benefits long-term from loose monetary policy."
+  },
+  "SEMICONDUCTOR REBUILDING — TSMC ANNOUNCES NEW FABS IN US AND JAPAN": {
+    blurb: "TSMC announced construction of new advanced chip fabrication plants in the US and Japan to rebuild semiconductor supply destroyed during the war.",
+    analysis: "TSMC rebuilding in the US and Japan reshores chip supply. NASDAQ rallies on supply chain recovery. The semiconductor rebuild is a multi-year investment cycle benefiting the entire tech sector."
+  },
+  "POST-WAR COMMODITY UNWIND — OIL CRASHES BACK": {
+    blurb: "Oil prices crashed as the post-war commodity unwind accelerated, with Russian oil returning to global markets and demand fears replacing supply fears.",
+    analysis: "Oil crashing back is the peace dividend. War premium evaporates. Energy stocks give back gains. Consumers benefit from lower fuel costs. NASDAQ rallies on margin improvement."
+  },
+  "MASSIVE SHORT SQUEEZE — BEARS TRAPPED IN RECOVERY RALLY": {
+    blurb: "A massive short squeeze trapped bearish traders as the recovery rally accelerated, forcing billions in short covering across all sectors.",
+    analysis: "Short squeeze accelerates the recovery. Bears who profited from the war crash are now forced buyers. NASDAQ surges. The violence of the squeeze creates its own momentum."
+  },
+  "GLOBAL MARKETS RECOVERING — BEST WEEK IN HISTORY": {
+    blurb: "Global markets staged the best weekly recovery in history as peace, rate cuts, and reconstruction spending created a perfect storm of bullish catalysts.",
+    analysis: "Historic recovery week signals the bottom is in. Every asset class rallies except war-premium beneficiaries like gold and defense. The recovery trade has room to run."
+  },
+  "NEW WORLD ORDER — NATO EXPANDS, DEFENSE BUDGETS TRIPLE": {
+    blurb: "NATO expanded its membership and all allies committed to tripling defense budgets permanently, reshaping the global security architecture.",
+    analysis: "Tripled defense budgets create a permanent new normal for military spending. Defense stocks have a structural multi-decade tailwind. The post-war order is more militarized."
+  },
+  "PEACE TREATY SIGNED — FORMAL END TO HOSTILITIES": {
+    blurb: "A formal peace treaty was signed by all belligerents, officially ending the first world war of the 21st century and establishing new borders and trade agreements.",
+    analysis: "The peace treaty provides legal certainty for recovery. Markets fully price in the end of conflict. Reconstruction accelerates. A new economic era begins built on the ruins of the old."
+  },
+  "MARKETS STABILIZE — NEW NORMAL TAKES SHAPE": {
+    blurb: "Markets stabilized at new levels as the post-war 'new normal' took shape, with permanently higher defense spending and restructured global supply chains.",
+    analysis: "Stabilization means the market has found equilibrium. Defense and infrastructure lead. Tech rebuilds. The economy works, just differently than before. Long-term investors can position with confidence."
+  },
+  "RECONSTRUCTION BOOM — INFRASTRUCTURE SPENDING AT RECORD": {
+    blurb: "A reconstruction boom drove infrastructure spending to record levels worldwide as nations rebuilt devastated regions and modernized supply chains.",
+    analysis: "Record infrastructure spending is the ultimate Keynesian stimulus. Jobs, growth, and corporate profits all benefit. NASDAQ recovers on tech infrastructure demand. Gold moderates."
+  },
+  "INSTITUTIONAL BUYERS FLOOD MARKET": {
+    blurb: "Institutional investors flooded back into equity markets with record allocations, signaling that the 'smart money' believed the worst was over.",
+    analysis: "Institutional buying is the ultimate validation of recovery. When pension funds and endowments buy, it provides a floor under prices. All assets benefit from institutional conviction."
+  },
+  "MARKETS CLOSE — SCARS REMAIN BUT HOPE RETURNS": {
+    blurb: "Markets closed the final session of the wartime period with cautious optimism, bearing scars from the conflict but renewed hope for the future.",
+    analysis: "The closing bell on the war era. Portfolios are battered but rebuilding. The lessons of wartime investing: defense and gold protect, diversification matters, and markets eventually recover."
+  },
+
+  // ==========================================================================
+  // SCRIPTED GAME 3 — The Rollercoaster
+  // ==========================================================================
+
+  "FDA FAST-TRACKS REVOLUTIONARY CANCER TREATMENT": {
+    blurb: "The FDA granted breakthrough therapy designation and fast-track review to a revolutionary immunotherapy cancer treatment showing 90% remission rates.",
+    analysis: "Fast-tracked cancer treatment validates the biotech pipeline. The sector rallies on blockbuster potential. M&A speculation increases as big pharma circles the innovators."
+  },
+  "PHARMA MEGA-MERGER — LARGEST DEAL IN HISTORY ANNOUNCED": {
+    blurb: "Two pharmaceutical giants announced the largest merger in corporate history, creating a $500 billion combined entity dominating oncology and rare diseases.",
+    analysis: "Mega-mergers signal peak confidence in pharma. Biotech rallies on M&A premium. Smaller companies become acquisition targets. The sector consolidation trend accelerates."
+  },
+  "BIOTECH ETF GOES PARABOLIC — 3RD STRAIGHT DAY OF GAINS": {
+    blurb: "The leading biotech ETF surged for a third consecutive day, going parabolic as momentum traders piled into the healthcare rally.",
+    analysis: "Parabolic moves attract momentum but also mark dangerous territory. Biotech is running hot. Latecomers face risk if the music stops. Enjoy the ride but size positions carefully."
+  },
+  "BIOTECH HEDGE FUNDS REPORT BEST QUARTER IN DECADE": {
+    blurb: "Biotech-focused hedge funds reported their best quarterly returns in a decade, with several flagship funds posting 40%+ gains.",
+    analysis: "Hedge fund outperformance in biotech attracts more capital to the sector. The virtuous cycle continues as returns attract inflows which drive more returns. Until it doesn't."
+  },
+  "CLINICAL TRIAL HALTED — SEVERE SIDE EFFECTS REPORTED": {
+    blurb: "A high-profile clinical trial was halted after severe side effects were reported in multiple patients, raising safety concerns about the entire drug class.",
+    analysis: "Trial halt is a cold shower for biotech euphoria. The sector sells off on safety concerns. Drug class fears spread beyond the single compound. Reality check after parabolic gains."
+  },
+  "FDA LAUNCHES INVESTIGATION INTO PHARMA FRAUD": {
+    blurb: "The FDA launched a formal investigation into potential fraud in clinical trial data submitted by several pharmaceutical companies.",
+    analysis: "FDA fraud investigation is worst case for biotech. If trial data is fraudulent, drug approvals get reversed. The entire pipeline of pending approvals faces heightened scrutiny."
+  },
+  "MARKETS STABILIZE — ROTATION INTO ENERGY": {
+    blurb: "Markets stabilized as capital rotated out of beaten-down biotech into energy stocks, seeking value in the commodity sector.",
+    analysis: "Sector rotation from biotech to energy is classic risk reallocation. Oil and energy benefit from inflows. Biotech bleeds as momentum reverses. The market finds new leadership."
+  },
+  "REPORTS OF EXPLOSION NEAR EUROPEAN GAS PIPELINE — UNVERIFIED": {
+    blurb: "Unverified reports emerged of an explosion near a major European gas pipeline, triggering an immediate spike in natural gas futures.",
+    analysis: "Pipeline explosion reports, even unverified, spike energy prices instantly. Oil and gas surge on supply fears. If confirmed, European energy prices could double. Markets are hair-trigger on energy."
+  },
+  "NORD STREAM 3 SABOTAGED — EUROPEAN ENERGY CRISIS": {
+    blurb: "Underwater explosions destroyed the newly completed Nord Stream 3 pipeline, triggering an immediate European energy crisis.",
+    analysis: "Another Nord Stream sabotage eliminates European gas supply. Oil and energy surge. European markets crash on recession fears. Gold benefits from geopolitical instability."
+  },
+  "OIL SURGES — OPEC REFUSES TO INCREASE PRODUCTION": {
+    blurb: "Oil prices surged after OPEC refused to increase production quotas despite soaring prices, citing the need to maintain market 'stability.'",
+    analysis: "OPEC defending high prices means sustained energy inflation. Oil benefits directly. Consumers and businesses suffer from higher costs. Gold rises on inflation fears."
+  },
+  "OIL TANKER EXPLODES IN STRAIT OF HORMUZ": {
+    blurb: "A loaded oil tanker exploded in the Strait of Hormuz, temporarily disrupting traffic through the waterway that handles 20% of global oil transit.",
+    analysis: "Hormuz disruption is the ultimate oil supply shock. Oil surges on fears of extended closure. Gold rises on geopolitical risk. NASDAQ drops on energy cost inflation."
+  },
+  "WORST DROUGHT IN 500 YEARS — CROP FAILURES WORLDWIDE": {
+    blurb: "A record-breaking drought described as the worst in 500 years devastated agricultural regions worldwide, causing widespread crop failures.",
+    analysis: "Once-in-500-years drought destroys food supply. Agricultural commodity prices surge. Coffee and grain prices spike. Gold rises on inflation. Emerging markets suffer from food insecurity."
+  },
+  "ENERGY PRICES STABILIZE — STRATEGIC RESERVES RELEASED": {
+    blurb: "Energy prices stabilized after multiple nations coordinated strategic petroleum reserve releases totaling 200 million barrels.",
+    analysis: "Strategic reserve releases provide temporary relief but deplete emergency stocks. Oil prices stabilize short-term but the underlying supply problem remains. A brief reprieve."
+  },
+  "TESLA PREPARING MASSIVE CYBERTRUCK RECALL OVER BATTERY DEFECT": {
+    blurb: "Reports emerged that Tesla was preparing a massive Cybertruck recall due to a battery defect that could cause thermal runaway in certain conditions.",
+    analysis: "Recall rumors hit Tesla's newest product line. Stock dips on warranty costs and brand damage. Lithium faces sympathy selling. Competitors like BYD gain on Tesla's stumble."
+  },
+  "TESLA CYBERTRUCK MASSIVE RECALL — BATTERY FIRES REPORTED": {
+    blurb: "Tesla issued a massive Cybertruck recall after multiple battery fires were reported, the largest safety action in the company's history.",
+    analysis: "Confirmed battery fires are a nightmare for Tesla. Stock crashes on safety concerns and recall costs. Lithium sells off on EV demand fears. BYD and competitors gain share."
+  },
+  "BYD OVERTAKES TESLA IN GLOBAL EV SALES": {
+    blurb: "BYD officially overtook Tesla as the world's largest EV manufacturer by quarterly sales volume, a historic shift in the automotive industry.",
+    analysis: "BYD passing Tesla is a psychological blow. Tesla stock faces multiple compression on lost market leadership. Lithium benefits as overall EV demand remains strong regardless of who leads."
+  },
+  "TESLA HITS 52-WEEK LOW — IS THIS THE END?": {
+    blurb: "Tesla stock hit a 52-week low as a convergence of recalls, market share losses, and analyst downgrades raised existential questions about the company.",
+    analysis: "Tesla at 52-week lows is either a buying opportunity or the beginning of the end. The fundamentals are deteriorating but the brand still has power. Maximum uncertainty means maximum volatility."
+  },
+  "TESLA UNVEILS $25K MODEL — ORDERS CRASH SERVERS": {
+    blurb: "Tesla unveiled its long-awaited $25,000 compact EV and order servers immediately crashed as millions attempted to place reservations simultaneously.",
+    analysis: "The $25K Tesla is a game changer. Server-crashing demand proves mass market EV appetite. Tesla stock surges on volume growth potential. Lithium benefits from demand validation."
+  },
+  "EV SALES SURPASS GAS VEHICLES FOR FIRST TIME": {
+    blurb: "Electric vehicle sales surpassed gasoline vehicle sales globally for the first time in history, marking an irreversible tipping point for the auto industry.",
+    analysis: "The EV tipping point is here. Tesla and lithium benefit from the secular shift. Oil faces permanent demand destruction. This is the most significant auto industry moment since the Model T."
+  },
+  "TESLA RALLY CONTINUES — ANALYSTS UPGRADE TO STRONG BUY": {
+    blurb: "Tesla's rally extended as major Wall Street analysts upgraded the stock to Strong Buy, citing the $25K model demand and EV market leadership.",
+    analysis: "Analyst upgrades fuel the Tesla momentum. Institutional buyers follow upgrades. Lithium benefits from Tesla's success. The EV bull case is back with force."
+  },
+  "GME MEME MANIA RETURNS — ROARING KITTY POSTS AGAIN": {
+    blurb: "GameStop mania returned as the legendary 'Roaring Kitty' posted on social media for the first time in years, igniting retail trading frenzy.",
+    analysis: "Meme stock revival is pure sentiment-driven chaos. GME and crypto benefit from retail enthusiasm. NASDAQ is volatile as meme mania distorts normal market signals."
+  },
+  "CRYPTO TWITTER ERUPTS — 'SHORT SQUEEZE INCOMING' TRENDING": {
+    blurb: "Crypto Twitter erupted with short squeeze speculation as 'SHORT SQUEEZE INCOMING' trended worldwide, driving massive retail inflows into crypto exchanges.",
+    analysis: "Social media-driven squeeze narrative drives crypto volumes. BTC and altcoins benefit from retail FOMO. The squeeze thesis may or may not play out, but the volatility is guaranteed."
+  },
+  "MEME STOCKS SURGE — SHORT SELLERS PANIC": {
+    blurb: "Meme stocks and crypto surged in a coordinated retail rally as short sellers scrambled to cover positions across multiple assets.",
+    analysis: "Short seller panic creates violent upward moves. Momentum feeds on itself as covering forces more buying. Crypto and meme stocks benefit. But meme rallies always end eventually."
+  },
+  "MEME BUBBLE POPS — RETAIL TRADERS LEFT HOLDING BAGS": {
+    blurb: "The meme stock and crypto bubble burst as prices collapsed, leaving millions of retail traders holding massive losses.",
+    analysis: "Meme bubble pop is the inevitable conclusion. Retail traders suffer the most. Crypto and NASDAQ sell off on risk aversion. Gold benefits as burned investors seek safety."
+  },
+  "MASSIVE DEFI EXPLOIT DRAINS $2B": {
+    blurb: "A sophisticated DeFi exploit drained $2 billion from multiple decentralized finance protocols in the largest crypto hack in history.",
+    analysis: "$2B DeFi hack destroys trust in decentralized finance. Altcoins crash on security fears. BTC holds better as the 'safer' crypto. The incident strengthens the case for crypto regulation."
+  },
+  "GOLD RUSH — CENTRAL BANKS BUYING RECORD AMOUNTS": {
+    blurb: "Central banks worldwide purchased record amounts of gold, driven by de-dollarization trends and the desire for tangible reserve assets.",
+    analysis: "Record central bank gold buying is the strongest fundamental signal for gold. When nations choose gold over dollars, the structural bull case is confirmed. Gold's rally has institutional backing."
+  },
+  "GOLD ETFS SEE RECORD INFLOWS — BILLIONS POUR IN OVERNIGHT": {
+    blurb: "Gold ETFs received record inflows as billions poured in overnight from institutional investors seeking safe haven exposure.",
+    analysis: "Record ETF inflows mean institutional conviction in gold. When pension funds and endowments buy gold, it provides sustained price support. The gold bull market is broadening."
+  },
+  "GOLD HITS ALL-TIME HIGH — SAFE HAVEN DEMAND SURGES": {
+    blurb: "Gold hit a new all-time high as safe haven demand surged amid global economic uncertainty and geopolitical tensions.",
+    analysis: "All-time high gold signals peak uncertainty. Momentum attracts more buyers. Central banks and institutions are accumulating. The gold supercycle thesis is playing out in real time."
+  },
+  "STUDY: LOOKING AT GOLD REDUCES ANXIETY": {
+    blurb: "A peer-reviewed neuroscience study found that visual exposure to gold objects reduced cortisol levels and anxiety markers in 85% of participants.",
+    analysis: "A quirky study that goes viral. Novelty factor drives brief gold interest from retail buyers. A harmless, meme-worthy headline with a tiny positive nudge for gold sentiment."
+  },
+  "ASTRONOMERS DETECT HIGH-METALLIC NEAR-EARTH ASTEROID — COULD CONTAIN GOLD": {
+    blurb: "Astronomers detected a near-Earth asteroid with unusually high metallic content, with spectral analysis suggesting significant gold and platinum deposits.",
+    analysis: "Space gold sounds exciting but extraction is decades away. Short-term gold bears use it to argue future supply. In reality, the technology gap means zero near-term impact on prices."
+  },
+  "NASA: GOLD-RICH ASTEROID APPROACHING — MINING MISSION PLANNED": {
+    blurb: "NASA announced plans for a mining mission to the gold-rich asteroid, projecting the rock could contain more gold than all Earth's mined reserves.",
+    analysis: "Asteroid mining plans introduce long-term supply fear into gold markets. If space gold becomes real, Earth gold loses scarcity value. But this is decades out — current impact is psychological only."
+  },
+  "DEEP SEA MINING BEGINS — ALTERNATIVE MINERALS FLOODING MARKET": {
+    blurb: "Deep sea mining operations commenced in the Pacific, with initial hauls flooding markets with rare minerals at prices well below terrestrial mining costs.",
+    analysis: "Alternative mineral supply from deep sea mining undermines scarcity pricing for mined assets. Gold faces competitive pressure from new supply sources. The mining cost floor drops."
+  },
+  "GOLD CRASHES 2ND DAY — PANIC SELLING": {
+    blurb: "Gold crashed for a second consecutive day as panic selling accelerated, with leveraged gold ETFs liquidating positions in a cascading selloff.",
+    analysis: "Two-day gold crash signals a sentiment reversal. Leveraged liquidation creates forced selling that overshoots fundamentals. This could be a buying opportunity or the start of a bear market."
+  },
+  "MAJOR NATION ADOPTS BITCOIN AS LEGAL TENDER": {
+    blurb: "A major economy adopted Bitcoin as legal tender alongside its national currency, the most significant national crypto adoption in history.",
+    analysis: "A major nation going Bitcoin legal tender is the ultimate adoption catalyst. BTC surges on legitimacy. Altcoins follow. The crypto as currency narrative gains its strongest proof point yet."
+  },
+  "VISA AND MASTERCARD PROCESS BITCOIN NATIVELY": {
+    blurb: "Visa and Mastercard announced native Bitcoin processing on their payment networks, enabling direct BTC transactions at millions of merchants worldwide.",
+    analysis: "Payment network integration makes Bitcoin spendable everywhere. Adoption accelerates as friction disappears. BTC and the broader crypto ecosystem benefit from mainstream infrastructure support."
+  },
+  "CRYPTO RALLY ACCELERATES — MAINSTREAM ADOPTION SURGING": {
+    blurb: "The crypto rally accelerated as mainstream adoption metrics — wallet downloads, merchant acceptance, and institutional holdings — all hit record levels.",
+    analysis: "Accelerating adoption validates the bull thesis. When metrics across all categories improve simultaneously, the rally has fundamental support. BTC and altcoins benefit from rising tide."
+  },
+  "ETHEREUM COMPLETES MAJOR UPGRADE": {
+    blurb: "Ethereum successfully completed a major network upgrade, dramatically reducing gas fees and increasing transaction throughput.",
+    analysis: "Successful Ethereum upgrades boost the entire DeFi ecosystem. Lower fees attract more users and capital. Altcoins benefit as the leading smart contract platform gets better."
+  },
+  "ALTCOINS EXPLODE — 'ALT SEASON' DECLARED": {
+    blurb: "Altcoins exploded in a broad rally as crypto analysts declared the start of 'alt season,' with smaller tokens dramatically outperforming Bitcoin.",
+    analysis: "Alt season means risk appetite is at maximum. Smaller tokens surge as capital rotates from BTC into higher-beta bets. Maximum reward potential but also maximum crash risk."
+  },
+  "DEFI PROTOCOLS HIT ALL-TIME HIGH TOTAL VALUE LOCKED": {
+    blurb: "Decentralized finance protocols hit all-time high total value locked (TVL) as billions flooded into yield farming and liquidity pools.",
+    analysis: "Record DeFi TVL shows capital commitment to decentralized finance. Altcoins and ETH benefit from growing ecosystem value. But high TVL also attracts more hacks and exploits."
+  },
+  "COORDINATED GLOBAL RATE CUTS — MARKETS EUPHORIC": {
+    blurb: "Central banks worldwide announced coordinated interest rate cuts, triggering market euphoria and the strongest single-day rally in years.",
+    analysis: "Coordinated rate cuts are the ultimate bullish catalyst. Every risk asset surges on cheap money. NASDAQ leads. Crypto rallies. Gold benefits long-term from loose policy. Euphoria is everywhere."
+  },
+  "MASSIVE SHORT SQUEEZE": {
+    blurb: "A massive short squeeze erupted across multiple asset classes as bearish traders were forced to cover positions in the face of relentless buying pressure.",
+    analysis: "Cross-asset short squeeze creates explosive upward moves. Forced covering accelerates gains across NASDAQ, crypto, and commodities. The pain trade is up."
+  },
+  "EVERYTHING RALLY — BEST DAY IN MARKET HISTORY": {
+    blurb: "Markets staged the best single-day rally in history with every asset class, sector, and geography closing sharply higher in a historic 'everything rally.'",
+    analysis: "Everything rally is peak euphoria. When literally everything goes up together, it feels amazing but signals maximum complacency. Enjoy the gains but the next correction will be sharp."
+  },
+  "SLIGHT PULLBACK — PROFIT TAKING AFTER HISTORIC RUN": {
+    blurb: "Markets experienced a slight pullback as traders took profits after the historic rally, with volumes light and sentiment remaining broadly positive.",
+    analysis: "Healthy profit-taking after a historic run. No panic — just position trimming. The trend remains bullish. Dips get bought. This is normal market breathing after explosive moves."
+  },
+  "MARKETS CLOSE ON A HIGH — WHAT A RIDE": {
+    blurb: "Markets closed on a high note to end one of the most volatile and exciting trading periods in history, with traders reflecting on the wild ride.",
+    analysis: "The final bell on a rollercoaster period. Portfolios that survived the whipsaws are stronger for it. The market rewarded patience, diversification, and the courage to buy fear."
   },
 }

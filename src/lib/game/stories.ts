@@ -32,6 +32,7 @@ export interface Story {
   subcategory?: string  // For blocking same-subcategory concurrent stories
   teaser: string  // Short summary shown in DEVELOPING section (e.g., "TAIWAN CRISIS")
   stages: StoryStage[]
+  excludeChains?: string[]  // Chain IDs to permanently block when this story fires
 }
 
 export interface ActiveStory {
@@ -192,6 +193,7 @@ export const STORIES: Story[] = [
     category: 'geopolitical',
     subcategory: 'asia',
     teaser: 'TAIWAN STRAIT TENSIONS',
+    excludeChains: ['geo_taiwan_invasion', 'geo_taiwan_blockade', 'geo_taiwan_summit'],
     stages: [
       {
         headline: 'UNUSUAL PLA NAVAL ACTIVITY DETECTED NEAR TAIWAN',
@@ -2643,6 +2645,46 @@ export const STORIES: Story[] = [
         },
       },
     ],
+  },
+
+  // Bot Flood - AI Bot Swarm
+  {
+    id: 'story_bot_flood',
+    category: 'tech',
+    subcategory: 'ai',
+    teaser: 'BOT SWARM ALERT',
+    stages: [
+      {
+        headline: 'CLOUDFLARE REPORTS 3,500% SPIKE IN BOT TRAFFIC — "NEVER SEEN ANYTHING LIKE THIS"',
+        effects: { nasdaq: -0.03, tesla: -0.02, emerging: -0.02, gold: 0.04, btc: 0.03 }
+      },
+      {
+        headline: 'BOTS OVERWHELM TELECOM: MILLIONS RECEIVE 1,000+ CALLS AND EMAILS PER HOUR — NETWORKS COLLAPSING',
+        effects: { nasdaq: -0.12, tesla: -0.10, defense: -0.06, emerging: -0.10, oil: -0.05, lithium: -0.05, biotech: -0.04, altcoins: -0.08, gold: 0.12, btc: 0.10 }
+      },
+      {
+        headline: '',
+        effects: {},
+        branches: {
+          positive: {
+            headline: 'BOTNET TRACED TO ROGUE AI TRAINING RUN — OPENAI ENGINEER ARRESTED, NETWORKS RECOVERING',
+            effects: { nasdaq: 0.15, tesla: 0.12, defense: 0.08, emerging: 0.10, oil: 0.05, altcoins: 0.10, gold: -0.08, btc: -0.05 },
+            probability: 0.35,
+            allowsReversal: true
+          },
+          neutral: {
+            headline: 'INTERNET NOW REQUIRES "PROOF OF HUMANITY" — DIGITAL LIFE FOREVER CHANGED',
+            effects: { nasdaq: -0.05, tesla: -0.04, defense: -0.03, emerging: -0.06, altcoins: -0.12, gold: 0.08, btc: 0.06 },
+            probability: 0.35
+          },
+          negative: {
+            headline: 'BOTS PLACING FAKE TRADES AND FAKE NEWS — SEC HALTS ALL ELECTRONIC TRADING',
+            effects: { nasdaq: -0.25, tesla: -0.20, defense: -0.12, emerging: -0.18, oil: -0.08, lithium: -0.10, biotech: -0.08, altcoins: -0.20, gold: 0.25, btc: 0.22 },
+            probability: 0.30
+          }
+        }
+      }
+    ]
   },
 ]
 

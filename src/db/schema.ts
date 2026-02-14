@@ -116,3 +116,72 @@ export const scenarios = pgTable('scenarios', {
 }, (table) => [
   index('idx_scenarios_status').on(table.status),
 ])
+
+// ============================================
+// tennis_matches (PvE + PvP match results)
+// ============================================
+export const tennisMatches = pgTable('tennis_matches', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
+  mode: text('mode').notNull(),
+  difficulty: text('difficulty').notNull(),
+  opponentName: text('opponent_name').notNull(),
+  winner: text('winner').notNull(),
+  loser: text('loser').notNull(),
+  scoreline: text('scoreline').notNull(),
+  durationSeconds: integer('duration_seconds').notNull().default(0),
+  stats: text('stats'),
+  tournamentId: uuid('tournament_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  index('idx_tennis_matches_user_id').on(table.userId),
+  index('idx_tennis_matches_created_at').on(table.createdAt),
+  index('idx_tennis_matches_mode').on(table.mode),
+  index('idx_tennis_matches_tournament_id').on(table.tournamentId),
+])
+
+// ============================================
+// tennis_tournaments (save/resume bracket state)
+// ============================================
+export const tennisTournaments = pgTable('tennis_tournaments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
+  status: text('status').notNull().default('in_progress'),
+  state: text('state').notNull().default('{}'),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  index('idx_tennis_tournaments_user_id').on(table.userId),
+  index('idx_tennis_tournaments_status').on(table.status),
+  index('idx_tennis_tournaments_updated_at').on(table.updatedAt),
+])
+
+// ============================================
+// tennis_match_events (optional replay telemetry)
+// ============================================
+export const tennisMatchEvents = pgTable('tennis_match_events', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  matchId: uuid('match_id').notNull().references(() => tennisMatches.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
+  eventType: text('event_type').notNull(),
+  eventPayload: text('event_payload'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  index('idx_tennis_match_events_match_id').on(table.matchId),
+  index('idx_tennis_match_events_created_at').on(table.createdAt),
+])
+
+// ============================================
+// tennis_rankings (PvE/PvP leaderboard)
+// ============================================
+export const tennisRankings = pgTable('tennis_rankings', {
+  userId: uuid('user_id').primaryKey().references(() => profiles.id, { onDelete: 'cascade' }),
+  rating: integer('rating').notNull().default(1200),
+  matchesPlayed: integer('matches_played').notNull().default(0),
+  wins: integer('wins').notNull().default(0),
+  losses: integer('losses').notNull().default(0),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  index('idx_tennis_rankings_rating').on(table.rating),
+])

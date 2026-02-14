@@ -18,7 +18,7 @@ const DYNAMIC_EXPLANATIONS: { prefix: string; explanation: string }[] = [
   // Luxury asset daily costs
   {
     prefix: 'JET MAINTENANCE:',
-    explanation: "Your G650ER private jet requires constant upkeep. This daily cost covers: hangar fees at private terminals, flight crew salaries (pilots, attendants), fuel reserves, mandatory FAA inspections, insurance premiums, and routine maintenance. Owning a jet isn't just the purchase price - it's a lifestyle commitment that costs roughly 1% of the aircraft's value per day to maintain flight-ready status. The benefit? +20% Angel deal frequency and +40% VC deal frequency from networking at 45,000 feet."
+    explanation: "Your G650ER private jet requires constant upkeep. This daily cost covers: hangar fees at private terminals, flight crew salaries (pilots, attendants), fuel reserves, mandatory FAA inspections, insurance premiums, and routine maintenance. Owning a jet isn't just the purchase price - it's a lifestyle commitment that costs roughly 1% of the aircraft's value per day to maintain flight-ready status. The benefit? +30% deal frequency from networking at 45,000 feet."
   },
   {
     prefix: 'YACHT UPKEEP:',
