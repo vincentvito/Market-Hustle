@@ -212,3 +212,61 @@ export const tennisRankings = pgTable('tennis_rankings', {
 }, (table) => [
   index('idx_tennis_rankings_rating').on(table.rating),
 ])
+
+// ============================================
+// rooms (multiplayer room sessions)
+// ============================================
+export const rooms = pgTable('rooms', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  code: text('code').notNull().unique(),
+  hostId: uuid('host_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  status: text('status').notNull().default('lobby'), // lobby | playing | finished
+  scenarioData: text('scenario_data'), // JSON of ScriptedGameDefinition
+  gameDuration: smallint('game_duration').notNull().default(30),
+  maxPlayers: smallint('max_players').notNull().default(8),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  startedAt: timestamp('started_at', { withTimezone: true }),
+  finishedAt: timestamp('finished_at', { withTimezone: true }),
+}, (table) => [
+  index('idx_rooms_code').on(table.code),
+  index('idx_rooms_status').on(table.status),
+  index('idx_rooms_host_id').on(table.hostId),
+])
+
+// ============================================
+// room_players (players in a room)
+// ============================================
+export const roomPlayers = pgTable('room_players', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  roomId: uuid('room_id').notNull().references(() => rooms.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  username: text('username').notNull(),
+  isHost: boolean('is_host').notNull().default(false),
+  isReady: boolean('is_ready').notNull().default(false),
+  currentDay: smallint('current_day').notNull().default(0),
+  currentNetWorth: integer('current_net_worth').notNull().default(50000),
+  status: text('status').notNull().default('joined'), // joined | playing | finished | left
+  joinedAt: timestamp('joined_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  uniqueIndex('idx_room_players_unique').on(table.roomId, table.userId),
+  index('idx_room_players_room_id').on(table.roomId),
+])
+
+// ============================================
+// room_results (final results for room games)
+// ============================================
+export const roomResults = pgTable('room_results', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  roomId: uuid('room_id').notNull().references(() => rooms.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  username: text('username').notNull(),
+  finalNetWorth: integer('final_net_worth').notNull(),
+  profitPercent: decimal('profit_percent', { precision: 10, scale: 2 }).notNull(),
+  daysSurvived: smallint('days_survived').notNull(),
+  outcome: text('outcome').notNull(), // win | bankrupt | margin_called | etc.
+  rank: smallint('rank'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  uniqueIndex('idx_room_results_unique').on(table.roomId, table.userId),
+  index('idx_room_results_room_id').on(table.roomId),
+])

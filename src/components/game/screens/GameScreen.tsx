@@ -22,6 +22,7 @@ import { ActionsModal } from '../ui/ActionsModal'
 import { GiftsModal } from '../ui/GiftsModal'
 import { OffshoreTrustModal } from '../ui/OffshoreTrustModal'
 import { DebtRepaymentModal } from '../ui/DebtRepaymentModal'
+import { RoomProgressBar } from '../rooms/RoomProgressBar'
 import { useState, useEffect } from 'react'
 
 export function GameScreen() {
@@ -107,6 +108,7 @@ export function GameScreen() {
       <ActionsModal />
       <GiftsModal />
       <Header />
+      <RoomProgressBar />
       <StatsBar onDebtClick={() => setShowCreditCards(true)} />
       <PortfolioOverlay
         onSelectAsset={handlePortfolioAssetSelect}

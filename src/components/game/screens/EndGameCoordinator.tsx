@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { useUserDetails } from '@/hooks/useUserDetails'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
@@ -10,6 +10,8 @@ import { AuthModal } from '@/components/auth/AuthModal'
 import { GuestEndView } from './endGameViews/GuestEndView'
 import { MemberEndView } from './endGameViews/MemberEndView'
 import { ProEndView } from './endGameViews/ProEndView'
+import { RoomLeaderboard } from '../rooms/RoomLeaderboard'
+import { useRoom } from '@/hooks/useRoom'
 import type { EndGameProps, LossBreakdown, LeaderboardRank } from './endGameViews/types'
 
 const STARTING_NET_WORTH = 0
@@ -48,6 +50,11 @@ export function EndGameCoordinator() {
   const prices = useGame((state) => state.prices)
   const cash = useGame((state) => state.cash)
 
+  // Room state
+  const roomId = useRoom(state => state.roomId)
+  const submitRoomResult = useRoom(state => state.submitResult)
+  const roomSubmittedRef = useRef(false)
+
   // Local state
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [leaderboardRank, setLeaderboardRank] = useState<LeaderboardRank | undefined>()
@@ -79,6 +86,21 @@ export function EndGameCoordinator() {
 
     return () => clearTimeout(timer)
   }, [username, gameDuration, getNetWorth])
+
+  // Submit room result if in a room game
+  useEffect(() => {
+    if (!roomId || roomSubmittedRef.current) return
+    roomSubmittedRef.current = true
+
+    const nw = getNetWorth()
+    submitRoomResult({
+      finalNetWorth: Math.round(nw),
+      profitPercent: ((nw - STARTING_NET_WORTH) / STARTING_CAPITAL * 100) || 0,
+      daysSurvived: screen === 'win' ? gameDuration : day,
+      outcome: screen === 'win' ? 'win' : gameOverReason,
+      username: username || 'unknown',
+    })
+  }, [roomId, submitRoomResult, getNetWorth, screen, gameDuration, day, gameOverReason, username])
 
   // Compute derived values
   const outcome: 'win' | 'loss' = screen === 'win' ? 'win' : 'loss'
@@ -200,6 +222,9 @@ export function EndGameCoordinator() {
       ) : (
         <GuestEndView {...props} />
       )}
+
+      {/* Room Leaderboard (shown when game was a room game) */}
+      {roomId && <RoomLeaderboard />}
 
       {/* Auth Modal (shared across views) */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />

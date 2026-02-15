@@ -7,6 +7,10 @@ import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboa
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { isIntroSeen } from './IntroScreen'
+import { CreateRoomModal } from '../rooms/CreateRoomModal'
+import { JoinRoomModal } from '../rooms/JoinRoomModal'
+import { AuthModal } from '@/components/auth/AuthModal'
+import { useRoom } from '@/hooks/useRoom'
 
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
@@ -65,6 +69,11 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const [usernameInput, setUsernameInput] = useState('')
   const [usernameError, setUsernameError] = useState<string | null>(null)
   const [isEditingUsername, setIsEditingUsername] = useState(false)
+  const [showCreateRoom, setShowCreateRoom] = useState(false)
+  const [showJoinRoom, setShowJoinRoom] = useState(false)
+  const [showAuthForRoom, setShowAuthForRoom] = useState(false)
+  const [pendingRoomAction, setPendingRoomAction] = useState<'create' | 'join' | null>(null)
+  const roomStatus = useRoom(state => state.roomStatus)
   const hasInitialData = useRef(!!initialLeaderboards)
 
   // Guests can always play - no username required
@@ -238,6 +247,38 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           [ PLAY NOW ]
         </button>
 
+        {/* Room Buttons */}
+        {hasValidUsername && (
+          <div className="flex gap-3 mb-8">
+            <button
+              onClick={() => {
+                if (!user) {
+                  setPendingRoomAction('create')
+                  setShowAuthForRoom(true)
+                } else {
+                  setShowCreateRoom(true)
+                }
+              }}
+              className="border border-mh-border text-mh-text-dim px-4 py-2 text-xs font-mono cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue transition-colors"
+            >
+              CREATE ROOM
+            </button>
+            <button
+              onClick={() => {
+                if (!user) {
+                  setPendingRoomAction('join')
+                  setShowAuthForRoom(true)
+                } else {
+                  setShowJoinRoom(true)
+                }
+              }}
+              className="border border-mh-border text-mh-text-dim px-4 py-2 text-xs font-mono cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue transition-colors"
+            >
+              JOIN ROOM
+            </button>
+          </div>
+        )}
+
         {/* Leaderboard Section */}
         <h1 className="text-mh-text-dim text-lg font-mono tracking-widest mb-3">LEADERBOARD</h1>
         {/* Duration filter - only for registered users */}
@@ -358,6 +399,24 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
         )}
       </div>
 
+      {/* Room Modals */}
+      <CreateRoomModal
+        isOpen={showCreateRoom}
+        onClose={() => setShowCreateRoom(false)}
+        onCreated={() => setShowCreateRoom(false)}
+      />
+      <JoinRoomModal
+        isOpen={showJoinRoom}
+        onClose={() => setShowJoinRoom(false)}
+        onJoined={() => setShowJoinRoom(false)}
+      />
+      <AuthModal
+        isOpen={showAuthForRoom}
+        onClose={() => {
+          setShowAuthForRoom(false)
+          setPendingRoomAction(null)
+        }}
+      />
     </div>
   )
 }
