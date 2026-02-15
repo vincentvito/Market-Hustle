@@ -72,8 +72,9 @@ export const DEFAULT_USER_STATE: UserState = {
 }
 
 // Game limits by user type
-export const ANONYMOUS_GAME_LIMIT = 5        // Lifetime total for anonymous users
-export const REGISTERED_FREE_DAILY_LIMIT = 3 // Daily limit for registered free users
+export const ANONYMOUS_GAME_LIMIT = 999      // Guests can play unlimited (conversion via end-game modal)
+export const REGISTERED_FREE_INITIAL_GAMES = 3 // Initial games after registration
+export const REGISTERED_FREE_DAILY_LIMIT = 1 // 1 game per day after initial games used
 export const PRO_TRIAL_GAME_LIMIT = 5        // Free Pro trial games for signed-in users
 
 // Helper to generate unique game ID
@@ -87,15 +88,31 @@ export function getTodayDateString(): string {
 }
 
 // Check if user can start a new game based on their tier
-// AUTH DISABLED: Always allow game starts
 export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
-  return true
+  // Pro users: unlimited
+  if (state.tier === 'pro') return true
+  // Guests: always allow (conversion happens at end-game)
+  if (!isLoggedIn) return true
+  // Registered free users: check limits
+  return getRemainingGames(state, isLoggedIn) > 0
 }
 
 // Get remaining games based on user tier
-// AUTH DISABLED: Always return unlimited
 export function getRemainingGames(state: UserState, isLoggedIn: boolean): number {
-  return Infinity
+  // Pro users: unlimited
+  if (state.tier === 'pro') return Infinity
+  // Guests: unlimited (we convert at end-game)
+  if (!isLoggedIn) return Infinity
+  // Registered free users: 3 initial games + 1/day after that
+  const totalPlayed = state.totalGamesPlayed
+  if (totalPlayed < REGISTERED_FREE_INITIAL_GAMES) {
+    // Still have initial games
+    return REGISTERED_FREE_INITIAL_GAMES - totalPlayed
+  }
+  // After initial games used: 1 game per day
+  const today = getTodayDateString()
+  if (state.lastPlayedDate !== today) return REGISTERED_FREE_DAILY_LIMIT
+  return Math.max(0, REGISTERED_FREE_DAILY_LIMIT - state.gamesPlayedToday)
 }
 
 // Get the limit type for display purposes

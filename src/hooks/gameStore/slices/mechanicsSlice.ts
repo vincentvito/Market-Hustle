@@ -334,14 +334,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const effectiveTier = get().getEffectiveTier()
     const willUseProTrial = storeUserTier === 'free' && storeIsLoggedIn && get().hasProTrialRemaining()
 
-    // Check game limits based on user state:
-    // - Pro users (paid or trial): unlimited
-    // - Registered free users (logged in, no trial): 3 games/day
-    // - Anonymous users (not logged in): 10 games lifetime
-    if (effectiveTier !== 'pro' && !canStartGame(userState, storeIsLoggedIn)) {
+    // Check game limits (canStartGame handles all tiers):
+    // - Pro users (paid): unlimited
+    // - Guests: unlimited (conversion at end-game)
+    // - Registered free users: 3 initial games + 1/day
+    if (!canStartGame(userState, storeIsLoggedIn)) {
       const limitType = getLimitType(userState, storeIsLoggedIn)
       if (limitType === 'anonymous') {
-        // Anonymous user hit 10 lifetime games - show signup modal
         set({
           showAnonymousLimitModal: true,
           showDailyLimitModal: false,
@@ -349,7 +348,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
           limitType: 'anonymous',
         })
       } else {
-        // Registered free user hit 3 daily games - show upgrade modal
+        // Registered free user hit daily limit
         set({
           showDailyLimitModal: true,
           showAnonymousLimitModal: false,
@@ -371,12 +370,12 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     // Update games played counter based on user type
     let updatedUserState: typeof userState
     if (!storeIsLoggedIn || userState.isAnonymous) {
-      // Anonymous user - increment lifetime counter (localStorage only)
+      // Guest user - increment lifetime counter (localStorage only)
       updatedUserState = incrementAnonymousGames(userState)
     } else {
       // Registered user - increment daily counter
       // Also sync to Supabase (fire-and-forget, doesn't block game start)
-      if (effectiveTier !== 'pro') {
+      if (storeUserTier !== 'pro') {
         callIncrementGamesPlayed()
       }
       updatedUserState = incrementGamesPlayed(userState)

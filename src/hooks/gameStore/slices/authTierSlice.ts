@@ -181,9 +181,12 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
 
     // Use Supabase data as authoritative source for logged-in users
     const { userTier } = get()
+    // Build a synthetic UserState for getRemainingGames calculation
+    const userState = loadUserState()
+    const syntheticState = { ...userState, gamesPlayedToday, lastPlayedDate: profile.lastPlayedDate || '', tier: userTier }
     set({
       supabaseProfile: { ...profile, gamesPlayedToday },
-      gamesRemaining: userTier === 'pro' ? Infinity : Math.max(0, REGISTERED_FREE_DAILY_LIMIT - gamesPlayedToday),
+      gamesRemaining: userTier === 'pro' ? Infinity : getRemainingGames(syntheticState, true),
       limitType: userTier === 'pro' ? 'unlimited' : 'daily',
     })
   },
@@ -193,9 +196,16 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
   setIsUsingProTrial: (isUsing: boolean) => set({ isUsingProTrial: isUsing }),
 
   // Computed: effective tier considering Pro trial
-  // AUTH DISABLED: Always return 'pro' so all users can play pro games
+  // Guests get 'free' tier (30-day games only)
+  // Registered users get 'pro' features (all durations, full gameplay)
   getEffectiveTier: () => {
-    return 'pro'
+    const { userTier, isLoggedIn, proTrialGamesUsed } = get()
+    // Pro users always get pro
+    if (userTier === 'pro') return 'pro'
+    // Logged-in free users get pro features (unlocked durations etc.)
+    if (isLoggedIn) return 'pro'
+    // Guests get free tier
+    return 'free'
   },
 
   hasProTrialRemaining: () => {

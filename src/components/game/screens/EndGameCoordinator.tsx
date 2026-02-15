@@ -191,10 +191,15 @@ export function EndGameCoordinator() {
     leaderboardRank,
   }
 
-  // AUTH DISABLED: Always show Pro end view for all users
+  // Route to appropriate view based on auth state
+  // Guests see registration CTA, registered users see full end-game view
   return (
     <>
-      <ProEndView {...props} />
+      {isLoggedIn ? (
+        <ProEndView {...props} />
+      ) : (
+        <GuestEndView {...props} />
+      )}
 
       {/* Auth Modal (shared across views) */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />

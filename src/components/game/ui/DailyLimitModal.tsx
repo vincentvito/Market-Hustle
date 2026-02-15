@@ -1,22 +1,15 @@
 'use client'
 
 import { useGame } from '@/hooks/useGame'
-import { useStripeCheckout } from '@/hooks/useStripeCheckout'
-import { REGISTERED_FREE_DAILY_LIMIT, PRO_TRIAL_GAME_LIMIT } from '@/lib/game/userState'
+import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 
 /**
- * Modal shown when registered free users have hit their daily game limit (3/day).
- * Only shows when user has no Pro trial games remaining.
- * Prompts them to come back tomorrow or upgrade to Pro.
+ * Modal shown when registered free users have hit their daily game limit.
+ * Prompts them to come back tomorrow.
  */
 export function DailyLimitModal() {
   const showDailyLimitModal = useGame((state) => state.showDailyLimitModal)
   const setShowDailyLimitModal = useGame((state) => state.setShowDailyLimitModal)
-  const proTrialGamesUsed = useGame((state) => state.proTrialGamesUsed)
-  const { checkout, loading: checkoutLoading } = useStripeCheckout()
-
-  // User has used all their Pro trial games
-  const trialExhausted = proTrialGamesUsed >= PRO_TRIAL_GAME_LIMIT
 
   if (!showDailyLimitModal) return null
 
@@ -45,44 +38,18 @@ export function DailyLimitModal() {
 
           {/* Message */}
           <div className="text-mh-text-main text-sm mb-6 leading-relaxed">
-            You&apos;ve used all {REGISTERED_FREE_DAILY_LIMIT} free games for today.
-            {trialExhausted && (
-              <>
-                <br />
-                <span className="text-mh-text-dim">(Pro trial also used: {PRO_TRIAL_GAME_LIMIT}/{PRO_TRIAL_GAME_LIMIT})</span>
-              </>
-            )}
+            You&apos;ve used your {REGISTERED_FREE_DAILY_LIMIT === 1 ? 'free game' : `${REGISTERED_FREE_DAILY_LIMIT} free games`} for today.
             <br />
-            <span className="text-mh-text-dim">Come back tomorrow or upgrade to Pro for unlimited games.</span>
+            <span className="text-mh-text-dim">Come back tomorrow for another game!</span>
           </div>
 
-          {/* Buttons */}
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => setShowDailyLimitModal(false)}
-              className="w-full py-3 border-2 border-mh-border bg-transparent text-mh-text-main text-sm font-mono cursor-pointer hover:bg-mh-border/20 transition-colors"
-            >
-              [ BACK TO MENU ]
-            </button>
-            <button
-              onClick={() => checkout('monthly')}
-              disabled={checkoutLoading}
-              className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {checkoutLoading ? 'LOADING...' : 'UPGRADE TO PRO — $4.99/mo'}
-            </button>
-          </div>
-
-          {/* Pro benefits teaser */}
-          <div className="mt-4 pt-4 border-t border-mh-border">
-            <div className="text-mh-text-dim text-xs mb-2">PRO INCLUDES:</div>
-            <div className="text-mh-profit-green text-xs space-y-1">
-              <div>✓ Unlimited games</div>
-              <div>✓ 45 & 60-day modes</div>
-              <div>✓ Short selling & leverage</div>
-              <div>✓ Career statistics</div>
-            </div>
-          </div>
+          {/* Button */}
+          <button
+            onClick={() => setShowDailyLimitModal(false)}
+            className="w-full py-3 border-2 border-mh-border bg-transparent text-mh-text-main text-sm font-mono cursor-pointer hover:bg-mh-border/20 transition-colors"
+          >
+            [ BACK TO MENU ]
+          </button>
         </div>
       </div>
     </>
