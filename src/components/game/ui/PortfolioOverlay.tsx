@@ -378,12 +378,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
                           {RISK_TIER_LABELS[asset.riskTier]}
                         </span>
                       )}
-                      {/* AT RISK warning for high-risk PE */}
-                      {asset.failureChancePerDay && asset.failureChancePerDay >= 0.005 && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-mh-loss-red/20 text-mh-loss-red">
-                          ⚠️ AT RISK
-                        </span>
-                      )}
                     </div>
                     <div className="text-mh-text-dim text-[11px]">
                       Bought Day {owned.purchaseDay} for {formatLargePrice(owned.purchasePrice)}

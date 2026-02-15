@@ -508,7 +508,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
         },
       ],
       flavorHeadline:
-        "POPE ENDORSES BITCOIN IN SUNDAY SERMON — 'RENDER UNTO THE BLOCKCHAIN'",
+        "POPE REVEALS VATICAN TREASURY NOW 10% BITCOIN — 'FAITH IN DECENTRALIZATION'",
     },
 
     // ── DAY 26 ─────────────────────────────────────────────

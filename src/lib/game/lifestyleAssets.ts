@@ -10,7 +10,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
     name: 'Defense Spending Bill',
     emoji: '🎖️',
     flavor: 'Lobby Congress to pass increased defense spending',
-    cost: 3_000_000,
+    cost: 750_000,
     successEffects: { defense: 0.30, uranium: 0.20, oil: 0.15 },
     backfireEffects: {
       priceEffects: { defense: -0.15 },
@@ -23,7 +23,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
     name: 'Drug Fast-Track Act',
     emoji: '💊',
     flavor: 'Lobby Congress to deregulate drug approval process',
-    cost: 3_000_000,
+    cost: 750_000,
     successEffects: { biotech: 0.35, nasdaq: 0.12 },
     backfireEffects: {
       priceEffects: { biotech: -0.20 },
@@ -98,7 +98,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       chance: 0.50,
     },
   },
-  // Smokey's on K — single repeatable insider tip (system randomly picks a bill scenario)
+  // Smokey's on K — one-time insider tip (system randomly picks a bill scenario)
   insider_tip: {
     id: 'insider_tip',
     name: 'Insider Tip',
@@ -109,7 +109,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
     backfireEffects: {},        // Determined at runtime from randomly selected scenario
     backfireChance: 0.15,
     silentExecution: true,
-    repeatable: true,
+    repeatable: false,
   },
   // Apex Media endgame ability
   run_for_president: {
@@ -436,7 +436,7 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
     basePrice: 15_000_000,
     dailyCost: 250_000,
     description: 'G650ER. Skip the lines, close deals at 45,000 feet.',
-    passiveBenefit: '+20% deal frequency',
+    passiveBenefit: '+30% deal frequency',
   },
   {
     id: 'art_collection',

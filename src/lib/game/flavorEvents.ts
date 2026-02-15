@@ -37,7 +37,7 @@ export const FLAVOR_EVENTS: FlavorEvent[] = [
   { headline: "AMAZON LAUNCHES DRONE DELIVERY IN EUROPE", effects: { nasdaq: 0.02 } },
   { headline: "EU MANDATES 67.3°C ESPRESSO TEMPERATURE", effects: { coffee: -0.02 } },
   { headline: "EU PROPOSES MANDATORY 47-CHARACTER PASSWORDS", effects: { nasdaq: -0.02 } },
-  { headline: "POPE ENDORSES BITCOIN IN SUNDAY SERMON — 'RENDER UNTO THE BLOCKCHAIN'", effects: { btc: 0.02, altcoins: 0.01 } },
+  { headline: "POPE REVEALS VATICAN TREASURY NOW 10% BITCOIN — 'FAITH IN DECENTRALIZATION'", effects: { btc: 0.02, altcoins: 0.01 } },
   { headline: "FLORIDA MAN ACCIDENTALLY BUYS $2M IN URANIUM FUTURES — 'I THOUGHT IT WAS CRYPTO'", effects: { uranium: 0.02 } },
   { headline: "STUDY: TRADING STOCKS ACTIVATES SAME BRAIN REGIONS AS GAMBLING AND COCAINE", effects: { btc: 0.01 } },
   { headline: "TIKTOK TREND: GEN-ALPHA KIDS DOING 'MARGIN CALL CHALLENGES' ON PARENTS' BROKERAGES", effects: { nasdaq: -0.01 } },

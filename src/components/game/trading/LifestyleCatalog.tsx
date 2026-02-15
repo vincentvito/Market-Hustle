@@ -320,12 +320,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                     }`}>
                       {formatReturn(asset.dailyReturn)}
                     </span>
-                    {/* Failure risk indicator for high-risk PE */}
-                    {asset.failureChancePerDay && asset.failureChancePerDay >= 0.005 && (
-                      <span className="text-[10px] text-mh-loss-red">
-                        ⚠️ {Math.round(asset.failureChancePerDay * 30 * 100)}%/mo risk
-                      </span>
-                    )}
                     {isOwned && (
                       <span className={`text-xs font-bold ${
                         profitLoss >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
@@ -391,13 +385,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                       </span>
                     )}
                   </div>
-                  {/* Failure risk warning for high-risk PE */}
-                  {selectedAsset.failureChancePerDay && selectedAsset.failureChancePerDay >= 0.005 && (
-                    <div className="mt-2 p-2 rounded text-xs bg-mh-loss-red/10 text-mh-loss-red">
-                      <span className="font-bold">⚠️ HIGH RISK: </span>
-                      ~{Math.round(selectedAsset.failureChancePerDay * 30 * 100)}% monthly chance of total loss
-                    </div>
-                  )}
                 </div>
               </div>
 

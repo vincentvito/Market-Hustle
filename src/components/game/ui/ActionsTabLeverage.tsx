@@ -19,24 +19,27 @@ function formatPrice(value: number): string {
   return `$${value.toFixed(0)}`
 }
 
-function formatBackfireRisk(ability: PEAbility): string {
-  const risks: string[] = []
-  const effects = ability.backfireEffects
-
-  if (effects.fine) {
-    risks.push(`${formatPrice(effects.fine)} fine`)
+function getRiskDescription(ability: PEAbility): string {
+  switch (ability.id) {
+    case 'defense_spending_bill':
+      return 'If this backfires, defense stocks crash and you face an SEC investigation.'
+    case 'drug_fast_track':
+      return 'If this backfires, biotech stocks crash and you pay a $5M fine.'
+    case 'yemen_operations':
+      return 'If this backfires, oil prices drop and you lose this PE asset.'
+    case 'chile_acquisition':
+      return 'If this backfires, lithium prices crash and you pay a $100M fine.'
+    case 'project_chimera':
+      return 'If this backfires, you lose this PE asset with a 50% chance of game over.'
+    case 'operation_divide':
+      return 'If this backfires, NASDAQ crashes and you lose this PE asset.'
+    case 'insider_tip':
+      return '15% chance the tip is wrong — could mean fines or an SEC probe.'
+    case 'run_for_president':
+      return '50/50 odds. Lose and your media empire takes a massive hit.'
+    default:
+      return 'This operation carries significant risk if it backfires.'
   }
-  if (effects.losePE) {
-    risks.push('Lose PE asset')
-  }
-  if (effects.triggerEncounter) {
-    risks.push('SEC investigation')
-  }
-  if (effects.gameOverRisk) {
-    risks.push(`${Math.round(effects.gameOverRisk * 100)}% game over`)
-  }
-
-  return risks.length > 0 ? risks.join(', ') : 'Price crash'
 }
 
 export function ActionsTabLeverage() {
@@ -150,14 +153,14 @@ export function ActionsTabLeverage() {
                       {/* Cost, risk, and execute button (only if not used) */}
                       {!status.isUsed && (
                         <div className="mt-2">
-                          <div className="flex items-center gap-3 text-[10px] mb-2">
-                            <span className="font-bold text-amber-400">
-                              Cost: {formatPrice(ability.cost)}
-                            </span>
-                            <span className="text-mh-loss-red">
-                              Risk: {ability.repeatable ? `${Math.round(ability.backfireChance * 100)}% backfire` : formatBackfireRisk(ability)}
-                            </span>
+                          <div className="text-[10px] font-bold text-amber-400 mb-1">
+                            Cost: {formatPrice(ability.cost)}
                           </div>
+                          {canExecute && (
+                            <div className="text-[10px] text-mh-text-dim mb-2">
+                              {getRiskDescription(ability)}
+                            </div>
+                          )}
                           <button
                             onClick={() => executePEAbility(ability.id, peCompany.id)}
                             disabled={!canExecute}
@@ -179,7 +182,7 @@ export function ActionsTabLeverage() {
           )
         })}
 
-      {/* ===== LOCKED abilities: compact faded list ===== */}
+      {/* ===== LOCKED abilities: card-style list ===== */}
       {(() => {
         const lockedCompanies = peCompaniesWithAbilities.filter(pe => !ownedPEIds.has(pe.id))
         if (lockedCompanies.length === 0) return null
@@ -193,35 +196,44 @@ export function ActionsTabLeverage() {
             <div className="text-[10px] font-bold text-mh-text-dim uppercase tracking-wider mb-2 opacity-50">
               Locked Abilities
             </div>
-            <div className="space-y-1">
+            <div className={isModern3 ? 'space-y-2' : 'space-y-0'}>
               {lockedAbilities.map(({ ability, peCompany }) => (
                 <div
                   key={ability.id}
-                  className="flex items-center justify-between py-1.5 px-2 rounded opacity-40 cursor-pointer"
+                  className={`w-full p-3 text-left cursor-pointer opacity-50 ${
+                    isModern3
+                      ? 'rounded-lg bg-[#0f1419]'
+                      : 'border-b border-mh-border bg-mh-bg'
+                  }`}
                   onClick={() => {
                     setLockedClickedId(ability.id)
                     setTimeout(() => setLockedClickedId(null), 2500)
                   }}
                 >
                   {lockedClickedId === ability.id ? (
-                    <div className="text-[10px] text-amber-400 animate-pulse">
+                    <div className="text-xs text-amber-400 animate-pulse py-2">
                       Invest in Private Equity to unlock.
                     </div>
                   ) : (
-                    <>
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-sm grayscale flex-shrink-0">{ability.emoji}</span>
-                        <span className="text-[11px] font-bold text-mh-text-dim truncate">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">{ability.emoji}</div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-bold text-mh-text-bright truncate block">
                           {ability.name}
                         </span>
-                        <span className="text-[9px] text-mh-border flex-shrink-0">
-                          {peCompany.name}
-                        </span>
+                        <div className="text-xs text-mh-text-dim mt-0.5 line-clamp-1">
+                          {ability.flavor}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 flex-wrap">
+                          <span className="text-sm font-bold text-mh-text-main">
+                            {formatPrice(ability.cost)}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-amber-400 mt-1">
+                          {peCompany.emoji} {peCompany.name}
+                        </div>
                       </div>
-                      <span className="text-[10px] text-mh-border flex-shrink-0 ml-2">
-                        {formatPrice(ability.cost)}
-                      </span>
-                    </>
+                    </div>
                   )}
                 </div>
               ))}

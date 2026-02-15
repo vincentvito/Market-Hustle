@@ -275,6 +275,7 @@ export interface EventChain {
   category: string
   subcategory?: string               // For regional blocking (e.g., 'asia', 'middle-east')
   rumor: string
+  developing?: string            // Escalation headline shown on day 2 of duration-2 chains
   duration: number // days until resolution
   outcomes: EventChainOutcome[] // 2-4 possible outcomes
   // Sentiment for conflict prevention (rumor phase creates anticipation mood)
@@ -283,6 +284,8 @@ export interface EventChain {
   primaryAsset?: string              // Primary asset for mood recording
   allowsReversal?: boolean           // If true, chain can start even if it conflicts with current mood
   predictionMarket?: PredictionMarketHint  // Prediction market hint shown on day 2+ of rumor
+  excludeStories?: string[]               // Story IDs to permanently block when this chain fires
+  excludeChains?: string[]                // Chain IDs to permanently block when this chain fires
 }
 
 export interface ActiveChain {
@@ -290,6 +293,7 @@ export interface ActiveChain {
   startDay: number
   daysRemaining: number
   rumor: string
+  developing?: string  // Escalation headline shown on day 2 of duration-2 chains
   category: string
   subcategory?: string  // For regional blocking (e.g., 'asia', 'middle-east')
   predictionLine?: string  // Pre-computed prediction market text, shown on day 2+
