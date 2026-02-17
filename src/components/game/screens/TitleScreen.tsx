@@ -10,7 +10,6 @@ import { isIntroSeen } from './IntroScreen'
 import { CreateRoomModal } from '../rooms/CreateRoomModal'
 import { JoinRoomModal } from '../rooms/JoinRoomModal'
 import { AuthModal } from '@/components/auth/AuthModal'
-import { useRoom } from '@/hooks/useRoom'
 
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
@@ -59,7 +58,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const username = useGame(state => state.username)
   const setUsername = useGame(state => state.setUsername)
   const setSelectedDuration = useGame(state => state.setSelectedDuration)
-  const isLoggedIn = useGame(state => state.isLoggedIn)
   const { user, updateSettings } = useAuth()
 
   const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.daily ?? [])
@@ -72,12 +70,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const [showCreateRoom, setShowCreateRoom] = useState(false)
   const [showJoinRoom, setShowJoinRoom] = useState(false)
   const [showAuthForRoom, setShowAuthForRoom] = useState(false)
-  const [pendingRoomAction, setPendingRoomAction] = useState<'create' | 'join' | null>(null)
-  const roomStatus = useRoom(state => state.roomStatus)
   const hasInitialData = useRef(!!initialLeaderboards)
-
-  // Guests can always play - no username required
-  const isGuest = !isLoggedIn
 
   // Sync input with stored username
   useEffect(() => {
@@ -103,9 +96,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
     setIsEditingUsername(false)
   }
 
-  // Guests can play without username, registered users need one
   const hasValidUsername = !!username
-  const canPlay = isGuest || hasValidUsername
 
   // Initialize store from localStorage on mount
   useEffect(() => {
@@ -183,50 +174,48 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           BUY LOW. SELL HIGH.<br />DON&apos;T GO BROKE.
         </div>
 
-        {/* Username Input - only shown for registered users */}
-        {!isGuest && (
-          <div className="w-full max-w-[280px] mb-4">
-            {hasValidUsername && !isEditingUsername ? (
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-mh-text-dim text-sm">Playing as</span>
-                <span className="text-mh-accent-blue text-sm font-bold">{username}</span>
+        {/* Username Input */}
+        <div className="w-full max-w-[280px] mb-4">
+          {hasValidUsername && !isEditingUsername ? (
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-mh-text-dim text-sm">Playing as</span>
+              <span className="text-mh-accent-blue text-sm font-bold">{username}</span>
+              <button
+                onClick={() => setIsEditingUsername(true)}
+                className="text-mh-text-dim text-xs hover:text-mh-text-main transition-colors cursor-pointer bg-transparent border-none"
+              >
+                [change]
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-mh-text-dim text-xs mb-1">ENTER USERNAME TO PLAY</div>
+              <div className="flex gap-2 w-full">
+                <input
+                  type="text"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') validateAndSetUsername() }}
+                  maxLength={15}
+                  placeholder="your_username"
+                  className="flex-1 bg-transparent border border-mh-border text-mh-text-main text-sm font-mono
+                    px-3 py-2 outline-none focus:border-mh-accent-blue transition-colors placeholder:text-mh-text-dim/50"
+                />
                 <button
-                  onClick={() => setIsEditingUsername(true)}
-                  className="text-mh-text-dim text-xs hover:text-mh-text-main transition-colors cursor-pointer bg-transparent border-none"
+                  onClick={validateAndSetUsername}
+                  className="bg-transparent border border-mh-accent-blue text-mh-accent-blue
+                    px-3 py-2 text-xs font-mono cursor-pointer
+                    hover:bg-mh-accent-blue/10 transition-colors"
                 >
-                  [change]
+                  OK
                 </button>
               </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <div className="text-mh-text-dim text-xs mb-1">ENTER USERNAME TO PLAY</div>
-                <div className="flex gap-2 w-full">
-                  <input
-                    type="text"
-                    value={usernameInput}
-                    onChange={(e) => setUsernameInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                    onKeyDown={(e) => { if (e.key === 'Enter') validateAndSetUsername() }}
-                    maxLength={15}
-                    placeholder="your_username"
-                    className="flex-1 bg-transparent border border-mh-border text-mh-text-main text-sm font-mono
-                      px-3 py-2 outline-none focus:border-mh-accent-blue transition-colors placeholder:text-mh-text-dim/50"
-                  />
-                  <button
-                    onClick={validateAndSetUsername}
-                    className="bg-transparent border border-mh-accent-blue text-mh-accent-blue
-                      px-3 py-2 text-xs font-mono cursor-pointer
-                      hover:bg-mh-accent-blue/10 transition-colors"
-                  >
-                    OK
-                  </button>
-                </div>
-                {usernameError && (
-                  <div className="text-mh-loss-red text-xs">{usernameError}</div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+              {usernameError && (
+                <div className="text-mh-loss-red text-xs">{usernameError}</div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Play Button */}
         <button
@@ -237,9 +226,9 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
               setScreen('intro')
             }
           }}
-          disabled={!canPlay}
-          className={`border-2 px-8 py-3 text-base font-mono transition-colors mb-8
-            ${canPlay
+          disabled={!hasValidUsername}
+          className={`border-2 px-8 py-3 text-base font-mono transition-colors ${user ? 'mb-8' : 'mb-3'}
+            ${hasValidUsername
               ? 'border-mh-accent-blue text-mh-accent-blue bg-transparent cursor-pointer glow-text hover:bg-mh-accent-blue/10 active:bg-mh-accent-blue/20'
               : 'border-mh-border text-mh-text-dim bg-transparent cursor-not-allowed opacity-50'
             }`}
@@ -247,62 +236,68 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           [ PLAY NOW ]
         </button>
 
+        {/* Sign In Button - shown when logged out */}
+        {!user && (
+          <button
+            onClick={() => setShowAuthForRoom(true)}
+            className="border-2 px-8 py-3 text-base font-mono transition-colors mb-8 border-mh-border text-mh-text-dim bg-transparent cursor-pointer hover:border-mh-text-main hover:text-mh-text-main"
+          >
+            [ SIGN IN ]
+          </button>
+        )}
+
         {/* Room Buttons */}
         {hasValidUsername && (
-          <div className="flex gap-3 mb-8">
-            <button
-              onClick={() => {
-                if (!user) {
-                  setPendingRoomAction('create')
-                  setShowAuthForRoom(true)
-                } else {
-                  setShowCreateRoom(true)
-                }
-              }}
-              className="border border-mh-border text-mh-text-dim px-4 py-2 text-xs font-mono cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue transition-colors"
-            >
-              CREATE ROOM
-            </button>
-            <button
-              onClick={() => {
-                if (!user) {
-                  setPendingRoomAction('join')
-                  setShowAuthForRoom(true)
-                } else {
-                  setShowJoinRoom(true)
-                }
-              }}
-              className="border border-mh-border text-mh-text-dim px-4 py-2 text-xs font-mono cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue transition-colors"
-            >
-              JOIN ROOM
-            </button>
+          <div className="flex flex-col items-center gap-2 mb-8">
+            <div className="flex gap-3">
+              <button
+                onClick={user ? () => setShowCreateRoom(true) : () => setShowAuthForRoom(true)}
+                className={`border px-4 py-2 text-xs font-mono transition-colors ${
+                  user
+                    ? 'border-mh-border text-mh-text-dim cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue'
+                    : 'border-mh-border/50 text-mh-text-dim/40 cursor-pointer'
+                }`}
+              >
+                CREATE ROOM
+              </button>
+              <button
+                onClick={user ? () => setShowJoinRoom(true) : () => setShowAuthForRoom(true)}
+                className={`border px-4 py-2 text-xs font-mono transition-colors ${
+                  user
+                    ? 'border-mh-border text-mh-text-dim cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue'
+                    : 'border-mh-border/50 text-mh-text-dim/40 cursor-pointer'
+                }`}
+              >
+                JOIN ROOM
+              </button>
+            </div>
+            {!user && (
+              <span className="text-mh-text-dim/50 text-[10px] font-mono">SIGN IN TO PLAY WITH FRIENDS</span>
+            )}
           </div>
         )}
 
         {/* Leaderboard Section */}
         <h1 className="text-mh-text-dim text-lg font-mono tracking-widest mb-3">LEADERBOARD</h1>
-        {/* Duration filter - only for registered users */}
-        {!isGuest && (
-          <div className="flex gap-2 mb-4">
-            {([30, 45, 60] as const).map((d) => (
-              <button
-                key={d}
-                onClick={() => {
-                  setLeaderboardDuration(d)
-                  setSelectedDuration(d)
-                  if (user) updateSettings({ duration: d })
-                }}
-                className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors cursor-pointer ${
-                  leaderboardDuration === d
-                    ? 'bg-mh-accent-blue/20 text-mh-accent-blue border-mh-accent-blue'
-                    : 'bg-mh-bg text-mh-text-dim border-mh-border hover:text-mh-text-main hover:border-mh-text-dim'
-                }`}
-              >
-                {d} days
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="flex gap-2 mb-4">
+          {([30, 45, 60] as const).map((d) => (
+            <button
+              key={d}
+              onClick={() => {
+                setLeaderboardDuration(d)
+                setSelectedDuration(d)
+                if (user) updateSettings({ duration: d })
+              }}
+              className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors cursor-pointer ${
+                leaderboardDuration === d
+                  ? 'bg-mh-accent-blue/20 text-mh-accent-blue border-mh-accent-blue'
+                  : 'bg-mh-bg text-mh-text-dim border-mh-border hover:text-mh-text-main hover:border-mh-text-dim'
+              }`}
+            >
+              {d} days
+            </button>
+          ))}
+        </div>
 
         {/* Daily Leaderboard */}
         <div className="w-full max-w-[320px] mb-6">
@@ -412,10 +407,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
       />
       <AuthModal
         isOpen={showAuthForRoom}
-        onClose={() => {
-          setShowAuthForRoom(false)
-          setPendingRoomAction(null)
-        }}
+        onClose={() => setShowAuthForRoom(false)}
       />
     </div>
   )

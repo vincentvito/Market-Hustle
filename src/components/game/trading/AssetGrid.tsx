@@ -125,7 +125,7 @@ export function AssetGrid() {
                   ? 'bg-mh-bg'
                   : 'bg-mh-border'
           }`}>
-            <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full`}>
+            <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full content-center h-full`}>
               {ASSETS.map((asset, index) => (
                 <AssetCell
                   key={asset.id}

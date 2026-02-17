@@ -93,14 +93,6 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     position: 'bottom',
   },
   {
-    targetId: 'tutorial-price-movement',
-    title: 'Asset Grid',
-    description: 'Tap any asset to buy some shares. Try it now!',
-    position: 'bottom',
-    interactive: true,
-    waitForAction: 'trade',
-  },
-  {
     targetId: 'tutorial-price-section',
     title: 'Price Movement',
     description: 'Green ↑ = price up. Red ↓ = price down. Buy low, sell high.',
@@ -206,7 +198,17 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
   const updatePosition = useCallback(() => {
     if (!step) return
 
-    const target = document.getElementById(step.targetId)
+    // Find visible element (handles duplicate IDs from responsive mobile/desktop grids)
+    let target: HTMLElement | null = null
+    const candidates = Array.from(document.querySelectorAll<HTMLElement>(`[id="${step.targetId}"]`))
+    for (let i = 0; i < candidates.length; i++) {
+      const r = candidates[i].getBoundingClientRect()
+      if (r.width > 0 && r.height > 0) {
+        target = candidates[i]
+        break
+      }
+    }
+    if (!target) target = document.getElementById(step.targetId)
     if (target) {
       const rect = target.getBoundingClientRect()
       setTargetRect(rect)
@@ -329,22 +331,6 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
         }}
       />
 
-      {/* Floating emoji on top of asset for Asset Grid step */}
-      {step.title === 'Asset Grid' && (
-        <div
-          className="absolute tutorial-finger-tap"
-          style={{
-            top: highlightTop + highlightHeight / 2 - 20,
-            left: highlightLeft + highlightWidth / 2 - 20,
-            fontSize: '2.5rem',
-            pointerEvents: 'none',
-            zIndex: 10000,
-          }}
-        >
-          👆
-        </div>
-      )}
-
       {/* Tooltip */}
       <div
         className="absolute bg-[#1a2634] border border-mh-border p-4 rounded-lg max-w-[280px] font-mono"
@@ -396,15 +382,6 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
                     {fingerEmoji}
                   </span>
                 </div>
-              </div>
-            ) : step.title === 'Asset Grid' ? (
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-mh-accent-blue font-bold text-sm glow-text">
-                  {step.title}
-                </span>
-                <span className="text-mh-text-dim text-xs">
-                  {currentStep + 1} / {TUTORIAL_STEPS.length}
-                </span>
               </div>
             ) : (
               <div className="flex items-center justify-between mb-2">
