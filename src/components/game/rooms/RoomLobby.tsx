@@ -2,19 +2,24 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRoom, type RoomPlayer } from '@/hooks/useRoom'
-import { useRoomChannel, type RoomPresenceState } from '@/hooks/useRoomChannel'
+import { useRoomChannel, type RoomPresenceState, type RoomSettings } from '@/hooks/useRoomChannel'
 import { useGame } from '@/hooks/useGame'
 import { useAuth } from '@/contexts/AuthContext'
-import { SCRIPTED_GAME_1 } from '@/lib/game/scriptedGames/script1_yellowstone'
-import { SCRIPTED_GAME_2 } from '@/lib/game/scriptedGames/script2_worldWar'
-import { SCRIPTED_GAME_3 } from '@/lib/game/scriptedGames/script3_rollercoaster'
-import type { ScriptedGameDefinition } from '@/lib/game/scriptedGames/types'
 
-const SCENARIOS: { id: string; title: string; description: string; data: ScriptedGameDefinition }[] = [
-  { id: 'yellowstone', title: 'Yellowstone', description: 'Bull run into volcanic apocalypse', data: SCRIPTED_GAME_1 },
-  { id: 'world_war', title: 'World War III', description: 'Geopolitical escalation & safe havens', data: SCRIPTED_GAME_2 },
-  { id: 'rollercoaster', title: 'The Rollercoaster', description: 'Sector rotation chaos & whiplash', data: SCRIPTED_GAME_3 },
-]
+const DURATION_OPTIONS = [30, 45, 60] as const
+const CASH_OPTIONS = [25_000, 50_000, 1_00_000, 2_00_000] as const
+const DEBT_OPTIONS = [0, 25_000, 50_000, 1_00_000] as const
+
+function formatCurrency(value: number): string {
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
+  return `$${value}`
+}
+
+export interface RoomGameConfig {
+  duration: number
+  startingCash: number
+  startingDebt: number
+}
 
 export function RoomLobby() {
   const { user } = useAuth()
@@ -25,26 +30,26 @@ export function RoomLobby() {
   const players = useRoom(state => state.players)
   const setPlayers = useRoom(state => state.setPlayers)
   const setRoomStatus = useRoom(state => state.setRoomStatus)
-  const setScenario = useRoom(state => state.setScenario)
   const startRoomGame = useRoom(state => state.startGame)
   const leaveRoom = useRoom(state => state.leaveRoom)
   const toggleReady = useRoom(state => state.toggleReady)
 
-  const setPreloadedScenario = useGame(state => state.setPreloadedScenario)
   const startGame = useGame(state => state.startGame)
 
   const username = useGame(state => state.username)
-  const [selectedScenario, setSelectedScenario] = useState(0)
+  const [selectedDuration, setSelectedDuration] = useState<number>(30)
+  const [selectedCash, setSelectedCash] = useState<number>(50_000)
+  const [selectedDebt, setSelectedDebt] = useState<number>(50_000)
   const [starting, setStarting] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copiedLink, setCopiedLink] = useState(false)
+  const [copiedCode, setCopiedCode] = useState(false)
 
-  // Stable callback refs to avoid re-subscribing channel
   const onPresenceSyncRef = useRef<(p: Record<string, RoomPresenceState>) => void>()
   onPresenceSyncRef.current = (presencePlayers: Record<string, RoomPresenceState>) => {
     const playerList: RoomPlayer[] = Object.values(presencePlayers).map(p => ({
       userId: p.userId,
       username: p.username,
-      isHost: false, // We'll set this from room data
+      isHost: false,
       isReady: p.isReady,
       currentDay: p.currentDay,
       currentNetWorth: p.currentNetWorth,
@@ -53,16 +58,26 @@ export function RoomLobby() {
     setPlayers(playerList)
   }
 
-  const onGameStartRef = useRef<(scenarioData: string) => void>()
-  onGameStartRef.current = (scenarioData: string) => {
+  const onGameStartRef = useRef<(broadcastData: string) => void>()
+  onGameStartRef.current = (broadcastData: string) => {
     try {
-      const scenario = JSON.parse(scenarioData) as ScriptedGameDefinition
-      setScenario(scenario)
+      const config: RoomGameConfig = JSON.parse(broadcastData)
       setRoomStatus('playing')
-      setPreloadedScenario(scenario)
-      startGame()
-    } catch (error) {
-      console.error('Failed to parse scenario data:', error)
+      startGame(
+        config.duration as 30 | 45 | 60,
+        { cash: config.startingCash, debt: config.startingDebt },
+      )
+    } catch {
+      // Malformed broadcast payload — ignore
+    }
+  }
+
+  const onSettingsUpdateRef = useRef<(settings: RoomSettings) => void>()
+  onSettingsUpdateRef.current = (settings: RoomSettings) => {
+    if (!isHost) {
+      setSelectedDuration(settings.duration)
+      setSelectedCash(settings.startingCash)
+      setSelectedDebt(settings.startingDebt)
     }
   }
 
@@ -70,48 +85,101 @@ export function RoomLobby() {
     onPresenceSyncRef.current?.(p)
   }, [])
 
-  const handleGameStart = useCallback((scenarioData: string) => {
-    onGameStartRef.current?.(scenarioData)
+  const handleGameStart = useCallback((broadcastData: string) => {
+    onGameStartRef.current?.(broadcastData)
   }, [])
 
-  const { track, broadcastGameStart } = useRoomChannel({
+  const handleSettingsUpdate = useCallback((settings: RoomSettings) => {
+    onSettingsUpdateRef.current?.(settings)
+  }, [])
+
+  const { track, broadcastGameStart, broadcastSettings } = useRoomChannel({
     roomId,
     userId: user?.id ?? null,
     username,
+    isHost,
     onPresenceSync: handlePresenceSync,
     onGameStart: handleGameStart,
+    onSettingsUpdate: handleSettingsUpdate,
   })
 
-  // Sync ready state via presence when toggling
+  useEffect(() => {
+    if (!isHost) return
+    broadcastSettings({
+      duration: selectedDuration,
+      startingCash: selectedCash,
+      startingDebt: selectedDebt,
+    })
+  }, [isHost, selectedDuration, selectedCash, selectedDebt, broadcastSettings])
+
   const handleToggleReady = async () => {
-    await toggleReady()
     const currentPlayer = players.find(p => p.userId === user?.id)
-    track({ isReady: !currentPlayer?.isReady })
+    const newReady = !currentPlayer?.isReady
+    await toggleReady(newReady)
+    track({ isReady: newReady })
   }
 
   const handleStartGame = async () => {
     setStarting(true)
-    const scenario = SCENARIOS[selectedScenario].data
-    const success = await startRoomGame(scenario)
+    const config: RoomGameConfig = {
+      duration: selectedDuration,
+      startingCash: selectedCash,
+      startingDebt: selectedDebt,
+    }
+    const success = await startRoomGame()
     if (success) {
-      // Broadcast to all players
-      broadcastGameStart(JSON.stringify(scenario))
-      // Host also starts their own game
-      setPreloadedScenario(scenario)
-      startGame()
+      broadcastGameStart(JSON.stringify(config))
+      startGame(
+        config.duration as 30 | 45 | 60,
+        { cash: config.startingCash, debt: config.startingDebt },
+      )
     }
     setStarting(false)
+  }
+
+  const handleCopyLink = () => {
+    if (roomCode) {
+      const url = `${window.location.origin}?room=${roomCode}`
+      navigator.clipboard.writeText(url)
+      setCopiedLink(true)
+      setTimeout(() => setCopiedLink(false), 2_000)
+    }
   }
 
   const handleCopyCode = () => {
     if (roomCode) {
       navigator.clipboard.writeText(roomCode)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setCopiedCode(true)
+      setTimeout(() => setCopiedCode(false), 2_000)
     }
   }
 
-  // Track initial presence on mount
+  // Fallback polling for missed game_start broadcast
+  useEffect(() => {
+    if (roomStatus !== 'lobby' || !roomId) return
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/rooms/${roomId}`)
+        if (!res.ok) return
+        const data = await res.json()
+        if (data.room?.status === 'playing') {
+          // Room started but we missed the broadcast — start with default config
+          const config: RoomGameConfig = {
+            duration: selectedDuration,
+            startingCash: selectedCash,
+            startingDebt: selectedDebt,
+          }
+          onGameStartRef.current?.(JSON.stringify(config))
+        }
+      } catch {
+        // Ignore polling errors
+      }
+    }, 8_000)
+
+    return () => clearInterval(interval)
+  }, [roomStatus, roomId, selectedDuration, selectedCash, selectedDebt])
+
   useEffect(() => {
     if (user?.id && username) {
       track({ userId: user.id, username, isReady: isHost, status: 'joined' })
@@ -120,7 +188,7 @@ export function RoomLobby() {
 
   if (roomStatus !== 'lobby') return null
 
-  const allReady = players.length >= 2 && players.every(p => p.isReady)
+  const allReady = players.length >= 1 && players.every(p => p.isReady)
   const canStart = isHost && allReady && !starting
 
   return (
@@ -128,15 +196,25 @@ export function RoomLobby() {
       <div className="flex flex-col items-center p-4 pb-8 text-center min-h-full">
         {/* Header */}
         <div className="text-mh-text-dim text-xs font-mono tracking-widest mb-2 mt-4">ROOM CODE</div>
-        <button
-          onClick={handleCopyCode}
-          className="text-mh-accent-blue text-4xl font-mono tracking-[0.5em] mb-2 cursor-pointer bg-transparent border-none hover:text-mh-text-bright transition-colors"
-          title="Click to copy"
-        >
+        <div className="text-mh-accent-blue text-4xl font-mono tracking-[0.5em] mb-3">
           {roomCode}
-        </button>
+        </div>
+        <div className="flex gap-2 mb-2">
+          <button
+            onClick={handleCopyLink}
+            className="border border-mh-accent-blue text-mh-accent-blue px-4 py-2 text-xs font-mono cursor-pointer hover:bg-mh-accent-blue/10 transition-colors rounded"
+          >
+            {copiedLink ? 'COPIED!' : 'COPY LINK'}
+          </button>
+          <button
+            onClick={handleCopyCode}
+            className="border border-mh-border text-mh-text-dim px-4 py-2 text-xs font-mono cursor-pointer hover:border-mh-text-dim hover:text-mh-text-main transition-colors rounded"
+          >
+            {copiedCode ? 'COPIED!' : 'COPY CODE'}
+          </button>
+        </div>
         <div className="text-mh-text-dim text-xs mb-8">
-          {copied ? 'Copied!' : 'Click to copy — share with friends'}
+          Share this link with friends to join
         </div>
 
         {/* Player List */}
@@ -170,30 +248,77 @@ export function RoomLobby() {
           </div>
         </div>
 
-        {/* Scenario Selection (Host only) */}
-        {isHost && (
-          <div className="w-full max-w-[320px] mb-6">
-            <div className="text-mh-text-dim text-sm mb-3 font-mono">SCENARIO</div>
-            <div className="space-y-2">
-              {SCENARIOS.map((scenario, idx) => (
-                <button
-                  key={scenario.id}
-                  onClick={() => setSelectedScenario(idx)}
-                  className={`w-full text-left px-4 py-3 border rounded-lg transition-colors cursor-pointer ${
-                    selectedScenario === idx
-                      ? 'border-mh-accent-blue bg-mh-accent-blue/10'
-                      : 'border-mh-border hover:border-mh-text-dim'
-                  }`}
-                >
-                  <div className={`text-sm font-mono ${selectedScenario === idx ? 'text-mh-accent-blue' : 'text-mh-text-main'}`}>
-                    {scenario.title}
-                  </div>
-                  <div className="text-xs text-mh-text-dim mt-1">{scenario.description}</div>
-                </button>
-              ))}
+        {/* Game Settings — host edits, non-host sees read-only */}
+        <div className="w-full max-w-[320px] mb-6">
+          <div className="text-mh-text-dim text-sm mb-3 font-mono">GAME SETTINGS</div>
+          <div className="border border-mh-border rounded-lg p-4 space-y-4">
+            {/* Duration */}
+            <div>
+              <div className="text-mh-text-dim text-xs font-mono mb-2">DURATION</div>
+              <div className="flex gap-2">
+                {DURATION_OPTIONS.map((d) => (
+                  <button
+                    key={d}
+                    onClick={isHost ? () => setSelectedDuration(d) : undefined}
+                    className={`flex-1 py-2 text-xs font-mono border rounded transition-colors ${
+                      isHost ? 'cursor-pointer' : 'cursor-default'
+                    } ${
+                      selectedDuration === d
+                        ? 'border-mh-accent-blue text-mh-accent-blue bg-mh-accent-blue/10'
+                        : 'border-mh-border text-mh-text-dim' + (isHost ? ' hover:border-mh-text-dim' : '')
+                    }`}
+                  >
+                    {d} days
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Starting Cash */}
+            <div>
+              <div className="text-mh-text-dim text-xs font-mono mb-2">STARTING CASH</div>
+              <div className="flex gap-2">
+                {CASH_OPTIONS.map((c) => (
+                  <button
+                    key={c}
+                    onClick={isHost ? () => setSelectedCash(c) : undefined}
+                    className={`flex-1 py-2 text-xs font-mono border rounded transition-colors ${
+                      isHost ? 'cursor-pointer' : 'cursor-default'
+                    } ${
+                      selectedCash === c
+                        ? 'border-mh-profit-green text-mh-profit-green bg-mh-profit-green/10'
+                        : 'border-mh-border text-mh-text-dim' + (isHost ? ' hover:border-mh-text-dim' : '')
+                    }`}
+                  >
+                    {formatCurrency(c)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Starting Debt */}
+            <div>
+              <div className="text-mh-text-dim text-xs font-mono mb-2">STARTING DEBT</div>
+              <div className="flex gap-2">
+                {DEBT_OPTIONS.map((d) => (
+                  <button
+                    key={d}
+                    onClick={isHost ? () => setSelectedDebt(d) : undefined}
+                    className={`flex-1 py-2 text-xs font-mono border rounded transition-colors ${
+                      isHost ? 'cursor-pointer' : 'cursor-default'
+                    } ${
+                      selectedDebt === d
+                        ? 'border-mh-loss-red text-mh-loss-red bg-mh-loss-red/10'
+                        : 'border-mh-border text-mh-text-dim' + (isHost ? ' hover:border-mh-text-dim' : '')
+                    }`}
+                  >
+                    {d === 0 ? '$0' : formatCurrency(d)}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Action Buttons */}
         <div className="w-full max-w-[320px] space-y-3">

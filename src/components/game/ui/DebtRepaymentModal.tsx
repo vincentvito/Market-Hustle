@@ -4,7 +4,6 @@ import { useGame } from '@/hooks/useGame'
 import { formatCompact } from '@/lib/utils/formatMoney'
 import { useRef, useEffect } from 'react'
 
-// Format money with full precision for debt amounts
 function formatMoney(value: number): string {
   return `$${value.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`
 }
@@ -31,7 +30,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
   maxRepayRef.current = maxRepay
   creditCardDebtRef.current = creditCardDebt
 
-  // Update all displays (slider + text)
   const updateDisplay = (amount: number) => {
     const percent = maxRepayRef.current > 0 ? (amount / maxRepayRef.current) * 100 : 0
 
@@ -56,7 +54,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
     }
   }
 
-  // Get amount from mouse/touch position
   const getAmountFromPosition = (clientX: number) => {
     if (!sliderRef.current) return 0
     const rect = sliderRef.current.getBoundingClientRect()
@@ -65,7 +62,7 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
     const max = maxRepayRef.current
     const rawAmount = percent * max
     // Scale rounding step based on max amount
-    const step = max >= 10_000 ? 100 : max >= 1_000 ? 10 : 1
+    const step = max >= 10_000 ? 100 : max >= 1_000 ? 10 : max >= 1 ? 1 : 0.01
     const rounded = Math.round(rawAmount / step) * step
     return Math.min(rounded, max)
   }
@@ -90,7 +87,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
     isDragging.current = false
   }
 
-  // Attach window event listeners for mouse drag
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => handleMove(e.clientX)
     const handleMouseUp = () => handleEnd()
@@ -104,7 +100,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
     }
   }, [])
 
-  // Set MAX amount
   const setMaxAmount = () => {
     currentAmount.current = maxRepayRef.current
     updateDisplay(maxRepayRef.current)
@@ -125,7 +120,7 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-mh-bg border border-mh-border rounded-lg p-6 max-w-md w-full"
+        className="bg-mh-bg border border-mh-border rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

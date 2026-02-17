@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useRoom } from '@/hooks/useRoom'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -10,7 +11,7 @@ function formatMoney(value: number): string {
   return `$${value.toLocaleString()}`
 }
 
-function getRankEmoji(rank: number): string {
+function formatRankLabel(rank: number): string {
   if (rank === 1) return '1st'
   if (rank === 2) return '2nd'
   if (rank === 3) return '3rd'
@@ -19,15 +20,24 @@ function getRankEmoji(rank: number): string {
 
 export function RoomLeaderboard() {
   const { user } = useAuth()
+  const router = useRouter()
   const results = useRoom(state => state.results)
   const roomCode = useRoom(state => state.roomCode)
   const fetchResults = useRoom(state => state.fetchResults)
   const cleanup = useRoom(state => state.cleanup)
 
-  // Fetch results on mount
+  const allRanked = results.length > 0 && results.every(r => r.rank !== null)
+
   useEffect(() => {
     fetchResults()
-  }, [fetchResults])
+    if (allRanked) return
+
+    const interval = setInterval(() => {
+      fetchResults()
+    }, 8_000)
+
+    return () => clearInterval(interval)
+  }, [fetchResults, allRanked])
 
   if (results.length === 0) return null
 
@@ -61,7 +71,7 @@ export function RoomLeaderboard() {
                 rank === 3 ? 'text-yellow-500' :
                 'text-mh-text-dim'
               }`}>
-                {getRankEmoji(rank)}
+                {formatRankLabel(rank)}
               </span>
               <div className="flex-1 min-w-0">
                 <div className="text-mh-text-main text-sm truncate">
@@ -73,7 +83,7 @@ export function RoomLeaderboard() {
                 </div>
               </div>
               <span className={`font-mono text-sm ${
-                result.finalNetWorth >= 50000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
+                result.finalNetWorth >= 50_000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
               }`}>
                 {formatMoney(result.finalNetWorth)}
               </span>
@@ -83,7 +93,7 @@ export function RoomLeaderboard() {
       </div>
 
       <button
-        onClick={cleanup}
+        onClick={() => { cleanup(); router.push('/') }}
         className="w-full py-2 border border-mh-border text-mh-text-dim font-mono text-xs cursor-pointer hover:border-mh-text-dim hover:text-mh-text-main transition-colors rounded"
       >
         BACK TO MENU

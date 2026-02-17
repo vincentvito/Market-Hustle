@@ -19,6 +19,7 @@ export function GuestEndView({
   gameDuration,
   onPlayAgain,
   onOpenAuth,
+  roomStandings,
 }: EndGameProps) {
   const isWin = outcome === 'win'
 
@@ -54,6 +55,9 @@ export function GuestEndView({
           {profitPercent.toFixed(1)}% RETURN
         </div>
       )}
+
+      {/* Room standings (live or final) */}
+      {roomStandings}
 
       {/* Registration CTA - The main conversion point */}
       <div className="w-full max-w-[320px] md:max-w-[400px] mb-6">

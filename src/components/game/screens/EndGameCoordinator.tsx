@@ -8,26 +8,16 @@ import { getEndGameMessage, type MarginCallContext } from '@/lib/game/endGameMes
 import { ASSETS } from '@/lib/game/assets'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { GuestEndView } from './endGameViews/GuestEndView'
-import { MemberEndView } from './endGameViews/MemberEndView'
 import { ProEndView } from './endGameViews/ProEndView'
 import { RoomLeaderboard } from '../rooms/RoomLeaderboard'
+import { RoomLiveStandings } from '../rooms/RoomLiveStandings'
 import { useRoom } from '@/hooks/useRoom'
 import type { EndGameProps, LossBreakdown, LeaderboardRank } from './endGameViews/types'
 
 const STARTING_NET_WORTH = 0
-const STARTING_CAPITAL = 50000
+const STARTING_CAPITAL = 50_000
 
-/**
- * EndGameCoordinator - Master dispatcher for end-game screens.
- *
- * Responsibilities:
- * 1. Subscribe to game state and auth context
- * 2. Compute all data needed by views (props-based architecture)
- * 3. Route to appropriate tier-specific view (Guest, Member, Pro)
- * 4. Manage shared state (auth modal)
- */
 export function EndGameCoordinator() {
-  // Game state
   const screen = useGame((state) => state.screen)
   const day = useGame((state) => state.day)
   const gameDuration = useGame((state) => state.gameDuration)
@@ -36,35 +26,30 @@ export function EndGameCoordinator() {
   const startGame = useGame((state) => state.startGame)
   const gamesRemaining = useGame((state) => state.gamesRemaining)
 
-  // Auth state
   const isLoggedIn = useGame((state) => state.isLoggedIn)
   const getProTrialGamesRemaining = useGame((state) => state.getProTrialGamesRemaining)
   const { isPro } = useUserDetails()
 
-  // Username for leaderboard rank
   const username = useGame((state) => state.username)
-
-  // Pro-specific data for loss breakdown
   const leveragedPositions = useGame((state) => state.leveragedPositions)
   const shortPositions = useGame((state) => state.shortPositions)
   const prices = useGame((state) => state.prices)
   const cash = useGame((state) => state.cash)
 
-  // Room state
   const roomId = useRoom(state => state.roomId)
+  const roomStatus = useRoom(state => state.roomStatus)
   const submitRoomResult = useRoom(state => state.submitResult)
   const roomSubmittedRef = useRef(false)
 
-  // Local state
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [leaderboardRank, setLeaderboardRank] = useState<LeaderboardRank | undefined>()
 
-  // Hooks
   const { checkout, loading: checkoutLoading } = useStripeCheckout()
 
   // Fetch leaderboard rank after a short delay (gives fire-and-forget save time to land)
+  // Skip for room games — room has its own standings
   useEffect(() => {
-    if (!username) return
+    if (!username || roomId) return
 
     const timer = setTimeout(async () => {
       try {
@@ -85,7 +70,7 @@ export function EndGameCoordinator() {
     }, 600)
 
     return () => clearTimeout(timer)
-  }, [username, gameDuration, getNetWorth])
+  }, [username, gameDuration, getNetWorth, roomId])
 
   // Submit room result if in a room game
   useEffect(() => {
@@ -102,7 +87,6 @@ export function EndGameCoordinator() {
     })
   }, [roomId, submitRoomResult, getNetWorth, screen, gameDuration, day, gameOverReason, username])
 
-  // Compute derived values
   const outcome: 'win' | 'loss' = screen === 'win' ? 'win' : 'loss'
   const netWorth = getNetWorth()
   const profitAmount = (netWorth - STARTING_NET_WORTH) || 0
@@ -111,7 +95,6 @@ export function EndGameCoordinator() {
   const reason = outcome === 'win' ? 'WIN' : gameOverReason
   const canPlayAgain = gamesRemaining > 0
 
-  // Compute loss breakdown for Pro users
   const lossBreakdown = useMemo((): LossBreakdown | undefined => {
     if (!isPro || outcome !== 'loss') return undefined
 
@@ -158,7 +141,6 @@ export function EndGameCoordinator() {
     }
   }, [isPro, outcome, gameOverReason, leveragedPositions, shortPositions, prices, cash])
 
-  // Compute context for dynamic game over messages
   const marginCallContext = useMemo((): MarginCallContext | undefined => {
     if (!lossBreakdown) return undefined
 
@@ -175,10 +157,8 @@ export function EndGameCoordinator() {
     return { worstLeveraged, worstShort }
   }, [lossBreakdown])
 
-  // Get the end game message (with context for dynamic messages)
   const message = getEndGameMessage(reason, marginCallContext)
 
-  // Action handlers
   const handlePlayAgain = () => {
     startGame()
   }
@@ -193,7 +173,10 @@ export function EndGameCoordinator() {
     setShowAuthModal(true)
   }
 
-  // Build props for views
+  const roomStandings = roomId ? (
+    roomStatus === 'finished' ? <RoomLeaderboard /> : <RoomLiveStandings />
+  ) : undefined
+
   const props: EndGameProps = {
     outcome,
     gameOverReason: reason,
@@ -211,10 +194,9 @@ export function EndGameCoordinator() {
     lossBreakdown,
     proTrialGamesRemaining: getProTrialGamesRemaining(),
     leaderboardRank,
+    roomStandings,
   }
 
-  // Route to appropriate view based on auth state
-  // Guests see registration CTA, registered users see full end-game view
   return (
     <>
       {isLoggedIn ? (
@@ -222,9 +204,6 @@ export function EndGameCoordinator() {
       ) : (
         <GuestEndView {...props} />
       )}
-
-      {/* Room Leaderboard (shown when game was a room game) */}
-      {roomId && <RoomLeaderboard />}
 
       {/* Auth Modal (shared across views) */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />

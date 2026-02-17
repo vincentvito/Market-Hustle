@@ -25,6 +25,7 @@ export function ProEndView({
   gameDuration,
   onPlayAgain,
   leaderboardRank,
+  roomStandings,
 }: EndGameProps) {
   const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
   const resultsRef = useRef<HTMLDivElement>(null)
@@ -79,6 +80,9 @@ export function ProEndView({
 
       <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>
+
+      {/* Room standings (live or final) */}
+      {roomStandings}
 
       {/* Play Again Button - Always enabled for Pro */}
       <button

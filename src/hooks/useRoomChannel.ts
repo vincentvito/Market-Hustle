@@ -11,47 +11,71 @@ export interface RoomPresenceState {
   status: 'joined' | 'playing' | 'finished' | 'left'
 }
 
+export interface RoomSettings {
+  duration: number
+  startingCash: number
+  startingDebt: number
+}
+
 interface UseRoomChannelOptions {
   roomId: string | null
   userId: string | null
   username: string | null
+  isHost?: boolean
   onGameStart?: (scenarioData: string) => void
   onPlayerFinished?: (data: { userId: string; username: string; finalNetWorth: number }) => void
   onPlayerLeft?: (data: { userId: string }) => void
   onPresenceSync?: (players: Record<string, RoomPresenceState>) => void
+  onSettingsUpdate?: (settings: RoomSettings) => void
 }
 
 export function useRoomChannel({
   roomId,
   userId,
   username,
+  isHost,
   onGameStart,
   onPlayerFinished,
   onPlayerLeft,
   onPresenceSync,
+  onSettingsUpdate,
 }: UseRoomChannelOptions) {
   const channelRef = useRef<RealtimeChannel | null>(null)
   const presenceRef = useRef<RoomPresenceState | null>(null)
 
-  // Track the player's own presence state
-  const track = useCallback((state: Partial<RoomPresenceState>) => {
-    if (!channelRef.current || !userId || !username) return
+  const onGameStartRef = useRef(onGameStart)
+  const onPlayerFinishedRef = useRef(onPlayerFinished)
+  const onPlayerLeftRef = useRef(onPlayerLeft)
+  const onPresenceSyncRef = useRef(onPresenceSync)
+  const onSettingsUpdateRef = useRef(onSettingsUpdate)
 
+  onGameStartRef.current = onGameStart
+  onPlayerFinishedRef.current = onPlayerFinished
+  onPlayerLeftRef.current = onPlayerLeft
+  onPresenceSyncRef.current = onPresenceSync
+  onSettingsUpdateRef.current = onSettingsUpdate
+
+  const track = useCallback((state: Partial<RoomPresenceState>) => {
+    if (!userId || !username) return
+
+    // Always update presenceRef so subscribe callback can use latest state
     presenceRef.current = {
       userId,
       username,
       isReady: false,
       currentDay: 0,
-      currentNetWorth: 50000,
+      currentNetWorth: 50_000,
       status: 'joined',
       ...presenceRef.current,
       ...state,
     }
 
-    channelRef.current.track(presenceRef.current)
+    // Only send to channel if subscribed
+    if (channelRef.current) {
+      channelRef.current.track(presenceRef.current)
+    }
   }, [userId, username])
 
-  // Broadcast events
   const broadcastGameStart = useCallback((scenarioData: string) => {
     if (!channelRef.current) return
     channelRef.current.send({
@@ -79,7 +103,15 @@ export function useRoomChannel({
     })
   }, [userId])
 
-  // Subscribe/unsubscribe to channel
+  const broadcastSettings = useCallback((settings: RoomSettings) => {
+    if (!channelRef.current) return
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'room_settings',
+      payload: settings,
+    })
+  }, [])
+
   useEffect(() => {
     if (!roomId || !userId || !username) return
 
@@ -98,35 +130,33 @@ export function useRoomChannel({
             players[key] = arr[0]
           }
         }
-        onPresenceSync?.(players)
+        onPresenceSyncRef.current?.(players)
       })
       .on('broadcast', { event: 'game_start' }, ({ payload }: { payload: Record<string, string> }) => {
-        onGameStart?.(payload.scenarioData)
+        onGameStartRef.current?.(payload.scenarioData)
       })
       .on('broadcast', { event: 'player_finished' }, ({ payload }: { payload: { userId: string; username: string; finalNetWorth: number } }) => {
-        onPlayerFinished?.(payload)
+        onPlayerFinishedRef.current?.(payload)
       })
       .on('broadcast', { event: 'player_left' }, ({ payload }: { payload: { userId: string } }) => {
-        onPlayerLeft?.(payload)
+        onPlayerLeftRef.current?.(payload)
+      })
+      .on('broadcast', { event: 'room_settings' }, ({ payload }: { payload: RoomSettings }) => {
+        onSettingsUpdateRef.current?.(payload)
       })
       .subscribe(async (status: string) => {
         if (status === 'SUBSCRIBED') {
-          await channel.track({
+          // Use presenceRef if track() was called before subscription, otherwise use defaults
+          const initialState = presenceRef.current || {
             userId,
             username,
-            isReady: false,
+            isReady: !!isHost,
             currentDay: 0,
-            currentNetWorth: 50000,
-            status: 'joined',
-          })
-          presenceRef.current = {
-            userId,
-            username,
-            isReady: false,
-            currentDay: 0,
-            currentNetWorth: 50000,
+            currentNetWorth: 50_000,
             status: 'joined',
           }
+          presenceRef.current = initialState
+          await channel.track(initialState)
         }
       })
 
@@ -137,7 +167,6 @@ export function useRoomChannel({
       channelRef.current = null
       presenceRef.current = null
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, userId, username])
 
   return {
@@ -145,5 +174,6 @@ export function useRoomChannel({
     broadcastGameStart,
     broadcastPlayerFinished,
     broadcastPlayerLeft,
+    broadcastSettings,
   }
 }

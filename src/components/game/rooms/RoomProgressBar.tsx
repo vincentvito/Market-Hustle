@@ -18,13 +18,13 @@ export function RoomProgressBar() {
   const players = useRoom(state => state.players)
   const setPlayers = useRoom(state => state.setPlayers)
   const roomStatus = useRoom(state => state.roomStatus)
+  const isHost = useRoom(state => state.isHost)
 
   const day = useGame(state => state.day)
   const gameDuration = useGame(state => state.gameDuration)
   const getNetWorth = useGame(state => state.getNetWorth)
   const username = useGame(state => state.username)
 
-  // Stable callback ref
   const onPresenceSyncRef = useRef<(p: Record<string, RoomPresenceState>) => void>()
   onPresenceSyncRef.current = (presencePlayers: Record<string, RoomPresenceState>) => {
     const playerList = Object.values(presencePlayers).map(p => ({
@@ -47,10 +47,10 @@ export function RoomProgressBar() {
     roomId,
     userId: user?.id ?? null,
     username,
+    isHost,
     onPresenceSync: handlePresenceSync,
   })
 
-  // Update presence on every day advance
   useEffect(() => {
     if (roomStatus === 'playing' && user?.id) {
       track({
@@ -63,7 +63,6 @@ export function RoomProgressBar() {
 
   if (!roomId || roomStatus !== 'playing') return null
 
-  // Sort players by net worth descending
   const otherPlayers = players
     .filter(p => p.userId !== user?.id && p.status !== 'left')
     .sort((a, b) => b.currentNetWorth - a.currentNetWorth)
@@ -72,13 +71,12 @@ export function RoomProgressBar() {
 
   return (
     <div className="bg-mh-bg/90 border-b border-mh-border px-3 py-2">
-      <div className="flex items-center gap-3 overflow-x-auto text-xs font-mono">
-        <span className="text-mh-text-dim flex-shrink-0">ROOM:</span>
+      <div className="flex items-center gap-3 overflow-x-auto text-xs font-mono justify-end">
         {otherPlayers.map((player) => (
           <div key={player.userId} className="flex items-center gap-1.5 flex-shrink-0">
             <span className="text-mh-text-dim truncate max-w-[60px]">{player.username}</span>
             <span className="text-mh-text-dim">D{player.currentDay}/{gameDuration}</span>
-            <span className={player.currentNetWorth >= 50000 ? 'text-mh-profit-green' : 'text-mh-loss-red'}>
+            <span className={player.currentNetWorth >= 50_000 ? 'text-mh-profit-green' : 'text-mh-loss-red'}>
               {formatMoney(player.currentNetWorth)}
             </span>
             {player.status === 'finished' && (
