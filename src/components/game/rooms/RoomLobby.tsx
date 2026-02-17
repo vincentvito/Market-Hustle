@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRoom, type RoomPlayer } from '@/hooks/useRoom'
 import { useRoomChannel, type RoomPresenceState, type RoomSettings } from '@/hooks/useRoomChannel'
 import { useGame } from '@/hooks/useGame'
+import type { GameDuration } from '@/lib/game/types'
 import { useAuth } from '@/contexts/AuthContext'
 
 const DURATION_OPTIONS = [30, 45, 60] as const
@@ -34,7 +35,7 @@ export function RoomLobby() {
   const leaveRoom = useRoom(state => state.leaveRoom)
   const toggleReady = useRoom(state => state.toggleReady)
 
-  const startGame = useGame(state => state.startGame)
+  const startGame: (duration?: GameDuration, options?: { cash?: number; debt?: number }) => void = useGame(state => state.startGame)
 
   const username = useGame(state => state.username)
   const [selectedDuration, setSelectedDuration] = useState<number>(30)
