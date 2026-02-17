@@ -167,7 +167,7 @@ export function useRoomChannel({
       channelRef.current = null
       presenceRef.current = null
     }
-  }, [roomId, userId, username])
+  }, [roomId, userId, username, isHost])
 
   return {
     track,
