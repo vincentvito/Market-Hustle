@@ -31,7 +31,7 @@ export function RoomLobby() {
   const players = useRoom(state => state.players)
   const setPlayers = useRoom(state => state.setPlayers)
   const setRoomStatus = useRoom(state => state.setRoomStatus)
-  const startRoomGame = useRoom(state => state.startGame)
+  const startRoomGame: () => Promise<boolean> = useRoom(state => state.startGame)
   const leaveRoom = useRoom(state => state.leaveRoom)
   const toggleReady: (isReady: boolean) => Promise<void> = useRoom(state => state.toggleReady)
 
