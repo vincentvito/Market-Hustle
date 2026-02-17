@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import type { ScriptedGameDefinition } from '@/lib/game/scriptedGames/types'
 
 export interface RoomPlayer {
   userId: string
@@ -34,15 +33,12 @@ interface RoomState {
   // Results
   results: RoomResult[]
 
-  // Scenario for this room game
-  scenario: ScriptedGameDefinition | null
-
   // Actions
   createRoom: () => Promise<{ roomId: string; roomCode: string } | null>
   joinRoom: (code: string) => Promise<{ roomId: string; roomCode: string } | null>
   leaveRoom: () => Promise<void>
-  toggleReady: () => Promise<void>
-  startGame: (scenario: ScriptedGameDefinition) => Promise<boolean>
+  toggleReady: (isReady: boolean) => Promise<void>
+  startGame: () => Promise<boolean>
   submitResult: (result: {
     finalNetWorth: number
     profitPercent: number
@@ -55,7 +51,6 @@ interface RoomState {
   // State setters (called from channel hook)
   setPlayers: (players: RoomPlayer[]) => void
   setRoomStatus: (status: 'idle' | 'lobby' | 'playing' | 'finished') => void
-  setScenario: (scenario: ScriptedGameDefinition) => void
   setResults: (results: RoomResult[]) => void
 
   // Cleanup
@@ -69,11 +64,17 @@ export const useRoom = create<RoomState>()((set, get) => ({
   roomStatus: 'idle',
   players: [],
   results: [],
-  scenario: null,
 
   createRoom: async () => {
     try {
-      const res = await fetch('/api/rooms/create', { method: 'POST' })
+      // Send local username so the API can use/sync it to the profile
+      const { useGame } = await import('@/hooks/useGame')
+      const localUsername = useGame.getState().username
+      const res = await fetch('/api/rooms/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: localUsername }),
+      })
       if (!res.ok) {
         const data = await res.json()
         throw new Error(data.error || 'Failed to create room')
@@ -94,10 +95,12 @@ export const useRoom = create<RoomState>()((set, get) => ({
 
   joinRoom: async (code: string) => {
     try {
+      const { useGame } = await import('@/hooks/useGame')
+      const localUsername = useGame.getState().username
       const res = await fetch('/api/rooms/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code.toUpperCase() }),
+        body: JSON.stringify({ code: code.toUpperCase(), username: localUsername }),
       })
       if (!res.ok) {
         const data = await res.json()
@@ -128,27 +131,31 @@ export const useRoom = create<RoomState>()((set, get) => ({
     get().cleanup()
   },
 
-  toggleReady: async () => {
+  toggleReady: async (isReady: boolean) => {
     const { roomId } = get()
     if (!roomId) return
     try {
-      await fetch(`/api/rooms/${roomId}/ready`, { method: 'POST' })
+      await fetch(`/api/rooms/${roomId}/ready`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isReady }),
+      })
     } catch (error) {
       console.error('Error toggling ready:', error)
     }
   },
 
-  startGame: async (scenario: ScriptedGameDefinition) => {
+  startGame: async () => {
     const { roomId } = get()
     if (!roomId) return false
     try {
       const res = await fetch(`/api/rooms/${roomId}/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scenarioData: JSON.stringify(scenario) }),
+        body: JSON.stringify({}),
       })
       if (!res.ok) return false
-      set({ roomStatus: 'playing', scenario })
+      set({ roomStatus: 'playing' })
       return true
     } catch (error) {
       console.error('Error starting game:', error)
@@ -207,7 +214,6 @@ export const useRoom = create<RoomState>()((set, get) => ({
 
   setPlayers: (players) => set({ players }),
   setRoomStatus: (status) => set({ roomStatus: status }),
-  setScenario: (scenario) => set({ scenario }),
   setResults: (results) => set({ results }),
 
   cleanup: () => set({
@@ -217,6 +223,5 @@ export const useRoom = create<RoomState>()((set, get) => ({
     roomStatus: 'idle',
     players: [],
     results: [],
-    scenario: null,
   }),
 }))
