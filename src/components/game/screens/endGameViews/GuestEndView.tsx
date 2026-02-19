@@ -62,29 +62,30 @@ export function GuestEndView({
       {/* Registration CTA - The main conversion point */}
       <div className="w-full max-w-[320px] md:max-w-[400px] mb-6">
         <div className="border-2 border-mh-accent-blue p-5 md:p-6 bg-mh-accent-blue/5">
-          <div className="text-mh-text-bright text-base md:text-lg font-bold mb-2">
-            Continue your run
-          </div>
-          <div className="text-mh-text-dim text-sm mb-4">
-            Register for free to keep playing and unlock more days
+          <div className="text-mh-text-bright text-base md:text-lg font-bold mb-4">
+            Register for free for the full experience
           </div>
 
           <div className="text-mh-text-dim text-xs space-y-2 mb-5 text-left">
-            <div className="flex items-start gap-2">
-              <span className="text-mh-accent-blue">✓</span>
-              <span>Save your progress & stats</span>
-            </div>
             <div className="flex items-start gap-2">
               <span className="text-mh-accent-blue">✓</span>
               <span>Unlock 45 & 60-day challenges</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-mh-accent-blue">✓</span>
-              <span>Compete on the leaderboard</span>
+              <span>Short stocks</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-mh-accent-blue">✓</span>
-              <span>3 free games + 1 game daily</span>
+              <span>2x, 5x, 10x leverage</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-mh-accent-blue">✓</span>
+              <span>Compete with friends</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-mh-accent-blue">✓</span>
+              <span>View the leaderboard</span>
             </div>
           </div>
 

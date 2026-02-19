@@ -53,7 +53,7 @@ export interface UserState {
 
   // Settings
   selectedDuration: GameDuration
-  selectedTheme?: 'retro' | 'modern3' | 'retro2' | 'bloomberg'
+  selectedTheme?: 'retro' | 'modern3' | 'retro2' | 'bloomberg' | 'modern3list'
 }
 
 export const DEFAULT_USER_STATE: UserState = {

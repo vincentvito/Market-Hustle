@@ -21,7 +21,7 @@ function formatPrice(value: number): string {
 
 export function ActionsTabBuy() {
   const { cash, ownedLuxury, buyLuxuryAsset, sellLuxuryAsset, selectedTheme } = useGame()
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
   const [sellConfirmAsset, setSellConfirmAsset] = useState<LuxuryAsset | null>(null)
 

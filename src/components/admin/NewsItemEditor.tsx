@@ -11,6 +11,8 @@ const LABEL_TYPES: { value: NewsLabelType; label: string; color: string }[] = [
   { value: 'breaking', label: 'BREAK', color: '#ef4444' },
   { value: 'developing', label: 'DEV', color: '#f97316' },
   { value: 'scheduled', label: 'SCHED', color: '#8b5cf6' },
+  { value: 'study', label: 'STUDY', color: '#06b6d4' },
+  { value: 'report', label: 'REPORT', color: '#14b8a6' },
 ]
 
 interface NewsItemEditorProps {

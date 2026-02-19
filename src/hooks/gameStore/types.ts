@@ -51,7 +51,7 @@ export interface AuthTierSlice {
   isLoggedIn: boolean
   username: string | null
   selectedDuration: GameDuration
-  selectedTheme: 'retro' | 'modern3' | 'retro2' | 'bloomberg'
+  selectedTheme: 'retro' | 'modern3' | 'retro2' | 'bloomberg' | 'modern3list'
   showDailyLimitModal: boolean
   showAnonymousLimitModal: boolean
   gamesRemaining: number
@@ -67,7 +67,7 @@ export interface AuthTierSlice {
   setUserTier: (tier: 'free' | 'pro') => void
   setUsername: (username: string) => void
   setSelectedDuration: (duration: GameDuration) => void
-  setSelectedTheme: (theme: 'retro' | 'modern3' | 'retro2' | 'bloomberg') => void
+  setSelectedTheme: (theme: 'retro' | 'modern3' | 'retro2' | 'bloomberg' | 'modern3list') => void
   setShowDailyLimitModal: (show: boolean) => void
   setShowAnonymousLimitModal: (show: boolean) => void
   initializeFromStorage: () => void
@@ -132,6 +132,8 @@ export interface MechanicsSlice extends GameState {
   // Startup actions
   investInStartup: (amount: number) => void
   dismissStartupOffer: () => void
+  liquidateForStartup: (amount: number) => void
+  cancelStartupLiquidation: () => void
 
   // Lifestyle actions
   buyLifestyle: (assetId: string) => void
@@ -168,7 +170,7 @@ export interface MechanicsSlice extends GameState {
   dismissCelebration: () => void
 
   // Encounter actions
-  confirmEncounterResult: (result: EncounterResult, encounterType: EncounterType) => void
+  confirmEncounterResult: (result: EncounterResult, encounterType: EncounterType, pendingShitcoinData?: { outcome: 'moon' | 'rug'; profit: number } | null) => void
 
   // Liquidation actions
   pendingLiquidation: PendingLiquidation | null
@@ -213,6 +215,7 @@ export interface MechanicsSlice extends GameState {
 
   // Credit card debt actions
   setCreditCardDebt: (newDebt: number) => void
+  borrowCreditCardDebt: (amount: number) => void
 
   // Casino gambling
   applyCasinoResult: (cashDelta: number) => void

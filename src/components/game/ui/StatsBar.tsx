@@ -19,7 +19,7 @@ export function StatsBar({ onDebtClick }: StatsBarProps) {
   } = useGame()
   const portfolioValue = getPortfolioValue()
   const isBloomberg = selectedTheme === 'bloomberg'
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const hasPositions = portfolioValue > 0 || leveragedPositions.length > 0 || shortPositions.length > 0
 
   return (

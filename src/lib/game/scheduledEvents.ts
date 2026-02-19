@@ -519,7 +519,7 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     predictionMarket: { outcomeIndex: 0, inflatedProbability: 0.62, label: 'CROP SHORTFALL', missLabel: 'RECORD YIELDS' },
     outcomes: [
       {
-        headline: 'USDA REPORT: GLOBAL CROP SHORTFALL — FOOD PRICES TO SURGE',
+        headline: 'USDA REPORT — GLOBAL CROP SHORTFALL — FOOD PRICES TO SURGE',
         probability: 0.45,
         effects: { coffee: 0.08, gold: 0.04, emerging: -0.04, nasdaq: -0.02 },
         sentiment: 'bullish',
@@ -527,7 +527,7 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
         allowsReversal: true,
       },
       {
-        headline: 'USDA REPORT: PRODUCTION INLINE — NO SURPRISES',
+        headline: 'USDA REPORT — PRODUCTION INLINE — NO SURPRISES',
         probability: 0.15,
         effects: { coffee: 0.02, emerging: 0.02 },
         sentiment: 'neutral',
@@ -535,7 +535,7 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
         allowsReversal: true,
       },
       {
-        headline: 'USDA REPORT: RECORD GLOBAL YIELDS — SURPLUS OVERWHELMS MARKET',
+        headline: 'USDA REPORT — RECORD GLOBAL YIELDS — SURPLUS OVERWHELMS MARKET',
         probability: 0.40,
         effects: { coffee: -0.08, emerging: 0.04, gold: -0.02 },
         sentiment: 'bearish',
@@ -871,7 +871,7 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     predictionMarket: { outcomeIndex: 0, inflatedProbability: 0.62, label: 'INVENTORY DRAW', missLabel: 'SURPRISE BUILD' },
     outcomes: [
       {
-        headline: 'EIA REPORT: MASSIVE INVENTORY DRAW — CRUDE STOCKS AT 5-YEAR LOW',
+        headline: 'EIA REPORT — MASSIVE INVENTORY DRAW — CRUDE STOCKS AT 5-YEAR LOW',
         probability: 0.45,
         effects: { oil: 0.08, gold: 0.03, emerging: -0.03, uranium: 0.03 },
         sentiment: 'bullish',
@@ -879,7 +879,7 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
         allowsReversal: true,
       },
       {
-        headline: 'EIA REPORT: INVENTORIES INLINE — NO CHANGE IN SUPPLY OUTLOOK',
+        headline: 'EIA REPORT — INVENTORIES INLINE — NO CHANGE IN SUPPLY OUTLOOK',
         probability: 0.15,
         effects: { oil: 0.02, emerging: 0.01 },
         sentiment: 'neutral',
@@ -887,7 +887,7 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
         allowsReversal: true,
       },
       {
-        headline: 'EIA REPORT: SURPRISE CRUDE BUILD — DEMAND DESTRUCTION FEARS SURFACE',
+        headline: 'EIA REPORT — SURPRISE CRUDE BUILD — DEMAND DESTRUCTION FEARS SURFACE',
         probability: 0.40,
         effects: { oil: -0.07, tesla: 0.03, lithium: 0.02, uranium: 0.02 },
         sentiment: 'bearish',

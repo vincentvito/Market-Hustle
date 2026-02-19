@@ -270,9 +270,9 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "POWELL REVERSES: FED STAYS HAWKISH DESPITE HINTS": "No pivot means expensive money continues. Growth stocks and real estate suffer. Dollar strengthens on rate differentials.",
 
-  "INFLATION REPORT: 9.2% - FED POLICY TRAPPED": "High inflation with no policy response destroys purchasing power. Hard assets like gold and Bitcoin rally. Stocks fall because the Fed will eventually have to crush inflation with rate hikes.",
+  "INFLATION REPORT — 9.2% - FED POLICY TRAPPED": "High inflation with no policy response destroys purchasing power. Hard assets like gold and Bitcoin rally. Stocks fall because the Fed will eventually have to crush inflation with rate hikes.",
 
-  "INFLATION REPORT: COOLING DATA SIGNALS SOFT LANDING": "Cooling inflation without recession is the dream scenario. Stocks rally. Real estate benefits from stable rates. The Fed can ease without consequences.",
+  "INFLATION REPORT — COOLING DATA SIGNALS SOFT LANDING": "Cooling inflation without recession is the dream scenario. Stocks rally. Real estate benefits from stable rates. The Fed can ease without consequences.",
 
   "DOJ ACTS: BINANCE CEO ARRESTED, EXCHANGE FROZEN": "The largest crypto exchange freezing is catastrophic. Billions become inaccessible. Crypto crashes on liquidity crisis. Gold rises as money seeks safety.",
 
@@ -1194,11 +1194,11 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "USDA WORLD CROP PRODUCTION REPORT DUE TOMORROW": "The USDA report is the single most important data release for agricultural markets. Any surprise in yield estimates moves prices immediately. Traders position cautiously ahead of the release.",
 
-  "USDA REPORT: GLOBAL CROP SHORTFALL — FOOD PRICES TO SURGE": "The USDA cutting production estimates means less food on the global market. Coffee and agricultural commodities spike on supply fears. Emerging markets get hit by food inflation. Gold rallies on economic stress.",
+  "USDA REPORT — GLOBAL CROP SHORTFALL — FOOD PRICES TO SURGE": "The USDA cutting production estimates means less food on the global market. Coffee and agricultural commodities spike on supply fears. Emerging markets get hit by food inflation. Gold rallies on economic stress.",
 
-  "USDA REPORT: PRODUCTION INLINE — NO SURPRISES": "Inline USDA data is a non-event. Agricultural commodities drift slightly as the worst-case scenario doesn't materialize. Markets move on to the next catalyst.",
+  "USDA REPORT — PRODUCTION INLINE — NO SURPRISES": "Inline USDA data is a non-event. Agricultural commodities drift slightly as the worst-case scenario doesn't materialize. Markets move on to the next catalyst.",
 
-  "USDA REPORT: RECORD GLOBAL YIELDS — SURPLUS OVERWHELMS MARKET": "Record crop yields mean too much supply chasing too little demand. Coffee and agricultural futures crash as exporters compete to offload inventory. Emerging market farmers benefit from volume but suffer on price.",
+  "USDA REPORT — RECORD GLOBAL YIELDS — SURPLUS OVERWHELMS MARKET": "Record crop yields mean too much supply chasing too little demand. Coffee and agricultural futures crash as exporters compete to offload inventory. Emerging market farmers benefit from volume but suffer on price.",
 
   "CHINA MANUFACTURING PMI DATA DUE TOMORROW — GROWTH FEARS LINGER": "China PMI is the pulse of global manufacturing. Above 50 means expansion, below means contraction. Everything from lithium to oil to emerging market equities moves with Chinese factory output.",
 
@@ -1306,7 +1306,7 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
 
   "REBALANCING ONLY: FUND SHIFTING FROM TECH TO COMMODITIES": "Sector rotation is mundane compared to the feared capital flight. Tech takes a haircut as the fund reduces its overweight position, but commodities benefit from new inflows. The scare was overblown — this is portfolio management, not geopolitical revolt.",
 
-  "FALSE REPORT: NORWAY DENIES ANY CHANGES — MARKET RECOVERS": "False alarm triggers a textbook relief rally. The market snaps back as the existential threat evaporates. Positioning unwinds rapidly. Gold gives back its safe-haven premium. This is why you don't panic-sell on unconfirmed reports.",
+  "FALSE REPORT — NORWAY DENIES ANY CHANGES — MARKET RECOVERS": "False alarm triggers a textbook relief rally. The market snaps back as the existential threat evaporates. Positioning unwinds rapidly. Gold gives back its safe-haven premium. This is why you don't panic-sell on unconfirmed reports.",
 
   "DOMINO EFFECT: JAPAN AND SAUDI FUNDS ALSO SIGNAL US EXIT": "When the dominos start falling, there's no stopping them. Japan and Saudi Arabia following Norway means the world's biggest pools of capital are abandoning US markets in concert. NASDAQ faces structural selling with no natural buyer. Gold and Bitcoin become the last refuges.",
 
@@ -1472,11 +1472,11 @@ export const NEWS_EXPLANATIONS: Record<string, string> = {
   // EIA Oil Inventory
   "EIA CRUDE OIL INVENTORY REPORT DUE TOMORROW — STOCKPILE WATCH": "The EIA weekly petroleum report is the most important data point for oil markets. Inventory draws signal demand outpacing supply — bullish for oil. Builds signal oversupply — bearish. Oil traders live and die by this number every week.",
 
-  "EIA REPORT: MASSIVE INVENTORY DRAW — CRUDE STOCKS AT 5-YEAR LOW": "Five-year low in crude stocks is a scarcity signal. Demand is outrunning supply, which means higher prices ahead. Oil surges on the supply deficit. Gold catches a bid from energy-driven inflation fears. Uranium benefits as the energy crunch makes alternatives more attractive.",
+  "EIA REPORT — MASSIVE INVENTORY DRAW — CRUDE STOCKS AT 5-YEAR LOW": "Five-year low in crude stocks is a scarcity signal. Demand is outrunning supply, which means higher prices ahead. Oil surges on the supply deficit. Gold catches a bid from energy-driven inflation fears. Uranium benefits as the energy crunch makes alternatives more attractive.",
 
-  "EIA REPORT: INVENTORIES INLINE — NO CHANGE IN SUPPLY OUTLOOK": "Inline inventories are a non-event for oil markets. Supply and demand are balanced, prices drift sideways. No catalyst for a move in either direction. Oil traders close their screens and go to lunch.",
+  "EIA REPORT — INVENTORIES INLINE — NO CHANGE IN SUPPLY OUTLOOK": "Inline inventories are a non-event for oil markets. Supply and demand are balanced, prices drift sideways. No catalyst for a move in either direction. Oil traders close their screens and go to lunch.",
 
-  "EIA REPORT: SURPRISE CRUDE BUILD — DEMAND DESTRUCTION FEARS SURFACE": "Surprise inventory builds mean the economy is consuming less oil. Demand destruction is a recession signal. Oil drops on weakening fundamentals. Clean energy alternatives benefit — if fossil fuel demand is structurally declining, the energy transition accelerates. Tesla and lithium catch a bid.",
+  "EIA REPORT — SURPRISE CRUDE BUILD — DEMAND DESTRUCTION FEARS SURFACE": "Surprise inventory builds mean the economy is consuming less oil. Demand destruction is a recession signal. Oil drops on weakening fundamentals. Clean energy alternatives benefit — if fossil fuel demand is structurally declining, the energy transition accelerates. Tesla and lithium catch a bid.",
 
   // Retail Sales
   "US RETAIL SALES DATA DUE TOMORROW — CONSUMER SPENDING IN FOCUS": "Retail sales measure consumer spending, which drives 70% of US GDP. This is the single most important number for understanding whether the economy is healthy or heading for trouble. Every asset class reacts to the consumer.",

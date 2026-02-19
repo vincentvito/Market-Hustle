@@ -482,6 +482,36 @@ export function expandLifestyleEffects(effects: LifestyleEffects): Record<string
 }
 
 // =============================================================================
+// ASSET EVENT MULTIPLIERS — Per-asset volatility scaling
+// Applied in the game engine to all accumulated effects before price calculation.
+// Riskier assets swing harder; safe havens stay stable.
+// =============================================================================
+
+export const ASSET_EVENT_MULTIPLIERS: Record<string, number> = {
+  // Tier 1: Crypto — wildest swings (meme coins, DeFi, speculative)
+  altcoins: 2.5,
+  btc: 2.0,
+
+  // Tier 2: High-vol single assets (meme stock energy, speculative commodities)
+  tesla: 1.8,
+  uranium: 1.8,
+  lithium: 1.8,
+
+  // Tier 3: Moderate-high (developing markets, binary biotech outcomes, weather commodities)
+  emerging: 1.5,
+  biotech: 1.5,
+  coffee: 1.5,
+
+  // Tier 4: Established (broad indices, stable commodities, defense contracts)
+  nasdaq: 1.3,
+  oil: 1.3,
+  defense: 1.3,
+
+  // Tier 5: Safe haven (least volatile by design)
+  gold: 1.1,
+}
+
+// =============================================================================
 // PE EXIT EVENTS - Acquisition and IPO opportunities
 // =============================================================================
 import { PERiskTier } from './types'

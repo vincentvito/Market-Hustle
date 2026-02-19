@@ -42,7 +42,6 @@ export function GameScreen() {
     setShowActionsModal,
     showGiftsModal,
     setShowGiftsModal,
-    creditCardDebt,
     pendingGameOver,
   } = useGame()
   const [showHelp, setShowHelp] = useState(false)
@@ -56,7 +55,7 @@ export function GameScreen() {
     }
   }, [])
 
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 
@@ -235,21 +234,8 @@ export function GameScreen() {
       {showOffshoreTrust && (
         <OffshoreTrustModal onClose={() => setShowOffshoreTrust(false)} />
       )}
-      {showCreditCards && creditCardDebt > 0 && (
+      {showCreditCards && (
         <DebtRepaymentModal onClose={() => setShowCreditCards(false)} />
-      )}
-      {showCreditCards && creditCardDebt <= 0 && (
-        <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center" onClick={() => setShowCreditCards(false)}>
-          <div className="bg-mh-bg border border-mh-border rounded-lg p-6 max-w-md" onClick={e => e.stopPropagation()}>
-            <p className="text-mh-text-bright text-lg mb-4">No outstanding debt! Your credit card is paid off.</p>
-            <button
-              onClick={() => setShowCreditCards(false)}
-              className="w-full py-2 bg-mh-accent-blue text-white font-bold rounded hover:brightness-110"
-            >
-              Close
-            </button>
-          </div>
-        </div>
       )}
 
       {/* TradeSheet - rendered at GameScreen level for proper absolute positioning */}

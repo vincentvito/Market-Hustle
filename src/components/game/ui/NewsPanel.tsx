@@ -14,6 +14,8 @@ const LABEL_PRIORITY: Record<NewsLabelType | 'undefined', number> = {
   rumor: 4,
   gossip: 5,   // Wall St Gossip (trading messages) appear below main news
   flavor: 5,   // Flavor events (meme/celebrity) same tier as gossip
+  study: 5,    // Study headlines (promoted from flavor)
+  report: 5,   // Report headlines (promoted from flavor)
   none: 6,
   undefined: 6, // Treat undefined same as none
 }
@@ -38,12 +40,27 @@ function getLabelDisplay(labelType?: NewsLabelType): { text: string; colorClass:
       return { text: 'WALL ST GOSSIP', colorClass: 'text-mh-news' }
     case 'flavor':
       return { text: 'JUST IN', colorClass: 'text-mh-news' }
+    case 'study':
+      return { text: 'STUDY', colorClass: 'text-mh-news' }
+    case 'report':
+      return { text: 'REPORT', colorClass: 'text-mh-news' }
     case 'none':
       return null
     case 'news':
     default:
       return { text: 'NEWS', colorClass: 'text-mh-news' }
   }
+}
+
+// Strip redundant category prefixes from headline text for display only.
+// The raw headline is preserved for dictionary lookups (newsExplanations, newsContent).
+function cleanHeadline(headline: string, hasLabel: boolean): string {
+  if (!hasLabel) return headline
+  // Strip emoji prefixes (🎯, ⚠️, 📰, 🕵️)
+  let cleaned = headline.replace(/^(?:🎯|⚠️|📰|🕵️)\s*/, '')
+  // Strip known category prefixes that duplicate the label
+  cleaned = cleaned.replace(/^(BREAKING|DEVELOPING|JUST IN|NEWS|STUDY|REPORT):\s*/, '')
+  return cleaned
 }
 
 export function NewsPanel() {
@@ -56,7 +73,7 @@ export function NewsPanel() {
     milestonePhase,
     selectedTheme,
   } = useGame()
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 
@@ -100,10 +117,10 @@ export function NewsPanel() {
 
   // Build sorted news array (used for typewriter logic and rendering)
   const chainRumorItems: NewsItem[] = rumors.map(r => ({
-    headline: (day > r.startDay && r.developing) ? r.developing : r.rumor,
+    headline: r.rumor,
     effects: {},
-    labelType: (day > r.startDay && r.developing) ? 'developing' as NewsLabelType : 'rumor' as NewsLabelType,
-    predictionLine: day > r.startDay ? r.predictionLine : undefined,
+    labelType: 'rumor' as NewsLabelType,
+    predictionLine: r.predictionLine,
   }))
   const allNews = [...todayNews, ...chainRumorItems]
     .sort((a, b) => getNewsPriority(a.labelType) - getNewsPriority(b.labelType))
@@ -118,7 +135,9 @@ export function NewsPanel() {
       return
     }
 
-    const currentHeadline = allNews[typewriterIndex].headline
+    const currentNews = allNews[typewriterIndex]
+    const currentLabel = getLabelDisplay(currentNews.labelType)
+    const currentHeadline = cleanHeadline(currentNews.headline, !!currentLabel)
 
     if (charIndex >= currentHeadline.length) {
       // Current item complete, move to next
@@ -252,17 +271,20 @@ export function NewsPanel() {
           const label = getLabelDisplay(news.labelType)
           const textColorClass = 'text-mh-news'
 
+          // Clean redundant prefixes from headline for display
+          const cleanedHeadline = cleanHeadline(news.headline, !!label)
+
           // Determine displayed text based on typewriter state
-          let displayedHeadline = news.headline
+          let displayedHeadline = cleanedHeadline
           let showCursor = false
 
           if (isTypewriting) {
             if (idx < typewriterIndex) {
               // Already fully revealed
-              displayedHeadline = news.headline
+              displayedHeadline = cleanedHeadline
             } else if (idx === typewriterIndex) {
               // Currently typing this one
-              displayedHeadline = news.headline.slice(0, charIndex)
+              displayedHeadline = cleanedHeadline.slice(0, charIndex)
               showCursor = true
             } else {
               // Not yet started - don't render

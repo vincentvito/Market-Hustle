@@ -52,7 +52,7 @@ export function ActionsTabLeverage() {
     selectedTheme,
     isPresident,
   } = useGame()
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
 
   const [lockedClickedId, setLockedClickedId] = useState<string | null>(null)
 

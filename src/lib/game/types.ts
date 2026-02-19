@@ -34,6 +34,7 @@ export interface PEAbility {
     gameOverRisk?: number                  // % chance of game over (0-1)
   }
   backfireChance: number  // 0.20 = 20%
+  backfireExplanation: string  // Human-readable description of what happens on backfire
   silentExecution?: boolean  // If true, no headline on execution day (RUMOR fires next day instead)
   repeatable?: boolean       // If true, can be used multiple times (blocked only while story arc pending)
   specialEffect?: {
@@ -275,7 +276,6 @@ export interface EventChain {
   category: string
   subcategory?: string               // For regional blocking (e.g., 'asia', 'middle-east')
   rumor: string
-  developing?: string            // Escalation headline shown on day 2 of duration-2 chains
   duration: number // days until resolution
   outcomes: EventChainOutcome[] // 2-4 possible outcomes
   // Sentiment for conflict prevention (rumor phase creates anticipation mood)
@@ -283,7 +283,7 @@ export interface EventChain {
   sentimentAssets?: string[]         // Which assets are affected by this chain
   primaryAsset?: string              // Primary asset for mood recording
   allowsReversal?: boolean           // If true, chain can start even if it conflicts with current mood
-  predictionMarket?: PredictionMarketHint  // Prediction market hint shown on day 2+ of rumor
+  predictionMarket?: PredictionMarketHint  // Prediction market hint shown alongside rumor
   excludeStories?: string[]               // Story IDs to permanently block when this chain fires
   excludeChains?: string[]                // Chain IDs to permanently block when this chain fires
 }
@@ -293,10 +293,9 @@ export interface ActiveChain {
   startDay: number
   daysRemaining: number
   rumor: string
-  developing?: string  // Escalation headline shown on day 2 of duration-2 chains
   category: string
   subcategory?: string  // For regional blocking (e.g., 'asia', 'middle-east')
-  predictionLine?: string  // Pre-computed prediction market text, shown on day 2+
+  predictionLine?: string  // Pre-computed prediction market text
 }
 
 export interface ResolvedChain {
@@ -340,13 +339,14 @@ export interface ActiveScheduledEvent {
 
 export type GameScreen = 'title' | 'intro' | 'game' | 'gameover' | 'win'
 
-export type NewsLabelType = 'rumor' | 'developing' | 'news' | 'breaking' | 'none' | 'gossip' | 'scheduled' | 'flavor'
+export type NewsLabelType = 'rumor' | 'developing' | 'news' | 'breaking' | 'none' | 'gossip' | 'scheduled' | 'flavor' | 'study' | 'report'
 
 export interface NewsItem {
   headline: string
   effects: Record<string, number>
   labelType?: NewsLabelType
   predictionLine?: string  // Prediction market probability text
+  baseHeadline?: string  // Original headline for dictionary lookups (when headline has dynamic suffixes)
 }
 
 // Price history for candlestick charts
@@ -373,6 +373,7 @@ export interface GameState {
   shortPositions: ShortPosition[]
   prices: Record<string, number>
   prevPrices: Record<string, number>
+  initialPrices: Record<string, number>  // Day 1 opening prices (anchor for mean reversion)
   // Price history for each asset (for candlestick charts)
   priceHistory: Record<string, DayCandle[]>
   // Cost basis tracking: { assetId: { totalCost: number, totalQty: number } }
@@ -433,6 +434,7 @@ export interface GameState {
   // Random Encounter state
   encounterState: EncounterState
   pendingEncounter: PendingEncounter | null  // Encounter awaiting player decision
+  pendingShitcoin: PendingShitcoin | null  // Shitcoin awaiting resolution (2-day delay)
   queuedStartupOffer: Startup | null  // Startup offer delayed by encounter
   pendingLiquidation: PendingLiquidation | null  // Asset seizure awaiting player selection
   // Scheduled event state (known calendar events with advance notice)
@@ -514,13 +516,15 @@ export interface PendingEncounter {
   skipNextDayOnResolve?: boolean
 }
 
-// Pending liquidation (forced asset sale for SEC/Divorce/Tax)
+// Pending liquidation (forced asset sale for SEC/Divorce/Tax, or voluntary for startup investment)
 export interface PendingLiquidation {
   amountNeeded: number
-  reason: 'sec' | 'divorce' | 'tax'
+  reason: 'sec' | 'divorce' | 'tax' | 'startup_investment'
   headline: string  // Result headline to show after liquidation
-  encounterType: EncounterType
-  encounterState: EncounterState  // Pre-computed updated state
+  encounterType?: EncounterType
+  encounterState?: EncounterState  // Pre-computed updated state
+  startupInvestmentAmount?: number  // Amount to invest after liquidation (startup_investment only)
+  startupOffer?: Startup  // The startup offer to invest in after liquidation
 }
 
 // Encounter resolution result
@@ -534,6 +538,13 @@ export interface EncounterResult {
   spinColor?: RouletteColor  // The color of the result
   // Forced liquidation fields (for SEC/Divorce when cash < penalty)
   liquidationRequired?: number  // Total amount to extract (will force-sell assets if cash insufficient)
+}
+
+export interface PendingShitcoin {
+  investedDay: number       // Day the player minted the coin
+  resolvesDay: number       // investedDay + 2
+  outcome: 'moon' | 'rug'  // Pre-rolled at mint time
+  profit: number            // $10K-$90K net profit (only relevant if outcome === 'moon')
 }
 
 export interface GameAction {

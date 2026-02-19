@@ -174,7 +174,7 @@ export function recordGameEnd(
   entry: GameHistoryEntry,
   isWin: boolean
 ): UserState {
-  const profit = entry.finalNetWorth - 100000 // Assuming $100K starting capital
+  const profit = entry.finalNetWorth - 50000 // Starting capital is $50K
 
   return {
     ...state,

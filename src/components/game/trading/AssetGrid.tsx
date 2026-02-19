@@ -5,6 +5,7 @@ import { ASSETS } from '@/lib/game/assets'
 import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
 import { useGame } from '@/hooks/useGame'
 import { AssetCell } from './AssetCell'
+import { AssetListView } from './AssetListView'
 import { LifestyleCatalog } from './LifestyleCatalog'
 
 type TabType = 'stocks' | 'properties' | 'private_equity'
@@ -27,7 +28,8 @@ export function AssetGrid() {
       setActiveTab('properties')
     }
   }, [pendingLifestyleAssetId, pendingLuxuryAssetId])
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
+  const isModern3List = selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 
@@ -94,38 +96,20 @@ export function AssetGrid() {
       </div>
 
       {activeTab === 'stocks' ? (
-        <>
-          {/* Mobile/Tablet: 3 cols vertical scroll */}
-          <div className={`flex-1 min-h-0 lg:hidden overflow-auto grid grid-cols-3 auto-rows-min ${
-            isBloomberg
-              ? 'gap-px bg-[#333333]'
-              : isRetro2
-                ? 'gap-1.5 p-1.5 bg-mh-bg'
-                : isModern3
-                  ? 'gap-1.5 px-1.5 pb-1.5 bg-mh-bg'
-                  : 'gap-px bg-mh-border'
-          }`}>
-            {ASSETS.map((asset, index) => (
-              <AssetCell
-                key={asset.id}
-                asset={asset}
-                onSelect={selectAsset}
-                id={index === 0 ? 'tutorial-price-movement' : undefined}
-                priceId={index === 0 ? 'tutorial-price-section' : undefined}
-              />
-            ))}
-          </div>
-          {/* Desktop: 4 cols vertical scroll */}
-          <div className={`hidden lg:flex flex-1 min-h-0 overflow-auto ${
-            isBloomberg
-              ? 'bg-[#333333]'
-              : isRetro2
-                ? 'bg-mh-bg'
-                : isModern3
-                  ? 'bg-mh-bg'
-                  : 'bg-mh-border'
-          }`}>
-            <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full content-center h-full`}>
+        isModern3List ? (
+          <AssetListView />
+        ) : (
+          <>
+            {/* Mobile/Tablet: 3 cols vertical scroll */}
+            <div className={`flex-1 min-h-0 lg:hidden overflow-auto grid grid-cols-3 auto-rows-min ${
+              isBloomberg
+                ? 'gap-px bg-[#333333]'
+                : isRetro2
+                  ? 'gap-1.5 p-1.5 bg-mh-bg'
+                  : isModern3
+                    ? 'gap-1.5 px-1.5 pb-1.5 bg-mh-bg'
+                    : 'gap-px bg-mh-border'
+            }`}>
               {ASSETS.map((asset, index) => (
                 <AssetCell
                   key={asset.id}
@@ -136,8 +120,30 @@ export function AssetGrid() {
                 />
               ))}
             </div>
-          </div>
-        </>
+            {/* Desktop: 4 cols vertical scroll */}
+            <div className={`hidden lg:flex flex-1 min-h-0 overflow-auto ${
+              isBloomberg
+                ? 'bg-[#333333]'
+                : isRetro2
+                  ? 'bg-mh-bg'
+                  : isModern3
+                    ? 'bg-mh-bg'
+                    : 'bg-mh-border'
+            }`}>
+              <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full content-center h-full`}>
+                {ASSETS.map((asset, index) => (
+                  <AssetCell
+                    key={asset.id}
+                    asset={asset}
+                    onSelect={selectAsset}
+                    id={index === 0 ? 'tutorial-price-movement' : undefined}
+                    priceId={index === 0 ? 'tutorial-price-section' : undefined}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        )
       ) : activeTab === 'properties' ? (
         <LifestyleCatalog filterCategory="property" />
       ) : (

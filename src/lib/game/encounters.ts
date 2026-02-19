@@ -76,7 +76,7 @@ export const ENCOUNTERS: Record<EncounterType, EncounterDefinition> = {
     description: 'A shady developer offers to create a meme coin with your face on it. "Trust me bro, we\'ll pump it together."',
     flavor: '"$YOURCOIN could be the next DOGE!"',
     choices: [
-      { label: 'MINT IT', description: 'Pay $5K, 20% chance of 10x return, 80% rug pull' },
+      { label: 'MINT IT', description: 'Pay $5K, 20% chance of big return, 80% rug pull. Result in 2 days.' },
       { label: 'PASS', description: 'Keep your dignity (and your $5K)' },
     ],
     requiresCash: 5000,
@@ -95,7 +95,7 @@ export const ENCOUNTERS: Record<EncounterType, EncounterDefinition> = {
   },
   roulette: {
     id: 'roulette',
-    title: 'HIGH ROLLER INVITATION',
+    title: 'CASINO INVITATION',
     emoji: '🎰',
     description: 'A black limo pulls up. "The Whale Room is open tonight. One spin. Double or nothing."',
     flavor: '"Fortune favors the bold."',
@@ -176,8 +176,8 @@ export function getAvailableEncounters(
   // Shitcoin - needs $5K
   if (cash >= 5000) available.push('shitcoin')
 
-  // Kidney - once per game, only when desperate (net worth < $30K)
-  if (!state.usedKidney && netWorth < 30000) available.push('kidney')
+  // Kidney - once per game, only when desperate (net worth < $30K), ~1 in 3 games
+  if (!state.usedKidney && netWorth < 30000 && Math.random() < 0.33) available.push('kidney')
 
   // Roulette - needs $2K minimum
   if (cash >= 2000) available.push('roulette')
@@ -333,32 +333,44 @@ export function resolveDivorce(
   }
 }
 
-// Resolve Shitcoin
+// Resolve Shitcoin - delayed outcome (2 days)
+export interface ShitcoinResult {
+  immediate: EncounterResult
+  pending: { outcome: 'moon' | 'rug'; profit: number } | null
+}
+
 export function resolveShitcoin(
   choice: 'mint' | 'pass',
   cash: number
-): EncounterResult {
+): ShitcoinResult {
   if (choice === 'pass') {
     return {
-      headline: 'SHITCOIN DECLINED: You kept your dignity intact',
-      cashChange: 0,
+      immediate: {
+        headline: 'SHITCOIN DECLINED: You kept your dignity intact',
+        cashChange: 0,
+      },
+      pending: null,
     }
   }
 
   const cost = 5000
 
-  // 20% chance of 10x return
-  if (Math.random() < 0.2) {
-    const profit = cost * 10 - cost  // Net profit after initial investment
-    return {
-      headline: '$YOURCOIN TO THE MOON: Your shitcoin pumped 10x before you dumped',
-      cashChange: profit,  // +$45K net
-    }
-  } else {
-    return {
-      headline: 'RUG PULLED: $YOURCOIN went to zero. The dev vanished.',
+  // Pre-roll outcome (20% moon, 80% rug) — revealed in 2 days
+  const isWin = Math.random() < 0.2
+  // Variable profit: $10K-$90K net (was always $45K)
+  const profit = isWin
+    ? Math.round((Math.random() * 80000 + 10000) / 1000) * 1000
+    : 0
+
+  return {
+    immediate: {
+      headline: '$YOURCOIN IS LIVE: Your coin just launched. The market will decide its fate...',
       cashChange: -cost,
-    }
+    },
+    pending: {
+      outcome: isWin ? 'moon' : 'rug',
+      profit,
+    },
   }
 }
 
@@ -382,8 +394,8 @@ export function resolveKidney(
     }
   } else {
     return {
-      headline: 'SUCCESSFUL SURGERY: $12K richer, one kidney lighter',
-      cashChange: 12000,
+      headline: 'SUCCESSFUL SURGERY: $22K richer, one kidney lighter',
+      cashChange: 22000,
     }
   }
 }
@@ -518,5 +530,19 @@ export function resolveTax(
         liquidationRequired: penalty,
       }
     }
+  }
+}
+
+/** Check if a scripted encounter should be skipped based on game state. */
+export function shouldSkipScriptedEncounter(
+  type: EncounterType,
+  state: EncounterState,
+  netWorth: number,
+): boolean {
+  switch (type) {
+    case 'kidney':
+      return state.usedKidney || netWorth >= 30000
+    default:
+      return false
   }
 }
