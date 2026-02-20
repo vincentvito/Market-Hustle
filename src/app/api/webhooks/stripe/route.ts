@@ -1,20 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { stripe, STRIPE_PRICES, type StripePlan } from '@/lib/stripe/server'
+import { stripe } from '@/lib/stripe/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { db } from '@/db'
-import { profiles, subscriptions } from '@/db/schema'
+import { profiles, subscriptions, webhookEvents } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import Stripe from 'stripe'
 import { randomUUID } from 'crypto'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
-
-// Map Price IDs to plan types for robust plan detection
-const PRICE_TO_PLAN: Record<string, StripePlan> = {
-  [STRIPE_PRICES.monthly]: 'monthly',
-  [STRIPE_PRICES.yearly]: 'yearly',
-}
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
@@ -34,6 +28,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
+  // Log the incoming event (onConflictDoNothing deduplicates retries)
+  await db
+    .insert(webhookEvents)
+    .values({
+      id: event.id,
+      eventType: event.type,
+      status: 'received',
+      payload: body,
+    })
+    .onConflictDoNothing()
+
   // Keep admin client for auth admin operations only
   const supabase = createAdminClient()
 
@@ -45,21 +50,15 @@ export async function POST(request: NextRequest) {
         break
       }
 
-      case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription
-        await handleSubscriptionUpdated(subscription)
+      case 'charge.refunded': {
+        const charge = event.data.object as Stripe.Charge
+        await handleChargeRefunded(charge)
         break
       }
 
-      case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription
-        await handleSubscriptionDeleted(subscription)
-        break
-      }
-
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice
-        await handlePaymentFailed(invoice)
+      case 'charge.dispute.created': {
+        const dispute = event.data.object as Stripe.Dispute
+        await handleDisputeCreated(dispute)
         break
       }
 
@@ -67,17 +66,48 @@ export async function POST(request: NextRequest) {
         console.log(`Unhandled event type: ${event.type}`)
     }
 
+    // Mark event as successfully processed
+    await db
+      .update(webhookEvents)
+      .set({ status: 'processed', processedAt: new Date() })
+      .where(eq(webhookEvents.id, event.id))
+
     return NextResponse.json({ received: true })
   } catch (error) {
     console.error('Error processing webhook:', error)
     const message = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json(
-      { error: `Webhook handler failed: ${message}` },
-      { status: 500 }
-    )
+
+    // Log failure to webhook_events
+    await db
+      .update(webhookEvents)
+      .set({ status: 'failed', error: message })
+      .where(eq(webhookEvents.id, event.id))
+
+    // Distinguish transient errors (DB issues, network) from permanent ones
+    // (missing data, invalid state). Return 200 for permanent errors so Stripe
+    // doesn't retry them endlessly.
+    const isTransient = message.includes('ECONNREFUSED') ||
+      message.includes('timeout') ||
+      message.includes('ENOTFOUND') ||
+      message.includes('database') ||
+      message.includes('connection')
+
+    if (isTransient) {
+      return NextResponse.json(
+        { error: `Webhook handler failed: ${message}` },
+        { status: 500 }
+      )
+    }
+
+    // Permanent error — acknowledge receipt so Stripe stops retrying
+    console.error(`Permanent webhook error (not retryable): ${message}`)
+    return NextResponse.json({ received: true, error: message })
   }
 }
 
+// ============================================================================
+// checkout.session.completed — one-time payment completed
+// ============================================================================
 async function handleCheckoutCompleted(
   supabase: ReturnType<typeof createAdminClient>,
   session: Stripe.Checkout.Session
@@ -86,54 +116,36 @@ async function handleCheckoutCompleted(
 
   const userId = session.client_reference_id || session.metadata?.user_id
   const customerId = session.customer as string
-  const subscriptionId = session.subscription as string
+  const paymentIntentId = session.payment_intent as string
   const customerEmail = session.customer_email || session.customer_details?.email
 
-  console.log('Session data:', { userId, customerId, subscriptionId, customerEmail })
+  console.log('Session data:', { userId, customerId, paymentIntentId, customerEmail })
 
   if (!customerEmail) {
     throw new Error('No customer email in checkout session')
   }
-
-  // Get subscription details (with items expanded for current_period_end)
-  console.log('Fetching subscription data...')
-  let subscriptionData
-  try {
-    subscriptionData = await stripe.subscriptions.retrieve(subscriptionId, {
-      expand: ['items.data'],
-    })
-    console.log('Subscription data fetched successfully')
-  } catch (stripeError) {
-    throw new Error(`Failed to fetch subscription: ${stripeError instanceof Error ? stripeError.message : 'Unknown'}`)
-  }
-  // Detect plan from price.id first, fall back to metadata
-  const priceId = subscriptionData.items.data[0]?.price?.id
-  const plan: StripePlan = (priceId && PRICE_TO_PLAN[priceId])
-    || (subscriptionData.metadata?.plan as StripePlan)
-    || 'monthly'
-  // Get current_period_end from the first subscription item
-  const currentPeriodEnd = subscriptionData.items.data[0]?.current_period_end || Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
 
   let finalUserId = userId
   let isNewUser = false
 
   // If no user ID, we need to find or create user account
   if (!finalUserId) {
-    // Check if user with this email already exists (with pagination to handle >50 users)
-    console.log('Listing users to find existing account...')
+    // Look up existing user by email directly (scales regardless of user count)
+    console.log('Looking up user by email...')
     let existingAccount
     try {
-      const { data: existingUser, error: listError } = await supabase.auth.admin.listUsers({
+      const { data, error: listError } = await supabase.auth.admin.listUsers({
         page: 1,
-        perPage: 1000
-      })
+        perPage: 1,
+        filter: customerEmail,
+      } as Parameters<typeof supabase.auth.admin.listUsers>[0] & { filter?: string })
       if (listError) {
         throw new Error(`listUsers error: ${listError.message}`)
       }
-      existingAccount = existingUser?.users.find(u => u.email === customerEmail)
+      existingAccount = data?.users.find(u => u.email === customerEmail)
       console.log('User search complete, found:', !!existingAccount)
-    } catch (listUsersError) {
-      throw new Error(`Failed to list users: ${listUsersError instanceof Error ? listUsersError.message : 'Unknown'}`)
+    } catch (lookupError) {
+      throw new Error(`Failed to look up user: ${lookupError instanceof Error ? lookupError.message : 'Unknown'}`)
     }
 
     if (existingAccount) {
@@ -160,66 +172,61 @@ async function handleCheckoutCompleted(
     }
   }
 
-  // For existing users (not invited), send a magic link email
-  if (!isNewUser) {
-    const existingUserBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/otp`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-      },
-      body: JSON.stringify({
-        email: customerEmail,
-        create_user: false,
-        options: {
-          emailRedirectTo: `${existingUserBaseUrl}/auth/callback?next=${encodeURIComponent('/?autostart=pro')}`,
+  // For existing users who checked out without being logged in, send a magic link.
+  // Skip if user was already authenticated (client_reference_id was set).
+  const wasAuthenticated = !!session.client_reference_id
+  if (!isNewUser && !wasAuthenticated) {
+    try {
+      const existingUserBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
         },
-      }),
-    })
+        body: JSON.stringify({
+          email: customerEmail,
+          create_user: false,
+          options: {
+            emailRedirectTo: `${existingUserBaseUrl}/auth/callback?next=${encodeURIComponent('/?autostart=pro')}`,
+          },
+        }),
+      })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Failed to send magic link email:', errorText)
-      throw new Error(`Failed to send magic link email: ${errorText}`)
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Failed to send magic link email:', errorText)
+        // Don't throw — magic link failure shouldn't prevent purchase recording
+      } else {
+        console.log(`Magic link email sent to existing user: ${customerEmail}`)
+      }
+    } catch (emailError) {
+      console.error('Error sending magic link:', emailError)
+      // Don't throw — continue with purchase recording
     }
-    console.log(`Magic link email sent to existing user: ${customerEmail}`)
   }
 
-  // Check if subscription already exists by stripe_subscription_id
-  const existingSub = await db
-    .select({ id: subscriptions.id })
-    .from(subscriptions)
-    .where(eq(subscriptions.stripeSubscriptionId, subscriptionId))
-    .limit(1)
-
-  if (existingSub.length > 0) {
-    // UPDATE existing subscription
-    await db
-      .update(subscriptions)
-      .set({
+  // Atomic upsert — avoids race condition if webhook is delivered concurrently
+  await db
+    .insert(subscriptions)
+    .values({
+      id: randomUUID(),
+      userId: finalUserId!,
+      stripeCustomerId: customerId,
+      stripePaymentIntentId: paymentIntentId,
+      status: 'active',
+      plan: 'lifetime',
+    })
+    .onConflictDoUpdate({
+      target: subscriptions.stripePaymentIntentId,
+      set: {
         userId: finalUserId!,
         stripeCustomerId: customerId,
         status: 'active',
-        plan: plan as 'monthly' | 'yearly',
-        currentPeriodEnd: new Date(currentPeriodEnd * 1000),
-      })
-      .where(eq(subscriptions.id, existingSub[0].id))
-  } else {
-    // INSERT new subscription
-    await db
-      .insert(subscriptions)
-      .values({
-        id: randomUUID(),
-        userId: finalUserId!,
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscriptionId,
-        status: 'active',
-        plan: plan as 'monthly' | 'yearly',
-        currentPeriodEnd: new Date(currentPeriodEnd * 1000),
-      })
-  }
+        plan: 'lifetime',
+      },
+    })
 
   // Upsert user's profile with pro tier
   await db
@@ -230,21 +237,27 @@ async function handleCheckoutCompleted(
       set: { tier: 'pro' },
     })
 
-  console.log(`Checkout completed for user ${finalUserId}, plan: ${plan}`)
+  console.log(`Checkout completed for user ${finalUserId}, plan: lifetime`)
 }
 
-async function handleSubscriptionUpdated(
-  subscription: Stripe.Subscription
+// ============================================================================
+// charge.refunded — full refund
+// ============================================================================
+async function handleChargeRefunded(
+  charge: Stripe.Charge
 ) {
-  const customerId = subscription.customer as string
-  const status = mapStripeStatus(subscription.status)
-  const currentPeriodEnd = subscription.items?.data[0]?.current_period_end || Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
+  const customerId = charge.customer as string
+  if (!customerId) {
+    console.log('Charge refunded but no customer ID, skipping')
+    return
+  }
 
-  // Detect plan from price.id for plan change handling
-  const priceId = subscription.items?.data[0]?.price?.id
-  const plan: StripePlan = (priceId && PRICE_TO_PLAN[priceId]) || 'monthly'
+  // Only downgrade if fully refunded
+  if (!charge.refunded) {
+    console.log(`Partial refund for customer ${customerId}, keeping tier`)
+    return
+  }
 
-  // Find user by customer ID
   const sub = await db
     .select({ userId: subscriptions.userId })
     .from(subscriptions)
@@ -252,90 +265,66 @@ async function handleSubscriptionUpdated(
     .limit(1)
 
   if (sub.length === 0) {
-    console.error('No subscription found for customer:', customerId)
+    console.error('No subscription found for refunded customer:', customerId)
     return
   }
 
-  // Update subscription status and plan
-  await db
-    .update(subscriptions)
-    .set({
-      status,
-      plan,
-      currentPeriodEnd: new Date(currentPeriodEnd * 1000),
-    })
-    .where(eq(subscriptions.stripeCustomerId, customerId))
-
-  // Update tier based on status
-  const tier = status === 'active' || status === 'trialing' ? 'pro' : 'free'
-  await db
-    .update(profiles)
-    .set({ tier })
-    .where(eq(profiles.id, sub[0].userId))
-
-  console.log(`Subscription updated for user ${sub[0].userId}, status: ${status}`)
-}
-
-async function handleSubscriptionDeleted(
-  subscription: Stripe.Subscription
-) {
-  const customerId = subscription.customer as string
-
-  // Find user by customer ID
-  const sub = await db
-    .select({ userId: subscriptions.userId })
-    .from(subscriptions)
-    .where(eq(subscriptions.stripeCustomerId, customerId))
-    .limit(1)
-
-  if (sub.length === 0) {
-    console.error('No subscription found for customer:', customerId)
-    return
-  }
-
-  // Update subscription status
   await db
     .update(subscriptions)
     .set({ status: 'canceled' })
     .where(eq(subscriptions.stripeCustomerId, customerId))
 
-  // Revert tier to free
   await db
     .update(profiles)
     .set({ tier: 'free' })
     .where(eq(profiles.id, sub[0].userId))
 
-  console.log(`Subscription deleted for user ${sub[0].userId}`)
+  console.log(`Full refund processed for user ${sub[0].userId}, tier downgraded`)
 }
 
-async function handlePaymentFailed(
-  invoice: Stripe.Invoice
+// ============================================================================
+// charge.dispute.created — chargeback
+// ============================================================================
+async function handleDisputeCreated(
+  dispute: Stripe.Dispute
 ) {
-  const customerId = invoice.customer as string
+  const charge = dispute.charge
+  // charge can be a string ID or expanded Charge object
+  let customerId: string | null = null
+  if (typeof charge === 'string') {
+    // Fetch the charge to get the customer ID
+    const chargeData = await stripe.charges.retrieve(charge)
+    customerId = chargeData.customer as string
+  } else if (charge && typeof charge === 'object') {
+    customerId = (charge as Stripe.Charge).customer as string
+  }
 
-  // Update subscription status to past_due
+  if (!customerId) {
+    console.error('Dispute created but could not resolve customer ID')
+    return
+  }
+
+  const sub = await db
+    .select({ userId: subscriptions.userId })
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeCustomerId, customerId))
+    .limit(1)
+
+  if (sub.length === 0) {
+    console.error('No subscription found for disputed customer:', customerId)
+    return
+  }
+
+  // Downgrade tier immediately on dispute
   await db
     .update(subscriptions)
-    .set({ status: 'past_due' })
+    .set({ status: 'canceled' })
     .where(eq(subscriptions.stripeCustomerId, customerId))
 
-  console.log(`Payment failed for customer ${customerId}`)
-}
+  await db
+    .update(profiles)
+    .set({ tier: 'free' })
+    .where(eq(profiles.id, sub[0].userId))
 
-function mapStripeStatus(status: Stripe.Subscription.Status): 'active' | 'canceled' | 'past_due' | 'trialing' {
-  switch (status) {
-    case 'active':
-      return 'active'
-    case 'trialing':
-      return 'trialing'
-    case 'past_due':
-    case 'unpaid':
-      return 'past_due'
-    case 'canceled':
-    case 'incomplete':
-    case 'incomplete_expired':
-    case 'paused':
-    default:
-      return 'canceled'
-  }
+  console.log(`Dispute created for user ${sub[0].userId}, tier downgraded`)
 }
