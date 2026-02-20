@@ -1,16 +1,15 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { useGame } from '@/hooks/useGame'
 import { useAuth } from '@/contexts/AuthContext'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { isIntroSeen } from './IntroScreen'
-import { CreateRoomModal } from '../rooms/CreateRoomModal'
-import { JoinRoomModal } from '../rooms/JoinRoomModal'
 import { AuthModal } from '@/components/auth/AuthModal'
-
+import { HowToPlayModal } from '../ui/HowToPlayModal'
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
 ██╔████╔██║███████║██████╔╝█████╔╝ █████╗     ██║
@@ -50,6 +49,9 @@ interface TitleScreenProps {
   }
 }
 
+type ActiveSection = 'rooms' | 'leaderboards' | null
+type LeaderboardTab = 'daily' | 'allTime' | 'worst'
+
 export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const setScreen = useGame(state => state.setScreen)
   const startGame = useGame(state => state.startGame)
@@ -59,42 +61,18 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const setUsername = useGame(state => state.setUsername)
   const setSelectedDuration = useGame(state => state.setSelectedDuration)
   const { user, updateSettings } = useAuth()
+  const router = useRouter()
 
   const [dailyLeaderboard, setDailyLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.daily ?? [])
   const [allTimeLeaderboard, setAllTimeLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.allTime ?? [])
   const [worstLeaderboard, setWorstLeaderboard] = useState<LeaderboardEntry[]>(initialLeaderboards?.worst ?? [])
   const [leaderboardDuration, setLeaderboardDuration] = useState<30 | 45 | 60>(30)
-  const [usernameInput, setUsernameInput] = useState('')
-  const [usernameError, setUsernameError] = useState<string | null>(null)
-  const [isEditingUsername, setIsEditingUsername] = useState(false)
-  const [showCreateRoom, setShowCreateRoom] = useState(false)
-  const [showJoinRoom, setShowJoinRoom] = useState(false)
   const [showAuthForRoom, setShowAuthForRoom] = useState(false)
+  const [showHowToPlay, setShowHowToPlay] = useState(false)
   const hasInitialData = useRef(!!initialLeaderboards)
 
-  // Sync input with stored username
-  useEffect(() => {
-    if (username) setUsernameInput(username)
-  }, [username])
-
-  const validateAndSetUsername = () => {
-    const value = usernameInput.trim().toLowerCase()
-    if (value.length < 3) {
-      setUsernameError('Min 3 characters')
-      return
-    }
-    if (value.length > 15) {
-      setUsernameError('Max 15 characters')
-      return
-    }
-    if (!/^[a-z0-9_]+$/.test(value)) {
-      setUsernameError('Only letters, numbers, underscores')
-      return
-    }
-    setUsernameError(null)
-    setUsername(value)
-    setIsEditingUsername(false)
-  }
+  const [activeSection, setActiveSection] = useState<ActiveSection>(null)
+  const [leaderboardTab, setLeaderboardTab] = useState<LeaderboardTab>('allTime')
 
   const hasValidUsername = !!username
 
@@ -152,259 +130,270 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
 
   const showAllTimeSkeleton = allTimeLeaderboard.length === 0 && !hasInitialData.current
 
-  return (
-    <div className="h-full bg-mh-bg overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch">
-      <div className="flex flex-col items-center p-4 pb-8 text-center relative min-h-full">
-        {/* Settings gear icon */}
-        <button
-          onClick={() => setShowSettings(true)}
-          className="absolute top-4 right-4 text-mh-text-dim hover:text-mh-text-bright transition-colors cursor-pointer bg-transparent border-none p-2 text-xl z-10"
-          title="Settings"
-        >
-          ⚙️
-        </button>
+  const toggleSection = (section: ActiveSection) => {
+    setActiveSection(prev => prev === section ? null : section)
+  }
 
-        {/* Logo */}
-        <pre className="glow-text text-[7px] leading-tight mb-4 text-mh-text-bright whitespace-pre">
+  // Active leaderboard data and color config
+  const currentLeaderboard =
+    leaderboardTab === 'daily' ? dailyLeaderboard
+    : leaderboardTab === 'allTime' ? allTimeLeaderboard
+    : worstLeaderboard
+
+  const tabColors = {
+    daily: { top: 'text-mh-profit-green', topBg: 'bg-mh-profit-green/10' },
+    allTime: { top: 'text-mh-accent-blue', topBg: 'bg-mh-accent-blue/10' },
+    worst: { top: 'text-mh-loss-red', topBg: 'bg-mh-loss-red/10' },
+  }
+  const colors = tabColors[leaderboardTab]
+
+  return (
+    <div className="h-full bg-mh-bg overflow-y-auto relative" style={{
+      backgroundImage: 'url(/image.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed',
+    }}>
+      {/* Dark overlay for readability */}
+      <div className="fixed inset-0 z-[2] pointer-events-none" style={{
+        background: 'linear-gradient(to bottom, rgba(13,17,23,0.7) 0%, rgba(13,17,23,0.4) 40%, rgba(13,17,23,0.6) 100%)',
+      }} />
+
+      <div className="flex flex-col items-center min-h-full px-4 relative text-center z-[5]">
+        {/* Top spacer — pushes content toward vertical center */}
+        <div className="flex-1 min-h-[5vh] max-h-[12vh]" />
+
+        {/* ═══ HERO: Logo + Tagline ═══ */}
+        <pre className="glow-text text-[7px] leading-tight mb-4 text-mh-text-bright whitespace-pre text-left inline-block">
           {ASCII_LOGO}
         </pre>
 
-        {/* Tagline - more visible */}
-        <div className="text-mh-text-bright text-sm mb-10 leading-relaxed font-bold">
+        <div className="text-mh-text-bright text-sm mb-10 leading-relaxed font-bold tracking-wider">
           BUY LOW. SELL HIGH.<br />DON&apos;T GO BROKE.
         </div>
 
-        {/* Username Input */}
-        <div className="w-full max-w-[280px] mb-4">
-          {hasValidUsername && !isEditingUsername ? (
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-mh-text-dim text-sm">Playing as</span>
-              <span className="text-mh-accent-blue text-sm font-bold">{username}</span>
-              <button
-                onClick={() => setIsEditingUsername(true)}
-                className="text-mh-text-dim text-xs hover:text-mh-text-main transition-colors cursor-pointer bg-transparent border-none"
-              >
-                [change]
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-2">
-              <div className="text-mh-text-dim text-xs mb-1">ENTER USERNAME TO PLAY</div>
-              <div className="flex gap-2 w-full">
-                <input
-                  type="text"
-                  value={usernameInput}
-                  onChange={(e) => setUsernameInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                  onKeyDown={(e) => { if (e.key === 'Enter') validateAndSetUsername() }}
-                  maxLength={15}
-                  placeholder="your_username"
-                  className="flex-1 bg-transparent border border-mh-border text-mh-text-main text-sm font-mono
-                    px-3 py-2 outline-none focus:border-mh-accent-blue transition-colors placeholder:text-mh-text-dim/50"
-                />
+        {/* ═══ MAIN MENU ═══ */}
+        <nav aria-label="Main menu" className="flex flex-col items-center gap-0.5 mb-6 w-full max-w-[280px]">
+          {/* PLAY — primary action, visually distinct */}
+          <button
+            onClick={() => {
+              if (isIntroSeen()) {
+                startGame()
+              } else {
+                setScreen('intro')
+              }
+            }}
+            className="group w-full text-center py-3 font-mono text-lg tracking-[0.2em] transition-all duration-200 bg-transparent border-none focus-visible:outline-none text-mh-text-bright glow-text cursor-pointer"
+          >
+            <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{'> '}</span>
+            PLAY
+            <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{' <'}</span>
+          </button>
+
+          {/* ROOMS */}
+          <button
+            onClick={() => toggleSection('rooms')}
+            aria-expanded={activeSection === 'rooms'}
+            className={`group w-full text-center py-2 font-mono text-sm tracking-[0.2em] transition-all duration-200 bg-transparent border-none cursor-pointer focus-visible:outline-none
+              ${activeSection === 'rooms' ? 'text-white' : 'text-white/70 hover:text-white focus-visible:text-white'}`}
+          >
+            <span className={`opacity-0 transition-opacity duration-150 ${activeSection === 'rooms' ? '!opacity-100' : 'group-hover:opacity-100 group-focus-visible:opacity-100'}`}>{'> '}</span>
+            ROOMS
+            <span className={`opacity-0 transition-opacity duration-150 ${activeSection === 'rooms' ? '!opacity-100' : 'group-hover:opacity-100 group-focus-visible:opacity-100'}`}>{' <'}</span>
+          </button>
+
+          {/* LEADERBOARDS */}
+          <button
+            onClick={() => toggleSection('leaderboards')}
+            aria-expanded={activeSection === 'leaderboards'}
+            className={`group w-full text-center py-2 font-mono text-sm tracking-[0.2em] transition-all duration-200 bg-transparent border-none cursor-pointer focus-visible:outline-none
+              ${activeSection === 'leaderboards' ? 'text-white' : 'text-white/70 hover:text-white focus-visible:text-white'}`}
+          >
+            <span className={`opacity-0 transition-opacity duration-150 ${activeSection === 'leaderboards' ? '!opacity-100' : 'group-hover:opacity-100 group-focus-visible:opacity-100'}`}>{'> '}</span>
+            LEADERBOARDS
+            <span className={`opacity-0 transition-opacity duration-150 ${activeSection === 'leaderboards' ? '!opacity-100' : 'group-hover:opacity-100 group-focus-visible:opacity-100'}`}>{' <'}</span>
+          </button>
+
+          {/* HOW TO PLAY */}
+          <button
+            onClick={() => setShowHowToPlay(true)}
+            className="group w-full text-center py-2 font-mono text-sm tracking-[0.2em] transition-all duration-200 bg-transparent border-none cursor-pointer text-white/70 hover:text-white focus-visible:text-white focus-visible:outline-none"
+          >
+            <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{'> '}</span>
+            HOW TO PLAY
+            <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{' <'}</span>
+          </button>
+
+          {/* SETTINGS */}
+          <button
+            onClick={() => setShowSettings(true)}
+            className="group w-full text-center py-2 font-mono text-sm tracking-[0.2em] transition-all duration-200 bg-transparent border-none cursor-pointer text-white/70 hover:text-white focus-visible:text-white focus-visible:outline-none"
+          >
+            <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{'> '}</span>
+            SETTINGS
+            <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{' <'}</span>
+          </button>
+        </nav>
+
+        {/* ═══ EXPANDABLE: ROOMS ═══ */}
+        {activeSection === 'rooms' && (
+          <div role="region" aria-label="Rooms" className="w-full max-w-[280px] mb-6 border border-white/20 p-4 space-y-3 bg-black/40 backdrop-blur-sm">
+            {hasValidUsername ? (
+              <>
                 <button
-                  onClick={validateAndSetUsername}
-                  className="bg-transparent border border-mh-accent-blue text-mh-accent-blue
-                    px-3 py-2 text-xs font-mono cursor-pointer
-                    hover:bg-mh-accent-blue/10 transition-colors"
+                  onClick={user ? () => router.push('/room/create') : () => setShowAuthForRoom(true)}
+                  className={`w-full py-2.5 font-mono text-xs tracking-wider transition-colors bg-transparent border cursor-pointer focus-visible:outline focus-visible:outline-1 focus-visible:outline-white
+                    ${user
+                      ? 'text-white/80 border-white/30 hover:border-white hover:text-white'
+                      : 'text-white/50 border-white/20 hover:border-white/40 hover:text-white/70'
+                    }`}
                 >
-                  OK
+                  CREATE ROOM
                 </button>
-              </div>
-              {usernameError && (
-                <div className="text-mh-loss-red text-xs">{usernameError}</div>
+                <button
+                  onClick={user ? () => router.push('/room/join') : () => setShowAuthForRoom(true)}
+                  className={`w-full py-2.5 font-mono text-xs tracking-wider transition-colors bg-transparent border cursor-pointer focus-visible:outline focus-visible:outline-1 focus-visible:outline-white
+                    ${user
+                      ? 'text-white/80 border-white/30 hover:border-white hover:text-white'
+                      : 'text-white/50 border-white/20 hover:border-white/40 hover:text-white/70'
+                    }`}
+                >
+                  JOIN ROOM
+                </button>
+                {!user && (
+                  <p className="text-white/50 text-[10px] font-mono text-center !mt-1 !mb-0">
+                    SIGN IN TO PLAY WITH FRIENDS
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-white/60 text-xs font-mono text-center py-2 m-0">
+                Set a username first to create or join rooms.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* ═══ EXPANDABLE: LEADERBOARDS ═══ */}
+        {activeSection === 'leaderboards' && (
+          <div role="region" aria-label="Leaderboards" className="w-full max-w-[320px] mb-6 border border-white/20 p-4 bg-black/40 backdrop-blur-sm">
+            {/* Duration selector */}
+            <div className="flex justify-center gap-2 mb-3" role="group" aria-label="Game duration">
+              {([30, 45, 60] as const).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => {
+                    setLeaderboardDuration(d)
+                    setSelectedDuration(d)
+                    if (user) updateSettings({ duration: d })
+                  }}
+                  aria-pressed={leaderboardDuration === d}
+                  className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors cursor-pointer focus-visible:outline focus-visible:outline-1 focus-visible:outline-white ${
+                    leaderboardDuration === d
+                      ? 'bg-white/20 text-white border-white/60'
+                      : 'bg-transparent text-white/50 border-white/20 hover:text-white/80 hover:border-white/40'
+                  }`}
+                >
+                  {d} days
+                </button>
+              ))}
+            </div>
+
+            {/* Tab selector */}
+            <div className="flex justify-center gap-1 mb-3" role="tablist" aria-label="Leaderboard type">
+              {([
+                { key: 'daily' as const, label: 'TODAY' },
+                { key: 'allTime' as const, label: 'ALL-TIME' },
+                { key: 'worst' as const, label: 'SHAME' },
+              ]).map((tab) => (
+                <button
+                  key={tab.key}
+                  role="tab"
+                  aria-selected={leaderboardTab === tab.key}
+                  onClick={() => setLeaderboardTab(tab.key)}
+                  className={`px-3 py-1.5 text-xs font-mono transition-colors bg-transparent border-none cursor-pointer focus-visible:outline focus-visible:outline-1 focus-visible:outline-white
+                    ${leaderboardTab === tab.key
+                      ? 'text-white'
+                      : 'text-white/50 hover:text-white/80'
+                    }`}
+                >
+                  {leaderboardTab === tab.key ? `[ ${tab.label} ]` : tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Leaderboard table */}
+            <div className="border border-white/15 rounded-lg overflow-hidden">
+              {leaderboardTab === 'allTime' && showAllTimeSkeleton ? (
+                <LeaderboardSkeleton rows={5} />
+              ) : currentLeaderboard.length === 0 ? (
+                <div className="px-3 py-4 text-sm text-white/50 text-center">
+                  {leaderboardTab === 'daily'
+                    ? 'No games played today yet. Be the first!'
+                    : 'No entries yet.'}
+                </div>
+              ) : (
+                currentLeaderboard.map((entry, index) => (
+                  <div
+                    key={index}
+                    className={`flex items-center px-3 py-2 text-sm ${
+                      index < 3 ? 'bg-white/5' : index % 2 === 1 ? 'bg-white/[0.02]' : ''
+                    }`}
+                  >
+                    <span className={`w-10 ${index < 3 ? 'text-white font-bold' : 'text-white/50'}`}>
+                      #{index + 1}
+                    </span>
+                    <span className="flex-1 text-white/80 truncate text-left">
+                      {entry.username}
+                    </span>
+                    <span className={`font-mono text-right ${
+                      leaderboardTab === 'worst'
+                        ? 'text-red-400'
+                        : entry.score >= 1_000_000_000 ? 'text-green-400'
+                        : entry.score >= 1_000_000 ? 'text-white'
+                        : 'text-white/80'
+                    }`}>
+                      {formatScore(entry.score)}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Bottom spacer */}
+        <div className="flex-1 min-h-[3vh]" />
+
+        {/* ═══ FOOTER ═══ */}
+        <div className="pb-6 flex flex-col items-center gap-2 w-full max-w-[280px]">
+          {hasValidUsername && (
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-white/50 text-xs font-mono">Playing as</span>
+              <span className="text-white text-xs font-bold font-mono">{username}</span>
+              {process.env.NODE_ENV === 'development' && (
+                <button
+                  onClick={() => setUsername('')}
+                  className="text-red-400/60 text-[10px] hover:text-red-400 transition-colors cursor-pointer bg-transparent border-none font-mono"
+                >
+                  [reset]
+                </button>
               )}
             </div>
           )}
-        </div>
-
-        {/* Play Button */}
-        <button
-          onClick={() => {
-            if (isIntroSeen()) {
-              startGame()
-            } else {
-              setScreen('intro')
-            }
-          }}
-          disabled={!hasValidUsername}
-          className={`border-2 px-8 py-3 text-base font-mono transition-colors ${user ? 'mb-8' : 'mb-3'}
-            ${hasValidUsername
-              ? 'border-mh-accent-blue text-mh-accent-blue bg-transparent cursor-pointer glow-text hover:bg-mh-accent-blue/10 active:bg-mh-accent-blue/20'
-              : 'border-mh-border text-mh-text-dim bg-transparent cursor-not-allowed opacity-50'
-            }`}
-        >
-          [ PLAY NOW ]
-        </button>
-
-        {/* Sign In Button - shown when logged out */}
-        {!user && (
-          <button
-            onClick={() => setShowAuthForRoom(true)}
-            className="border-2 px-8 py-3 text-base font-mono transition-colors mb-8 border-mh-border text-mh-text-dim bg-transparent cursor-pointer hover:border-mh-text-main hover:text-mh-text-main"
-          >
-            [ SIGN IN ]
-          </button>
-        )}
-
-        {/* Room Buttons */}
-        {hasValidUsername && (
-          <div className="flex flex-col items-center gap-2 mb-8">
-            <div className="flex gap-3">
-              <button
-                onClick={user ? () => setShowCreateRoom(true) : () => setShowAuthForRoom(true)}
-                className={`border px-4 py-2 text-xs font-mono transition-colors ${
-                  user
-                    ? 'border-mh-border text-mh-text-dim cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue'
-                    : 'border-mh-border/50 text-mh-text-dim/40 cursor-pointer'
-                }`}
-              >
-                CREATE ROOM
-              </button>
-              <button
-                onClick={user ? () => setShowJoinRoom(true) : () => setShowAuthForRoom(true)}
-                className={`border px-4 py-2 text-xs font-mono transition-colors ${
-                  user
-                    ? 'border-mh-border text-mh-text-dim cursor-pointer hover:border-mh-accent-blue hover:text-mh-accent-blue'
-                    : 'border-mh-border/50 text-mh-text-dim/40 cursor-pointer'
-                }`}
-              >
-                JOIN ROOM
-              </button>
-            </div>
-            {!user && (
-              <span className="text-mh-text-dim/50 text-[10px] font-mono">SIGN IN TO PLAY WITH FRIENDS</span>
-            )}
-          </div>
-        )}
-
-        {/* Leaderboard Section */}
-        <h1 className="text-mh-text-dim text-lg font-mono tracking-widest mb-3">LEADERBOARD</h1>
-        <div className="flex gap-2 mb-4">
-          {([30, 45, 60] as const).map((d) => (
+          {!user && (
             <button
-              key={d}
-              onClick={() => {
-                setLeaderboardDuration(d)
-                setSelectedDuration(d)
-                if (user) updateSettings({ duration: d })
-              }}
-              className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors cursor-pointer ${
-                leaderboardDuration === d
-                  ? 'bg-mh-accent-blue/20 text-mh-accent-blue border-mh-accent-blue'
-                  : 'bg-mh-bg text-mh-text-dim border-mh-border hover:text-mh-text-main hover:border-mh-text-dim'
-              }`}
+              onClick={() => setShowAuthForRoom(true)}
+              className="px-6 py-1.5 font-mono text-xs tracking-[0.2em] transition-all duration-200 bg-transparent border border-white/25 cursor-pointer text-white/50 hover:text-white hover:border-white/60 focus-visible:outline-none"
             >
-              {d} days
+              SIGN IN
             </button>
-          ))}
+          )}
         </div>
-
-        {/* Daily Leaderboard */}
-        <div className="w-full max-w-[320px] mb-6">
-          <div className="text-mh-text-dim text-sm mb-3 text-center">TODAY</div>
-          <div className="border border-mh-border rounded-lg overflow-hidden">
-            {dailyLeaderboard.length === 0 ? (
-              <div className="px-3 py-4 text-sm text-mh-text-dim text-center">
-                No games played today yet. Be the first!
-              </div>
-            ) : (
-              dailyLeaderboard.map((entry, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center px-3 py-2 text-sm ${
-                    index < 3 ? 'bg-mh-profit-green/10' : index % 2 === 1 ? 'bg-mh-border/10' : ''
-                  }`}
-                >
-                  <span className={`w-10 ${index < 3 ? 'text-mh-profit-green font-bold' : 'text-mh-text-dim'}`}>
-                    #{index + 1}
-                  </span>
-                  <span className="flex-1 text-mh-text-main truncate text-left">
-                    {entry.username}
-                  </span>
-                  <span className={`font-mono text-right ${
-                    entry.score >= 1_000_000_000 ? 'text-mh-profit-green' :
-                    entry.score >= 1_000_000 ? 'text-mh-accent-blue' :
-                    'text-mh-text-main'
-                  }`}>
-                    {formatScore(entry.score)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* All-Time Leaderboard */}
-        <div className="w-full max-w-[320px] mb-6">
-          <div className="text-mh-text-dim text-sm mb-3 text-center">ALL-TIME</div>
-          <div className="border border-mh-border rounded-lg overflow-hidden">
-            {showAllTimeSkeleton ? (
-              <LeaderboardSkeleton rows={5} />
-            ) : (
-              allTimeLeaderboard.map((entry, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center px-3 py-2 text-sm ${
-                    index < 3 ? 'bg-mh-accent-blue/10' : index % 2 === 1 ? 'bg-mh-border/10' : ''
-                  }`}
-                >
-                  <span className={`w-10 ${index < 3 ? 'text-mh-accent-blue font-bold' : 'text-mh-text-dim'}`}>
-                    #{index + 1}
-                  </span>
-                  <span className="flex-1 text-mh-text-main truncate text-left">
-                    {entry.username}
-                  </span>
-                  <span className={`font-mono text-right ${
-                    entry.score >= 1_000_000_000 ? 'text-mh-profit-green' :
-                    entry.score >= 1_000_000 ? 'text-mh-accent-blue' :
-                    'text-mh-text-main'
-                  }`}>
-                    {formatScore(entry.score)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-        {/* Worst Scores Leaderboard */}
-        {worstLeaderboard.length > 0 && (
-          <div className="w-full max-w-[320px]">
-            <div className="text-mh-text-dim text-sm mb-3 text-center">HALL OF SHAME</div>
-            <div className="border border-mh-border rounded-lg overflow-hidden">
-              {worstLeaderboard.map((entry, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center px-3 py-2 text-sm ${
-                    index < 3 ? 'bg-mh-loss-red/10' : index % 2 === 1 ? 'bg-mh-border/10' : ''
-                  }`}
-                >
-                  <span className={`w-10 ${index < 3 ? 'text-mh-loss-red font-bold' : 'text-mh-text-dim'}`}>
-                    #{index + 1}
-                  </span>
-                  <span className="flex-1 text-mh-text-main truncate text-left">
-                    {entry.username}
-                  </span>
-                  <span className="font-mono text-right text-mh-loss-red">
-                    {formatScore(entry.score)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Room Modals */}
-      <CreateRoomModal
-        isOpen={showCreateRoom}
-        onClose={() => setShowCreateRoom(false)}
-        onCreated={() => setShowCreateRoom(false)}
-      />
-      <JoinRoomModal
-        isOpen={showJoinRoom}
-        onClose={() => setShowJoinRoom(false)}
-        onJoined={() => setShowJoinRoom(false)}
-      />
+      {showHowToPlay && <HowToPlayModal onClose={() => setShowHowToPlay(false)} />}
       <AuthModal
         isOpen={showAuthForRoom}
         onClose={() => setShowAuthForRoom(false)}

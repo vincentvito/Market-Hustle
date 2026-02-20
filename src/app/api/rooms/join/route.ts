@@ -3,8 +3,8 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { db } from '@/db'
-import { rooms, roomPlayers, profiles } from '@/db/schema'
-import { eq, and, count } from 'drizzle-orm'
+import { rooms, roomPlayers, roomResults, profiles } from '@/db/schema'
+import { eq, and, count, ne } from 'drizzle-orm'
 
 export async function POST(request: Request) {
   try {
@@ -16,11 +16,13 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { code } = body
+    const { code, username: requestUsername } = body
 
     if (!code || typeof code !== 'string') {
       return NextResponse.json({ error: 'Room code required' }, { status: 400 })
     }
+
+    const normalizedRequestUsername = typeof requestUsername === 'string' ? requestUsername.trim().toLowerCase() : null
 
     // Get user profile for username
     const profileResult = await db
@@ -29,11 +31,23 @@ export async function POST(request: Request) {
       .where(eq(profiles.id, user.id))
       .limit(1)
 
-    if (profileResult.length === 0 || !profileResult[0].username) {
-      return NextResponse.json({ error: 'Username required' }, { status: 400 })
+    let username = profileResult[0]?.username
+
+    // If profile has no username but one was sent in the request, sync it
+    if (!username && normalizedRequestUsername && /^[a-z0-9_]{3,15}$/.test(normalizedRequestUsername)) {
+      await db
+        .insert(profiles)
+        .values({ id: user.id, username: normalizedRequestUsername })
+        .onConflictDoUpdate({
+          target: profiles.id,
+          set: { username: normalizedRequestUsername },
+        })
+      username = normalizedRequestUsername
     }
 
-    const username = profileResult[0].username
+    if (!username) {
+      return NextResponse.json({ error: 'Username required' }, { status: 400 })
+    }
 
     // Find room by code
     const roomResult = await db
@@ -48,18 +62,52 @@ export async function POST(request: Request) {
 
     const room = roomResult[0]
 
-    if (room.status !== 'lobby') {
-      return NextResponse.json({ error: 'Room is no longer accepting players' }, { status: 400 })
+    if (room.status === 'finished') {
+      return NextResponse.json({ error: 'Room is closed' }, { status: 400 })
     }
+
+    // Parse settings from scenarioData
+    let startingCash = 50_000
+    let startingDebt = 50_000
+    if (room.scenarioData) {
+      try {
+        const sd = JSON.parse(room.scenarioData)
+        if (typeof sd.startingCash === 'number') startingCash = sd.startingCash
+        if (typeof sd.startingDebt === 'number') startingDebt = sd.startingDebt
+      } catch { /* ignore parse errors */ }
+    }
+
+    // Fetch existing results for standings
+    const existingResults = await db
+      .select()
+      .from(roomResults)
+      .where(eq(roomResults.roomId, room.id))
+
+    const resultsPayload = existingResults.map(r => ({
+      user_id: r.userId,
+      username: r.username,
+      final_net_worth: r.finalNetWorth,
+      profit_percent: r.profitPercent,
+      days_survived: r.daysSurvived,
+      outcome: r.outcome,
+      rank: r.rank,
+    }))
 
     // Check if already in room
     const existingPlayer = await db
-      .select({ id: roomPlayers.id })
+      .select({ id: roomPlayers.id, status: roomPlayers.status })
       .from(roomPlayers)
       .where(and(eq(roomPlayers.roomId, room.id), eq(roomPlayers.userId, user.id)))
       .limit(1)
 
     if (existingPlayer.length > 0) {
+      // If player had left, reset them to joined
+      if (existingPlayer[0].status === 'left') {
+        await db
+          .update(roomPlayers)
+          .set({ status: 'joined' })
+          .where(eq(roomPlayers.id, existingPlayer[0].id))
+      }
       return NextResponse.json({
         room: {
           id: room.id,
@@ -68,16 +116,19 @@ export async function POST(request: Request) {
           host_id: room.hostId,
           game_duration: room.gameDuration,
           max_players: room.maxPlayers,
+          starting_cash: startingCash,
+          starting_debt: startingDebt,
         },
+        results: resultsPayload,
         message: 'Already in room',
       })
     }
 
-    // Check player count
+    // Check player count (exclude players who left)
     const [playerCount] = await db
       .select({ count: count() })
       .from(roomPlayers)
-      .where(and(eq(roomPlayers.roomId, room.id), eq(roomPlayers.status, 'joined')))
+      .where(and(eq(roomPlayers.roomId, room.id), ne(roomPlayers.status, 'left')))
 
     if (playerCount.count >= room.maxPlayers) {
       return NextResponse.json({ error: 'Room is full' }, { status: 400 })
@@ -101,7 +152,10 @@ export async function POST(request: Request) {
         host_id: room.hostId,
         game_duration: room.gameDuration,
         max_players: room.maxPlayers,
+        starting_cash: startingCash,
+        starting_debt: startingDebt,
       },
+      results: resultsPayload,
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)

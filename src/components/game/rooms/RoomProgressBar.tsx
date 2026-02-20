@@ -31,7 +31,7 @@ export function RoomProgressBar() {
       userId: p.userId,
       username: p.username,
       isHost: false,
-      isReady: p.isReady,
+      isReady: false,
       currentDay: p.currentDay,
       currentNetWorth: p.currentNetWorth,
       status: p.status,

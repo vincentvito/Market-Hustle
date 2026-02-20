@@ -40,4 +40,6 @@ export interface EndGameProps {
   lossBreakdown?: LossBreakdown
   leaderboardRank?: LeaderboardRank
   roomStandings?: ReactNode
+  onBackToRoom?: () => void
+  roomCode?: string
 }

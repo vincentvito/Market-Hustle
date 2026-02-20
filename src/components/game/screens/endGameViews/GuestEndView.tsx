@@ -2,6 +2,7 @@
 
 import type { EndGameProps } from './types'
 import { formatNetWorth } from '@/lib/utils/formatMoney'
+import { InlineUsernameInput } from './InlineUsernameInput'
 
 /**
  * GuestEndView - End-game screen for anonymous/guest users.
@@ -20,6 +21,8 @@ export function GuestEndView({
   onPlayAgain,
   onOpenAuth,
   roomStandings,
+  onBackToRoom,
+  roomCode,
 }: EndGameProps) {
   const isWin = outcome === 'win'
 
@@ -29,7 +32,7 @@ export function GuestEndView({
   const profitColor = netWorth >= 100000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
-    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center">
+    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center relative z-[51]">
       {/* Outcome Header */}
       <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
       <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
@@ -56,11 +59,33 @@ export function GuestEndView({
         </div>
       )}
 
+      <InlineUsernameInput />
+
+      {/* Room code */}
+      {roomCode && (
+        <div className="mt-4 mb-2">
+          <span className="text-mh-text-dim text-xs font-mono">ROOM </span>
+          <span className="text-mh-accent-blue text-sm font-mono tracking-wider">{roomCode}</span>
+        </div>
+      )}
+
       {/* Room standings (live or final) */}
       {roomStandings}
 
+      {/* Back to Room button */}
+      {onBackToRoom && (
+        <button
+          onClick={onBackToRoom}
+          className="mt-4 mb-2 bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
+            px-10 py-4 text-base font-mono cursor-pointer glow-text
+            hover:bg-mh-accent-blue/10 transition-colors"
+        >
+          [ BACK TO ROOM ]
+        </button>
+      )}
+
       {/* Registration CTA - The main conversion point */}
-      <div className="w-full max-w-[320px] md:max-w-[400px] mb-6">
+      <div className="w-full max-w-[320px] md:max-w-[400px] mt-8 mb-6">
         <div className="border-2 border-mh-accent-blue p-5 md:p-6 bg-mh-accent-blue/5">
           <div className="text-mh-text-bright text-base md:text-lg font-bold mb-2">
             Continue your run
@@ -88,24 +113,24 @@ export function GuestEndView({
             </div>
           </div>
 
-          <button
-            onClick={onOpenAuth}
-            className="w-full py-3 border-2 border-mh-accent-blue bg-mh-accent-blue text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-accent-blue/90 transition-colors"
-          >
-            REGISTER FREE
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={onPlayAgain}
+              className="flex-1 py-3 bg-transparent border border-mh-border text-mh-text-dim
+                text-sm font-mono transition-colors
+                cursor-pointer hover:border-mh-text-dim hover:text-mh-text-main"
+            >
+              PLAY AS GUEST
+            </button>
+            <button
+              onClick={onOpenAuth}
+              className="flex-1 py-3 border-2 border-mh-accent-blue bg-mh-accent-blue text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-accent-blue/90 transition-colors"
+            >
+              REGISTER FREE
+            </button>
+          </div>
         </div>
       </div>
-
-      {/* Play Again as Guest - secondary/ghost style */}
-      <button
-        onClick={onPlayAgain}
-        className="bg-transparent border border-mh-border text-mh-text-dim
-          px-6 py-2 text-sm font-mono transition-colors
-          cursor-pointer hover:border-mh-text-dim hover:text-mh-text-main"
-      >
-        Play Again as Guest
-      </button>
     </div>
   )
 }

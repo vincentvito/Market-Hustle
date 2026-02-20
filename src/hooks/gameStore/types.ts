@@ -41,6 +41,7 @@ import type { UserTier } from '@/lib/game/userState'
 
 // Supabase profile data for game limits (synced from AuthContext)
 export interface SupabaseProfileData {
+  totalGamesPlayed: number
   gamesPlayedToday: number
   lastPlayedDate: string | null
 }
@@ -112,7 +113,7 @@ export interface MechanicsSlice extends GameState {
   showGiftsModal: boolean
 
   // Game control actions
-  startGame: (duration?: GameDuration) => void
+  startGame: (duration?: GameDuration, options?: { cash?: number; debt?: number; skipLimits?: boolean }) => void
   nextDay: () => void
   triggerNextDay: () => void
   setScreen: (screen: GameScreen) => void

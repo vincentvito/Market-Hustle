@@ -39,14 +39,31 @@ export async function GET(
       .from(roomPlayers)
       .where(eq(roomPlayers.roomId, id))
 
-    // Get results if finished
-    let results: typeof roomResults.$inferSelect[] = []
-    if (room.status === 'finished') {
-      results = await db
-        .select()
-        .from(roomResults)
-        .where(eq(roomResults.roomId, id))
+    // Check room membership
+    const isMember = players.some(p => p.userId === user.id)
+    if (!isMember) {
+      return NextResponse.json({ error: 'Not a member of this room' }, { status: 403 })
     }
+
+    // Always fetch results
+    const results = await db
+      .select()
+      .from(roomResults)
+      .where(eq(roomResults.roomId, id))
+
+    // Parse settings
+    let startingCash = 50_000
+    let startingDebt = 50_000
+    if (room.scenarioData) {
+      try {
+        const sd = JSON.parse(room.scenarioData)
+        if (typeof sd.startingCash === 'number') startingCash = sd.startingCash
+        if (typeof sd.startingDebt === 'number') startingDebt = sd.startingDebt
+      } catch { /* ignore */ }
+    }
+
+    // Settings are locked if any player has started or finished
+    const settingsLocked = players.some(p => p.status === 'playing' || p.status === 'finished')
 
     return NextResponse.json({
       room: {
@@ -57,6 +74,9 @@ export async function GET(
         scenario_data: room.scenarioData,
         game_duration: room.gameDuration,
         max_players: room.maxPlayers,
+        starting_cash: startingCash,
+        starting_debt: startingDebt,
+        settings_locked: settingsLocked,
         created_at: room.createdAt,
         started_at: room.startedAt,
         finished_at: room.finishedAt,

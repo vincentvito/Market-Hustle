@@ -26,7 +26,7 @@ export async function POST(
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Check room exists and is playing
+    // Check room exists
     const roomResult = await db
       .select()
       .from(rooms)
@@ -37,7 +37,7 @@ export async function POST(
       return NextResponse.json({ error: 'Room not found' }, { status: 404 })
     }
 
-    // Upsert result (in case of re-submission)
+    // Upsert result (update if exists, insert if new)
     const existingResult = await db
       .select({ id: roomResults.id })
       .from(roomResults)
@@ -45,9 +45,11 @@ export async function POST(
       .limit(1)
 
     if (existingResult.length > 0) {
+      // Update existing result (replay)
       await db
         .update(roomResults)
         .set({
+          username,
           finalNetWorth: Math.round(finalNetWorth),
           profitPercent: String(profitPercent ?? 0),
           daysSurvived: daysSurvived ?? 30,
@@ -55,6 +57,7 @@ export async function POST(
         })
         .where(eq(roomResults.id, existingResult[0].id))
     } else {
+      // Insert new result
       await db.insert(roomResults).values({
         roomId: id,
         userId: user.id,
@@ -76,37 +79,51 @@ export async function POST(
       })
       .where(and(eq(roomPlayers.roomId, id), eq(roomPlayers.userId, user.id)))
 
-    // Check if all players are finished
-    const activePlayers = await db
-      .select({ status: roomPlayers.status })
-      .from(roomPlayers)
-      .where(eq(roomPlayers.roomId, id))
+    // Always recompute ranks after every submission
+    const allResults = await db
+      .select()
+      .from(roomResults)
+      .where(eq(roomResults.roomId, id))
 
-    const allFinished = activePlayers.every(p => p.status === 'finished' || p.status === 'left')
+    const sorted = [...allResults].sort((a, b) => {
+      if (b.finalNetWorth !== a.finalNetWorth) return b.finalNetWorth - a.finalNetWorth
+      if ((b.daysSurvived ?? 0) !== (a.daysSurvived ?? 0)) return (b.daysSurvived ?? 0) - (a.daysSurvived ?? 0)
+      return Number(b.profitPercent ?? 0) - Number(a.profitPercent ?? 0)
+    })
 
-    if (allFinished) {
-      // Compute ranks
-      const allResults = await db
-        .select()
-        .from(roomResults)
-        .where(eq(roomResults.roomId, id))
-
-      const sorted = [...allResults].sort((a, b) => b.finalNetWorth - a.finalNetWorth)
-      for (let i = 0; i < sorted.length; i++) {
-        await db
-          .update(roomResults)
-          .set({ rank: i + 1 })
-          .where(eq(roomResults.id, sorted[i].id))
+    let currentRank = 1
+    for (let i = 0; i < sorted.length; i++) {
+      if (i > 0 && (
+        sorted[i].finalNetWorth !== sorted[i - 1].finalNetWorth ||
+        (sorted[i].daysSurvived ?? 0) !== (sorted[i - 1].daysSurvived ?? 0) ||
+        Number(sorted[i].profitPercent ?? 0) !== Number(sorted[i - 1].profitPercent ?? 0)
+      )) {
+        currentRank++
       }
-
-      // Mark room as finished
       await db
-        .update(rooms)
-        .set({ status: 'finished', finishedAt: new Date() })
-        .where(eq(rooms.id, id))
+        .update(roomResults)
+        .set({ rank: currentRank })
+        .where(eq(roomResults.id, sorted[i].id))
     }
 
-    return NextResponse.json({ success: true, allFinished })
+    // Return updated results with ranks
+    const updatedResults = await db
+      .select()
+      .from(roomResults)
+      .where(eq(roomResults.roomId, id))
+
+    return NextResponse.json({
+      success: true,
+      results: updatedResults.map(r => ({
+        user_id: r.userId,
+        username: r.username,
+        final_net_worth: r.finalNetWorth,
+        profit_percent: r.profitPercent,
+        days_survived: r.daysSurvived,
+        outcome: r.outcome,
+        rank: r.rank,
+      })),
+    })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.error('Error finishing room game:', message)

@@ -4,10 +4,10 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { db } from '@/db'
 import { rooms, roomPlayers } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 
 export async function POST(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -19,14 +19,8 @@ export async function POST(
     }
 
     const { id } = await params
-    const body = await request.json()
-    const { scenarioData } = body
 
-    if (!scenarioData) {
-      return NextResponse.json({ error: 'Scenario data required' }, { status: 400 })
-    }
-
-    // Get room and verify host
+    // Get room
     const roomResult = await db
       .select()
       .from(rooms)
@@ -39,34 +33,64 @@ export async function POST(
 
     const room = roomResult[0]
 
-    if (room.hostId !== user.id) {
-      return NextResponse.json({ error: 'Only the host can start the game' }, { status: 403 })
+    if (room.status === 'finished') {
+      return NextResponse.json({ error: 'Room is closed' }, { status: 400 })
     }
 
-    if (room.status !== 'lobby') {
-      return NextResponse.json({ error: 'Room is not in lobby state' }, { status: 400 })
+    // Verify player is in the room
+    const playerResult = await db
+      .select({ id: roomPlayers.id, status: roomPlayers.status })
+      .from(roomPlayers)
+      .where(and(eq(roomPlayers.roomId, id), eq(roomPlayers.userId, user.id)))
+      .limit(1)
+
+    if (playerResult.length === 0) {
+      return NextResponse.json({ error: 'Not in this room' }, { status: 400 })
     }
 
-    // Update room status
-    await db
-      .update(rooms)
-      .set({
-        status: 'playing',
-        scenarioData: typeof scenarioData === 'string' ? scenarioData : JSON.stringify(scenarioData),
-        startedAt: new Date(),
-      })
-      .where(eq(rooms.id, id))
+    const player = playerResult[0]
 
-    // Update all joined players to playing
+    // Allow starting if joined or finished (replay)
+    if (player.status !== 'joined' && player.status !== 'finished') {
+      return NextResponse.json({ error: 'Already playing' }, { status: 400 })
+    }
+
+    // Update this player's status to playing
     await db
       .update(roomPlayers)
-      .set({ status: 'playing' })
-      .where(eq(roomPlayers.roomId, id))
+      .set({ status: 'playing', currentDay: 0, currentNetWorth: 50_000 })
+      .where(eq(roomPlayers.id, player.id))
 
-    return NextResponse.json({ success: true })
+    // If room is still in lobby (first player to start), transition to playing
+    if (room.status === 'lobby') {
+      await db
+        .update(rooms)
+        .set({ status: 'playing', startedAt: new Date() })
+        .where(eq(rooms.id, id))
+    }
+
+    // Parse settings
+    let startingCash = 50_000
+    let startingDebt = 50_000
+    if (room.scenarioData) {
+      try {
+        const sd = JSON.parse(room.scenarioData)
+        if (typeof sd.startingCash === 'number') startingCash = sd.startingCash
+        if (typeof sd.startingDebt === 'number') startingDebt = sd.startingDebt
+      } catch { /* ignore */ }
+    }
+
+    return NextResponse.json({
+      success: true,
+      settings: {
+        game_duration: room.gameDuration,
+        starting_cash: startingCash,
+        starting_debt: startingDebt,
+      },
+    })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    console.error('Error starting room:', message)
-    return NextResponse.json({ error: 'Failed to start room' }, { status: 500 })
+    console.error('Error starting room:', message, error)
+    return NextResponse.json({ error: `Failed to start room: ${message}` }, { status: 500 })
   }
 }

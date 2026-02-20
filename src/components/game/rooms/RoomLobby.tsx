@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useRoom, type RoomPlayer } from '@/hooks/useRoom'
-import { useRoomChannel, type RoomPresenceState, type RoomSettings } from '@/hooks/useRoomChannel'
+import { useRoom, type RoomPlayer, type RoomResult } from '@/hooks/useRoom'
+import { useRoomChannel, type RoomPresenceState } from '@/hooks/useRoomChannel'
 import { useGame } from '@/hooks/useGame'
-import type { GameDuration } from '@/lib/game/types'
 import { useAuth } from '@/contexts/AuthContext'
 
 const DURATION_OPTIONS = [30, 45, 60] as const
@@ -16,10 +15,10 @@ function formatCurrency(value: number): string {
   return `$${value}`
 }
 
-export interface RoomGameConfig {
-  duration: number
-  startingCash: number
-  startingDebt: number
+function formatMoney(value: number): string {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
+  return `$${value.toLocaleString()}`
 }
 
 export function RoomLobby() {
@@ -27,114 +26,93 @@ export function RoomLobby() {
   const roomId = useRoom(state => state.roomId)
   const roomCode = useRoom(state => state.roomCode)
   const isHost = useRoom(state => state.isHost)
-  const roomStatus = useRoom(state => state.roomStatus)
+  const showRoomHub = useRoom(state => state.showRoomHub)
   const players = useRoom(state => state.players)
+  const results = useRoom(state => state.results)
+  const roomSettings = useRoom(state => state.roomSettings)
   const setPlayers = useRoom(state => state.setPlayers)
-  const setRoomStatus = useRoom(state => state.setRoomStatus)
-  const startRoomGame: () => Promise<boolean> = useRoom(state => state.startGame)
+  const startRun = useRoom(state => state.startRun)
   const leaveRoom = useRoom(state => state.leaveRoom)
-  const toggleReady: (isReady: boolean) => Promise<void> = useRoom(state => state.toggleReady)
-
-  const startGame: (duration?: GameDuration, options?: { cash?: number; debt?: number }) => void = useGame(state => state.startGame)
+  const updateSettings = useRoom(state => state.updateSettings)
+  const fetchResults = useRoom(state => state.fetchResults)
 
   const username = useGame(state => state.username)
-  const [selectedDuration, setSelectedDuration] = useState<number>(30)
-  const [selectedCash, setSelectedCash] = useState<number>(50_000)
-  const [selectedDebt, setSelectedDebt] = useState<number>(50_000)
+
+  const [selectedDuration, setSelectedDuration] = useState<number>(roomSettings?.duration ?? 30)
+  const [selectedCash, setSelectedCash] = useState<number>(roomSettings?.startingCash ?? 50_000)
+  const [selectedDebt, setSelectedDebt] = useState<number>(roomSettings?.startingDebt ?? 50_000)
   const [starting, setStarting] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
 
+  // Sync local settings from store when roomSettings changes
+  useEffect(() => {
+    if (roomSettings) {
+      setSelectedDuration(roomSettings.duration)
+      setSelectedCash(roomSettings.startingCash)
+      setSelectedDebt(roomSettings.startingDebt)
+    }
+  }, [roomSettings])
+
+  // Determine if settings are locked (any player started or finished)
+  const settingsLocked = players.some(p => p.status === 'playing' || p.status === 'finished')
+
   const onPresenceSyncRef = useRef<(p: Record<string, RoomPresenceState>) => void>()
   onPresenceSyncRef.current = (presencePlayers: Record<string, RoomPresenceState>) => {
-    const playerList: RoomPlayer[] = Object.values(presencePlayers).map(p => ({
-      userId: p.userId,
-      username: p.username,
-      isHost: false,
-      isReady: p.isReady,
-      currentDay: p.currentDay,
-      currentNetWorth: p.currentNetWorth,
-      status: p.status,
-    }))
-    setPlayers(playerList)
-  }
-
-  const onGameStartRef = useRef<(broadcastData: string) => void>()
-  onGameStartRef.current = (broadcastData: string) => {
-    try {
-      const config: RoomGameConfig = JSON.parse(broadcastData)
-      setRoomStatus('playing')
-      startGame(
-        config.duration as 30 | 45 | 60,
-        { cash: config.startingCash, debt: config.startingDebt },
-      )
-    } catch {
-      // Malformed broadcast payload — ignore
+    const presenceList = Object.values(presencePlayers)
+    // Merge: start from current players (API-sourced), overlay live presence data
+    const existing = useRoom.getState().players
+    const merged = new Map<string, RoomPlayer>()
+    // Add all existing players from API
+    for (const p of existing) {
+      merged.set(p.userId, p)
     }
-  }
-
-  const onSettingsUpdateRef = useRef<(settings: RoomSettings) => void>()
-  onSettingsUpdateRef.current = (settings: RoomSettings) => {
-    if (!isHost) {
-      setSelectedDuration(settings.duration)
-      setSelectedCash(settings.startingCash)
-      setSelectedDebt(settings.startingDebt)
+    // Overlay presence data (more up-to-date for live fields)
+    for (const p of presenceList) {
+      const prev = merged.get(p.userId)
+      merged.set(p.userId, {
+        userId: p.userId,
+        username: p.username,
+        isHost: prev?.isHost ?? false,
+        isReady: false,
+        currentDay: p.currentDay,
+        currentNetWorth: p.currentNetWorth,
+        status: p.status,
+      })
     }
+    setPlayers(Array.from(merged.values()))
   }
 
   const handlePresenceSync = useCallback((p: Record<string, RoomPresenceState>) => {
     onPresenceSyncRef.current?.(p)
   }, [])
 
-  const handleGameStart = useCallback((broadcastData: string) => {
-    onGameStartRef.current?.(broadcastData)
-  }, [])
-
-  const handleSettingsUpdate = useCallback((settings: RoomSettings) => {
-    onSettingsUpdateRef.current?.(settings)
-  }, [])
-
-  const { track, broadcastGameStart, broadcastSettings } = useRoomChannel({
+  const { track } = useRoomChannel({
     roomId,
     userId: user?.id ?? null,
     username,
     isHost,
     onPresenceSync: handlePresenceSync,
-    onGameStart: handleGameStart,
-    onSettingsUpdate: handleSettingsUpdate,
   })
 
-  useEffect(() => {
-    if (!isHost) return
-    broadcastSettings({
-      duration: selectedDuration,
-      startingCash: selectedCash,
-      startingDebt: selectedDebt,
-    })
-  }, [isHost, selectedDuration, selectedCash, selectedDebt, broadcastSettings])
+  // Host settings change → save via API
+  const settingsDebounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const handleSettingChange = useCallback((updates: { duration?: number; startingCash?: number; startingDebt?: number }) => {
+    if (!isHost || settingsLocked) return
+    if (updates.duration !== undefined) setSelectedDuration(updates.duration)
+    if (updates.startingCash !== undefined) setSelectedCash(updates.startingCash)
+    if (updates.startingDebt !== undefined) setSelectedDebt(updates.startingDebt)
 
-  const handleToggleReady = async () => {
-    const currentPlayer = players.find(p => p.userId === user?.id)
-    const newReady = !currentPlayer?.isReady
-    await toggleReady(newReady)
-    track({ isReady: newReady })
-  }
+    // Debounce the API call
+    clearTimeout(settingsDebounceRef.current)
+    settingsDebounceRef.current = setTimeout(() => {
+      updateSettings(updates)
+    }, 300)
+  }, [isHost, settingsLocked, updateSettings])
 
-  const handleStartGame = async () => {
+  const handleStartRun = async () => {
     setStarting(true)
-    const config: RoomGameConfig = {
-      duration: selectedDuration,
-      startingCash: selectedCash,
-      startingDebt: selectedDebt,
-    }
-    const success = await startRoomGame()
-    if (success) {
-      broadcastGameStart(JSON.stringify(config))
-      startGame(
-        config.duration as 30 | 45 | 60,
-        { cash: config.startingCash, debt: config.startingDebt },
-      )
-    }
+    await startRun()
     setStarting(false)
   }
 
@@ -155,42 +133,57 @@ export function RoomLobby() {
     }
   }
 
-  // Fallback polling for missed game_start broadcast
-  useEffect(() => {
-    if (roomStatus !== 'lobby' || !roomId) return
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/rooms/${roomId}`)
-        if (!res.ok) return
-        const data = await res.json()
-        if (data.room?.status === 'playing') {
-          // Room started but we missed the broadcast — start with default config
-          const config: RoomGameConfig = {
-            duration: selectedDuration,
-            startingCash: selectedCash,
-            startingDebt: selectedDebt,
-          }
-          onGameStartRef.current?.(JSON.stringify(config))
-        }
-      } catch {
-        // Ignore polling errors
-      }
-    }, 8_000)
-
-    return () => clearInterval(interval)
-  }, [roomStatus, roomId, selectedDuration, selectedCash, selectedDebt])
-
+  // Track presence
   useEffect(() => {
     if (user?.id && username) {
-      track({ userId: user.id, username, isReady: isHost, status: 'joined' })
+      track({ userId: user.id, username, status: 'joined' })
     }
-  }, [user?.id, username, isHost, track])
+  }, [user?.id, username, track])
 
-  if (roomStatus !== 'lobby') return null
+  // Poll for results/players periodically when in hub
+  useEffect(() => {
+    if (!roomId || !showRoomHub) return
+    // Fetch immediately and again after a short delay (auth may not be ready on first try)
+    fetchResults()
+    const quickRetry = setTimeout(fetchResults, 1_500)
+    const interval = setInterval(fetchResults, 8_000)
+    return () => { clearTimeout(quickRetry); clearInterval(interval) }
+  }, [roomId, showRoomHub, fetchResults])
 
-  const allReady = players.length >= 1 && players.every(p => p.isReady)
-  const canStart = isHost && allReady && !starting
+  if (!showRoomHub) return null
+
+  // Get player result from results array
+  const getPlayerResult = (userId: string): RoomResult | undefined =>
+    results.find(r => r.userId === userId)
+
+  // Render player status badge
+  const renderPlayerStatus = (player: RoomPlayer) => {
+    if (player.status === 'playing') {
+      return (
+        <span className="text-mh-profit-green text-xs font-mono animate-pulse">
+          PLAYING — Day {player.currentDay} — {formatMoney(player.currentNetWorth)}
+        </span>
+      )
+    }
+    if (player.status === 'finished') {
+      const result = getPlayerResult(player.userId)
+      if (result?.rank != null) {
+        return (
+          <span className="text-mh-accent-blue text-xs font-mono">
+            #{result.rank} — {formatMoney(result.finalNetWorth)}
+          </span>
+        )
+      }
+      return <span className="text-mh-accent-blue text-xs font-mono">FINISHED</span>
+    }
+    return <span className="text-mh-text-dim text-xs font-mono">IN HUB</span>
+  }
+
+  // Sort results for standings
+  const sortedResults = [...results].sort((a, b) => {
+    if (a.rank != null && b.rank != null) return a.rank - b.rank
+    return b.finalNetWorth - a.finalNetWorth
+  })
 
   return (
     <div className="h-full bg-mh-bg overflow-y-auto">
@@ -219,39 +212,44 @@ export function RoomLobby() {
         </div>
 
         {/* Player List */}
-        <div className="w-full max-w-[320px] mb-6">
+        <div className="w-full max-w-[360px] mb-6">
           <div className="text-mh-text-dim text-sm mb-3 font-mono">
-            PLAYERS ({players.length}/8)
+            PLAYERS ({players.filter(p => p.status !== 'left').length}/8)
           </div>
           <div className="border border-mh-border rounded-lg overflow-hidden">
-            {players.length === 0 ? (
+            {players.filter(p => p.status !== 'left').length === 0 ? (
               <div className="px-4 py-3 text-mh-text-dim text-sm">Waiting for players...</div>
             ) : (
-              players.map((player) => (
-                <div
-                  key={player.userId}
-                  className="flex items-center px-4 py-3 border-b border-mh-border last:border-b-0"
-                >
-                  <span className="flex-1 text-mh-text-main text-sm text-left truncate">
-                    {player.username}
-                    {player.userId === user?.id && (
-                      <span className="text-mh-text-dim ml-1">(you)</span>
-                    )}
-                  </span>
-                  {player.isReady ? (
-                    <span className="text-mh-profit-green text-xs font-mono">READY</span>
-                  ) : (
-                    <span className="text-mh-text-dim text-xs font-mono">WAITING</span>
-                  )}
-                </div>
-              ))
+              players
+                .filter(p => p.status !== 'left')
+                .map((player) => (
+                  <div
+                    key={player.userId}
+                    className="flex items-center px-4 py-3 border-b border-mh-border last:border-b-0"
+                  >
+                    <span className="flex-1 text-mh-text-main text-sm text-left truncate min-w-0">
+                      {player.username}
+                      {player.userId === user?.id && (
+                        <span className="text-mh-text-dim ml-1">(you)</span>
+                      )}
+                    </span>
+                    <div className="shrink-0 ml-2 text-right">
+                      {renderPlayerStatus(player)}
+                    </div>
+                  </div>
+                ))
             )}
           </div>
         </div>
 
-        {/* Game Settings — host edits, non-host sees read-only */}
-        <div className="w-full max-w-[320px] mb-6">
-          <div className="text-mh-text-dim text-sm mb-3 font-mono">GAME SETTINGS</div>
+        {/* Game Settings */}
+        <div className="w-full max-w-[360px] mb-6">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="text-mh-text-dim text-sm font-mono">GAME SETTINGS</span>
+            {settingsLocked && (
+              <span className="text-xs font-mono bg-mh-loss-red/20 text-mh-loss-red px-2 py-0.5 rounded">LOCKED</span>
+            )}
+          </div>
           <div className="border border-mh-border rounded-lg p-4 space-y-4">
             {/* Duration */}
             <div>
@@ -260,13 +258,13 @@ export function RoomLobby() {
                 {DURATION_OPTIONS.map((d) => (
                   <button
                     key={d}
-                    onClick={isHost ? () => setSelectedDuration(d) : undefined}
+                    onClick={isHost && !settingsLocked ? () => handleSettingChange({ duration: d }) : undefined}
                     className={`flex-1 py-2 text-xs font-mono border rounded transition-colors ${
-                      isHost ? 'cursor-pointer' : 'cursor-default'
+                      isHost && !settingsLocked ? 'cursor-pointer' : 'cursor-default'
                     } ${
                       selectedDuration === d
                         ? 'border-mh-accent-blue text-mh-accent-blue bg-mh-accent-blue/10'
-                        : 'border-mh-border text-mh-text-dim' + (isHost ? ' hover:border-mh-text-dim' : '')
+                        : 'border-mh-border text-mh-text-dim' + (isHost && !settingsLocked ? ' hover:border-mh-text-dim' : '')
                     }`}
                   >
                     {d} days
@@ -282,13 +280,13 @@ export function RoomLobby() {
                 {CASH_OPTIONS.map((c) => (
                   <button
                     key={c}
-                    onClick={isHost ? () => setSelectedCash(c) : undefined}
+                    onClick={isHost && !settingsLocked ? () => handleSettingChange({ startingCash: c }) : undefined}
                     className={`flex-1 py-2 text-xs font-mono border rounded transition-colors ${
-                      isHost ? 'cursor-pointer' : 'cursor-default'
+                      isHost && !settingsLocked ? 'cursor-pointer' : 'cursor-default'
                     } ${
                       selectedCash === c
                         ? 'border-mh-profit-green text-mh-profit-green bg-mh-profit-green/10'
-                        : 'border-mh-border text-mh-text-dim' + (isHost ? ' hover:border-mh-text-dim' : '')
+                        : 'border-mh-border text-mh-text-dim' + (isHost && !settingsLocked ? ' hover:border-mh-text-dim' : '')
                     }`}
                   >
                     {formatCurrency(c)}
@@ -304,13 +302,13 @@ export function RoomLobby() {
                 {DEBT_OPTIONS.map((d) => (
                   <button
                     key={d}
-                    onClick={isHost ? () => setSelectedDebt(d) : undefined}
+                    onClick={isHost && !settingsLocked ? () => handleSettingChange({ startingDebt: d }) : undefined}
                     className={`flex-1 py-2 text-xs font-mono border rounded transition-colors ${
-                      isHost ? 'cursor-pointer' : 'cursor-default'
+                      isHost && !settingsLocked ? 'cursor-pointer' : 'cursor-default'
                     } ${
                       selectedDebt === d
                         ? 'border-mh-loss-red text-mh-loss-red bg-mh-loss-red/10'
-                        : 'border-mh-border text-mh-text-dim' + (isHost ? ' hover:border-mh-text-dim' : '')
+                        : 'border-mh-border text-mh-text-dim' + (isHost && !settingsLocked ? ' hover:border-mh-text-dim' : '')
                     }`}
                   >
                     {d === 0 ? '$0' : formatCurrency(d)}
@@ -321,32 +319,69 @@ export function RoomLobby() {
           </div>
         </div>
 
+        {/* Standings */}
+        {sortedResults.length > 0 && (
+          <div className="w-full max-w-[360px] mb-6">
+            <div className="text-mh-text-dim text-sm mb-3 font-mono">STANDINGS</div>
+            <div className="border border-mh-border rounded-lg overflow-hidden">
+              {sortedResults.map((result) => {
+                const isYou = result.userId === user?.id
+                return (
+                  <div
+                    key={result.userId}
+                    className={`flex items-center px-4 py-3 border-b border-mh-border last:border-b-0 ${
+                      isYou ? 'bg-mh-accent-blue/10' : ''
+                    }`}
+                  >
+                    <span className={`w-8 font-mono text-sm ${
+                      result.rank === 1 ? 'text-mh-profit-green font-bold' :
+                      result.rank === 2 ? 'text-mh-accent-blue' :
+                      result.rank === 3 ? 'text-yellow-500' :
+                      'text-mh-text-dim'
+                    }`}>
+                      #{result.rank ?? '-'}
+                    </span>
+                    <span className="flex-1 text-mh-text-main text-sm truncate">
+                      {result.username}
+                      {isYou && <span className="text-mh-text-dim ml-1">(you)</span>}
+                    </span>
+                    <span className={`font-mono text-sm ${
+                      result.finalNetWorth >= 50_000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
+                    }`}>
+                      {formatMoney(result.finalNetWorth)}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Action Buttons */}
-        <div className="w-full max-w-[320px] space-y-3">
-          {!isHost && (
-            <button
-              onClick={handleToggleReady}
-              className={`w-full py-3 font-mono text-sm border-2 rounded transition-colors cursor-pointer ${
-                players.find(p => p.userId === user?.id)?.isReady
-                  ? 'border-mh-profit-green text-mh-profit-green bg-mh-profit-green/10'
-                  : 'border-mh-accent-blue text-mh-accent-blue hover:bg-mh-accent-blue/10'
-              }`}
-            >
-              {players.find(p => p.userId === user?.id)?.isReady ? 'READY ✓' : 'READY UP'}
-            </button>
-          )}
+        <div className="w-full max-w-[360px] space-y-3">
+          <button
+            onClick={handleStartRun}
+            disabled={starting}
+            className={`w-full py-3 font-mono text-sm border-2 rounded transition-colors ${
+              !starting
+                ? 'border-mh-profit-green text-mh-profit-green bg-mh-profit-green/10 cursor-pointer hover:bg-mh-profit-green/20'
+                : 'border-mh-border text-mh-text-dim cursor-not-allowed opacity-50'
+            }`}
+          >
+            {starting ? 'STARTING...' : 'PLAY'}
+          </button>
 
           {isHost && (
             <button
-              onClick={handleStartGame}
-              disabled={!canStart}
-              className={`w-full py-3 font-mono text-sm border-2 rounded transition-colors ${
-                canStart
-                  ? 'border-mh-profit-green text-mh-profit-green bg-mh-profit-green/10 cursor-pointer hover:bg-mh-profit-green/20'
-                  : 'border-mh-border text-mh-text-dim cursor-not-allowed opacity-50'
-              }`}
+              onClick={async () => {
+                if (!roomId) return
+                await fetch(`/api/rooms/${roomId}/leave`, { method: 'POST' })
+                // Closing room = host leaving, which finishes room if no one left
+                useRoom.getState().cleanup()
+              }}
+              className="w-full py-2 border border-mh-loss-red text-mh-loss-red font-mono text-xs cursor-pointer hover:bg-mh-loss-red/10 transition-colors rounded"
             >
-              {starting ? 'STARTING...' : !allReady ? 'WAITING FOR PLAYERS...' : 'START GAME'}
+              CLOSE ROOM
             </button>
           )}
 

@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { MarketHustle } from '@/components/game/MarketHustle'
+import { RoomRedirect } from '@/components/RoomRedirect'
 import { getLeaderboard } from '@/lib/game/leaderboardData'
 
 export default async function Home() {
@@ -11,12 +12,15 @@ export default async function Home() {
   ])
 
   return (
-    <MarketHustle
-      initialLeaderboards={{
-        daily: daily.entries,
-        allTime: allTime.entries,
-        worst: worst.entries,
-      }}
-    />
+    <>
+      <RoomRedirect />
+      <MarketHustle
+        initialLeaderboards={{
+          daily: daily.entries,
+          allTime: allTime.entries,
+          worst: worst.entries,
+        }}
+      />
+    </>
   )
 }

@@ -37,8 +37,10 @@ export function EndGameCoordinator() {
   const cash = useGame((state) => state.cash)
 
   const roomId = useRoom(state => state.roomId)
+  const roomCode = useRoom(state => state.roomCode)
   const roomStatus = useRoom(state => state.roomStatus)
   const submitRoomResult = useRoom(state => state.submitResult)
+  const returnToHub = useRoom(state => state.returnToHub)
   const roomSubmittedRef = useRef(false)
 
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -160,8 +162,14 @@ export function EndGameCoordinator() {
   const message = getEndGameMessage(reason, marginCallContext)
 
   const handlePlayAgain = () => {
-    startGame()
+    if (roomId) {
+      returnToHub()
+    } else {
+      startGame()
+    }
   }
+
+  const handleBackToRoom = roomId ? () => returnToHub() : undefined
 
   const handleCheckout = (plan: 'monthly' | 'yearly') => {
     if (!checkoutLoading) {
@@ -195,6 +203,8 @@ export function EndGameCoordinator() {
     proTrialGamesRemaining: getProTrialGamesRemaining(),
     leaderboardRank,
     roomStandings,
+    onBackToRoom: handleBackToRoom,
+    roomCode: roomCode ?? undefined,
   }
 
   return (

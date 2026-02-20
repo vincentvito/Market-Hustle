@@ -1,10 +1,12 @@
 'use client'
 
 import { useGame } from '@/hooks/useGame'
+import { useRoom } from '@/hooks/useRoom'
 import { formatNetWorth } from '@/lib/utils/formatMoney'
 
 export function Header() {
   const { day, gameDuration, getNetWorth, selectedTheme, setShowPortfolio } = useGame()
+  const roomCode = useRoom(state => state.roomCode)
   const netWorth = getNetWorth()
   const { text: netWorthText, sizeClass: netWorthSize } = formatNetWorth(netWorth)
   const isModern3 = selectedTheme === 'modern3'
@@ -28,7 +30,7 @@ export function Header() {
 
   return (
     <div
-      className={`px-4 pt-4 pb-1 md:px-6 md:pt-5 md:pb-2 flex justify-between items-start ${
+      className={`px-4 pt-4 pb-1 md:px-6 md:pt-5 lg:pb-5 md:pb-2 flex justify-between items-start ${
         isBloomberg ? 'border-b border-[#333333]' : isModern3 ? '' : 'border-b border-mh-border'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
@@ -36,10 +38,20 @@ export function Header() {
       {/* Left: Day Counter */}
       <div id="tutorial-day-counter">
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>DAY</div>
-        <div className={`text-3xl md:text-4xl font-bold ${isBloomberg ? 'text-[#ff8c00]' : 'text-mh-text-bright glow-text'}`}>
+        <div className={`text-3xl md:text-4xl lg:text-5xl font-bold ${isBloomberg ? 'text-[#ff8c00]' : 'text-mh-text-bright glow-text'}`}>
           {day}<span className={`text-base ${isBloomberg ? 'text-[#8b6914]' : 'text-mh-text-dim'}`}>/{gameDuration}</span>
         </div>
       </div>
+
+      {/* Center: Room Code (if in room) */}
+      {roomCode && (
+        <div className="text-center">
+          <div className={`text-[10px] ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>ROOM</div>
+          <div className={`text-sm font-mono tracking-wider ${isBloomberg ? 'text-[#ff8c00]' : 'text-mh-accent-blue'}`}>
+            {roomCode}
+          </div>
+        </div>
+      )}
 
       {/* Right: Net Worth */}
       <div

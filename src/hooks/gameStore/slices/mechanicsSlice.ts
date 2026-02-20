@@ -113,6 +113,7 @@ import {
   type DirectorConfig,
 } from '@/lib/game/director'
 import { getEventSentiment, deriveSentiment } from '@/lib/game/sentimentHelpers'
+import { capture } from '@/lib/posthog'
 
 // Helper to append a trade log entry to the store
 function appendTradeLog(
@@ -122,6 +123,16 @@ function appendTradeLog(
 ) {
   const { tradeLog, day } = get()
   set({ tradeLog: [...tradeLog, { ...entry, day }] })
+  capture('trade_executed', {
+    action: entry.action,
+    asset_name: entry.assetName,
+    category: entry.category,
+    quantity: entry.quantity,
+    price: entry.price,
+    total_value: entry.totalValue,
+    leverage: entry.leverage,
+    profit_loss: entry.profitLoss,
+  })
 }
 
 // Helper to record game completion to localStorage and Supabase
@@ -151,8 +162,20 @@ function saveGameResult(
   const updatedState = recordGameEnd(userState, entry, isWin)
   saveUserState(updatedState)
 
+  capture('game_ended', {
+    net_worth: finalNetWorth,
+    outcome: entry.outcome,
+    days_survived: daysSurvived,
+    duration: gameDuration,
+    profit_percent: entry.profitPercent,
+    total_trades: tradeLog?.length ?? 0,
+  })
+
   // Sync to Supabase with username (fire-and-forget)
-  if (username) {
+  // Skip for room games — room results stay in room leaderboard only
+  const { useRoom } = require('@/hooks/useRoom')
+  const isRoomGame = !!useRoom.getState().roomId
+  if (username && !isRoomGame) {
     fetch('/api/profile/record-game', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -166,7 +189,7 @@ function saveGameResult(
           daysSurvived: entry.daysSurvived,
           outcome: entry.outcome,
         },
-        tradeLogs: tradeLog,
+        tradeLogs: process.env.NODE_ENV === 'production' ? tradeLog : undefined,
       }),
     }).catch((err) => console.error('Error recording game:', err))
   }
@@ -320,7 +343,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // GAME CONTROL ACTIONS
   // ============================================================================
 
-  startGame: (duration?: GameDuration) => {
+  startGame: (duration?: GameDuration, options?: { cash?: number; debt?: number; skipLimits?: boolean }) => {
     // Load user state for limits and settings
     const userState = loadUserState()
 
@@ -334,11 +357,14 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const effectiveTier = get().getEffectiveTier()
     const willUseProTrial = storeUserTier === 'free' && storeIsLoggedIn && get().hasProTrialRemaining()
 
+    // Room games skip limit checks and duration restrictions
+    const skipLimits = options?.skipLimits === true
+
     // Check game limits (canStartGame handles all tiers):
     // - Pro users (paid): unlimited
     // - Guests: unlimited (conversion at end-game)
     // - Registered free users: 3 initial games + 1/day
-    if (!canStartGame(userState, storeIsLoggedIn)) {
+    if (!skipLimits && !canStartGame(userState, storeIsLoggedIn)) {
       const limitType = getLimitType(userState, storeIsLoggedIn)
       if (limitType === 'anonymous') {
         set({
@@ -360,16 +386,18 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     }
 
     // Pro users (paid or trial) can play any duration mode
-    // Free users can only play 30-day mode
+    // Free users can only play 30-day mode (unless in a room)
     const storeSelectedDuration = get().selectedDuration
     let gameDuration: GameDuration = duration ?? storeSelectedDuration ?? userState.selectedDuration ?? 30
-    if (effectiveTier === 'free' && gameDuration !== 30) {
+    if (!skipLimits && effectiveTier === 'free' && gameDuration !== 30) {
       gameDuration = 30
     }
 
-    // Update games played counter based on user type
+    // Update games played counter based on user type (skip for room games)
     let updatedUserState: typeof userState
-    if (!storeIsLoggedIn || userState.isAnonymous) {
+    if (skipLimits) {
+      updatedUserState = userState
+    } else if (!storeIsLoggedIn || userState.isAnonymous) {
       // Guest user - increment lifetime counter (localStorage only)
       updatedUserState = incrementAnonymousGames(userState)
     } else {
@@ -493,8 +521,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       screen: 'game',
       day: 1,
       gameDuration,
-      cash: 50000,
-      creditCardDebt: 50000,
+      cash: options?.cash ?? 50000,
+      creditCardDebt: options?.debt ?? 50000,
       trustFundBalance: 0,
       holdings: {},
       // Reset margin trading positions
@@ -504,7 +532,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       prevPrices,
       priceHistory,
       costBasis: {},
-      initialNetWorth: 0,  // Net worth = 50k cash - 50k debt = 0
+      initialNetWorth: (options?.cash ?? 50000) - (options?.debt ?? 50000),
       // Reset heat/suspicion
       wifeSuspicion: 0,
       wifeSuspicionFrozenUntilDay: null,
@@ -588,6 +616,17 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       // Reset trade log for new game
       tradeLog: [],
     })
+
+    {
+      const { useRoom } = require('@/hooks/useRoom')
+      capture('game_started', {
+        duration: duration,
+        is_multiplayer: !!useRoom.getState().roomId,
+        starting_cash: 100000,
+        tier: effectiveTier,
+        is_scripted: !!activeScript,
+      })
+    }
 
     // Record play timestamp for retention tracking (localStorage + Supabase)
     try {
@@ -2919,7 +2958,10 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   clearInvestmentResultToast: () => set({ activeInvestmentResultToast: null }),
   clearErrorMessage: () => set({ activeErrorMessage: null }),
   clearPendingAchievement: () => set({ pendingAchievement: null }),
-  triggerAchievement: (id: string) => set({ pendingAchievement: id }),
+  triggerAchievement: (id: string) => {
+    capture('achievement_unlocked', { achievement_id: id })
+    set({ pendingAchievement: id })
+  },
 
   // ============================================================================
   // MILESTONE ACTIONS

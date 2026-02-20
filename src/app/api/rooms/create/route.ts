@@ -25,6 +25,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
+    const body = await request.json().catch(() => ({}))
+    const requestUsername = typeof body.username === 'string' ? body.username.trim().toLowerCase() : null
+    const duration = typeof body.duration === 'number' && [30, 45, 60].includes(body.duration) ? body.duration : 30
+    const startingCash = typeof body.startingCash === 'number' && body.startingCash > 0 ? body.startingCash : 50_000
+    const startingDebt = typeof body.startingDebt === 'number' && body.startingDebt >= 0 ? body.startingDebt : 50_000
+
     // Get user profile for username
     const profileResult = await db
       .select({ username: profiles.username })
@@ -32,11 +38,23 @@ export async function POST(request: Request) {
       .where(eq(profiles.id, user.id))
       .limit(1)
 
-    if (profileResult.length === 0 || !profileResult[0].username) {
-      return NextResponse.json({ error: 'Username required' }, { status: 400 })
+    let username = profileResult[0]?.username
+
+    // If profile has no username but one was sent in the request, sync it
+    if (!username && requestUsername && /^[a-z0-9_]{3,15}$/.test(requestUsername)) {
+      await db
+        .insert(profiles)
+        .values({ id: user.id, username: requestUsername })
+        .onConflictDoUpdate({
+          target: profiles.id,
+          set: { username: requestUsername },
+        })
+      username = requestUsername
     }
 
-    const username = profileResult[0].username
+    if (!username) {
+      return NextResponse.json({ error: 'Username required' }, { status: 400 })
+    }
 
     // Generate unique room code (retry on collision with active rooms)
     let code: string
@@ -61,8 +79,9 @@ export async function POST(request: Request) {
       code,
       hostId: user.id,
       status: 'lobby',
-      gameDuration: 30,
+      gameDuration: duration,
       maxPlayers: 8,
+      scenarioData: JSON.stringify({ startingCash, startingDebt }),
     }).returning()
 
     // Add host as first player
@@ -83,6 +102,8 @@ export async function POST(request: Request) {
         host_id: room.hostId,
         game_duration: room.gameDuration,
         max_players: room.maxPlayers,
+        starting_cash: startingCash,
+        starting_debt: startingDebt,
       },
     })
   } catch (error) {

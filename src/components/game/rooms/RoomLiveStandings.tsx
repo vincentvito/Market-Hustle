@@ -32,7 +32,7 @@ export function RoomLiveStandings() {
       userId: p.userId,
       username: p.username,
       isHost: false,
-      isReady: p.isReady,
+      isReady: false,
       currentDay: p.currentDay,
       currentNetWorth: p.currentNetWorth,
       status: p.status,
@@ -63,7 +63,7 @@ export function RoomLiveStandings() {
     }
   }, [user?.id, day, getNetWorth, track])
 
-  if (!roomId || roomStatus === 'idle' || roomStatus === 'finished') return null
+  if (!roomId) return null
 
   const activePlayers = players
     .filter(p => p.status !== 'left')

@@ -2,8 +2,10 @@
 
 import { useState, useRef } from 'react'
 import { toPng } from 'html-to-image'
+import { useGame } from '@/hooks/useGame'
 import type { EndGameProps } from './types'
 import { formatNetWorth, formatCompact } from '@/lib/utils/formatMoney'
+import { InlineUsernameInput } from './InlineUsernameInput'
 
 /**
  * ProEndView - End-game screen for Pro-tier users.
@@ -26,9 +28,12 @@ export function ProEndView({
   onPlayAgain,
   leaderboardRank,
   roomStandings,
+  onBackToRoom,
+  roomCode,
 }: EndGameProps) {
   const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
   const resultsRef = useRef<HTMLDivElement>(null)
+  const username = useGame((state) => state.username)
   const isWin = outcome === 'win'
 
   // Color scheme based on outcome
@@ -37,7 +42,7 @@ export function ProEndView({
   const profitColor = profitAmount >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
-    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center px-6 pt-10 pb-6 md:p-10 text-center overflow-auto">
+    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center px-6 pt-10 pb-6 md:p-10 text-center overflow-auto relative z-[51]">
       {/* Shareable results card */}
       <div ref={resultsRef} className="bg-mh-bg flex flex-col items-center p-6 md:p-10 text-center">
       {/* Outcome Header */}
@@ -65,6 +70,8 @@ export function ProEndView({
         </div>
       </div>
 
+      <InlineUsernameInput />
+
       {leaderboardRank && (
         <div className="mt-4 text-sm">
           <div className="text-mh-text-dim text-xs mb-1">YOUR RANKING</div>
@@ -81,18 +88,47 @@ export function ProEndView({
       <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>
 
+      {/* Room code */}
+      {roomCode && (
+        <div className="mt-4 mb-2">
+          <span className="text-mh-text-dim text-xs font-mono">ROOM </span>
+          <span className="text-mh-accent-blue text-sm font-mono tracking-wider">{roomCode}</span>
+        </div>
+      )}
+
       {/* Room standings (live or final) */}
       {roomStandings}
 
-      {/* Play Again Button - Always enabled for Pro */}
-      <button
-        onClick={onPlayAgain}
-        className="bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
-          px-10 py-4 text-base font-mono cursor-pointer glow-text
-          hover:bg-mh-accent-blue/10 transition-colors"
-      >
-        [ PLAY AGAIN ]
-      </button>
+      {/* Back to Room / Play Again */}
+      {onBackToRoom ? (
+        <div className="flex flex-col items-center gap-3">
+          <button
+            onClick={onBackToRoom}
+            className="bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
+              px-10 py-4 text-base font-mono cursor-pointer glow-text
+              hover:bg-mh-accent-blue/10 transition-colors"
+          >
+            [ BACK TO ROOM ]
+          </button>
+          <button
+            onClick={onPlayAgain}
+            className="bg-transparent border border-mh-border text-mh-text-dim
+              px-8 py-3 text-sm font-mono cursor-pointer
+              hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
+          >
+            [ PLAY AGAIN ]
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={onPlayAgain}
+          className="bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
+            px-10 py-4 text-base font-mono cursor-pointer glow-text
+            hover:bg-mh-accent-blue/10 transition-colors"
+        >
+          [ PLAY AGAIN ]
+        </button>
+      )}
 
       {/* Share Results Button */}
       <button
