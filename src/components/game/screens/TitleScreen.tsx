@@ -11,6 +11,8 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { isIntroSeen } from './IntroScreen'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { HowToPlayModal } from '../ui/HowToPlayModal'
+import { ProUpgradeDialog } from '../ui/ProUpgradeDialog'
+import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
 ██╔████╔██║███████║██████╔╝█████╔╝ █████╗     ██║
@@ -70,6 +72,9 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const [leaderboardDuration, setLeaderboardDuration] = useState<30 | 45 | 60>(30)
   const [showAuthForRoom, setShowAuthForRoom] = useState(false)
   const [showHowToPlay, setShowHowToPlay] = useState(false)
+  const [showUpgrade, setShowUpgrade] = useState(false)
+  const { checkout, loading: checkoutLoading } = useStripeCheckout()
+  const userTier = useGame(state => state.userTier)
   const hasInitialData = useRef(!!initialLeaderboards)
 
   const [activeSection, setActiveSection] = useState<ActiveSection>(null)
@@ -149,6 +154,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const colors = tabColors[leaderboardTab]
 
   return (
+    <>
     <div className="h-full bg-mh-bg overflow-y-auto relative" style={{
       backgroundImage: 'url(/image.png)',
       backgroundSize: 'cover',
@@ -225,6 +231,18 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             HOW TO PLAY
             <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{' <'}</span>
           </button>
+
+          {/* UPGRADE — only for non-pro users */}
+          {userTier !== 'pro' && (
+            <button
+              onClick={() => user ? setShowUpgrade(true) : setShowAuthForRoom(true)}
+              className="group w-full text-center py-2 font-mono text-sm tracking-[0.2em] transition-all duration-200 bg-transparent border-none cursor-pointer text-mh-accent-blue/80 hover:text-mh-accent-blue focus-visible:text-mh-accent-blue focus-visible:outline-none"
+            >
+              <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{'> '}</span>
+              UPGRADE
+              <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{' <'}</span>
+            </button>
+          )}
 
           {/* SETTINGS */}
           <button
@@ -400,5 +418,15 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
         onClose={() => setShowAuthForRoom(false)}
       />
     </div>
+    {showUpgrade && (
+      <ProUpgradeDialog
+        isOpen={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        onCheckout={checkout}
+        isWin={false}
+        loading={checkoutLoading}
+      />
+    )}
+    </>
   )
 }
