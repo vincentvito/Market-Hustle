@@ -49,6 +49,7 @@ export function TierSync() {
 
       // Sync game limit data from Supabase
       syncFromSupabase({
+        totalGamesPlayed: profile.total_games_played,
         gamesPlayedToday: profile.games_played_today,
         lastPlayedDate: profile.last_played_date,
       })

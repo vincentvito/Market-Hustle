@@ -5,9 +5,4 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   typescript: true,
 })
 
-export const STRIPE_PRICES = {
-  monthly: process.env.STRIPE_PRICE_MONTHLY!,
-  yearly: process.env.STRIPE_PRICE_YEARLY!,
-} as const
-
-export type StripePlan = keyof typeof STRIPE_PRICES
+export const STRIPE_PRICE_LIFETIME = process.env.STRIPE_PRICE_LIFETIME!

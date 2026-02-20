@@ -24,22 +24,23 @@ export function StatsBar({ onDebtClick }: StatsBarProps) {
 
   return (
     <>
-      <div className={`mx-3 md:mx-4 mt-0.5 md:mt-1 ${isModern3 ? 'mb-1' : 'mb-3'} space-y-2`}>
+      <div className={`mx-3 md:mx-4 mt-0.5 md:mt-1 ${isModern3 ? 'mb-3' : 'mb-5'} space-y-2`}>
         {/* Row 1: Cash, Debt, Portfolio - matching net worth font style */}
         <div className="flex items-center justify-between">
           <div id="tutorial-cash">
             <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>CASH</div>
-            <div className={`text-lg md:text-xl font-bold text-mh-text-bright ${isBloomberg ? 'text-white' : 'glow-text'}`}>
+            <div className={`text-lg md:text-xl lg:text-2xl font-bold text-mh-text-bright ${isBloomberg ? 'text-white' : 'glow-text'}`}>
               {formatCompact(cash)}
             </div>
           </div>
           {creditCardDebt > 0 && (
             <div
+              id="tutorial-debt"
               onClick={onDebtClick}
               className={onDebtClick ? 'cursor-pointer hover:opacity-80' : ''}
             >
               <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>DEBT</div>
-              <div className="text-lg md:text-xl font-bold text-mh-loss-red glow-red">
+              <div className="text-lg md:text-xl lg:text-2xl font-bold text-mh-loss-red glow-red">
                 {formatCompact(creditCardDebt)}
               </div>
             </div>
@@ -49,7 +50,7 @@ export function StatsBar({ onDebtClick }: StatsBarProps) {
             className={hasPositions ? 'cursor-pointer' : ''}
           >
             <div className={`text-xs text-right ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>PORTFOLIO</div>
-            <div className={`text-lg md:text-xl font-bold text-mh-text-bright text-right ${isBloomberg ? 'text-white' : 'glow-text'}`}>
+            <div className={`text-lg md:text-xl lg:text-2xl font-bold text-mh-text-bright text-right ${isBloomberg ? 'text-white' : 'glow-text'}`}>
               {formatCompact(portfolioValue)}
             </div>
           </div>

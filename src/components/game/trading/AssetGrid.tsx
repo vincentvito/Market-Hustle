@@ -34,7 +34,7 @@ export function AssetGrid() {
   // Get tab wrapper classes based on theme
   const getTabWrapperClass = () => {
     if (isBloomberg) return 'flex border-b-2 border-[#ff8c00] bg-black'
-    if (isModern3) return 'flex p-1 bg-[#0f1419] rounded mt-1.5 mb-1.5 mx-2'
+    if (isModern3) return 'flex p-1 bg-[#0f1419] rounded mt-0 mb-0 mx-2'
     return 'flex border-b border-mh-border'
   }
 
@@ -102,7 +102,7 @@ export function AssetGrid() {
               : isRetro2
                 ? 'gap-1.5 p-1.5 bg-mh-bg'
                 : isModern3
-                  ? 'gap-1.5 px-1.5 pb-1.5 bg-mh-bg'
+                  ? 'gap-1.5 p-1.5 bg-mh-bg'
                   : 'gap-px bg-mh-border'
           }`}>
             {ASSETS.map((asset, index) => (
@@ -125,7 +125,7 @@ export function AssetGrid() {
                   ? 'bg-mh-bg'
                   : 'bg-mh-border'
           }`}>
-            <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full content-center h-full`}>
+            <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full content-start`}>
               {ASSETS.map((asset, index) => (
                 <AssetCell
                   key={asset.id}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { capture } from '@/lib/posthog'
 import { resolveRoulette } from '@/lib/game/encounters'
 import type { EncounterResult } from '@/lib/game/encounters'
 import type { RouletteColor } from '@/lib/game/types'
@@ -137,8 +138,9 @@ export function CasinoRoulette({ onBack }: CasinoRouletteProps) {
   const handleSpinComplete = useCallback((r: EncounterResult) => {
     setResult(r)
     applyCasinoResult(r.cashChange ?? 0)
+    capture('casino_game_played', { game: 'roulette', bet, cash_delta: r.cashChange ?? 0 })
     setStep('result')
-  }, [applyCasinoResult])
+  }, [applyCasinoResult, bet])
 
   const handlePlayAgain = () => {
     setStep('bet')

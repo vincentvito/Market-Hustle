@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { capture } from '@/lib/posthog'
 
 const TUTORIAL_KEY = 'mh-tutorial-seen'
 
@@ -32,7 +33,7 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <ol className="text-mh-text-main text-sm space-y-3 list-decimal list-inside">
-          <li><span className="text-mh-text-dim">Start with cash</span> — Buy and sell stocks, crypto, and commodities to grow wealth</li>
+          <li><span className="text-mh-text-dim">Start with cash & debt</span> — You begin with $50K debt at 1.75% daily interest. Pay it down or it snowballs</li>
           <li><span className="text-mh-text-dim">Read the news</span> — Headlines move markets. Buy before good news, sell before bad</li>
           <li><span className="text-mh-text-dim">Advance days</span> — Each day updates prices, triggers events, and pays rental income</li>
           <li><span className="text-mh-text-dim">Buy real assets</span> — Properties generate passive income; Private Equity unlocks special abilities</li>
@@ -81,6 +82,12 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     position: 'bottom',
   },
   {
+    targetId: 'tutorial-debt',
+    title: 'Your Debt',
+    description: 'You owe $50K at 1.75% daily interest. Tap to repay. Ignore it and it snowballs fast.',
+    position: 'bottom',
+  },
+  {
     targetId: 'tutorial-net-worth',
     title: 'Net Worth',
     description: 'Cash + assets. Hit zero and you\'re bankrupt. Game over.',
@@ -116,7 +123,9 @@ function calculateTooltipPosition(
   targetRect: DOMRect,
   position: 'top' | 'bottom' | 'left' | 'right',
   tooltipWidth: number,
-  tooltipHeight: number
+  tooltipHeight: number,
+  containerWidth: number,
+  containerHeight: number
 ): TooltipPosition {
   const padding = 12
   const arrowSize = 8
@@ -143,16 +152,18 @@ function calculateTooltipPosition(
       break
   }
 
-  // Clamp to viewport
+  // Clamp to container (fixed positioning is relative to .phone-container due to its transform)
   const viewportPadding = 16
-  left = Math.max(viewportPadding, Math.min(left, window.innerWidth - tooltipWidth - viewportPadding))
-  top = Math.max(viewportPadding, Math.min(top, window.innerHeight - tooltipHeight - viewportPadding))
+  left = Math.max(viewportPadding, Math.min(left, containerWidth - tooltipWidth - viewportPadding))
+  top = Math.max(viewportPadding, Math.min(top, containerHeight - tooltipHeight - viewportPadding))
 
   return { top, left, arrowPosition: position }
 }
 
 export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
   const [currentStep, setCurrentStep] = useState(0)
+  // Track tutorial_started once on mount
+  useEffect(() => { capture('tutorial_started') }, [])
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null)
   const [tooltipPos, setTooltipPos] = useState<TooltipPosition | null>(null)
   const [waitingForTradeClose, setWaitingForTradeClose] = useState(false)
@@ -198,6 +209,15 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
   const updatePosition = useCallback(() => {
     if (!step) return
 
+    // The .phone-container has transform: translateZ(0) which makes fixed elements
+    // position relative to it, not the viewport. We need container-relative coords.
+    const container = document.querySelector('.phone-container')
+    const containerRect = container?.getBoundingClientRect()
+    const offsetLeft = containerRect?.left ?? 0
+    const offsetTop = containerRect?.top ?? 0
+    const containerWidth = containerRect?.width ?? window.innerWidth
+    const containerHeight = containerRect?.height ?? window.innerHeight
+
     // Find visible element (handles duplicate IDs from responsive mobile/desktop grids)
     let target: HTMLElement | null = null
     const candidates = Array.from(document.querySelectorAll<HTMLElement>(`[id="${step.targetId}"]`))
@@ -210,13 +230,20 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
     }
     if (!target) target = document.getElementById(step.targetId)
     if (target) {
-      const rect = target.getBoundingClientRect()
+      const viewportRect = target.getBoundingClientRect()
+      // Convert viewport-relative coords to container-relative coords
+      const rect = new DOMRect(
+        viewportRect.left - offsetLeft,
+        viewportRect.top - offsetTop,
+        viewportRect.width,
+        viewportRect.height
+      )
       setTargetRect(rect)
 
       // Estimate tooltip size (will be refined)
       const tooltipWidth = 280
       const tooltipHeight = 140
-      const pos = calculateTooltipPosition(rect, step.position, tooltipWidth, tooltipHeight)
+      const pos = calculateTooltipPosition(rect, step.position, tooltipWidth, tooltipHeight, containerWidth, containerHeight)
       setTooltipPos(pos)
     }
   }, [step])
@@ -245,6 +272,7 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
     }
 
     if (isLastStep) {
+      capture('tutorial_completed', { steps_viewed: currentStep + 1, skipped: false })
       markTutorialSeen()
       onClose()
     } else {
@@ -253,6 +281,7 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
   }
 
   const handleSkip = () => {
+    capture('tutorial_completed', { steps_viewed: currentStep + 1, skipped: true })
     markTutorialSeen()
     onClose()
   }

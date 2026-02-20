@@ -1,78 +1,93 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe, STRIPE_PRICES, StripePlan } from '@/lib/stripe/server'
+import { stripe, STRIPE_PRICE_LIFETIME } from '@/lib/stripe/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { db } from '@/db'
-import { subscriptions } from '@/db/schema'
+import { profiles, subscriptions } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
-    const { plan, returnUrl } = await request.json() as { plan: StripePlan; returnUrl?: string }
-
-    if (!plan || !STRIPE_PRICES[plan]) {
-      return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
-    }
+    const { returnUrl } = await request.json() as { returnUrl?: string }
 
     const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
-    // Include {CHECKOUT_SESSION_ID} - Stripe replaces this with the actual session ID
-    const successUrl = `${baseUrl}${returnUrl || '/'}?payment=success&session_id={CHECKOUT_SESSION_ID}`
-    const cancelUrl = `${baseUrl}${returnUrl || '/'}?payment=cancelled`
-
-    // If user is logged in, check if they already have a Stripe customer ID
+    // If user is logged in, check for existing subscription/pro status
     let customerId: string | undefined
     if (user) {
-      const result = await db
-        .select({ stripeCustomerId: subscriptions.stripeCustomerId })
+      // Check if already pro
+      const profileResult = await db
+        .select({ tier: profiles.tier })
+        .from(profiles)
+        .where(eq(profiles.id, user.id))
+        .limit(1)
+
+      if (profileResult[0]?.tier === 'pro') {
+        return NextResponse.json(
+          { error: 'You already have Pro access' },
+          { status: 400 }
+        )
+      }
+
+      // Check for existing Stripe customer to reuse (avoids duplicate customers)
+      const subResult = await db
+        .select({
+          stripeCustomerId: subscriptions.stripeCustomerId,
+          status: subscriptions.status,
+        })
         .from(subscriptions)
         .where(eq(subscriptions.userId, user.id))
         .limit(1)
 
-      if (result[0]?.stripeCustomerId) {
-        customerId = result[0].stripeCustomerId
+      if (subResult[0]) {
+        // If they have an active purchase in our DB, block
+        if (subResult[0].status === 'active') {
+          return NextResponse.json(
+            { error: 'You already have Pro access' },
+            { status: 400 }
+          )
+        }
+        // Reuse existing Stripe customer for previously canceled/refunded users
+        if (subResult[0].stripeCustomerId) {
+          customerId = subResult[0].stripeCustomerId
+        }
       }
     }
 
-    // Create Stripe checkout session
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
+    // Sanitize returnUrl to prevent open redirect — only allow relative paths
+    const safeReturnUrl = returnUrl && returnUrl.startsWith('/') ? returnUrl : '/'
+    const successUrl = `${baseUrl}${safeReturnUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}`
+    const cancelUrl = `${baseUrl}${safeReturnUrl}?payment=cancelled`
+
+    // Create Stripe checkout session for one-time payment
     const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
+      mode: 'payment',
       payment_method_types: ['card'],
       line_items: [
         {
-          price: STRIPE_PRICES[plan],
+          price: STRIPE_PRICE_LIFETIME,
           quantity: 1,
         },
       ],
       success_url: successUrl,
       cancel_url: cancelUrl,
       customer: customerId,
-      customer_email: user?.email || undefined,
+      customer_email: !customerId ? (user?.email || undefined) : undefined,
       client_reference_id: user?.id || undefined,
       metadata: {
         user_id: user?.id || '',
-        plan,
+        plan: 'lifetime',
         project: 'market-hustle',
       },
-      subscription_data: {
-        metadata: {
-          user_id: user?.id || '',
-          plan,
-          project: 'market-hustle',
-        },
-      },
-      // Allow promotion codes for discounts
       allow_promotion_codes: true,
     })
 
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error) {
     console.error('Error creating checkout session:', error)
-    // Return actual error message for debugging
-    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: `Checkout failed: ${message}` },
+      { error: 'Something went wrong. Please try again.' },
       { status: 500 }
     )
   }

@@ -1,14 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-
-type Plan = 'monthly' | 'yearly'
+import { capture } from '@/lib/posthog'
 
 export function useStripeCheckout() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const checkout = async (plan: Plan) => {
+  const checkout = async () => {
     setLoading(true)
     setError(null)
 
@@ -16,7 +15,7 @@ export function useStripeCheckout() {
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({}),
       })
 
       const data = await response.json()
@@ -27,6 +26,7 @@ export function useStripeCheckout() {
 
       // Redirect to Stripe Checkout
       if (data.url) {
+        capture('checkout_initiated', { plan_type: 'lifetime' })
         window.location.href = data.url
       } else {
         throw new Error('No checkout URL returned')
@@ -37,32 +37,5 @@ export function useStripeCheckout() {
     }
   }
 
-  const openPortal = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await fetch('/api/stripe/create-portal-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create portal session')
-      }
-
-      if (data.url) {
-        window.location.href = data.url
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return { checkout, openPortal, loading, error }
+  return { checkout, loading, error }
 }

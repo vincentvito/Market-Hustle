@@ -3,6 +3,7 @@
 import { useGame } from '@/hooks/useGame'
 import { ASSETS } from '@/lib/game/assets'
 import type { LuxuryAssetId } from '@/lib/game/types'
+import { isDev } from '@/lib/env'
 import { Header } from '../ui/Header'
 import { StatsBar } from '../ui/StatsBar'
 import { NewsPanel } from '../ui/NewsPanel'
@@ -47,6 +48,18 @@ export function GameScreen() {
   } = useGame()
   const [showHelp, setShowHelp] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
+
+  // DEV: Shift+E to skip to end screen
+  useEffect(() => {
+    if (!isDev) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'E') {
+        useGame.getState().setScreen('win')
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
   const [showOffshoreTrust, setShowOffshoreTrust] = useState(false)
   const [showCreditCards, setShowCreditCards] = useState(false)
   // Show interactive tutorial on first game only

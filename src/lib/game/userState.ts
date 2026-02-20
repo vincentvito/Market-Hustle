@@ -1,3 +1,5 @@
+import { isDev } from '@/lib/env'
+
 // User tier and state management for Free/Pro features
 
 export type UserTier = 'free' | 'pro'
@@ -89,6 +91,7 @@ export function getTodayDateString(): string {
 
 // Check if user can start a new game based on their tier
 export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
+  if (isDev) return true
   // Pro users: unlimited
   if (state.tier === 'pro') return true
   // Guests: always allow (conversion happens at end-game)
@@ -99,6 +102,7 @@ export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
 
 // Get remaining games based on user tier
 export function getRemainingGames(state: UserState, isLoggedIn: boolean): number {
+  if (isDev) return Infinity
   // Pro users: unlimited
   if (state.tier === 'pro') return Infinity
   // Guests: unlimited (we convert at end-game)

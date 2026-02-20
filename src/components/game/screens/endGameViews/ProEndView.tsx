@@ -6,6 +6,7 @@ import { useGame } from '@/hooks/useGame'
 import type { EndGameProps } from './types'
 import { formatNetWorth, formatCompact } from '@/lib/utils/formatMoney'
 import { InlineUsernameInput } from './InlineUsernameInput'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 /**
  * ProEndView - End-game screen for Pro-tier users.
@@ -27,6 +28,7 @@ export function ProEndView({
   gameDuration,
   onPlayAgain,
   leaderboardRank,
+  leaderboardLoading,
   roomStandings,
   onBackToRoom,
   roomCode,
@@ -72,7 +74,12 @@ export function ProEndView({
 
       <InlineUsernameInput />
 
-      {leaderboardRank && (
+      {leaderboardLoading ? (
+        <div className="mt-4 text-sm w-full max-w-[320px]">
+          <div className="text-mh-text-dim text-xs mb-2">YOUR RANKING</div>
+          <Skeleton className="h-5 w-full" />
+        </div>
+      ) : leaderboardRank ? (
         <div className="mt-4 text-sm">
           <div className="text-mh-text-dim text-xs mb-1">YOUR RANKING</div>
           <div>
@@ -83,7 +90,7 @@ export function ProEndView({
             <span className="text-mh-text-dim"> of {leaderboardRank.allTimeTotal.toLocaleString()} all-time</span>
           </div>
         </div>
-      )}
+      ) : null}
 
       <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>

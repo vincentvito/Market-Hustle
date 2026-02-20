@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { capture } from '@/lib/posthog'
 import {
   createShuffledDeck,
   dealInitialHands,
@@ -78,6 +79,7 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
     const resolved = resolveHand(pHand, dHand, currentBet)
     setResult({ type: resolved.result, cashDelta: resolved.cashDelta, headline: resolved.headline })
     applyCasinoResult(resolved.cashDelta)
+    capture('casino_game_played', { game: 'blackjack', bet: currentBet, result: resolved.result, cash_delta: resolved.cashDelta })
     setPhase('result')
   }, [applyCasinoResult])
 

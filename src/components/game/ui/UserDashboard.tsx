@@ -244,7 +244,7 @@ export function UserDashboard() {
       {/* Upgrade to Pro button for free users */}
       {!isPro && (
         <button
-          onClick={() => checkout('monthly')}
+          onClick={() => checkout()}
           disabled={checkoutLoading}
           className="w-full py-2.5 mb-4 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >

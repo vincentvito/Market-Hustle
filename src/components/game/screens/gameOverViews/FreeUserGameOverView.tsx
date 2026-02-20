@@ -95,33 +95,23 @@ export function FreeUserGameOverView() {
         )}
       </div>
 
-      {/* Upsell Section */}
-      <div className="mb-6 max-w-[280px]">
-        <div className="text-mh-text-bright text-sm font-bold mb-3">
+      {/* Go Pro Card */}
+      <div className="mb-6 w-full max-w-[280px] border-2 border-mh-profit-green/40 rounded-lg p-5 bg-mh-profit-green/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]">
+        <div className="text-mh-text-bright text-sm font-bold mb-3 text-center">
           That was easy mode.
         </div>
-        <div className="text-mh-text-dim text-sm space-y-1">
+        <div className="text-mh-text-dim text-sm space-y-1 mb-4">
+          <div>• Unlimited games</div>
           <div>• Short selling</div>
           <div>• 10X leverage</div>
-          <div>• More strategy</div>
+          <div>• 45 & 60-day challenges</div>
         </div>
-      </div>
-
-      {/* Pricing Buttons */}
-      <div className="flex flex-col gap-2 w-full max-w-[280px] mb-6">
         <button
-          onClick={() => checkout('yearly')}
+          onClick={() => checkout()}
           disabled={checkoutLoading}
           className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {checkoutLoading ? 'LOADING...' : 'GO PRO — $29.99/yr (50% off)'}
-        </button>
-        <button
-          onClick={() => checkout('monthly')}
-          disabled={checkoutLoading}
-          className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {checkoutLoading ? 'LOADING...' : '$4.99/month'}
+          {checkoutLoading ? 'LOADING...' : 'GO PRO — ONE-TIME PURCHASE'}
         </button>
       </div>
 

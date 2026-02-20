@@ -7,7 +7,7 @@ import { roomPlayers } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -31,8 +31,10 @@ export async function POST(
       return NextResponse.json({ error: 'Not in this room' }, { status: 400 })
     }
 
-    // Toggle ready state
-    const newReady = !playerResult[0].isReady
+    // Use explicit isReady from body, fall back to toggle
+    let body: { isReady?: boolean } = {}
+    try { body = await request.json() } catch { /* no body */ }
+    const newReady = body.isReady !== undefined ? body.isReady : !playerResult[0].isReady
 
     await db
       .update(roomPlayers)

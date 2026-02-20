@@ -1,135 +1,97 @@
 'use client'
 
-import { REGISTERED_FREE_DAILY_LIMIT, PRO_TRIAL_GAME_LIMIT } from '@/lib/game/userState'
+import { useState, useRef } from 'react'
+import { toPng } from 'html-to-image'
+import { useGame } from '@/hooks/useGame'
+import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 import type { EndGameProps } from './types'
-import { formatNetWorth } from '@/lib/utils/formatMoney'
+import { formatNetWorth, formatCompact } from '@/lib/utils/formatMoney'
+import { InlineUsernameInput } from './InlineUsernameInput'
+import { Skeleton } from '@/components/ui/Skeleton'
 
-/**
- * MemberEndView - End-game screen for registered free-tier users.
- *
- * Features:
- * - Unified layout for both wins and losses
- * - Conditional styling (green for win, red for loss)
- * - Daily games counter (resets at midnight)
- * - Pro trial status (when user has trial games remaining)
- * - Pro upsell (less aggressive than Guest)
- * - Primary "Play Again" button when games available
- */
 export function MemberEndView({
   outcome,
   message,
   netWorth,
   profitPercent,
+  profitAmount,
   daysSurvived,
   gameDuration,
   gamesRemaining,
   canPlayAgain,
   onPlayAgain,
-  onCheckout,
-  proTrialGamesRemaining = 0,
+  leaderboardRank,
+  leaderboardLoading,
 }: EndGameProps) {
+  const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
+  const resultsRef = useRef<HTMLDivElement>(null)
+  const username = useGame((state) => state.username)
   const isWin = outcome === 'win'
-  const hasProTrial = proTrialGamesRemaining > 0
 
-  // Color scheme based on outcome
   const titleColor = isWin ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
   const netWorthColor = netWorth >= 0 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
-  const profitColor = netWorth >= 100000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
+  const profitColor = profitAmount >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
-    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center">
-      {/* Outcome Header */}
-      <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
-      <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
-      <div className="text-mh-text-dim text-sm md:text-base mb-6 max-w-[280px] md:max-w-[400px] leading-relaxed">
-        {message.flavor}
+    <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center px-6 pt-10 pb-6 md:p-10 text-center overflow-auto relative z-[51]">
+      {/* Shareable results card */}
+      <div ref={resultsRef} className="bg-mh-bg flex flex-col items-center p-6 md:p-10 text-center">
+        <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
+        <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
+        <div className="text-mh-text-dim text-sm md:text-base mb-6 max-w-[280px] md:max-w-[400px] leading-relaxed">
+          {message.flavor}
+        </div>
+
+        <div className="text-mh-text-main text-lg md:text-xl mb-8">
+          {isWin ? 'YOU SURVIVED' : 'SURVIVED'} {daysSurvived} / {gameDuration} DAYS
+        </div>
+
+        <div className="border border-mh-border p-6 md:p-8 mb-4 min-w-[240px] md:min-w-[360px]">
+          <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
+          <div className={`${formatNetWorth(netWorth).sizeClass} mb-4 ${netWorthColor}`}>{formatNetWorth(netWorth).text}</div>
+          <div className={`text-lg md:text-xl ${profitColor}`}>
+            {profitAmount >= 0 ? '+' : ''}{profitPercent.toFixed(1)}% RETURN
+          </div>
+          <div className={`text-sm md:text-base mt-1 ${profitColor}`}>
+            ({profitAmount >= 0 ? '+' : ''}{formatCompact(profitAmount)})
+          </div>
+        </div>
+
+        <InlineUsernameInput />
+
+        {leaderboardLoading ? (
+          <div className="mt-4 text-sm w-full max-w-[320px]">
+            <div className="text-mh-text-dim text-xs mb-2">YOUR RANKING</div>
+            <Skeleton className="h-5 w-full" />
+          </div>
+        ) : leaderboardRank ? (
+          <div className="mt-4 text-sm">
+            <div className="text-mh-text-dim text-xs mb-1">YOUR RANKING</div>
+            <div>
+              <span className="text-mh-accent-blue font-bold">#{leaderboardRank.dailyRank.toLocaleString()}</span>
+              <span className="text-mh-text-dim"> of {leaderboardRank.dailyTotal.toLocaleString()} today</span>
+              <span className="text-mh-text-dim mx-2">|</span>
+              <span className="text-mh-accent-blue font-bold">#{leaderboardRank.allTimeRank.toLocaleString()}</span>
+              <span className="text-mh-text-dim"> of {leaderboardRank.allTimeTotal.toLocaleString()} all-time</span>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>
 
-      {/* Days Survived */}
-      <div className="text-mh-text-main text-lg md:text-xl mb-8">
-        {isWin ? 'YOU SURVIVED' : 'SURVIVED'} {daysSurvived} / {gameDuration} DAYS
-      </div>
-
-      {/* Final Net Worth */}
-      <div className="border border-mh-border p-5 md:p-8 mb-2 min-w-[200px] md:min-w-[320px]">
-        <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
-        <div className={`${formatNetWorth(netWorth).sizeClass} ${netWorthColor}`}>{formatNetWorth(netWorth).text}</div>
-      </div>
-
-      {/* Profit/Loss percentage - more prominent on wins */}
-      {isWin && (
-        <div className={`text-lg md:text-xl mb-4 ${profitColor}`}>
-          {profitPercent >= 0 ? '+' : ''}
-          {profitPercent.toFixed(1)}% RETURN
+      {/* Daily Games Counter */}
+      {isFinite(gamesRemaining) && (
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-mh-text-dim text-xs">DAILY GAMES</span>
+          <span className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}>
+            {gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
+          </span>
+          {gamesRemaining === 0 && <span className="text-mh-loss-red text-xs">Resets at midnight</span>}
         </div>
       )}
 
-      {/* Pro Trial Banner - When user has trial games remaining */}
-      {hasProTrial && (
-        <div className="border-2 border-mh-accent-blue p-4 mb-6 min-w-[200px] bg-mh-accent-blue/10">
-          <div className="text-mh-accent-blue text-xs font-bold mb-1">PRO TRIAL ACTIVE</div>
-          <div className="text-mh-text-bright text-lg font-bold mb-2">
-            {proTrialGamesRemaining}/{PRO_TRIAL_GAME_LIMIT} games left
-          </div>
-          <div className="text-mh-text-dim text-xs space-y-0.5">
-            <div>Next game includes:</div>
-            <div className="text-mh-accent-blue">• Short selling • 10X leverage • All modes</div>
-          </div>
-        </div>
-      )}
-
-      {/* Daily Games Remaining Counter - Only show if no trial remaining */}
-      {!hasProTrial && (
-        <div className="border border-mh-border p-3 mb-6 min-w-[200px] bg-mh-border/10">
-          <div className="flex justify-between items-center">
-            <span className="text-mh-text-dim text-xs">DAILY GAMES</span>
-            <span
-              className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}
-            >
-              {gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
-            </span>
-          </div>
-          {gamesRemaining === 0 && (
-            <div className="text-mh-loss-red text-xs mt-1">Resets at midnight</div>
-          )}
-        </div>
-      )}
-
-      {/* Upsell Section - Different messaging based on trial status */}
-      <div className="mb-6 max-w-[280px] md:max-w-[400px]">
-        <div className="text-mh-text-bright text-sm md:text-base font-bold mb-3">
-          {hasProTrial
-            ? 'Love Pro features? Keep them forever:'
-            : isWin
-              ? 'Ready for the real challenge?'
-              : 'That was easy mode.'}
-        </div>
-        {!hasProTrial && (
-          <div className="text-mh-text-dim text-sm space-y-1 mb-4">
-            <div>• Short selling</div>
-            <div>• 10X leverage</div>
-            <div>• 45 & 60-day challenges</div>
-          </div>
-        )}
-      </div>
-
-      {/* Pricing Buttons */}
-      <div className="flex flex-col gap-2 w-full max-w-[280px] md:max-w-[400px] mb-6">
-        <button
-          onClick={() => onCheckout('yearly')}
-          className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors"
-        >
-          GO PRO — $29.99/yr (50% off)
-        </button>
-        <button
-          onClick={() => onCheckout('monthly')}
-          className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors"
-        >
-          $4.99/month
-        </button>
-      </div>
-
-      {/* Play Again Button - Primary when available */}
+      {/* Action buttons */}
       <button
         onClick={onPlayAgain}
         disabled={!canPlayAgain}
@@ -138,6 +100,43 @@ export function MemberEndView({
           ${canPlayAgain ? 'cursor-pointer hover:bg-mh-accent-blue/10' : 'opacity-50 cursor-not-allowed'}`}
       >
         [ PLAY AGAIN ]
+      </button>
+
+      {/* Share Results */}
+      <button
+        onClick={async () => {
+          if (!resultsRef.current || shareState === 'sharing') return
+          setShareState('sharing')
+          try {
+            const dataUrl = await toPng(resultsRef.current, { pixelRatio: 2 })
+            const res = await fetch(dataUrl)
+            const blob = await res.blob()
+            const file = new File([blob], 'market-hustle-results.png', { type: 'image/png' })
+            const text = [
+              'Market Hustle \u{1F4C8}',
+              `${isWin ? '\u{1F3C6} MARKET CLOSED' : '\u{1F480} ' + message.title}`,
+              `Survived ${daysSurvived}/${gameDuration} days`,
+              `Can you beat my score? markethustle.com`,
+            ].join('\n')
+            if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare?.({ files: [file] })) {
+              await navigator.share({ files: [file], text })
+            } else {
+              const a = document.createElement('a')
+              a.href = dataUrl
+              a.download = 'market-hustle-results.png'
+              a.click()
+            }
+          } catch {
+            // Share cancelled or failed
+          } finally {
+            setShareState('idle')
+          }
+        }}
+        className="mt-3 bg-transparent border border-mh-border text-mh-text-dim
+          px-8 py-3 text-sm font-mono cursor-pointer
+          hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
+      >
+        {shareState === 'sharing' ? '[ CAPTURING... ]' : shareState === 'copied' ? '[ COPIED! ]' : '[ SHARE RESULTS ]'}
       </button>
     </div>
   )

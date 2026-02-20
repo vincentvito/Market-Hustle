@@ -19,6 +19,8 @@ const STRICT_PREFIXES = [
   '/api/username/',
   '/api/stripe/',
   '/api/game-plays',
+  '/api/rooms/create',
+  '/api/rooms/join',
 ]
 
 function getTier(pathname: string): keyof typeof RATE_LIMITS {
@@ -29,11 +31,14 @@ function getTier(pathname: string): keyof typeof RATE_LIMITS {
 }
 
 export async function middleware(request: NextRequest) {
+  // Let PostHog reverse-proxy requests pass through without session/rate-limit overhead
+  if (request.nextUrl.pathname.startsWith('/ingest')) return NextResponse.next()
+
   // Run session check first so we know if the user is signed in
   const { response, userId } = await updateSession(request)
 
-  // Only rate-limit API routes
-  if (request.nextUrl.pathname.startsWith('/api/')) {
+  // Only rate-limit API routes (skip webhooks — they're server-to-server with signature verification)
+  if (request.nextUrl.pathname.startsWith('/api/') && !request.nextUrl.pathname.startsWith('/api/webhooks/')) {
     // Use userId when signed in, fall back to IP for anonymous users
     const key = userId ?? (
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||

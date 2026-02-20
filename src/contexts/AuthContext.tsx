@@ -137,11 +137,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false
 
+    // Helper: sync local username to DB profile if profile has none
+    const syncLocalUsername = async () => {
+      try {
+        const { useGame } = await import('@/hooks/useGame')
+        const localUsername = useGame.getState().username
+        if (localUsername && /^[a-z0-9_]{3,15}$/.test(localUsername)) {
+          await fetch('/api/username/set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: localUsername }),
+          })
+        }
+      } catch (error) {
+        console.error('Error syncing local username:', error)
+      }
+    }
+
     // Helper: load profile and optionally migrate stats
     const loadProfile = async (userId: string, shouldMigrate: boolean) => {
       const profileData = await fetchProfile(userId)
       if (cancelled) return
       setProfile(profileData)
+
+      // Enrich PostHog person profile with latest DB data
+      if (profileData) {
+        import('@/lib/posthog').then(({ getPostHogClient }) => {
+          getPostHogClient()?.people.set({
+            tier: profileData.tier,
+            username: profileData.username,
+            total_games_played: profileData.total_games_played,
+          })
+        })
+      }
+
+      // If profile has no username, sync from local game store
+      if (!profileData?.username) {
+        await syncLocalUsername()
+      }
 
       if (shouldMigrate) {
         try {
@@ -152,6 +185,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
           if (!cancelled) console.error('Error migrating local stats:', error)
         }
+      }
+
+      // Re-fetch profile to pick up synced username
+      if (!profileData?.username) {
+        const updated = await fetchProfile(userId)
+        if (!cancelled) setProfile(updated)
       }
     }
 
@@ -166,6 +205,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Only fetch profile on actual auth changes (not INITIAL_SESSION)
         if (event === 'SIGNED_IN' && newSession?.user) {
+          import('@/lib/posthog').then(({ getPostHogClient, capture }) => {
+            const ph = getPostHogClient()
+            ph?.identify(newSession.user.id, { email: newSession.user.email })
+            capture('auth_signed_in')
+          })
           loadProfile(newSession.user.id, true)
         } else if (event === 'SIGNED_OUT' || !newSession?.user) {
           setProfile(null)
@@ -212,6 +256,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
+    import('@/lib/posthog').then(({ getPostHogClient, capture }) => {
+      capture('auth_signed_out')
+      getPostHogClient()?.reset()
+    })
     await supabase.auth.signOut()
     setUser(null)
     setSession(null)
@@ -244,31 +292,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   // Increment games_played_today counter (called on game START)
+  // Server computes all values from DB — no client-trusted data sent
   const incrementGamesPlayed = useCallback(async () => {
     if (!user) return
-
-    const today = new Date().toISOString().split('T')[0]
-    const isNewDay = profile?.last_played_date !== today
 
     try {
       const res = await fetch('/api/profile/increment-played', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          isNewDay,
-          currentCount: profile?.games_played_today || 0,
-        }),
+        body: JSON.stringify({}),
       })
 
       if (res.ok) {
         await refreshProfile()
+      } else if (res.status === 429) {
+        console.log('Daily game limit reached (server-enforced)')
       } else {
         console.error('Error incrementing games played:', await res.text())
       }
     } catch (error) {
       console.error('Error incrementing games played:', error)
     }
-  }, [user, profile?.last_played_date, profile?.games_played_today, refreshProfile])
+  }, [user, refreshProfile])
 
   // Sync game stats to DB (called on game END)
   const recordGameEnd = useCallback(async (

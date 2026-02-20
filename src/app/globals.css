@@ -231,6 +231,28 @@ body {
   }
 }
 
+/* Trade sheet: slide-up on mobile, centered fade on desktop */
+.trade-sheet-animate {
+  animation: slideUp 0.2s ease-out;
+}
+
+@media (min-width: 768px) {
+  .trade-sheet-animate {
+    animation: modalCenter 0.2s ease-out forwards;
+  }
+}
+
+@keyframes modalCenter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 /* Milestone celebration animations */
 .milestone-pulse-bg {
   animation: milestonePulseBg 0.5s ease-out forwards;
@@ -410,12 +432,29 @@ body {
   background: rgba(245, 158, 11, 0.1);
 }
 
+/* Title screen scrolling background */
+.title-scroll-col {
+  animation: titleScroll linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+@keyframes titleScroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
 /* Desktop wrapper */
 .desktop-wrapper {
   min-height: 100dvh;
   width: 100%;
   display: flex;
-  background-color: var(--mh-bg);
+  justify-content: center;
+  background-color: #060a0f;
 }
 
 /* App container */
@@ -427,6 +466,16 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   transform: translateZ(0);
+}
+
+/* Desktop: constrained width, centered */
+@media (min-width: 768px) {
+  .phone-container {
+    width: 50vw;
+    max-width: 50vw;
+    border-left: 1px solid var(--mh-border);
+    border-right: 1px solid var(--mh-border);
+  }
 }
 
 /* Mobile: full screen */

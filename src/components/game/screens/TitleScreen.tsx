@@ -6,6 +6,7 @@ import { useGame } from '@/hooks/useGame'
 import { useAuth } from '@/contexts/AuthContext'
 import { generateLeaderboard, type LeaderboardEntry } from '@/lib/game/leaderboard'
 import { loadUserState, resetDailyGamesIfNewDay, saveUserState } from '@/lib/game/persistence'
+import { isDev } from '@/lib/env'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { isIntroSeen } from './IntroScreen'
 import { AuthModal } from '@/components/auth/AuthModal'
@@ -372,7 +373,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             <div className="flex items-center justify-center gap-2">
               <span className="text-white/50 text-xs font-mono">Playing as</span>
               <span className="text-white text-xs font-bold font-mono">{username}</span>
-              {process.env.NODE_ENV === 'development' && (
+              {isDev && (
                 <button
                   onClick={() => setUsername('')}
                   className="text-red-400/60 text-[10px] hover:text-red-400 transition-colors cursor-pointer bg-transparent border-none font-mono"

@@ -2,12 +2,15 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useGame } from '@/hooks/useGame'
+import { useAuth } from '@/contexts/AuthContext'
 import { useUserDetails } from '@/hooks/useUserDetails'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { getEndGameMessage, type MarginCallContext } from '@/lib/game/endGameMessages'
 import { ASSETS } from '@/lib/game/assets'
 import { AuthModal } from '@/components/auth/AuthModal'
+import { ProUpgradeDialog } from '@/components/game/ui/ProUpgradeDialog'
 import { GuestEndView } from './endGameViews/GuestEndView'
+import { MemberEndView } from './endGameViews/MemberEndView'
 import { ProEndView } from './endGameViews/ProEndView'
 import { RoomLeaderboard } from '../rooms/RoomLeaderboard'
 import { RoomLiveStandings } from '../rooms/RoomLiveStandings'
@@ -28,7 +31,11 @@ export function EndGameCoordinator() {
 
   const isLoggedIn = useGame((state) => state.isLoggedIn)
   const getProTrialGamesRemaining = useGame((state) => state.getProTrialGamesRemaining)
-  const { isPro } = useUserDetails()
+  const { plan } = useUserDetails()
+  // Use profile.tier from AuthContext as authoritative source for view routing
+  // (game store's userTier can be stale from localStorage cache)
+  const { profile } = useAuth()
+  const actualTier = profile?.tier ?? 'free'
 
   const username = useGame((state) => state.username)
   const leveragedPositions = useGame((state) => state.leveragedPositions)
@@ -44,14 +51,25 @@ export function EndGameCoordinator() {
   const roomSubmittedRef = useRef(false)
 
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showProDialog, setShowProDialog] = useState(false)
   const [leaderboardRank, setLeaderboardRank] = useState<LeaderboardRank | undefined>()
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false)
 
   const { checkout, loading: checkoutLoading } = useStripeCheckout()
+
+  // Auto-open Pro upgrade dialog for logged-in free users
+  useEffect(() => {
+    if (isLoggedIn && actualTier !== 'pro') {
+      const timer = setTimeout(() => setShowProDialog(true), 800)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoggedIn, actualTier])
 
   // Fetch leaderboard rank after a short delay (gives fire-and-forget save time to land)
   // Skip for room games — room has its own standings
   useEffect(() => {
     if (!username || roomId) return
+    setLeaderboardLoading(true)
 
     const timer = setTimeout(async () => {
       try {
@@ -67,7 +85,9 @@ export function EndGameCoordinator() {
           setLeaderboardRank(data)
         }
       } catch {
-        // Silent fail — rank section simply won't render
+        // Silent fail — skeleton will disappear, rank won't render
+      } finally {
+        setLeaderboardLoading(false)
       }
     }, 600)
 
@@ -98,7 +118,7 @@ export function EndGameCoordinator() {
   const canPlayAgain = gamesRemaining > 0
 
   const lossBreakdown = useMemo((): LossBreakdown | undefined => {
-    if (!isPro || outcome !== 'loss') return undefined
+    if (actualTier !== 'pro' || outcome !== 'loss') return undefined
 
     // Only show breakdown for relevant game-over reasons
     const showBreakdown =
@@ -141,7 +161,7 @@ export function EndGameCoordinator() {
       shortLosses,
       cashRemaining: cash,
     }
-  }, [isPro, outcome, gameOverReason, leveragedPositions, shortPositions, prices, cash])
+  }, [actualTier, outcome, gameOverReason, leveragedPositions, shortPositions, prices, cash])
 
   const marginCallContext = useMemo((): MarginCallContext | undefined => {
     if (!lossBreakdown) return undefined
@@ -171,9 +191,9 @@ export function EndGameCoordinator() {
 
   const handleBackToRoom = roomId ? () => returnToHub() : undefined
 
-  const handleCheckout = (plan: 'monthly' | 'yearly') => {
+  const handleCheckout = () => {
     if (!checkoutLoading) {
-      checkout(plan)
+      checkout()
     }
   }
 
@@ -202,18 +222,32 @@ export function EndGameCoordinator() {
     lossBreakdown,
     proTrialGamesRemaining: getProTrialGamesRemaining(),
     leaderboardRank,
+    leaderboardLoading,
     roomStandings,
     onBackToRoom: handleBackToRoom,
     roomCode: roomCode ?? undefined,
   }
 
+  console.log('[EndGame] isLoggedIn:', isLoggedIn, 'storePlan:', plan, 'profileTier:', actualTier, 'view:', !isLoggedIn ? 'GuestEndView' : actualTier === 'pro' ? 'ProEndView' : 'MemberEndView')
+
   return (
     <>
-      {isLoggedIn ? (
+      {!isLoggedIn ? (
+        <GuestEndView {...props} />
+      ) : actualTier === 'pro' ? (
         <ProEndView {...props} />
       ) : (
-        <GuestEndView {...props} />
+        <MemberEndView {...props} />
       )}
+
+      {/* Pro Upgrade Dialog (auto-opens for free users) */}
+      <ProUpgradeDialog
+        isOpen={showProDialog}
+        onClose={() => setShowProDialog(false)}
+        onCheckout={handleCheckout}
+        isWin={outcome === 'win'}
+        loading={checkoutLoading}
+      />
 
       {/* Auth Modal (shared across views) */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />

@@ -177,13 +177,34 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
 
     // Logged-in user - check for daily reset
     const today = new Date().toISOString().split('T')[0]
-    const gamesPlayedToday = profile.lastPlayedDate === today ? profile.gamesPlayedToday : 0
+    // lastPlayedDate may be a Date object from the DB driver — normalize to string
+    const lpd = profile.lastPlayedDate as unknown
+    const lastPlayed = lpd instanceof Date
+      ? lpd.toISOString().split('T')[0]
+      : String(profile.lastPlayedDate || '').split('T')[0]
+    const gamesPlayedToday = lastPlayed === today ? profile.gamesPlayedToday : 0
 
     // Use Supabase data as authoritative source for logged-in users
     const { userTier } = get()
-    // Build a synthetic UserState for getRemainingGames calculation
+    // Build a synthetic UserState using Supabase's totalGamesPlayed (not localStorage)
     const userState = loadUserState()
-    const syntheticState = { ...userState, gamesPlayedToday, lastPlayedDate: profile.lastPlayedDate || '', tier: userTier }
+    const syntheticState = {
+      ...userState,
+      totalGamesPlayed: profile.totalGamesPlayed,
+      gamesPlayedToday,
+      lastPlayedDate: lastPlayed,
+      tier: userTier,
+    }
+
+    // Also sync Supabase data to localStorage so startGame() reads correct values
+    saveUserState({
+      ...userState,
+      totalGamesPlayed: profile.totalGamesPlayed,
+      gamesPlayedToday,
+      lastPlayedDate: lastPlayed,
+      tier: userTier,
+    })
+
     set({
       supabaseProfile: { ...profile, gamesPlayedToday },
       gamesRemaining: userTier === 'pro' ? Infinity : getRemainingGames(syntheticState, true),

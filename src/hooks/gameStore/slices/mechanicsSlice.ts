@@ -16,6 +16,7 @@ import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
 import { checkMilestone, getAllReachedMilestones } from '@/lib/game/milestones'
 import { STORIES, getStoryById, selectRandomStory } from '@/lib/game/stories'
 import { DEFAULT_GOSSIP_STATE, shouldShowGossip, createGossipNewsItem, isMarketSideways, hasMajorEventToday } from '@/lib/game/gossip'
+import { isProd, isDev } from '@/lib/env'
 import { selectFlavorEvent } from '@/lib/game/flavorEvents'
 import { DEFAULT_ENCOUNTER_STATE, rollForEncounter, resolveTax } from '@/lib/game/encounters'
 import type { EncounterResult } from '@/lib/game/encounters'
@@ -172,10 +173,11 @@ function saveGameResult(
   })
 
   // Sync to Supabase with username (fire-and-forget)
+  // Skip in dev mode — don't pollute leaderboard with test data
   // Skip for room games — room results stay in room leaderboard only
   const { useRoom } = require('@/hooks/useRoom')
   const isRoomGame = !!useRoom.getState().roomId
-  if (username && !isRoomGame) {
+  if (username && !isRoomGame && isProd) {
     fetch('/api/profile/record-game', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -189,7 +191,7 @@ function saveGameResult(
           daysSurvived: entry.daysSurvived,
           outcome: entry.outcome,
         },
-        tradeLogs: process.env.NODE_ENV === 'production' ? tradeLog : undefined,
+        tradeLogs: isProd ? tradeLog : undefined,
       }),
     }).catch((err) => console.error('Error recording game:', err))
   }
@@ -1156,7 +1158,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         Object.entries(outcome.effects).forEach(([assetId, effect]) => {
           effects[assetId] = (effects[assetId] || 0) + effect
         })
-        if (process.env.NODE_ENV === 'development') {
+        if (isDev) {
           console.debug(`[Story] ADVANCE: "${activeStory.storyId}" stage ${activeStory.currentStage}->${nextStage} — "${outcome.headline}" (label=${storyLabelType}, continues=${!!outcome.continues}, day=${newDay})`)
         }
         if (outcome.continues && hasMoreStages) {
@@ -1173,7 +1175,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
           }
           // Block same-category standalone events for 2 days after story resolution
           updatedCategoryCooldowns.push({ category: story.category, expiresDay: newDay + 2 })
-          if (process.env.NODE_ENV === 'development') {
+          if (isDev) {
             console.debug(`[Story] RESOLVED: "${activeStory.storyId}" (day=${newDay}, cooldown ${story.category} until day ${newDay + 2})`)
           }
         }
@@ -1262,7 +1264,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         if (newStory.excludeChains) {
           updatedUsedChainIds.push(...newStory.excludeChains)
         }
-        if (process.env.NODE_ENV === 'development') {
+        if (isDev) {
           console.debug(`[Story] STARTED: "${newStory.id}" — "${firstStage.headline}" (category=${newStory.category}, stages=${newStory.stages.length}, day=${newDay})`)
         }
       }
@@ -1362,7 +1364,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       if (chain.daysRemaining <= 1) {
         chainsToResolve.push(chain)
       } else {
-        if (process.env.NODE_ENV === 'development') {
+        if (isDev) {
           console.debug(`[Chain] TICK: "${chain.rumor}" (id=${chain.chainId}, daysRemaining=${chain.daysRemaining} -> ${chain.daysRemaining - 1}, day=${newDay})`)
         }
         remainingChains.push({
@@ -1395,13 +1397,13 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         updatedAssetMoods = recordChainOutcomeMood(outcome, newDay, updatedAssetMoods)
         // Block same-category standalone events for 2 days after chain resolution
         updatedCategoryCooldowns.push({ category: activeChain.category, expiresDay: newDay + 1 })
-        if (process.env.NODE_ENV === 'development') {
+        if (isDev) {
           console.debug(`[Chain] RESOLVED: "${activeChain.rumor}" -> "${outcome.headline}" (id=${activeChain.chainId}, day=${newDay}, label=${chainLabelType}, cooldown ${activeChain.category} until day ${newDay + 1})`)
         }
       } else {
         // Defensive: chain definition was removed or not found (e.g., hot-reload during dev).
         // Generate a fallback resolution so the rumor doesn't silently vanish.
-        if (process.env.NODE_ENV === 'development') {
+        if (isDev) {
           console.warn(`[Chain] RESOLUTION FAILED: chainDef not found for id="${activeChain.chainId}" (rumor="${activeChain.rumor}", day=${newDay})`)
         }
         todayNewsItems.push({
@@ -1548,7 +1550,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
           if (newChain.excludeChains) {
             updatedUsedChainIds.push(...newChain.excludeChains)
           }
-          if (process.env.NODE_ENV === 'development') {
+          if (isDev) {
             console.debug(`[Chain] STARTED: "${newChain.rumor}" (id=${newChain.id}, duration=${newChain.duration}, day=${newDay})`)
           }
           // Chain rumor is displayed via the 'rumors' state in NewsPanel
@@ -2157,7 +2159,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const newFBIHeat = 0
 
     // 8. Update state
-    if (process.env.NODE_ENV === 'development') {
+    if (isDev) {
       console.debug(`[Chain] STATE day=${newDay}: activeChains=${updatedChains.length}, todayNews=${todayNewsItems.length}, headlines=[${todayNewsItems.map(n => n.headline.substring(0, 50)).join(' | ')}]`)
     }
     const headlines = todayNewsItems.map(n => n.headline)

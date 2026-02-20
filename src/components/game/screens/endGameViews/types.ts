@@ -35,10 +35,11 @@ export interface EndGameProps {
   canPlayAgain: boolean
   proTrialGamesRemaining?: number
   onPlayAgain: () => void
-  onCheckout: (plan: 'monthly' | 'yearly') => void
+  onCheckout: () => void
   onOpenAuth: () => void
   lossBreakdown?: LossBreakdown
   leaderboardRank?: LeaderboardRank
+  leaderboardLoading?: boolean
   roomStandings?: ReactNode
   onBackToRoom?: () => void
   roomCode?: string

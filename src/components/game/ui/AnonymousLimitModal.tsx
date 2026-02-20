@@ -78,11 +78,11 @@ export function AnonymousLimitModal() {
               [ SIGN UP FREE ]
             </button>
             <button
-              onClick={() => checkout('monthly')}
+              onClick={() => checkout()}
               disabled={checkoutLoading}
               className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {checkoutLoading ? 'LOADING...' : 'GO PRO — $4.99/mo'}
+              {checkoutLoading ? 'LOADING...' : 'GO PRO — ONE-TIME PURCHASE'}
             </button>
             <button
               onClick={() => setShowAnonymousLimitModal(false)}

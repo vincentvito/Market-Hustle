@@ -125,7 +125,7 @@ export function GuestGameOverView() {
         </div>
 
         {/* Go Pro Box */}
-        <div className="flex-1 border-2 border-mh-profit-green p-4 bg-mh-profit-green/5">
+        <div className="flex-1 border-2 border-mh-profit-green rounded-lg p-4 bg-mh-profit-green/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]">
           <div className="text-mh-profit-green text-xs font-bold mb-3 text-center">
             GO UNLIMITED
           </div>
@@ -147,22 +147,13 @@ export function GuestGameOverView() {
               <span>Historical scenarios</span>
             </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <button
-              onClick={() => checkout('yearly')}
-              disabled={checkoutLoading}
-              className="w-full py-2 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-xs font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {checkoutLoading ? '...' : '$29.99/yr — 50% OFF'}
-            </button>
-            <button
-              onClick={() => checkout('monthly')}
-              disabled={checkoutLoading}
-              className="w-full py-1.5 border border-mh-profit-green/50 bg-transparent text-mh-profit-green text-[10px] font-mono cursor-pointer hover:bg-mh-profit-green/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {checkoutLoading ? '...' : '$4.99/month'}
-            </button>
-          </div>
+          <button
+            onClick={() => checkout()}
+            disabled={checkoutLoading}
+            className="w-full py-2 border-2 border-mh-profit-green bg-mh-profit-green text-mh-bg text-xs font-bold font-mono cursor-pointer hover:bg-mh-profit-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {checkoutLoading ? '...' : 'GO PRO — ONE-TIME'}
+          </button>
         </div>
       </div>
 
