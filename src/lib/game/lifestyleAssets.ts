@@ -17,6 +17,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       triggerEncounter: 'sec', // SEC encounter = FBI investigation in-game
     },
     backfireChance: 0.20,
+    backfireExplanation: 'Defense stocks drop 15% and you trigger an FBI investigation',
   },
   drug_fast_track: {
     id: 'drug_fast_track',
@@ -30,6 +31,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       fine: 5_000_000,
     },
     backfireChance: 0.20,
+    backfireExplanation: 'Biotech crashes 20% and you get fined $5M',
   },
   // Blackstone abilities
   yemen_operations: {
@@ -44,6 +46,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       losePE: true,
     },
     backfireChance: 0.20,
+    backfireExplanation: 'Oil drops 20% and you lose Blackstone Services entirely',
   },
   chile_acquisition: {
     id: 'chile_acquisition',
@@ -57,6 +60,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       fine: 100_000_000,
     },
     backfireChance: 0.20,
+    backfireExplanation: 'Lithium crashes 30% and you get fined $100M',
   },
   // Lazarus Genomics ability
   project_chimera: {
@@ -78,6 +82,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       gameOverRisk: 0.50, // 50% chance of FBI investigation = game over
     },
     backfireChance: 0.20,
+    backfireExplanation: 'Biotech drops 25%, you lose Lazarus Genomics, and 50% chance the FBI ends your career',
   },
   // Apex Media ability
   operation_divide: {
@@ -92,6 +97,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       losePE: true,
     },
     backfireChance: 0.20,
+    backfireExplanation: 'Nasdaq tanks 25% and you lose Apex Media entirely',
     specialEffect: {
       type: 'event_trigger',
       eventCategory: 'civil_war',
@@ -108,6 +114,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
     successEffects: {},         // Determined at runtime from randomly selected scenario
     backfireEffects: {},        // Determined at runtime from randomly selected scenario
     backfireChance: 0.15,
+    backfireExplanation: 'Depends on the bill — you may face fines or an SEC investigation',
     silentExecution: true,
     repeatable: false,
   },
@@ -124,6 +131,7 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
       // FBI heat +40 handled specially
     },
     backfireChance: 0.50, // 50/50 election
+    backfireExplanation: 'You lose the election — Apex Media tanks 50% and FBI heat spikes',
   },
 }
 

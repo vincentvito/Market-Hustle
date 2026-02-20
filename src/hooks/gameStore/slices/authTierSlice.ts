@@ -120,6 +120,8 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
     if (typeof document !== 'undefined') {
       if (theme === 'retro') {
         document.documentElement.removeAttribute('data-theme')
+      } else if (theme === 'modern3list') {
+        document.documentElement.setAttribute('data-theme', 'modern3')
       } else {
         document.documentElement.setAttribute('data-theme', theme)
       }
@@ -135,10 +137,14 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
 
     // Apply theme to DOM
     const storedTheme = userState.selectedTheme || 'modern3'
-    const validTheme = (['retro', 'modern3', 'retro2', 'bloomberg'].includes(storedTheme) ? storedTheme : 'modern3') as 'retro' | 'modern3' | 'retro2' | 'bloomberg'
+    // retro and retro2 themes are hidden — fall back to modern3
+    const hiddenThemes = ['retro', 'retro2']
+    const validTheme = ((['retro', 'modern3', 'retro2', 'bloomberg', 'modern3list'].includes(storedTheme) && !hiddenThemes.includes(storedTheme)) ? storedTheme : 'modern3') as 'retro' | 'modern3' | 'retro2' | 'bloomberg' | 'modern3list'
     if (typeof document !== 'undefined') {
       if (validTheme === 'retro') {
         document.documentElement.removeAttribute('data-theme')
+      } else if (validTheme === 'modern3list') {
+        document.documentElement.setAttribute('data-theme', 'modern3')
       } else {
         document.documentElement.setAttribute('data-theme', validTheme)
       }

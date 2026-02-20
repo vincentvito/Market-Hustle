@@ -78,7 +78,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     targetId: 'tutorial-cash',
     title: 'Your Cash',
-    description: 'Spending power. You start with $100,000 to invest.',
+    description: 'Spending power. You start with $50,000 to invest.',
     position: 'bottom',
   },
   {
@@ -90,13 +90,13 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     targetId: 'tutorial-net-worth',
     title: 'Net Worth',
-    description: 'Cash + assets. Hit zero and you\'re bankrupt. Game over.',
+    description: 'Net Worth = cash + assets - debt.',
     position: 'bottom',
   },
   {
     targetId: 'tutorial-news',
     title: 'News Feed',
-    description: 'Headlines move markets. Green = opportunity. Red = danger.',
+    description: 'News impacts stock prices. Rumors hint at tomorrow\'s news.',
     position: 'bottom',
   },
   {

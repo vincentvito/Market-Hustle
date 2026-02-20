@@ -39,12 +39,15 @@ interface NewsContent {
   analysis: string
 }
 
-function getNewsContent(headline: string, effects: Record<string, number>): NewsContent {
+function getNewsContent(headline: string, effects: Record<string, number>, baseHeadline?: string): NewsContent {
+  // Use baseHeadline for dictionary lookups when available (e.g., startup outcomes with amount suffixes)
+  const lookupKey = baseHeadline || headline
+
   // Check for structured content in NEWS_CONTENT first
-  const content = NEWS_CONTENT[headline]
+  const content = NEWS_CONTENT[lookupKey]
   if (content) {
     // If we have structured content, use it (with fallback to NEWS_EXPLANATIONS for analysis)
-    const analysis = content.analysis || NEWS_EXPLANATIONS[headline] || generateFallbackAnalysis(effects)
+    const analysis = content.analysis || NEWS_EXPLANATIONS[lookupKey] || generateFallbackAnalysis(effects)
     return {
       blurb: content.blurb || null,
       analysis
@@ -52,10 +55,10 @@ function getNewsContent(headline: string, effects: Record<string, number>): News
   }
 
   // Check for pre-written explanation in NEWS_EXPLANATIONS (legacy support)
-  if (NEWS_EXPLANATIONS[headline]) {
+  if (NEWS_EXPLANATIONS[lookupKey]) {
     return {
       blurb: null,
-      analysis: NEWS_EXPLANATIONS[headline]
+      analysis: NEWS_EXPLANATIONS[lookupKey]
     }
   }
 
@@ -135,8 +138,8 @@ export function NewsDetailOverlay() {
 
   if (!selectedNews) return null
 
-  const { headline, effects } = selectedNews
-  const { blurb, analysis } = getNewsContent(headline, effects)
+  const { headline, effects, baseHeadline } = selectedNews
+  const { blurb, analysis } = getNewsContent(headline, effects, baseHeadline)
 
   const sortedEffects = Object.entries(effects)
     .map(([id, effect]) => {

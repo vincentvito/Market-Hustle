@@ -9,7 +9,7 @@ export function Header() {
   const roomCode = useRoom(state => state.roomCode)
   const netWorth = getNetWorth()
   const { text: netWorthText, sizeClass: netWorthSize } = formatNetWorth(netWorth)
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isBloomberg = selectedTheme === 'bloomberg'
 
   const getNetWorthStyle = (): React.CSSProperties => {

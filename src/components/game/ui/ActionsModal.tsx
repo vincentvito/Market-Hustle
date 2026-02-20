@@ -16,7 +16,7 @@ const TABS: { id: TabId; label: string; emoji: string }[] = [
 
 export function ActionsModal() {
   const { showActionsModal, activeActionsTab, setShowActionsModal, setActiveActionsTab, selectedTheme } = useGame()
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
 
   if (!showActionsModal) return null

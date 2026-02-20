@@ -1,7 +1,14 @@
 'use client'
 
+import { useState } from 'react'
 import { useGame } from '@/hooks/useGame'
 import type { Startup } from '@/lib/game/types'
+
+function formatMoney(amount: number): string {
+  if (Math.abs(amount) >= 1_000_000) return `$${(amount / 1_000_000).toFixed(2)}M`
+  if (Math.abs(amount) >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`
+  return `$${Math.round(amount).toLocaleString('en-US')}`
+}
 
 const CATEGORY_ICONS: Record<string, string> = {
   tech: '💻',
@@ -23,7 +30,8 @@ function getRiskProfile(startup: Startup): { failRate: number; maxMultiplier: nu
 }
 
 export function StartupOfferOverlay() {
-  const { pendingStartupOffer, cash, investInStartup, dismissStartupOffer, selectedTheme } = useGame()
+  const { pendingStartupOffer, cash, investInStartup, dismissStartupOffer, liquidateForStartup, getNetWorth, selectedTheme } = useGame()
+  const [confirmingAmount, setConfirmingAmount] = useState<number | null>(null)
   const isRetro2 = selectedTheme === 'retro2'
 
   if (!pendingStartupOffer) return null
@@ -34,10 +42,20 @@ export function StartupOfferOverlay() {
 
   // Investment amounts based on tier
   const amounts = tier === 'angel' ? [10000, 20000, 50000] : [100000, 200000, 500000]
+  const netWorth = getNetWorth()
 
   const handleInvest = (amount: number) => {
     if (amount <= cash) {
       investInStartup(amount)
+    } else if (netWorth >= amount) {
+      setConfirmingAmount(amount)
+    }
+  }
+
+  const handleConfirmLiquidate = () => {
+    if (confirmingAmount) {
+      liquidateForStartup(confirmingAmount)
+      setConfirmingAmount(null)
     }
   }
 
@@ -120,43 +138,94 @@ export function StartupOfferOverlay() {
           </div>
         </div>
 
-        {/* Investment Options */}
-        <div className="p-4 border-b border-mh-border">
-          <div className="flex gap-2">
-            {amounts.map(amount => {
-              const canAfford = amount <= cash
-              return (
-                <button
-                  key={amount}
-                  onClick={() => handleInvest(amount)}
-                  disabled={!canAfford}
-                  className={`
-                    flex-1 py-3 rounded font-bold text-sm transition-all
-                    ${canAfford
-                      ? 'bg-mh-profit-green/20 border border-mh-profit-green text-mh-profit-green hover:bg-mh-profit-green/30 cursor-pointer'
-                      : 'bg-mh-border/50 border border-mh-border text-mh-text-dim cursor-not-allowed opacity-50'
-                    }
-                  `}
-                >
-                  ${amount >= 1_000_000 ? `${(amount / 1_000_000).toFixed(0)}M` : `${(amount / 1000).toFixed(0)}K`}
-                </button>
-              )
-            })}
-          </div>
-          <div className="text-mh-text-dim text-xs mt-2 text-center">
-            Cash: ${cash.toLocaleString('en-US')}
-          </div>
-        </div>
+        {confirmingAmount !== null ? (
+          <>
+            {/* Confirmation Summary */}
+            <div className="p-4 border-b border-mh-border">
+              <div className="text-mh-news text-[10px] font-bold tracking-wider mb-3 uppercase">
+                Investment Summary
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-mh-text-dim">Ticket</span>
+                  <span className="text-mh-text-bright font-bold">{formatMoney(confirmingAmount)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-mh-text-dim">Your cash</span>
+                  <span className={cash > 0 ? 'text-mh-profit-green' : 'text-mh-text-dim'}>{formatMoney(cash)}</span>
+                </div>
+                <div className="border-t border-mh-border pt-2 flex justify-between">
+                  <span className="text-mh-news font-bold">Need to sell</span>
+                  <span className="text-mh-news font-bold">{formatMoney(confirmingAmount - cash)}</span>
+                </div>
+              </div>
+              <p className="text-mh-text-dim text-xs mt-3 leading-relaxed">
+                You don&apos;t have enough cash. Sell assets from your portfolio to cover the shortfall.
+              </p>
+            </div>
 
-        {/* Pass Button */}
-        <div className="p-4">
-          <button
-            onClick={dismissStartupOffer}
-            className="w-full py-3 border border-mh-border bg-transparent text-mh-text-dim font-bold cursor-pointer hover:bg-mh-border/20 transition-all"
-          >
-            PASS
-          </button>
-        </div>
+            {/* Confirmation Buttons */}
+            <div className="p-4 space-y-2">
+              <button
+                onClick={handleConfirmLiquidate}
+                className="w-full py-3 rounded font-bold text-sm bg-mh-news/20 border-2 border-mh-news text-mh-news hover:bg-mh-news/30 cursor-pointer transition-all"
+              >
+                CHOOSE ASSETS TO SELL
+              </button>
+              <button
+                onClick={() => setConfirmingAmount(null)}
+                className="w-full py-2 border border-mh-border bg-transparent text-mh-text-dim font-bold text-xs cursor-pointer hover:bg-mh-border/20 transition-all rounded"
+              >
+                BACK
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Investment Options */}
+            <div className="p-4 border-b border-mh-border">
+              <div className="flex gap-2">
+                {amounts.map(amount => {
+                  const canAfford = amount <= cash
+                  const canLiquidate = !canAfford && netWorth >= amount
+                  const isDisabled = !canAfford && !canLiquidate
+                  return (
+                    <button
+                      key={amount}
+                      onClick={() => handleInvest(amount)}
+                      disabled={isDisabled}
+                      className={`
+                        flex-1 py-3 rounded font-bold text-sm transition-all
+                        ${canAfford
+                          ? 'bg-mh-profit-green/20 border border-mh-profit-green text-mh-profit-green hover:bg-mh-profit-green/30 cursor-pointer'
+                          : canLiquidate
+                            ? 'bg-mh-news/20 border border-mh-news text-mh-news hover:bg-mh-news/30 cursor-pointer'
+                            : 'bg-mh-border/50 border border-mh-border text-mh-text-dim cursor-not-allowed opacity-50'
+                        }
+                      `}
+                    >
+                      <div>${amount >= 1_000_000 ? `${(amount / 1_000_000).toFixed(0)}M` : `${(amount / 1000).toFixed(0)}K`}</div>
+                      {canLiquidate && <div className="text-[8px] opacity-80 mt-0.5">SELL & INVEST</div>}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="text-mh-text-dim text-xs mt-2 text-center">
+                Cash: ${cash.toLocaleString('en-US')}
+              </div>
+            </div>
+
+            {/* Pass Button */}
+            <div className="p-4">
+              <button
+                onClick={dismissStartupOffer}
+                className="w-full py-3 border border-mh-border bg-transparent text-mh-text-dim font-bold cursor-pointer hover:bg-mh-border/20 transition-all"
+              >
+                PASS
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

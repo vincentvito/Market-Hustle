@@ -40,7 +40,7 @@ export function SettingsPanel() {
     }
   }
 
-  const handleThemeChange = (theme: 'retro' | 'modern3' | 'retro2' | 'bloomberg') => {
+  const handleThemeChange = (theme: 'retro' | 'modern3' | 'retro2' | 'bloomberg' | 'modern3list') => {
     setSelectedTheme(theme)
     if (user) {
       updateSettings({ theme })
@@ -433,6 +433,7 @@ export function SettingsPanel() {
           {optionsExpanded && (
             <div className="px-4 pb-4">
               <div className="grid grid-cols-2 gap-2">
+                {/* RETRO theme hidden — kept for future reactivation
                 <button
                   onClick={() => handleThemeChange('retro')}
                   className={`p-2 rounded border text-center cursor-pointer ${
@@ -446,6 +447,7 @@ export function SettingsPanel() {
                   </div>
                   <div className="text-mh-text-dim text-[9px] mt-0.5">CRT look</div>
                 </button>
+                */}
                 <button
                   onClick={() => handleThemeChange('modern3')}
                   className={`p-2 rounded border text-center cursor-pointer ${
@@ -459,6 +461,7 @@ export function SettingsPanel() {
                   </div>
                   <div className="text-mh-text-dim text-[9px] mt-0.5">Cyan glow</div>
                 </button>
+                {/* CRT theme hidden — kept for future reactivation
                 <button
                   onClick={() => handleThemeChange('retro2')}
                   className={`p-2 rounded border text-center cursor-pointer ${
@@ -472,6 +475,7 @@ export function SettingsPanel() {
                   </div>
                   <div className="text-mh-text-dim text-[9px] mt-0.5">Green glow</div>
                 </button>
+                */}
                 <button
                   onClick={() => handleThemeChange('bloomberg')}
                   className={`p-2 rounded border text-center cursor-pointer ${
@@ -484,6 +488,19 @@ export function SettingsPanel() {
                     BLOOMBERG
                   </div>
                   <div className="text-mh-text-dim text-[9px] mt-0.5">Terminal</div>
+                </button>
+                <button
+                  onClick={() => handleThemeChange('modern3list')}
+                  className={`p-2 rounded border text-center cursor-pointer ${
+                    selectedTheme === 'modern3list'
+                      ? 'border-mh-accent-blue bg-mh-accent-blue/10'
+                      : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
+                  }`}
+                >
+                  <div className={`font-bold text-[11px] ${selectedTheme === 'modern3list' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
+                    LIST VIEW
+                  </div>
+                  <div className="text-mh-text-dim text-[9px] mt-0.5">Table layout</div>
                 </button>
               </div>
             </div>

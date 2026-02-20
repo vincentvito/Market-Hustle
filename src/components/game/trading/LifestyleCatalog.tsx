@@ -58,7 +58,7 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
     setPendingLuxuryAsset,
   } = useGame()
   const isRetro2 = selectedTheme === 'retro2'
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
 
   // If filterCategory is provided, use it as the active category and hide tabs
   const [activeCategory, setActiveCategory] = useState<CategoryId>(filterCategory || 'property')
@@ -68,6 +68,7 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
   const [sellConfirmLuxury, setSellConfirmLuxury] = useState<LuxuryAsset | null>(null)
   const [selectedPEAsset, setSelectedPEAsset] = useState<LifestyleAsset | null>(null) // PE bottom sheet
   const [sellConfirmPE, setSellConfirmPE] = useState<LifestyleAsset | null>(null) // PE sell confirmation
+  const [backfireTooltip, setBackfireTooltip] = useState<PEAbilityId | null>(null) // Which ability's backfire explanation is shown
 
   // Update active category when filterCategory changes
   useEffect(() => {
@@ -643,7 +644,7 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
           <Portal>
             <div
               className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end justify-center"
-              onClick={() => setSelectedPEAsset(null)}
+              onClick={() => { setSelectedPEAsset(null); setBackfireTooltip(null) }}
             >
               <div
                 className={`w-full max-w-[400px] p-4 pb-8 animate-slide-up max-h-[80vh] overflow-y-auto ${
@@ -693,11 +694,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                       }`}>
                         {formatReturn(selectedPEAsset.dailyReturn)}
                       </span>
-                      {selectedPEAsset.failureChancePerDay && selectedPEAsset.failureChancePerDay >= 0.001 && (
-                        <span className="text-xs text-mh-loss-red">
-                          ⚠️ {Math.round(selectedPEAsset.failureChancePerDay * 30 * 100)}%/mo risk
-                        </span>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -729,10 +725,21 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                             <span className="font-bold text-amber-400">
                               Cost: {formatPrice(ability.cost)}
                             </span>
-                            <span className="text-mh-loss-red">
-                              ⚠️ 20% backfire
-                            </span>
+                            <button
+                              className="text-mh-loss-red hover:underline"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setBackfireTooltip(backfireTooltip === ability.id ? null : ability.id)
+                              }}
+                            >
+                              ⚠️ {Math.round(ability.backfireChance * 100)}% backfire
+                            </button>
                           </div>
+                          {backfireTooltip === ability.id && (
+                            <div className="text-[10px] text-mh-loss-red/80 mt-1 pl-1 border-l border-mh-loss-red/30">
+                              {ability.backfireExplanation}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -786,7 +793,7 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
           <Portal>
             <div
               className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 z-[999] flex items-end justify-center"
-              onClick={() => setSellConfirmPE(null)}
+              onClick={() => { setSellConfirmPE(null); setBackfireTooltip(null) }}
             >
               <div
                 className={`w-full max-w-[400px] p-4 pb-8 animate-slide-up max-h-[80vh] overflow-y-auto ${
@@ -896,9 +903,15 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                                   <span className="font-bold text-amber-400">
                                     Cost: {formatPrice(ability.cost)}
                                   </span>
-                                  <span className="text-mh-loss-red">
+                                  <button
+                                    className="text-mh-loss-red hover:underline"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setBackfireTooltip(backfireTooltip === ability.id ? null : ability.id)
+                                    }}
+                                  >
                                     ⚠️ {Math.round(ability.backfireChance * 100)}% backfire
-                                  </span>
+                                  </button>
                                 </div>
                                 <button
                                   onClick={() => executePEAbility(ability.id, sellConfirmPE.id)}
@@ -911,6 +924,11 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                                 >
                                   {needsCash ? `NEED ${formatPrice(ability.cost - cash)}` : 'EXECUTE'}
                                 </button>
+                              </div>
+                            )}
+                            {backfireTooltip === ability.id && !status.isUsed && (
+                              <div className="text-[10px] text-mh-loss-red/80 mt-1 pl-1 border-l border-mh-loss-red/30">
+                                {ability.backfireExplanation}
                               </div>
                             )}
                           </div>

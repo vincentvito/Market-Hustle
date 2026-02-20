@@ -275,6 +275,7 @@ export function EncounterPopup() {
   const [rouletteBet, setRouletteBet] = useState<number>(0)
   const [rouletteColor, setRouletteColor] = useState<RouletteColor | null>(null)
   const [encounterResult, setEncounterResult] = useState<EncounterResult | null>(null)
+  const [pendingShitcoinData, setPendingShitcoinData] = useState<{ outcome: 'moon' | 'rug'; profit: number } | null>(null)
 
   // Reset state when encounter changes
   useEffect(() => {
@@ -283,6 +284,7 @@ export function EncounterPopup() {
       setRouletteBet(0)
       setRouletteColor(null)
       setEncounterResult(null)
+      setPendingShitcoinData(null)
     }
   }, [pendingEncounter])
 
@@ -314,9 +316,18 @@ export function EncounterPopup() {
       case 'divorce':
         result = choiceIndex === 0 ? resolveDivorce('settle', netWorth, cash, trustFundBalance) : resolveDivorce('contest', netWorth, cash, trustFundBalance)
         break
-      case 'shitcoin':
-        result = choiceIndex === 0 ? resolveShitcoin('mint', cash) : resolveShitcoin('pass', cash)
+      case 'shitcoin': {
+        const shitcoinResult = choiceIndex === 0 ? resolveShitcoin('mint', cash) : resolveShitcoin('pass', cash)
+        if (choiceIndex === 0 && shitcoinResult.pending) {
+          // MINT: Skip result screen — directly confirm and close popup
+          // Outcome appears as news headline in 2 days
+          confirmEncounterResult(shitcoinResult.immediate, 'shitcoin', shitcoinResult.pending)
+          return
+        }
+        // PASS: Show result normally
+        result = shitcoinResult.immediate
         break
+      }
       case 'kidney':
         result = choiceIndex === 0 ? resolveKidney('sell') : resolveKidney('keep')
         break
@@ -356,8 +367,9 @@ export function EncounterPopup() {
   // Handle confirm - commit result to game state
   const handleConfirm = () => {
     if (encounterResult) {
-      confirmEncounterResult(encounterResult, pendingEncounter.type)
+      confirmEncounterResult(encounterResult, pendingEncounter.type, pendingShitcoinData)
       setEncounterResult(null)
+      setPendingShitcoinData(null)
       setRouletteStep('choose')
       setRouletteBet(0)
       setRouletteColor(null)

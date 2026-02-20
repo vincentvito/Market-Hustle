@@ -24,7 +24,7 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
   const owned = holdings[asset.id] || 0
   const change = getPriceChange(asset.id)
   const isOwned = owned > 0
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 

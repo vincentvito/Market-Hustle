@@ -60,7 +60,7 @@ export function PresidentialToolkit() {
     selectedTheme,
   } = useGame()
 
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const abilities = getPresidentialAbilities()
 
   return (

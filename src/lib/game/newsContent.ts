@@ -574,11 +574,11 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "The Bureau of Labor Statistics will release the monthly Consumer Price Index report tomorrow morning.",
     analysis: "CPI day is always volatile. Position light into the number. The outcome determines Fed policy for months. Everyone's watching."
   },
-  "INFLATION REPORT: 9.2% - FED POLICY TRAPPED": {
+  "INFLATION REPORT — 9.2% - FED POLICY TRAPPED": {
     blurb: "The Consumer Price Index came in at 9.2% year-over-year, far exceeding expectations and trapping Fed policy.",
     analysis: "Hot inflation is a nightmare for the Fed. They have to hike into weakness. Stocks sell, gold rallies. The soft landing hopes just crashed."
   },
-  "INFLATION REPORT: COOLING DATA SIGNALS SOFT LANDING": {
+  "INFLATION REPORT — COOLING DATA SIGNALS SOFT LANDING": {
     blurb: "Inflation data showed meaningful cooling, reviving hopes for an economic soft landing.",
     analysis: "Goldilocks data is the best outcome. Stocks rally on soft landing hopes. The Fed can ease up. Risk-on across the board."
   },
@@ -3138,15 +3138,15 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "The USDA's monthly World Agricultural Supply and Demand Estimates report is due, with traders watching for crop yield revisions.",
     analysis: "The USDA report is the gold standard for agricultural data. Any surprise in yield estimates will move commodity prices — up on shortfalls, down on surpluses."
   },
-  "USDA REPORT: GLOBAL CROP SHORTFALL — FOOD PRICES TO SURGE": {
+  "USDA REPORT — GLOBAL CROP SHORTFALL — FOOD PRICES TO SURGE": {
     blurb: "The USDA slashed global crop production estimates, citing drought and pest damage across major growing regions.",
     analysis: "Supply shortfalls mean higher food prices globally. Coffee and agricultural commodities spike. Emerging market consumers get squeezed by food inflation. Gold catches a bid on economic stress."
   },
-  "USDA REPORT: PRODUCTION INLINE — NO SURPRISES": {
+  "USDA REPORT — PRODUCTION INLINE — NO SURPRISES": {
     blurb: "The USDA report showed global crop production broadly in line with expectations, with minimal revisions to prior estimates.",
     analysis: "Inline data is a non-event for markets. Agricultural commodities drift slightly higher as the worst-case scenario doesn't materialize."
   },
-  "USDA REPORT: RECORD GLOBAL YIELDS — SURPLUS OVERWHELMS MARKET": {
+  "USDA REPORT — RECORD GLOBAL YIELDS — SURPLUS OVERWHELMS MARKET": {
     blurb: "The USDA reported record global crop yields, with massive surpluses projected to overwhelm storage and processing capacity.",
     analysis: "Record harvests crush prices. Too much supply with nowhere to go. Coffee futures tank as exporters compete to offload inventory. Emerging market farmers benefit from volume."
   },
@@ -3346,7 +3346,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Norway's fund clarified it was rebalancing from overweight US tech positions into global commodities, not exiting entirely.",
     analysis: "Sector rotation, not flight. Tech takes a hit but the overall US exposure stays. Commodities rally on inflows. The scare was worse than reality."
   },
-  "FALSE REPORT: NORWAY DENIES ANY CHANGES — MARKET RECOVERS": {
+  "FALSE REPORT — NORWAY DENIES ANY CHANGES — MARKET RECOVERS": {
     blurb: "Norway's sovereign wealth fund issued a formal denial of any planned changes to its US asset allocation.",
     analysis: "False alarm triggers a relief rally. Markets snap back as the threat was fabricated. Positioning unwinds. Gold gives back safe-haven gains."
   },
@@ -3486,15 +3486,15 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "The EIA's weekly petroleum status report is due tomorrow, with traders watching crude stockpile levels for demand signals.",
     analysis: "The EIA inventory report is the most important weekly data point for oil markets. Draws signal strong demand; builds signal weakening consumption. Oil traders position ahead of the number."
   },
-  "EIA REPORT: MASSIVE INVENTORY DRAW — CRUDE STOCKS AT 5-YEAR LOW": {
+  "EIA REPORT — MASSIVE INVENTORY DRAW — CRUDE STOCKS AT 5-YEAR LOW": {
     blurb: "The EIA reported a massive crude inventory draw, pushing stockpiles to their lowest level in five years.",
     analysis: "Five-year low in crude stocks means demand is outpacing supply. Oil surges on scarcity premium. Gold catches a bid on energy-driven inflation fears. Uranium benefits as energy alternatives gain appeal."
   },
-  "EIA REPORT: INVENTORIES INLINE — NO CHANGE IN SUPPLY OUTLOOK": {
+  "EIA REPORT — INVENTORIES INLINE — NO CHANGE IN SUPPLY OUTLOOK": {
     blurb: "The EIA reported crude inventories broadly in line with expectations, with no significant changes to the supply-demand balance.",
     analysis: "Inline inventories are a non-event. Oil drifts slightly higher as the worst case doesn't materialize. No catalyst for a big move in either direction."
   },
-  "EIA REPORT: SURPRISE CRUDE BUILD — DEMAND DESTRUCTION FEARS SURFACE": {
+  "EIA REPORT — SURPRISE CRUDE BUILD — DEMAND DESTRUCTION FEARS SURFACE": {
     blurb: "The EIA reported a surprise build in crude inventories, raising fears of demand destruction as economic activity slows.",
     analysis: "Surprise builds mean the economy is consuming less energy. Oil drops on weakening demand signals. Clean energy alternatives benefit — if oil demand is structurally declining, the transition accelerates."
   },

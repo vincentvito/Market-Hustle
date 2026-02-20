@@ -12,6 +12,11 @@ interface TradeSheetProps {
   onClose: () => void
 }
 
+function formatQty(n: number): string {
+  if (Number.isInteger(n)) return n.toString()
+  return n.toFixed(2)
+}
+
 function formatPrice(p: number): string {
   if (p >= 1_000_000) return `${(p / 1_000_000).toFixed(1)}M`
   if (p >= 1000) return `${(p / 1000).toFixed(1)}K`
@@ -137,7 +142,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const { isPro } = useUserDetails()
 
   // Theme detection
-  const isModern3 = selectedTheme === 'modern3'
+  const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
   const [leverage, setLeverage] = useState<LeverageLevel>(1)
@@ -371,7 +376,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             <div className="text-lg font-bold text-mh-text-bright">{asset.name}</div>
             {owned > 0 && (
               <div className="text-xs text-mh-accent-blue">
-                OWN: {owned} (${formatPrice(owned * price)})
+                OWN: {formatQty(owned)} (${formatPrice(owned * price)})
               </div>
             )}
           </div>
@@ -571,7 +576,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             )}
 
             <span className="text-xs text-mh-text-dim">
-              {isShortMode ? `MAX: ${maxShort}` : `OWN: ${owned}`}
+              {isShortMode ? `MAX: ${maxShort}` : `OWN: ${formatQty(owned)}`}
             </span>
           </div>
 

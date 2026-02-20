@@ -8,7 +8,7 @@
 
 import type { MechanicsSliceCreator } from '../types'
 import { ASSETS } from '@/lib/game/assets'
-import { EVENTS, CATEGORY_WEIGHTS, QUIET_NEWS, LIFESTYLE_EFFECTS, expandLifestyleEffects, rollForPEExit } from '@/lib/game/events'
+import { EVENTS, CATEGORY_WEIGHTS, QUIET_NEWS, LIFESTYLE_EFFECTS, expandLifestyleEffects, rollForPEExit, ASSET_EVENT_MULTIPLIERS } from '@/lib/game/events'
 import { EVENT_CHAINS, CHAIN_CATEGORY_WEIGHTS } from '@/lib/game/eventChains'
 import { SCHEDULED_EVENTS } from '@/lib/game/scheduledEvents'
 import { ANGEL_STARTUPS, VC_STARTUPS } from '@/lib/game/startups'
@@ -18,7 +18,7 @@ import { STORIES, getStoryById, selectRandomStory } from '@/lib/game/stories'
 import { DEFAULT_GOSSIP_STATE, shouldShowGossip, createGossipNewsItem, isMarketSideways, hasMajorEventToday } from '@/lib/game/gossip'
 import { isProd, isDev } from '@/lib/env'
 import { selectFlavorEvent } from '@/lib/game/flavorEvents'
-import { DEFAULT_ENCOUNTER_STATE, rollForEncounter, resolveTax } from '@/lib/game/encounters'
+import { DEFAULT_ENCOUNTER_STATE, rollForEncounter, resolveTax, shouldSkipScriptedEncounter } from '@/lib/game/encounters'
 import type { EncounterResult } from '@/lib/game/encounters'
 import type {
   GameDuration,
@@ -46,6 +46,7 @@ import type {
   PendingAbilityEffects,
   ActiveScheduledEvent,
   TradeLogEntry,
+  NewsLabelType,
 } from '@/lib/game/types'
 import { getLuxuryAsset, LUXURY_ASSETS } from '@/lib/game/lifestyleAssets'
 import {
@@ -115,6 +116,18 @@ import {
 } from '@/lib/game/director'
 import { getEventSentiment, deriveSentiment } from '@/lib/game/sentimentHelpers'
 import { capture } from '@/lib/posthog'
+
+// Detect the correct labelType from a headline's embedded prefix.
+// Headlines may contain category prefixes (BREAKING:, STUDY:, etc.) that should
+// determine the label type rather than using a generic default.
+function detectLabelType(headline: string, defaultLabel: NewsLabelType): NewsLabelType {
+  if (/^(?:🎯|⚠️)\s*BREAKING:|^BREAKING:/.test(headline)) return 'breaking'
+  if (/^📰\s*DEVELOPING:|^DEVELOPING:/.test(headline)) return 'developing'
+  if (headline.startsWith('STUDY:')) return 'study'
+  if (headline.startsWith('REPORT:')) return 'report'
+  if (headline.startsWith('JUST IN:')) return 'flavor'
+  return defaultLabel
+}
 
 // Helper to append a trade log entry to the store
 function appendTradeLog(
@@ -212,6 +225,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   holdings: {},
   prices: {},
   prevPrices: {},
+  initialPrices: {},
   priceHistory: {},
   costBasis: {},
   initialNetWorth: 0,
@@ -277,6 +291,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   gossipState: DEFAULT_GOSSIP_STATE,
   encounterState: DEFAULT_ENCOUNTER_STATE,
   pendingEncounter: null,
+  pendingShitcoin: null,
   pendingLiquidation: null,
 
   // UI state
@@ -451,7 +466,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         labelType: n.labelType,
       }))
       if (day1.flavorHeadline) {
-        todayNewsItems.push({ headline: day1.flavorHeadline, effects: {}, labelType: day1.flavorHeadline.startsWith('@') ? 'gossip' : 'flavor' })
+        const flavorLabel = day1.flavorHeadline.startsWith('@') ? 'gossip' as const : detectLabelType(day1.flavorHeadline, 'flavor')
+        todayNewsItems.push({ headline: day1.flavorHeadline, effects: {}, labelType: flavorLabel })
       }
       // Build combined effects for day 1 price calculation
       const day1Effects: Record<string, number> = {}
@@ -532,6 +548,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       shortPositions: [],
       prices,
       prevPrices,
+      initialPrices: { ...prevPrices },  // Anchor for mean reversion (pre-game baseline)
       priceHistory,
       costBasis: {},
       initialNetWorth: (options?.cash ?? 50000) - (options?.debt ?? 50000),
@@ -575,6 +592,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       gossipState: DEFAULT_GOSSIP_STATE,
       encounterState: DEFAULT_ENCOUNTER_STATE,
       pendingEncounter: null,
+      pendingShitcoin: null,
       pendingLiquidation: null,
       queuedStartupOffer: null,
       activeScheduledEvent: null,
@@ -645,7 +663,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   },
 
   nextDay: () => {
-    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activePEExitOffer, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, lastStoryStartDay, gossipState, assetMoods, categoryCooldowns, usedFlavorHeadlines, usedEventHeadlines, leveragedPositions, shortPositions, ownedLuxury, operationStates, pendingAbilityEffects, pendingStoryArc, pendingPhase2Effects, usedPEAbilities, pendingInflationEffect, directorState, directorConfig, gameDuration, initialNetWorth, creditCardDebt, activeScheduledEvent, usedScheduledEventIds } = get()
+    const { prices, priceHistory, newsHistory, day, cash, holdings, activeChains, usedChainIds, activeInvestments, usedStartupIds, ownedLifestyle, lifestylePrices, activePEExitOffer, activeEscalations, hasReached1M, reachedMilestones, activeStories, usedStoryIds, lastStoryStartDay, gossipState, assetMoods, categoryCooldowns, usedFlavorHeadlines, usedEventHeadlines, leveragedPositions, shortPositions, ownedLuxury, operationStates, pendingAbilityEffects, pendingStoryArc, pendingPhase2Effects, usedPEAbilities, pendingInflationEffect, directorState, directorConfig, gameDuration, initialNetWorth, creditCardDebt, activeScheduledEvent, usedScheduledEventIds, initialPrices } = get()
     let effects: Record<string, number> = {}
     let updatedEscalations = [...activeEscalations]
     const todayNewsItems: NewsItem[] = []
@@ -693,13 +711,12 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       })
 
       // Add news headline (use stored eventHeadline from rumor → event buildup)
-      const prefix = pendingAbilityEffects.isBackfire ? '⚠️' : '🎯'
       const fallbackName = pendingAbilityEffects.abilityId.replace(/_/g, ' ').toUpperCase()
       const eventHeadline = pendingAbilityEffects.eventHeadline
         || (pendingAbilityEffects.isBackfire ? `BACKFIRE: ${fallbackName} OPERATION EXPOSED` : `${fallbackName} SUCCESSFUL`)
 
       todayNewsItems.push({
-        headline: `${prefix} ${eventHeadline}`,
+        headline: eventHeadline,
         effects: pendingAbilityEffects.effects,
         labelType: 'breaking',
       })
@@ -737,10 +754,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         // Day N+1: Show Part 2 headline
         // Silent execution abilities (empty part1) show this as RUMOR instead of DEVELOPING
         const isSilentExecution = !pendingStoryArc.part1Headline
-        const prefix = isSilentExecution ? '🕵️' : '📰'
         const labelType = isSilentExecution ? 'rumor' as const : 'developing' as const
         todayNewsItems.push({
-          headline: `${prefix} ${pendingStoryArc.part2Headline}`,
+          headline: pendingStoryArc.part2Headline,
           effects: {}, // No effects yet
           labelType,
         })
@@ -749,9 +765,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
       } else if (nextPhase === 3) {
         // Day N+2: Resolution - Apply effects
-        const prefix = pendingStoryArc.storyOutcome === 'unfavorable' ? '⚠️' : '🎯'
         todayNewsItems.push({
-          headline: `${prefix} ${pendingStoryArc.part3Headline}`,
+          headline: pendingStoryArc.part3Headline,
           effects: pendingStoryArc.effects,
           labelType: 'breaking',
         })
@@ -935,16 +950,17 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (isScripted) {
       const scriptedDay = get().activeScript!.days[newDay - 1]
       if (scriptedDay) {
-        // Add scripted news headlines
+        // Add scripted news headlines (detect label from headline prefix if needed)
         scriptedDay.news.forEach(n => {
-          todayNewsItems.push({ headline: n.headline, effects: n.effects, labelType: n.labelType })
+          todayNewsItems.push({ headline: n.headline, effects: n.effects, labelType: detectLabelType(n.headline, n.labelType) })
           Object.entries(n.effects).forEach(([assetId, effect]) => {
             effects[assetId] = (effects[assetId] || 0) + effect
           })
         })
         // Add scripted flavor/gossip headline
         if (scriptedDay.flavorHeadline) {
-          todayNewsItems.push({ headline: scriptedDay.flavorHeadline, effects: {}, labelType: scriptedDay.flavorHeadline.startsWith('@') ? 'gossip' : 'flavor' })
+          const scriptedFlavorLabel = scriptedDay.flavorHeadline.startsWith('@') ? 'gossip' as const : detectLabelType(scriptedDay.flavorHeadline, 'flavor')
+          todayNewsItems.push({ headline: scriptedDay.flavorHeadline, effects: {}, labelType: scriptedFlavorLabel })
         }
         // Apply invisible price nudges
         if (scriptedDay.priceNudges) {
@@ -1140,7 +1156,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
 
         // Determine label based on whether story continues or ends here
         const hasMoreStages = story.stages[nextStage + 1] !== undefined
-        let storyLabelType: import('@/lib/game/types').NewsLabelType
+        let storyLabelType: NewsLabelType
         if (outcome.continues && hasMoreStages) {
           storyLabelType = 'developing' // Mid-story branch → DEVELOPING label
         } else {
@@ -1536,7 +1552,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
             startDay: newDay,
             daysRemaining: newChain.duration,
             rumor: newChain.rumor,
-            developing: newChain.developing,
             category: newChain.category,
             subcategory: newChain.subcategory,
             predictionLine: chainPredictionLine,
@@ -1573,8 +1588,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         )
 
         if (e) {
-          // Single events = NEWS
-          todayNewsItems.push({ headline: e.headline, effects: e.effects, labelType: 'news' })
+          // Single events = NEWS (promote to BREAKING if headline contains BREAKING: prefix)
+          todayNewsItems.push({ headline: e.headline, effects: e.effects, labelType: detectLabelType(e.headline, 'news') })
           hasMarketNews = true
           eventFiredToday = e
           updateRippleCandidate(e.headline, e.category, e.effects)
@@ -1683,8 +1698,10 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         // Add news headline (startup resolution = NEWS)
         const headlineWithAmount = inv.outcome.multiplier === 0
           ? `${inv.outcome.headline} - YOUR $${inv.amount.toLocaleString('en-US')} INVESTMENT LOST`
-          : `${inv.outcome.headline} - YOU MADE $${Math.round(payout).toLocaleString('en-US')}!`
-        todayNewsItems.push({ headline: headlineWithAmount, effects: inv.outcome.marketEffects || {}, labelType: 'news' })
+          : isProfit
+            ? `${inv.outcome.headline} - YOU MADE $${Math.round(profitLoss).toLocaleString('en-US')}!`
+            : `${inv.outcome.headline} - YOU LOST $${Math.round(Math.abs(profitLoss)).toLocaleString('en-US')}!`
+        todayNewsItems.push({ headline: headlineWithAmount, effects: inv.outcome.marketEffects || {}, labelType: 'news', baseHeadline: inv.outcome.headline })
 
         // Merge market effects
         if (inv.outcome.marketEffects) {
@@ -1696,6 +1713,38 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     })
 
     updatedInvestments = remainingInvestments
+
+    // 4b. Process pending shitcoin - resolve after 2 days
+    const { pendingShitcoin } = get()
+    let resolvedShitcoin = false
+    if (pendingShitcoin && day + 1 >= pendingShitcoin.resolvesDay) {
+      resolvedShitcoin = true
+      if (pendingShitcoin.outcome === 'moon') {
+        cashChange += pendingShitcoin.profit
+        const profitFormatted = pendingShitcoin.profit.toLocaleString('en-US')
+        todayNewsItems.push({
+          headline: `$YOURCOIN TO THE MOON: Your shitcoin pumped hard before you dumped — +$${profitFormatted} profit`,
+          effects: {},
+          labelType: 'breaking',
+        })
+      } else {
+        todayNewsItems.push({
+          headline: 'RUG PULLED: $YOURCOIN went to zero. The dev vanished with your $5K.',
+          effects: {},
+          labelType: 'news',
+        })
+      }
+    }
+
+    // 4c. Add "minting" news on the day a shitcoin was just created
+    const currentPendingShitcoin = get().pendingShitcoin
+    if (!resolvedShitcoin && currentPendingShitcoin && currentPendingShitcoin.investedDay === newDay) {
+      todayNewsItems.push({
+        headline: '$YOURCOIN IS LIVE: Your meme coin just launched — the market will decide its fate in the coming days...',
+        effects: {},
+        labelType: 'news',
+      })
+    }
 
     // 5. If no market news today, add quiet news (lifestyle income doesn't count as market news)
     if (!hasMarketNews) {
@@ -1715,7 +1764,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         todayNewsItems.push({
           headline: flavor.headline,
           effects: flavor.effects,
-          labelType: 'flavor',
+          labelType: detectLabelType(flavor.headline, 'flavor'),
         })
         updatedFlavorHeadlines.push(flavor.headline)
 
@@ -1776,10 +1825,12 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     })
 
     // Now calculate final lifestyle prices: current price * (1 + volatility + event effects)
+    // Apply 1.3x global bump to lifestyle event effects so they don't feel disconnected
+    const LIFESTYLE_EFFECT_MULTIPLIER = 1.3
     LIFESTYLE_ASSETS.forEach(asset => {
       const currentPrice = lifestylePrices[asset.id] || asset.basePrice
       const volatilityChange = lifestyleBaseChanges[asset.id] || 0
-      const eventEffect = lifestyleEffects[asset.id] || 0
+      const eventEffect = (lifestyleEffects[asset.id] || 0) * LIFESTYLE_EFFECT_MULTIPLIER
       const totalChange = volatilityChange + eventEffect
       newLifestylePrices[asset.id] = Math.round(currentPrice * (1 + totalChange))
     })
@@ -1804,6 +1855,26 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       })
     }
 
+    // ===========================================================================
+    // STEP 5.9: APPLY ASSET-SPECIFIC VOLATILITY MULTIPLIERS
+    // ===========================================================================
+    // Riskier assets (altcoins, BTC, Tesla) swing harder than stable ones (gold).
+    // Applied after PE bonuses so the reduction still works proportionally.
+    for (const assetId of Object.keys(effects)) {
+      const multiplier = ASSET_EVENT_MULTIPLIERS[assetId] || 1.0
+      effects[assetId] = effects[assetId] * multiplier
+      // Cap negative effects at -85% (price can't drop below 15% in one day)
+      if (effects[assetId] < -0.85) effects[assetId] = -0.85
+    }
+    // Sync news display with multiplied effects
+    todayNewsItems.forEach(newsItem => {
+      Object.keys(newsItem.effects).forEach(assetId => {
+        const multiplier = ASSET_EVENT_MULTIPLIERS[assetId] || 1.0
+        newsItem.effects[assetId] = newsItem.effects[assetId] * multiplier
+        if (newsItem.effects[assetId] < -0.85) newsItem.effects[assetId] = -0.85
+      })
+    })
+
     // 6. Calculate new prices and update price history
     const newPrices: Record<string, number> = {}
     const newPriceHistory: Record<string, DayCandle[]> = {}
@@ -1814,7 +1885,19 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       // Normal price calculation with volatility and additive effects
       let change = (Math.random() - 0.5) * asset.volatility * 2
       if (effects[asset.id]) {
+        // Event day: event effect dominates, random noise reduced to 8%
         change = change * 0.08 + effects[asset.id]
+      } else {
+        // No-event day: apply gentle mean reversion toward opening price
+        const openPrice = initialPrices[asset.id]
+        if (openPrice > 0) {
+          const displacement = (prices[asset.id] - openPrice) / openPrice
+          // Only activate when displacement exceeds 15% (ignore small moves)
+          if (Math.abs(displacement) > 0.15) {
+            const REVERSION_STRENGTH = 0.07  // Pull 7% of displacement per day
+            change += -displacement * REVERSION_STRENGTH
+          }
+        }
       }
       close = prices[asset.id] * (1 + change)
       close = Math.max(0.01, Math.round(close * 100) / 100)
@@ -1942,8 +2025,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (!isScripted && !hasCelebrations && newDay <= gameLength - 6) {
 
       // ========== COOLDOWN CHECK ==========
-      // Minimum 6 days between any startup offers (reduced from 8 for better accessibility)
-      const cooldownDays = 6
+      // Minimum 3 days between any startup offers (reduced from 6 for more angel deal flow)
+      const cooldownDays = 3
       const daysSinceLastOffer = lastStartupOfferDay ? newDay - lastStartupOfferDay : Infinity
       const cooldownPassed = daysSinceLastOffer >= cooldownDays
 
@@ -1952,12 +2035,12 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       const vcNetWorthGate = 1_000_000
 
       // ========== HARD CAPS (base) ==========
-      const angelCap = 2  // Base: 2 Angel offers per game
+      const angelCap = 3  // Base: 3 Angel offers per game
       const vcCap = 2     // Base: 2 VC offers per game
 
       // ========== BASE PROBABILITIES ==========
       // Modestly increased for better accessibility (was 2.5% Angel, 4% VC)
-      let angelBaseChance = 0.035  // 3.5%
+      let angelBaseChance = 0.18  // 18%
       let vcBaseChance = 0.055     // 5.5%
 
       // Private Jet luxury asset: +30% deal frequency
@@ -2225,6 +2308,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       pendingPhase2Effects: queuedPhase2Effects || (clearedPhase2Effects ? null : pendingPhase2Effects),
       // Clear pending inflation effect after it's been applied (Print Money aftermath)
       pendingInflationEffect: clearedInflationEffect ? null : pendingInflationEffect,
+      // Clear pending shitcoin after resolution
+      pendingShitcoin: resolvedShitcoin ? null : get().pendingShitcoin,
       // Update Game Director state
       directorState: updatedDirectorState,
     })
@@ -2300,7 +2385,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (activeScript) {
       const nextDayNum = day + 1
       const nextScriptedDay = activeScript.days[nextDayNum - 1]
-      if (nextScriptedDay?.encounter) {
+      if (nextScriptedDay?.encounter && !shouldSkipScriptedEncounter(nextScriptedDay.encounter, encounterState, netWorth)) {
         set({
           pendingEncounter: { type: nextScriptedDay.encounter },
           queuedStartupOffer: pendingStartupOffer,
@@ -2672,7 +2757,19 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const outcomeBonus = hasPrivateJet ? 0.10 : 0  // 10% reduction in failure rate
 
     // Pre-determine the outcome at investment time (with Private Jet bonus if applicable)
-    const outcome = selectOutcomeWithBonus(pendingStartupOffer, outcomeBonus)
+    let outcome = selectOutcomeWithBonus(pendingStartupOffer, outcomeBonus)
+
+    // Force positive outcome for first game (10-20x return) so new players have capital to play with
+    const { scriptedGameNumber } = get()
+    if (scriptedGameNumber === 1) {
+      const forcedMultiplier = 10 + Math.floor(Math.random() * 11) // 10-20x
+      const positiveOutcomes = pendingStartupOffer.outcomes.filter(o => o.multiplier > 0)
+      if (positiveOutcomes.length > 0) {
+        const baseOutcome = positiveOutcomes[Math.floor(Math.random() * positiveOutcomes.length)]
+        outcome = { ...baseOutcome, multiplier: forcedMultiplier }
+      }
+    }
+
     let duration = getRandomDuration(pendingStartupOffer)
 
     // Ensure investment resolves before game ends
@@ -2711,6 +2808,32 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     } else {
       set({ pendingStartupOffer: null })
     }
+  },
+
+  liquidateForStartup: (amount: number) => {
+    const { pendingStartupOffer, cash } = get()
+    if (!pendingStartupOffer || amount <= cash) return
+
+    set({
+      pendingLiquidation: {
+        amountNeeded: amount,
+        reason: 'startup_investment',
+        headline: `Sold assets to invest in ${pendingStartupOffer.name}`,
+        startupInvestmentAmount: amount,
+        startupOffer: pendingStartupOffer,
+      },
+      pendingStartupOffer: null,
+    })
+  },
+
+  cancelStartupLiquidation: () => {
+    const { pendingLiquidation } = get()
+    if (!pendingLiquidation || pendingLiquidation.reason !== 'startup_investment') return
+
+    set({
+      pendingLiquidation: null,
+      pendingStartupOffer: pendingLiquidation.startupOffer || null,
+    })
   },
 
   // ============================================================================
@@ -2886,7 +3009,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (activeScriptForAdvance) {
       const nextDayNum = day + 1
       const nextScriptedDay = activeScriptForAdvance.days[nextDayNum - 1]
-      if (nextScriptedDay?.encounter) {
+      if (nextScriptedDay?.encounter && !shouldSkipScriptedEncounter(nextScriptedDay.encounter, encounterState, netWorth)) {
         set({
           pendingEncounter: { type: nextScriptedDay.encounter },
           queuedStartupOffer: pendingStartupOffer,
@@ -2998,7 +3121,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // ENCOUNTER ACTIONS
   // ============================================================================
 
-  confirmEncounterResult: (result: EncounterResult, encounterType: EncounterType) => {
+  confirmEncounterResult: (result: EncounterResult, encounterType: EncounterType, pendingShitcoinData?: { outcome: 'moon' | 'rug'; profit: number } | null) => {
     const { pendingEncounter, encounterState, cash, day, queuedStartupOffer, holdings, prices } = get()
 
     if (!pendingEncounter) return
@@ -3084,12 +3207,23 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return
     }
 
+    // Store pending shitcoin for delayed resolution (2 days)
+    const shitcoinToStore = pendingShitcoinData
+      ? {
+          investedDay: day + 1,
+          resolvesDay: day + 1 + 2,
+          outcome: pendingShitcoinData.outcome,
+          profit: pendingShitcoinData.profit,
+        }
+      : get().pendingShitcoin
+
     // Clear encounter and continue with the day
     set({
       cash: Math.round(newCash * 100) / 100,
       holdings: newHoldings,
       encounterState: newEncounterState,
       pendingEncounter: null,
+      pendingShitcoin: shitcoinToStore,
       message: finalHeadline,
     })
 
@@ -3173,37 +3307,53 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       }
     })
 
-    // Calculate new cash: existing cash + liquidated value - penalty amount
-    const newCash = cash + totalLiquidated - amountNeeded
-    const finalHeadline = `${headline} (Assets seized to cover penalty)`
+    if (pendingLiquidation.reason === 'startup_investment') {
+      // Voluntary liquidation to fund a startup investment
+      // Add liquidated value to cash, restore startup offer, then invest
+      const cashAfterSale = cash + totalLiquidated
+      set({
+        cash: Math.round(cashAfterSale * 100) / 100,
+        holdings: newHoldings,
+        costBasis: newCostBasis,
+        ownedLifestyle: newOwnedLifestyle,
+        ownedLuxury: newOwnedLuxury,
+        leveragedPositions: newLeveragedPositions,
+        shortPositions: newShortPositions,
+        pendingLiquidation: null,
+        pendingStartupOffer: pendingLiquidation.startupOffer || null,
+      })
+      // Now invest using the standard startup flow
+      get().investInStartup(amountNeeded)
+    } else {
+      // Forced liquidation (SEC/Divorce/Tax encounter penalty)
+      const newCash = cash + totalLiquidated - amountNeeded
+      const finalHeadline = `${headline} (Assets seized to cover penalty)`
+      const newWifeSuspicion = Math.min(100, wifeSuspicion + 15)
 
-    // Liquidation causes significant suspicion spike
-    const newWifeSuspicion = Math.min(100, wifeSuspicion + 15)
+      set({
+        cash: Math.round(newCash * 100) / 100,
+        holdings: newHoldings,
+        costBasis: newCostBasis,
+        ownedLifestyle: newOwnedLifestyle,
+        ownedLuxury: newOwnedLuxury,
+        leveragedPositions: newLeveragedPositions,
+        shortPositions: newShortPositions,
+        wifeSuspicion: newWifeSuspicion,
+        encounterState: pendingLiquidation.encounterState,
+        pendingLiquidation: null,
+        message: finalHeadline,
+      })
 
-    // Clear liquidation and update state
-    set({
-      cash: Math.round(newCash * 100) / 100,
-      holdings: newHoldings,
-      costBasis: newCostBasis,
-      ownedLifestyle: newOwnedLifestyle,
-      ownedLuxury: newOwnedLuxury,
-      leveragedPositions: newLeveragedPositions,
-      shortPositions: newShortPositions,
-      wifeSuspicion: newWifeSuspicion,
-      encounterState: newEncounterState,
-      pendingLiquidation: null,
-      message: finalHeadline,
-    })
+      // Advance the day normally
+      get().nextDay()
 
-    // Advance the day normally
-    get().nextDay()
-
-    // Restore any queued startup offer
-    const currentState = get()
-    if (queuedStartupOffer && !currentState.pendingStartupOffer) {
-      set({ pendingStartupOffer: queuedStartupOffer })
+      // Restore any queued startup offer
+      const currentState = get()
+      if (queuedStartupOffer && !currentState.pendingStartupOffer) {
+        set({ pendingStartupOffer: queuedStartupOffer })
+      }
+      set({ queuedStartupOffer: null })
     }
-    set({ queuedStartupOffer: null })
   },
 
   // ============================================================================
@@ -3863,6 +4013,18 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     set({
       creditCardDebt: newDebt,
       cash: cash - repayAmount
+    })
+  },
+
+  borrowCreditCardDebt: (amount: number) => {
+    const { cash, creditCardDebt } = get()
+    const netWorth = get().getNetWorth()
+    const maxBorrowable = Math.max(0, netWorth - creditCardDebt)
+    const actualBorrow = Math.min(amount, maxBorrowable)
+    if (actualBorrow <= 0) return
+    set({
+      creditCardDebt: Math.round((creditCardDebt + actualBorrow) * 100) / 100,
+      cash: Math.round((cash + actualBorrow) * 100) / 100,
     })
   },
 

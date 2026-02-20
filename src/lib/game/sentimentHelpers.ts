@@ -144,10 +144,25 @@ export function hasEventConflict(
   assetMoods: AssetMood[],
   currentDay: number
 ): boolean {
-  // Events marked as allowsReversal can fire even if they conflict
-  // This is for natural progressions like profit-taking, crisis resolution, etc.
+  // Events marked as allowsReversal get accelerated conflict resolution:
+  // still blocked on same day (moodAge < 1) but allowed from day 1+
+  // (normal events must wait until day 2+ reversal window)
   if (event.allowsReversal) {
-    return false
+    const sentiment = getEventSentiment(event)
+    if (sentiment === 'neutral' || sentiment === 'mixed') return false
+
+    const affectedAssets = getEventAffectedAssets(event)
+    for (const assetId of affectedAssets) {
+      const mood = assetMoods.find(m =>
+        m.assetId === assetId &&
+        (currentDay - m.recordedDay) < MOOD_DECAY_DAYS
+      )
+      if (mood && sentimentsConflict(sentiment, mood.sentiment)) {
+        const moodAge = currentDay - mood.recordedDay
+        if (moodAge < 1) return true // Block same-day contradictions
+      }
+    }
+    return false // Day 1+: allowed (the allowsReversal benefit)
   }
 
   const sentiment = getEventSentiment(event)
@@ -192,9 +207,24 @@ export function hasChainConflict(
   assetMoods: AssetMood[],
   currentDay: number
 ): boolean {
-  // Chains marked as allowsReversal can start even if they conflict
+  // Chains marked as allowsReversal get accelerated conflict resolution:
+  // still blocked on same day but allowed from day 1+
   if (chain.allowsReversal) {
-    return false
+    const rumorSentiment = chain.rumorSentiment ?? deriveSentimentFromChain(chain)
+    if (rumorSentiment === 'neutral' || rumorSentiment === 'mixed') return false
+
+    const affectedAssets = getChainAffectedAssets(chain)
+    for (const assetId of affectedAssets) {
+      const mood = assetMoods.find(m =>
+        m.assetId === assetId &&
+        (currentDay - m.recordedDay) < MOOD_DECAY_DAYS
+      )
+      if (mood && sentimentsConflict(rumorSentiment, mood.sentiment)) {
+        const moodAge = currentDay - mood.recordedDay
+        if (moodAge < 1) return true // Block same-day contradictions
+      }
+    }
+    return false // Day 1+: allowed
   }
 
   // Use explicit rumor sentiment or derive from the more likely outcome
@@ -239,10 +269,29 @@ function hasOutcomeConflict(
   assetMoods: AssetMood[],
   currentDay: number
 ): boolean {
-  // Outcomes marked as allowsReversal can fire even if they conflict
-  // This is for natural progressions like crisis resolution
+  // Outcomes marked as allowsReversal get accelerated conflict resolution:
+  // still blocked on same day but allowed from day 1+
   if (outcome.allowsReversal) {
-    return false
+    const sentiment = getOutcomeSentiment(outcome)
+    if (sentiment === 'neutral' || sentiment === 'mixed') return false
+
+    const affectedAssets = outcome.sentimentAssets && outcome.sentimentAssets.length > 0
+      ? outcome.sentimentAssets
+      : Object.entries(outcome.effects)
+          .filter(([_, effect]) => Math.abs(effect) >= 0.05)
+          .map(([assetId]) => assetId)
+
+    for (const assetId of affectedAssets) {
+      const mood = assetMoods.find(m =>
+        m.assetId === assetId &&
+        (currentDay - m.recordedDay) < MOOD_DECAY_DAYS
+      )
+      if (mood && sentimentsConflict(sentiment, mood.sentiment)) {
+        const moodAge = currentDay - mood.recordedDay
+        if (moodAge < 1) return true // Block same-day contradictions
+      }
+    }
+    return false // Day 1+: allowed
   }
 
   const sentiment = getOutcomeSentiment(outcome)
