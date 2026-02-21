@@ -18,8 +18,6 @@ interface Profile {
   current_streak: number
   games_played_today: number
   last_played_date: string | null
-  // Pro trial (5 free games for signed-in users)
-  pro_trial_games_used: number
   // Synced settings
   selected_theme?: string
   selected_duration?: number
@@ -33,13 +31,13 @@ interface AuthContextType {
   loading: boolean
   needsOnboarding: boolean  // True if user is logged in but hasn't set username
   signInWithMagicLink: (email: string) => Promise<{ error: Error | null }>
+  verifyOtp: (email: string, token: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
   updateSettings: (settings: { theme?: string; duration?: number }) => Promise<void>
   migrateLocalStats: (userId: string) => Promise<void>  // Exposed for onboarding
   incrementGamesPlayed: () => Promise<void>  // Increment daily counter on game START
   recordGameEnd: (finalNetWorth: number, isWin: boolean, gameData?: GameResultData) => Promise<void>  // Sync stats on game END
-  useProTrialGame: () => Promise<void>  // Increment pro trial counter on game END (when using trial)
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -255,6 +253,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error as Error | null }
   }
 
+  // Verify OTP code (for PWA users who can't use magic link)
+  const verifyOtp = async (email: string, token: string) => {
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'email',
+    })
+    return { error: error as Error | null }
+  }
+
   const signOut = async () => {
     import('@/lib/posthog').then(({ getPostHogClient, capture }) => {
       capture('auth_signed_out')
@@ -350,30 +358,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, profile, refreshProfile])
 
-  // Increment pro trial games used counter (called on game END when using trial)
-  const useProTrialGame = useCallback(async () => {
-    console.log('[useProTrialGame] called', { hasUser: !!user, userId: user?.id, hasProfile: !!profile, profileTier: profile?.tier, proTrialGamesUsed: profile?.pro_trial_games_used })
-    if (!user || !profile) {
-      console.warn('[useProTrialGame] BAIL — user or profile is null', { user: !!user, profile: !!profile })
-      return
-    }
-
-    try {
-      console.log('[useProTrialGame] calling API')
-      const res = await fetch('/api/profile/use-trial', { method: 'POST' })
-
-      if (res.ok) {
-        console.log('[useProTrialGame] success, refreshing profile...')
-        await refreshProfile()
-        console.log('[useProTrialGame] profile refreshed')
-      } else {
-        console.error('[useProTrialGame] API error:', await res.text())
-      }
-    } catch (error) {
-      console.error('[useProTrialGame] error:', error)
-    }
-  }, [user, profile, refreshProfile])
-
   // User needs onboarding if logged in but hasn't set username
   const needsOnboarding = !!user && !profile?.username
 
@@ -386,13 +370,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         needsOnboarding,
         signInWithMagicLink,
+        verifyOtp,
         signOut,
         refreshProfile,
         updateSettings,
         migrateLocalStats,
         incrementGamesPlayed,
         recordGameEnd,
-        useProTrialGame,
       }}
     >
       {children}

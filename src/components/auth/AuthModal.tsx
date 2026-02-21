@@ -13,8 +13,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [linkSent, setLinkSent] = useState(false)
+  const [showOtp, setShowOtp] = useState(false)
+  const [otpCode, setOtpCode] = useState('')
 
-  const { signInWithMagicLink } = useAuth()
+  const { signInWithMagicLink, verifyOtp } = useAuth()
 
   if (!isOpen) return null
 
@@ -37,15 +39,38 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   }
 
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    try {
+      const { error } = await verifyOtp(email, otpCode.trim())
+      if (error) {
+        setError(error.message)
+      } else {
+        handleClose()
+      }
+    } catch {
+      setError('An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleClose = () => {
     setEmail('')
     setError(null)
     setLinkSent(false)
+    setShowOtp(false)
+    setOtpCode('')
     onClose()
   }
 
   const handleSendAnother = () => {
     setLinkSent(false)
+    setShowOtp(false)
+    setOtpCode('')
     setError(null)
   }
 
@@ -68,28 +93,79 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </button>
 
         {linkSent ? (
-          // Success state - link sent
-          <>
-            <div className="text-4xl text-center mb-4">✓</div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2 text-center">
-              Magic Link Sent!
-            </h2>
-            <p className="text-[var(--text-secondary)] text-center mb-4">
-              Check your inbox at
-            </p>
-            <p className="text-[var(--accent-primary)] text-center font-medium mb-6">
-              {email}
-            </p>
-            <p className="text-[var(--text-secondary)] text-sm text-center mb-6">
-              Click the link in your email to sign in.
-            </p>
-            <button
-              onClick={handleSendAnother}
-              className="w-full py-2 border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)] font-semibold rounded transition-colors"
-            >
-              Send Another Link
-            </button>
-          </>
+          showOtp ? (
+            // OTP code entry
+            <>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2 text-center">
+                Enter Code
+              </h2>
+              <p className="text-[var(--text-secondary)] text-sm text-center mb-6">
+                Enter the code from your email
+              </p>
+
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  autoFocus
+                  placeholder="000000"
+                  className="w-full px-3 py-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded text-[var(--text-primary)] text-center text-2xl tracking-[0.4em] font-mono focus:outline-none focus:border-[var(--accent-primary)]"
+                />
+
+                {error && (
+                  <div className="text-red-500 text-sm text-center bg-red-500/10 py-2 rounded">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || otpCode.length < 6}
+                  className="w-full py-2 bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white font-semibold rounded transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Verifying...' : 'Verify Code'}
+                </button>
+              </form>
+
+              <button
+                onClick={handleSendAnother}
+                className="w-full mt-3 py-2 border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)] font-semibold rounded transition-colors"
+              >
+                Send Another Link
+              </button>
+            </>
+          ) : (
+            // Success state - link sent
+            <>
+              <div className="text-4xl text-center mb-4">✓</div>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2 text-center">
+                Magic Link Sent!
+              </h2>
+              <p className="text-[var(--text-secondary)] text-center mb-4">
+                Check your inbox at
+              </p>
+              <p className="text-[var(--accent-primary)] text-center font-medium mb-6">
+                {email}
+              </p>
+              <p className="text-[var(--text-secondary)] text-sm text-center mb-6">
+                Click the link in your email to sign in.
+              </p>
+              <button
+                onClick={() => { setShowOtp(true); setError(null) }}
+                className="w-full py-2 bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white font-semibold rounded transition-colors"
+              >
+                Use Code Instead
+              </button>
+              <button
+                onClick={handleSendAnother}
+                className="w-full mt-3 py-2 border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)] font-semibold rounded transition-colors"
+              >
+                Send Another Link
+              </button>
+            </>
+          )
         ) : (
           // Initial state - email input
           <>

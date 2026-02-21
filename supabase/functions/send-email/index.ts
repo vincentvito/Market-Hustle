@@ -76,6 +76,10 @@ Deno.serve(async (req) => {
           <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px 0 24px;">
             <a href="${confirmUrl}" style="display:inline-block;padding:14px 32px;background-color:#00ff88;color:#000000;font-size:14px;font-weight:bold;font-family:'Courier New',monospace;text-decoration:none;letter-spacing:1px;border-radius:2px;">${buttonText}</a>
           </td></tr></table>
+          <div style="text-align:center;margin-bottom:24px;">
+            <div style="font-size:12px;color:#5a6a7a;margin-bottom:8px;">Or use this one-time code:</div>
+            <div style="font-size:28px;font-weight:bold;color:#c8d8e8;letter-spacing:6px;font-family:'Courier New',monospace;">${email_data.token}</div>
+          </div>
           <div style="font-size:11px;color:#5a6a7a;line-height:1.5;">${footnote}</div>
         </td></tr>
         <tr><td style="padding:20px 32px;border-top:1px solid #2a3a4a;text-align:center;">
