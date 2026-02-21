@@ -14,23 +14,22 @@ import { setAuthBridge, clearAuthBridge } from '@/lib/game/authBridge'
  * IMPORTANT: If user is NOT logged in, tier is forced to 'free' to prevent
  * localStorage spoofing.
  *
- * Also tracks isLoggedIn state for game limit enforcement:
- * - Anonymous (not logged in): 10 lifetime games
- * - Registered free: 10 games/day (from Supabase)
+ * Game limits:
+ * - Guest (not logged in): 3 total games (IP-based)
+ * - Registered free: 1 game/day
  * - Pro: Unlimited
  */
 export function TierSync() {
-  const { profile, loading, user, incrementGamesPlayed, recordGameEnd, useProTrialGame } = useAuth()
+  const { profile, loading, user, incrementGamesPlayed, recordGameEnd } = useAuth()
   const setUserTier = useGame(state => state.setUserTier)
   const setIsLoggedIn = useGame(state => state.setIsLoggedIn)
   const syncFromSupabase = useGame(state => state.syncFromSupabase)
-  const setProTrialGamesUsed = useGame(state => state.setProTrialGamesUsed)
 
   // Register auth methods with the bridge so Zustand can call them
   useEffect(() => {
-    setAuthBridge({ incrementGamesPlayed, recordGameEnd, useProTrialGame })
+    setAuthBridge({ incrementGamesPlayed, recordGameEnd })
     return () => clearAuthBridge()
-  }, [incrementGamesPlayed, recordGameEnd, useProTrialGame])
+  }, [incrementGamesPlayed, recordGameEnd])
 
   useEffect(() => {
     // Wait for auth to finish loading
@@ -43,9 +42,6 @@ export function TierSync() {
       // If profile is loaded, sync tier and game data from Supabase
       if (!profile) return
       setUserTier(profile.tier)
-
-      // Sync Pro trial games used from Supabase
-      setProTrialGamesUsed(profile.pro_trial_games_used || 0)
 
       // Sync game limit data from Supabase
       syncFromSupabase({
@@ -64,7 +60,6 @@ export function TierSync() {
       // This prevents localStorage spoofing
       setIsLoggedIn(false)
       setUserTier('free')
-      setProTrialGamesUsed(0)  // Reset trial state for guests
       syncFromSupabase(null)  // Clear Supabase state for guests
 
       // Also reset localStorage tier to free
@@ -73,7 +68,7 @@ export function TierSync() {
         saveUserState({ ...userState, tier: 'free' })
       }
     }
-  }, [loading, user, profile, setUserTier, setIsLoggedIn, syncFromSupabase, setProTrialGamesUsed])
+  }, [loading, user, profile, setUserTier, setIsLoggedIn, syncFromSupabase])
 
   return null
 }

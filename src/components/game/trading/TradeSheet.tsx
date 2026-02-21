@@ -3,8 +3,18 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { useUserDetails } from '@/hooks/useUserDetails'
+import { useStripeCheckout, PENDING_CHECKOUT_KEY } from '@/hooks/useStripeCheckout'
 import { CandlestickChart } from '@/components/game/charts/CandlestickChart'
+import { ProUpgradeDialog } from '@/components/game/ui/ProUpgradeDialog'
+import { AuthModal } from '@/components/auth/AuthModal'
 import type { Asset, LeverageLevel } from '@/lib/game/types'
+
+const FRACTIONAL_ASSETS: Record<string, { minQuantity: number; step: number }> = {
+  btc: { minQuantity: 0, step: 0.001 },
+  gold: { minQuantity: 0, step: 0.01 },
+}
+
+const LEVERAGE_LEVELS: LeverageLevel[] = [2, 5, 10]
 
 interface TradeSheetProps {
   asset: Asset | null | undefined
@@ -19,7 +29,7 @@ function formatQty(n: number): string {
 
 function formatPrice(p: number): string {
   if (p >= 1_000_000) return `${(p / 1_000_000).toFixed(1)}M`
-  if (p >= 1000) return `${(p / 1000).toFixed(1)}K`
+  if (p >= 1_000) return `${(p / 1_000).toFixed(1)}K`
   if (p >= 100) return p.toFixed(0)
   if (p >= 10) return p.toFixed(1)
   return p.toFixed(2)
@@ -38,8 +48,13 @@ function formatCost(value: number): string {
   return `$${value.toFixed(0)}`
 }
 
-// Reusable slider hook for direct DOM manipulation
-function useSlider(maxValue: number, initialValue: number = 1, minValue: number = 1, step: number = 1) {
+// Direct DOM manipulation keeps slider at 60fps without React re-renders
+function useSlider({ maxValue, initialValue = 1, minValue = 1, step = 1 }: {
+  maxValue: number
+  initialValue?: number
+  minValue?: number
+  step?: number
+}) {
   const sliderRef = useRef<HTMLDivElement>(null)
   const thumbRef = useRef<HTMLDivElement>(null)
   const fillRef = useRef<HTMLDivElement>(null)
@@ -64,7 +79,6 @@ function useSlider(maxValue: number, initialValue: number = 1, minValue: number 
     if (thumbRef.current) thumbRef.current.style.left = `calc(${percent}% - 10px)`
     if (fillRef.current) fillRef.current.style.width = `${percent}%`
     if (qtyRef.current) {
-      // Format fractional values nicely
       const displayQty = stepRef.current < 1 ? qty.toFixed(3).replace(/\.?0+$/, '') : String(qty)
       qtyRef.current.textContent = displayQty
     }
@@ -79,12 +93,9 @@ function useSlider(maxValue: number, initialValue: number = 1, minValue: number 
     const max = maxRef.current
     const step = stepRef.current
 
-    // Calculate raw value
     const rawQty = min + percent * (max - min)
-    // Round to step
     const qty = Math.round(rawQty / step) * step
-    // Clamp to range
-    return Math.max(min, Math.min(max, Math.round(qty * 1000) / 1000))
+    return Math.max(min, Math.min(max, Math.round(qty * 1_000) / 1_000))
   }, [])
 
   const handleStart = useCallback((clientX: number) => {
@@ -133,15 +144,29 @@ function useSlider(maxValue: number, initialValue: number = 1, minValue: number 
   }
 }
 
-export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
+export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps): JSX.Element | null {
   const {
     prices, holdings, cash, buy, sell, getPriceChange, priceHistory,
     shortPositions, leveragedPositions, shortSell, coverShort, buyWithLeverage, closeLeveragedPosition,
     selectedTheme, gameDuration,
   } = useGame()
   const { isPro } = useUserDetails()
+  const isLoggedIn = useGame(state => state.isLoggedIn)
+  const { checkout, loading: checkoutLoading } = useStripeCheckout()
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
-  // Theme detection
+  // Store intent so the global handler in MarketHustle auto-triggers checkout after login
+  function handleCheckout() {
+    if (!isLoggedIn) {
+      sessionStorage.setItem(PENDING_CHECKOUT_KEY, '1')
+      setShowUpgradeDialog(false)
+      setShowAuthModal(true)
+      return
+    }
+    checkout()
+  }
+
   const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
@@ -152,42 +177,33 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const owned = asset ? holdings[asset.id] || 0 : 0
   const change = asset ? getPriceChange(asset.id) : 0
 
-  // Fractional asset configuration (only BTC for now)
-  const FRACTIONAL_ASSETS: Record<string, { minQuantity: number; step: number }> = {
-    btc: { minQuantity: 0, step: 0.001 },
-    gold: { minQuantity: 0, step: 0.01 },
-  }
   const isFractional = asset ? asset.id in FRACTIONAL_ASSETS : false
   const fractionalConfig = asset ? FRACTIONAL_ASSETS[asset.id] : null
 
-  // With leverage, you can buy more (but need downPayment = totalCost / leverage)
+  // Non-pro users always trade at 1x regardless of leverage state
   const effectiveLeverage = isPro && leverage > 1 ? leverage : 1
   const maxBuyRaw = isFractional && fractionalConfig
     ? Math.floor((cash * effectiveLeverage / price) / fractionalConfig.step) * fractionalConfig.step
     : Math.max(1, Math.floor((cash * effectiveLeverage) / price))
   const maxBuy = isFractional ? maxBuyRaw : Math.max(1, maxBuyRaw)
-  // Short mode: available collateral = cash - existing short exposure
-  // This matches the shortSell function constraint: totalExposure <= cash
+  // Available collateral = cash minus already-committed short exposure
+  // Matches the shortSell constraint: totalExposure <= cash
   const totalShortProceeds = shortPositions.reduce((sum, pos) => sum + pos.cashReceived, 0)
   const availableCashForShort = Math.max(0, cash - totalShortProceeds)
   const maxShort = Math.floor(availableCashForShort / price)
 
-  // Slider config based on asset type
   const sliderMin = isFractional ? 0 : 1
   const sliderStep = fractionalConfig?.step || 1
 
   const maxSell = isShortMode && isPro ? Math.max(sliderMin, maxShort) : (isFractional ? owned : Math.max(1, owned))
 
-  // Separate sliders for buy and sell
-  const buySlider = useSlider(maxBuy, sliderMin, sliderMin, sliderStep)
-  const sellSlider = useSlider(maxSell, sliderMin, sliderMin, sliderStep)
+  const buySlider = useSlider({ maxValue: maxBuy, initialValue: sliderMin, minValue: sliderMin, step: sliderStep })
+  const sellSlider = useSlider({ maxValue: maxSell, initialValue: sliderMin, minValue: sliderMin, step: sliderStep })
 
-  // Cost display refs
   const buyCostRef = useRef<HTMLSpanElement>(null)
   const buyDownPaymentRef = useRef<HTMLSpanElement>(null)
   const sellCostRef = useRef<HTMLSpanElement>(null)
 
-  // Update cost displays - shows TOTAL position value, with separate down payment
   const updateBuyCost = useCallback((qty: number) => {
     const totalCost = qty * price
     if (buyCostRef.current) {
@@ -205,7 +221,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     }
   }, [price])
 
-  // Store slider refs to avoid dependency issues
+  // Stable refs so event listeners don't need to re-register on every render
   const buySliderRef = useRef(buySlider)
   const sellSliderRef = useRef(sellSlider)
   const updateBuyCostRef = useRef(updateBuyCost)
@@ -217,7 +233,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   updateBuyCostRef.current = updateBuyCost
   updateSellCostRef.current = updateSellCost
 
-  // Document-level listeners for drag - ONLY when sheet is open
+  // Document-level drag listeners run only while open to avoid leaking handlers
   useEffect(() => {
     if (!isOpen) return
 
@@ -247,7 +263,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     }
   }, [isOpen])
 
-  // Reset when opening
   useEffect(() => {
     if (isOpen) {
       const min = sliderMinRef.current
@@ -255,44 +270,33 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
       sellSliderRef.current.setQty(min)
       updateBuyCostRef.current(min)
       updateSellCostRef.current(min)
-      // Reset Pro tier options
       setLeverage(1)
       setIsShortMode(false)
     }
   }, [isOpen])
 
-  // Reset sell slider when switching short mode
   useEffect(() => {
     const min = sliderMinRef.current
     sellSliderRef.current.setQty(min)
     updateSellCostRef.current(min)
   }, [isShortMode])
 
-  // Reset buy slider when leverage changes (max buying power changed)
+  // Update max FIRST before resetting visuals so the thumb position is correct
   useEffect(() => {
     const min = sliderMinRef.current
-    // IMPORTANT: Update max FIRST, before resetting qty/visuals
     buySliderRef.current.setMax(maxBuy)
     buySliderRef.current.setQty(min)
     buySliderRef.current.updateVisuals(min)
-    // Update cost displays: total position value + down payment
-    if (buyCostRef.current) {
-      buyCostRef.current.textContent = formatCost(min * price)
-    }
-    if (buyDownPaymentRef.current) {
-      buyDownPaymentRef.current.textContent = formatCost((min * price) / effectiveLeverage)
-    }
+    if (buyCostRef.current) buyCostRef.current.textContent = formatCost(min * price)
+    if (buyDownPaymentRef.current) buyDownPaymentRef.current.textContent = formatCost((min * price) / effectiveLeverage)
   }, [leverage, maxBuy, price, effectiveLeverage])
 
-  const handleBuy = () => {
+  function handleBuy() {
     if (!asset) return
     const qty = buySlider.currentQty.current
-    if (qty <= 0) return // Don't allow buying 0 units
-    const totalCost = qty * price
-    const downPayment = totalCost / effectiveLeverage
-
+    if (qty <= 0) return
+    const downPayment = (qty * price) / effectiveLeverage
     if (downPayment > cash) return
-
     if (leverage > 1 && isPro) {
       buyWithLeverage(asset.id, qty, leverage)
     } else {
@@ -301,38 +305,31 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     onClose()
   }
 
-  const handleSell = () => {
+  function handleSell() {
     if (!asset) return
     const qty = sellSlider.currentQty.current
-    if (qty <= 0) return // Don't allow selling 0 units
+    if (qty <= 0) return
     if (isShortMode && isPro) {
-      // Short sell - no ownership required
       shortSell(asset.id, qty)
-      onClose()
     } else if (owned > 0) {
       sell(asset.id, qty)
-      onClose()
     }
+    onClose()
   }
 
-  // canBuy: need enough for down payment of minimum purchasable quantity
   const minPurchaseQty = isFractional ? (fractionalConfig?.step || 0.001) : 1
-  const downPaymentNeeded = (minPurchaseQty * price) / effectiveLeverage
-  const canBuy = cash >= downPaymentNeeded
-  // canSell: short mode = need available collateral, regular = need holdings (any amount for fractional)
+  const canBuy = cash >= (minPurchaseQty * price) / effectiveLeverage
   const canSell = isShortMode && isPro ? maxShort > 0 : owned > 0
 
   if (!isOpen || !asset) return null
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/70 z-[60]"
         onClick={onClose}
       />
 
-      {/* Sheet - bottom sheet on mobile, centered modal on desktop */}
       <div
         className={`fixed bottom-0 left-0 right-0 z-[70] trade-sheet-animate overflow-y-auto
           md:bottom-auto md:top-1/2 md:left-1/2 md:w-[480px] md:max-h-[80vh] md:rounded-xl
@@ -352,7 +349,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           } : {})
         }}
       >
-        {/* Header with close button */}
         <div
           className={`flex items-center px-4 py-3 gap-3 ${
             isBloomberg ? 'border-b border-[#333333]' : isModern3 ? '' : 'border-b border-mh-border'
@@ -362,7 +358,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             background: 'linear-gradient(180deg, rgba(0,212,170,0.05) 0%, transparent 100%)'
           } : undefined}
         >
-          {/* Close button */}
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center text-mh-text-dim hover:text-mh-text-main transition-colors"
@@ -371,7 +366,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             <span className="text-xl">▼</span>
           </button>
 
-          {/* Asset info */}
           <div className="flex-1">
             <div className="text-lg font-bold text-mh-text-bright">{asset.name}</div>
             {owned > 0 && (
@@ -381,7 +375,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             )}
           </div>
 
-          {/* Price info */}
           <div className="text-right">
             <div className="text-xl font-bold text-mh-text-main">${formatPrice(price)}</div>
             <div
@@ -399,7 +392,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           </div>
         </div>
 
-        {/* Price Chart */}
         {asset && priceHistory[asset.id] && priceHistory[asset.id].length > 0 && (
           <div className={`px-4 py-2 ${
             isBloomberg ? 'border-b border-[#333333] bg-[#0a1628]' : 'border-b border-mh-border bg-[#080a0d]'
@@ -417,7 +409,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           </div>
         )}
 
-        {/* BUY Section */}
         <div className={`px-4 py-3 ${
           isBloomberg ? 'border-b border-[#333333]' : isModern3 ? '' : 'border-b border-mh-border'
         } ${canBuy
@@ -431,32 +422,32 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             </span>
           </div>
 
-          {/* Leverage selector - Pro only */}
-          {isPro && (
-            <div className="flex items-center gap-1 mb-2">
-              <span className="text-xs text-mh-text-dim mr-1">MARGIN:</span>
-              {([2, 5, 10] as LeverageLevel[]).map(lvl => (
-                <button
-                  key={lvl}
-                  onClick={() => setLeverage(leverage === lvl ? 1 : lvl)}
-                  className={`px-2 py-1 text-xs font-bold rounded transition-colors ${
-                    leverage === lvl
-                      ? 'bg-mh-accent-blue text-mh-bg'
-                      : 'bg-[#1a2a3a] text-mh-text-dim hover:text-mh-text-bright'
-                  }`}
-                >
-                  {lvl}x
-                </button>
-              ))}
-              {leverage > 1 && (
-                <span className="text-xs text-mh-accent-blue ml-2">
-                  DEBT: {formatCost((buySlider.currentQty.current * price) * (1 - 1/leverage))}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-1 mb-2">
+            <span className="text-xs text-mh-text-dim mr-1">MARGIN:</span>
+            {LEVERAGE_LEVELS.map(lvl => (
+              <button
+                key={lvl}
+                onClick={() => {
+                  if (!isPro) { setShowUpgradeDialog(true); return }
+                  setLeverage(leverage === lvl ? 1 : lvl)
+                }}
+                className={`px-2 py-1 text-xs font-bold rounded transition-colors ${
+                  isPro && leverage === lvl
+                    ? 'bg-mh-accent-blue text-mh-bg'
+                    : 'bg-[#1a2a3a] text-mh-text-dim hover:text-mh-text-bright'
+                }`}
+              >
+                {lvl}x{!isPro && <span className="ml-0.5 opacity-60">🔒</span>}
+              </button>
+            ))}
+            {isPro && leverage > 1 && (
+              <span className="text-xs text-mh-accent-blue ml-2">
+                DEBT: {formatCost((buySlider.currentQty.current * price) * (1 - 1/leverage))}
+              </span>
+            )}
+          </div>
 
-          {/* Buy Slider Track - wrapped with padding to keep fingers away from screen edges */}
+          {/* Padded to keep thumb reachable on edge-to-edge screens */}
           <div className="px-6">
             <div
               ref={buySlider.sliderRef}
@@ -491,7 +482,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             </div>
           </div>
 
-          {/* Buy Labels + Button */}
           <div className="flex items-center justify-between mt-2">
             <button
               onClick={() => { buySlider.setQty(sliderMin); updateBuyCost(sliderMin) }}
@@ -541,7 +531,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           </button>
         </div>
 
-        {/* SELL Section */}
         <div className={`px-4 py-3 ${canSell
           ? isBloomberg ? 'bg-[#1a0000]' : isModern3 ? 'bg-[#1a0a12]' : 'bg-[#150a0a]'
           : isBloomberg ? 'bg-black opacity-50' : isModern3 ? 'bg-[#0f1419] opacity-50' : 'bg-[#0d1117] opacity-50'
@@ -549,38 +538,38 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-bold text-mh-loss-red">SELL</span>
 
-            {/* Short toggle - Pro only */}
-            {isPro && (
-              <div className="flex items-center gap-1 text-xs">
-                <button
-                  onClick={() => setIsShortMode(false)}
-                  className={`px-2 py-1 rounded transition-colors ${
-                    !isShortMode
-                      ? 'bg-mh-loss-red/30 text-mh-loss-red'
-                      : 'text-mh-text-dim hover:text-mh-text-bright'
-                  }`}
-                >
-                  REGULAR
-                </button>
-                <button
-                  onClick={() => setIsShortMode(true)}
-                  className={`px-2 py-1 rounded transition-colors ${
-                    isShortMode
-                      ? 'bg-yellow-500/30 text-yellow-500'
-                      : 'text-mh-text-dim hover:text-mh-text-bright'
-                  }`}
-                >
-                  SHORT
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-1 text-xs">
+              <button
+                onClick={() => setIsShortMode(false)}
+                className={`px-2 py-1 rounded transition-colors ${
+                  !isShortMode
+                    ? 'bg-mh-loss-red/30 text-mh-loss-red'
+                    : 'text-mh-text-dim hover:text-mh-text-bright'
+                }`}
+              >
+                REGULAR
+              </button>
+              <button
+                onClick={() => {
+                  if (!isPro) { setShowUpgradeDialog(true); return }
+                  setIsShortMode(true)
+                }}
+                className={`px-2 py-1 rounded transition-colors ${
+                  isPro && isShortMode
+                    ? 'bg-yellow-500/30 text-yellow-500'
+                    : 'text-mh-text-dim hover:text-mh-text-bright'
+                }`}
+              >
+                SHORT{!isPro && <span className="ml-0.5 opacity-60">🔒</span>}
+              </button>
+            </div>
 
             <span className="text-xs text-mh-text-dim">
               {isShortMode ? `MAX: ${maxShort}` : `OWN: ${formatQty(owned)}`}
             </span>
           </div>
 
-          {/* Sell Slider Track - wrapped with padding to keep fingers away from screen edges */}
+          {/* Padded to keep thumb reachable on edge-to-edge screens */}
           <div className="px-6">
             <div
               ref={sellSlider.sliderRef}
@@ -613,7 +602,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             </div>
           </div>
 
-          {/* Sell Labels + Button */}
           <div className="flex items-center justify-between mt-2">
             <button
               onClick={() => { sellSlider.setQty(sliderMin); updateSellCost(sliderMin) }}
@@ -658,7 +646,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           </button>
         </div>
 
-        {/* Open Leveraged Positions - Pro only */}
         {isPro && asset && leveragedPositions.filter(p => p.assetId === asset.id).length > 0 && (
           <div className="px-4 py-3 border-t border-mh-border bg-[#0a1520]">
             <div className="text-xs font-bold text-mh-accent-blue mb-2">LEVERAGED POSITIONS</div>
@@ -695,7 +682,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           </div>
         )}
 
-        {/* Open Short Positions - Pro only */}
         {isPro && asset && shortPositions.filter(p => p.assetId === asset.id).length > 0 && (
           <div className="px-4 py-3 border-t border-mh-border bg-[#151008]">
             <div className="text-xs font-bold text-yellow-500 mb-2">OPEN SHORTS</div>
@@ -725,6 +711,16 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
           </div>
         )}
       </div>
+
+      <ProUpgradeDialog
+        isOpen={showUpgradeDialog}
+        onClose={() => setShowUpgradeDialog(false)}
+        onCheckout={handleCheckout}
+        isWin={false}
+        loading={checkoutLoading}
+      />
+
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   )
 }

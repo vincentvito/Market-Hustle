@@ -24,11 +24,9 @@ type RecordGameEndFn = (
   isWin: boolean,
   gameData?: GameResultData
 ) => Promise<void>
-type ConsumeProTrialFn = () => Promise<void>
 
 let incrementGamesPlayedFn: IncrementGamesPlayedFn | null = null
 let recordGameEndFn: RecordGameEndFn | null = null
-let consumeProTrialFn: ConsumeProTrialFn | null = null
 
 /**
  * Register AuthContext methods with the bridge.
@@ -37,11 +35,9 @@ let consumeProTrialFn: ConsumeProTrialFn | null = null
 export function setAuthBridge(fns: {
   incrementGamesPlayed: IncrementGamesPlayedFn
   recordGameEnd: RecordGameEndFn
-  useProTrialGame: ConsumeProTrialFn
 }): void {
   incrementGamesPlayedFn = fns.incrementGamesPlayed
   recordGameEndFn = fns.recordGameEnd
-  consumeProTrialFn = fns.useProTrialGame
 }
 
 /**
@@ -50,7 +46,6 @@ export function setAuthBridge(fns: {
 export function clearAuthBridge(): void {
   incrementGamesPlayedFn = null
   recordGameEndFn = null
-  consumeProTrialFn = null
 }
 
 /**
@@ -80,21 +75,5 @@ export function callRecordGameEnd(
     recordGameEndFn(finalNetWorth, isWin, gameData).catch(err => {
       console.error('Error recording game end:', err)
     })
-  }
-}
-
-/**
- * Increment pro_trial_games_used in Supabase.
- * Called by mechanicsSlice on game END when user was using a Pro trial game.
- * Fire-and-forget - does not block game end.
- */
-export function callUseProTrialGame(): void {
-  console.log('[authBridge] callUseProTrialGame called, bridge registered:', !!consumeProTrialFn)
-  if (consumeProTrialFn) {
-    consumeProTrialFn().catch(err => {
-      console.error('[authBridge] Error incrementing pro trial games:', err)
-    })
-  } else {
-    console.warn('[authBridge] consumeProTrialFn is null — bridge not registered')
   }
 }

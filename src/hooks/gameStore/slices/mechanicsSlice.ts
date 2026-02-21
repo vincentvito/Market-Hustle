@@ -369,36 +369,40 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const storeUserTier = get().userTier
     const storeIsLoggedIn = get().isLoggedIn
 
-    // Determine effective tier: Pro users, OR free users with trial games remaining
-    // This gives trial users full Pro experience
+    // Determine effective tier: only paid Pro users get 'pro'
     const effectiveTier = get().getEffectiveTier()
-    const willUseProTrial = storeUserTier === 'free' && storeIsLoggedIn && get().hasProTrialRemaining()
 
     // Room games skip limit checks and duration restrictions
     const skipLimits = options?.skipLimits === true
 
-    // Check game limits (canStartGame handles all tiers):
-    // - Pro users (paid): unlimited
-    // - Guests: unlimited (conversion at end-game)
-    // - Registered free users: 3 initial games + 1/day
+    // Guests: async IP-based total limit check (3 games ever, can't be bypassed via localStorage)
+    // Re-invokes startGame with skipLimits=true once the check passes.
+    if (!skipLimits && !storeIsLoggedIn) {
+      fetch('/api/game/guest-start', { method: 'POST' })
+        .then(res => res.json())
+        .then((data: { allowed: boolean; remaining: number }) => {
+          if (!data.allowed) {
+            set({ showAnonymousLimitModal: true, showDailyLimitModal: false, gamesRemaining: 0, limitType: 'anonymous' })
+            return
+          }
+          set({ gamesRemaining: data.remaining })
+          get().startGame(duration, { ...options, skipLimits: true })
+        })
+        .catch(() => {
+          // Allow play on network/DB error — don't punish users for infra issues
+          get().startGame(duration, { ...options, skipLimits: true })
+        })
+      return
+    }
+
+    // Registered free user: sync limit check
     if (!skipLimits && !canStartGame(userState, storeIsLoggedIn)) {
-      const limitType = getLimitType(userState, storeIsLoggedIn)
-      if (limitType === 'anonymous') {
-        set({
-          showAnonymousLimitModal: true,
-          showDailyLimitModal: false,
-          gamesRemaining: 0,
-          limitType: 'anonymous',
-        })
-      } else {
-        // Registered free user hit daily limit
-        set({
-          showDailyLimitModal: true,
-          showAnonymousLimitModal: false,
-          gamesRemaining: 0,
-          limitType: 'daily',
-        })
-      }
+      set({
+        showDailyLimitModal: true,
+        showAnonymousLimitModal: false,
+        gamesRemaining: 0,
+        limitType: 'daily',
+      })
       return
     }
 
@@ -625,7 +629,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       limitType,
       showDailyLimitModal: false,
       showAnonymousLimitModal: false,
-      isUsingProTrial: willUseProTrial,
+      isUsingProTrial: false,
       // Game Director state
       directorState: createInitialDirectorState(100000),
       directorConfig: DEFAULT_DIRECTOR_CONFIG,

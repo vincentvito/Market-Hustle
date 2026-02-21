@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useGame } from '@/hooks/useGame'
-import { useStripeCheckout } from '@/hooks/useStripeCheckout'
+import { useStripeCheckout, PENDING_CHECKOUT_KEY } from '@/hooks/useStripeCheckout'
 import { AuthModal } from '@/components/auth/AuthModal'
-import { ANONYMOUS_GAME_LIMIT } from '@/lib/game/userState'
+import { GUEST_TOTAL_LIMIT } from '@/lib/game/userState'
 
 /**
  * Modal shown when anonymous users (not logged in) have played all 10 lifetime games.
@@ -12,7 +12,7 @@ import { ANONYMOUS_GAME_LIMIT } from '@/lib/game/userState'
  */
 export function AnonymousLimitModal() {
   const { showAnonymousLimitModal, setShowAnonymousLimitModal } = useGame()
-  const { checkout, loading: checkoutLoading } = useStripeCheckout()
+  const { loading: checkoutLoading } = useStripeCheckout()
   const [showAuthModal, setShowAuthModal] = useState(false)
 
   if (!showAnonymousLimitModal) return null
@@ -21,9 +21,14 @@ export function AnonymousLimitModal() {
     setShowAuthModal(true)
   }
 
+  // Store intent so the global handler in MarketHustle auto-triggers checkout after login
+  const handleGoPro = () => {
+    sessionStorage.setItem(PENDING_CHECKOUT_KEY, '1')
+    setShowAuthModal(true)
+  }
+
   const handleAuthModalClose = () => {
     setShowAuthModal(false)
-    // Keep the anonymous limit modal open unless they successfully signed up
   }
 
   return (
@@ -51,10 +56,10 @@ export function AnonymousLimitModal() {
 
           {/* Message */}
           <div className="text-mh-text-main text-sm mb-6 leading-relaxed">
-            You&apos;ve played all {ANONYMOUS_GAME_LIMIT} free games!
+            You&apos;ve used all {GUEST_TOTAL_LIMIT} free games.
             <br />
             <span className="text-mh-text-dim">
-              Sign up free to keep playing, or upgrade to Pro for unlimited games.
+              Create a free account to keep playing, or upgrade to Pro for unlimited games.
             </span>
           </div>
 
@@ -62,7 +67,7 @@ export function AnonymousLimitModal() {
           <div className="mb-6 p-3 bg-mh-border/20 rounded">
             <div className="text-mh-text-dim text-xs mb-2">SIGN UP TO GET:</div>
             <div className="text-mh-text-main text-xs space-y-1 text-left">
-              <div>✓ 3 free games per day</div>
+              <div>✓ 1 free game per day</div>
               <div>✓ Save your stats across devices</div>
               <div>✓ Track your career progress</div>
               <div>✓ Appear on leaderboards</div>
@@ -78,11 +83,11 @@ export function AnonymousLimitModal() {
               [ SIGN UP FREE ]
             </button>
             <button
-              onClick={() => checkout()}
+              onClick={handleGoPro}
               disabled={checkoutLoading}
               className="w-full py-3 border-2 border-mh-profit-green bg-mh-profit-green/10 text-mh-profit-green text-sm font-bold font-mono cursor-pointer hover:bg-mh-profit-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {checkoutLoading ? 'LOADING...' : 'GO PRO — ONE-TIME PURCHASE'}
+              GO PRO — ONE-TIME PURCHASE
             </button>
             <button
               onClick={() => setShowAnonymousLimitModal(false)}

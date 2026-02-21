@@ -5,7 +5,6 @@ import { profiles } from '@/db/schema'
 import { eq, sql } from 'drizzle-orm'
 
 const REGISTERED_FREE_DAILY_LIMIT = 1
-const REGISTERED_FREE_INITIAL_GAMES = 3
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +19,6 @@ export async function POST(request: NextRequest) {
     const result = await db
       .select({
         tier: profiles.tier,
-        totalGamesPlayed: profiles.totalGamesPlayed,
         gamesPlayedToday: profiles.gamesPlayedToday,
         lastPlayedDate: profiles.lastPlayedDate,
       })
@@ -41,15 +39,12 @@ export async function POST(request: NextRequest) {
       const isNewDay = lastPlayed !== today
       const gamesPlayedToday = isNewDay ? 0 : profile.gamesPlayedToday
 
-      // Server-side limit enforcement
-      if (profile.totalGamesPlayed >= REGISTERED_FREE_INITIAL_GAMES) {
-        // Past initial games — enforce daily limit
-        if (gamesPlayedToday >= REGISTERED_FREE_DAILY_LIMIT) {
-          return NextResponse.json(
-            { error: 'Daily game limit reached', remaining: 0 },
-            { status: 429 }
-          )
-        }
+      // Enforce daily limit (1 game per day for free users)
+      if (gamesPlayedToday >= REGISTERED_FREE_DAILY_LIMIT) {
+        return NextResponse.json(
+          { error: 'Daily game limit reached', remaining: 0 },
+          { status: 429 }
+        )
       }
     }
 

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useGame } from '@/hooks/useGame'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { AuthModal } from '@/components/auth/AuthModal'
-import { ANONYMOUS_GAME_LIMIT } from '@/lib/game/userState'
+import { GUEST_TOTAL_LIMIT } from '@/lib/game/userState'
 
 // Game over messages based on reason
 const GAME_OVER_MESSAGES: Record<string, { title: string; emoji: string; flavor: string }> = {
@@ -88,7 +88,7 @@ export function GuestGameOverView() {
       {/* Games Remaining Counter */}
       <div className="border border-mh-border p-3 mb-6 min-w-[200px] bg-mh-border/10">
         <div className={`text-sm font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}>
-          {gamesRemaining}/{ANONYMOUS_GAME_LIMIT} free games remaining
+          {gamesRemaining}/{GUEST_TOTAL_LIMIT} free games remaining
         </div>
         {gamesRemaining === 0 && (
           <div className="text-mh-loss-red text-xs mt-1">Sign up to continue playing</div>
@@ -109,7 +109,7 @@ export function GuestGameOverView() {
             </div>
             <div className="flex items-start gap-1.5">
               <span className="text-mh-accent-blue">✓</span>
-              <span>3 free games every day</span>
+              <span>1 free game every day</span>
             </div>
             <div className="flex items-start gap-1.5">
               <span className="text-mh-accent-blue">✓</span>

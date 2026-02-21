@@ -227,6 +227,19 @@ export const scenarios = pgTable('scenarios', {
 // ])
 
 // ============================================
+// guest_daily_plays (IP-based rate limiting for anonymous users)
+// ============================================
+export const guestDailyPlays = pgTable('guest_daily_plays', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  ip: text('ip').notNull(),
+  playedDate: text('played_date').notNull(), // 'YYYY-MM-DD'
+  gamesPlayed: integer('games_played').notNull().default(1),
+}, (table) => [
+  uniqueIndex('idx_guest_daily_plays_ip_date').on(table.ip, table.playedDate),
+  index('idx_guest_daily_plays_date').on(table.playedDate),
+])
+
+// ============================================
 // rooms (multiplayer room sessions)
 // ============================================
 export const rooms = pgTable('rooms', {

@@ -30,7 +30,6 @@ export function EndGameCoordinator() {
   const gamesRemaining = useGame((state) => state.gamesRemaining)
 
   const isLoggedIn = useGame((state) => state.isLoggedIn)
-  const getProTrialGamesRemaining = useGame((state) => state.getProTrialGamesRemaining)
   const { plan } = useUserDetails()
   // Use profile.tier from AuthContext as authoritative source for view routing
   // (game store's userTier can be stale from localStorage cache)
@@ -220,7 +219,7 @@ export function EndGameCoordinator() {
     onCheckout: handleCheckout,
     onOpenAuth: handleOpenAuth,
     lossBreakdown,
-    proTrialGamesRemaining: getProTrialGamesRemaining(),
+    proTrialGamesRemaining: 0,
     leaderboardRank,
     leaderboardLoading,
     roomStandings,

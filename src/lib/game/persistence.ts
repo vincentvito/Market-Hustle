@@ -4,7 +4,7 @@ import {
   UserState,
   DEFAULT_USER_STATE,
   getTodayDateString,
-  ANONYMOUS_GAME_LIMIT,
+  GUEST_TOTAL_LIMIT,
   REGISTERED_FREE_DAILY_LIMIT,
   type GameHistoryEntry,
 } from './userState'
@@ -95,17 +95,19 @@ export function incrementAnonymousGames(state: UserState): UserState {
 }
 
 /**
- * Check if anonymous user can still play
+ * Check if anonymous user can still play (based on localStorage counter)
+ * Note: real enforcement is IP-based via /api/game/guest-start
  */
 export function canPlayAnonymous(state: UserState): boolean {
-  return state.anonymousGamesPlayed < ANONYMOUS_GAME_LIMIT
+  return state.anonymousGamesPlayed < GUEST_TOTAL_LIMIT
 }
 
 /**
- * Get remaining anonymous games
+ * Get remaining anonymous games (based on localStorage counter)
+ * Note: real enforcement is IP-based via /api/game/guest-start
  */
 export function getAnonymousGamesRemaining(state: UserState): number {
-  return Math.max(0, ANONYMOUS_GAME_LIMIT - state.anonymousGamesPlayed)
+  return Math.max(0, GUEST_TOTAL_LIMIT - state.anonymousGamesPlayed)
 }
 
 /**

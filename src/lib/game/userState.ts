@@ -74,10 +74,8 @@ export const DEFAULT_USER_STATE: UserState = {
 }
 
 // Game limits by user type
-export const ANONYMOUS_GAME_LIMIT = 999      // Guests can play unlimited (conversion via end-game modal)
-export const REGISTERED_FREE_INITIAL_GAMES = 3 // Initial games after registration
-export const REGISTERED_FREE_DAILY_LIMIT = 1 // 1 game per day after initial games used
-export const PRO_TRIAL_GAME_LIMIT = 5        // Free Pro trial games for signed-in users
+export const GUEST_TOTAL_LIMIT = 3           // IP-based total game cap for non-logged-in users (must register after 3)
+export const REGISTERED_FREE_DAILY_LIMIT = 1 // 1 game per day for registered free users (must pay for more)
 
 // Helper to generate unique game ID
 export function generateGameId(): string {
@@ -105,15 +103,9 @@ export function getRemainingGames(state: UserState, isLoggedIn: boolean): number
   if (isDev) return Infinity
   // Pro users: unlimited
   if (state.tier === 'pro') return Infinity
-  // Guests: unlimited (we convert at end-game)
+  // Guests: checked server-side via /api/game/guest-start
   if (!isLoggedIn) return Infinity
-  // Registered free users: 3 initial games + 1/day after that
-  const totalPlayed = state.totalGamesPlayed
-  if (totalPlayed < REGISTERED_FREE_INITIAL_GAMES) {
-    // Still have initial games
-    return REGISTERED_FREE_INITIAL_GAMES - totalPlayed
-  }
-  // After initial games used: 1 game per day
+  // Registered free users: 1 game per day
   const today = getTodayDateString()
   if (state.lastPlayedDate !== today) return REGISTERED_FREE_DAILY_LIMIT
   return Math.max(0, REGISTERED_FREE_DAILY_LIMIT - state.gamesPlayedToday)

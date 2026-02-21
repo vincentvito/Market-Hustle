@@ -15,9 +15,7 @@ import {
 import {
   getRemainingGames,
   getLimitType,
-  ANONYMOUS_GAME_LIMIT,
   REGISTERED_FREE_DAILY_LIMIT,
-  PRO_TRIAL_GAME_LIMIT,
 } from '@/lib/game/userState'
 import type { GameDuration } from '@/lib/game/types'
 
@@ -42,15 +40,15 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
   selectedTheme: 'modern3',
 
   // Game limit modal states
-  showDailyLimitModal: false,      // For registered free users (10/day)
-  showAnonymousLimitModal: false,  // For anonymous users (10 lifetime)
-  gamesRemaining: ANONYMOUS_GAME_LIMIT,
+  showDailyLimitModal: false,      // For registered free users (1/day)
+  showAnonymousLimitModal: false,  // For anonymous users (3 total)
+  gamesRemaining: Infinity,
   limitType: 'anonymous' as const,
 
   // Supabase-synced profile data (null for guests)
   supabaseProfile: null,
 
-  // Pro trial state (5 free games with full Pro features for signed-in users)
+  // Pro trial state — kept for backwards compat but no longer used
   proTrialGamesUsed: 0,
   isUsingProTrial: false,
 
@@ -218,31 +216,20 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
     })
   },
 
-  // Pro trial actions
-  setProTrialGamesUsed: (count: number) => set({ proTrialGamesUsed: count }),
-  setIsUsingProTrial: (isUsing: boolean) => set({ isUsingProTrial: isUsing }),
+  // Pro trial actions (no-ops, kept for interface compatibility)
+  setProTrialGamesUsed: (_count: number) => {},
+  setIsUsingProTrial: (_isUsing: boolean) => {},
 
-  // Computed: effective tier considering Pro trial
-  // Guests get 'free' tier (30-day games only)
-  // Registered users get 'pro' features (all durations, full gameplay)
+  // Computed: effective tier
+  // Only paid Pro users get 'pro' tier with full features
+  // Guests and registered free users get 'free' tier
   getEffectiveTier: () => {
-    const { userTier, isLoggedIn, proTrialGamesUsed } = get()
-    // Pro users always get pro
+    const { userTier } = get()
     if (userTier === 'pro') return 'pro'
-    // Logged-in free users get pro features (unlocked durations etc.)
-    if (isLoggedIn) return 'pro'
-    // Guests get free tier
     return 'free'
   },
 
-  hasProTrialRemaining: () => {
-    const { userTier, isLoggedIn, proTrialGamesUsed } = get()
-    // Only free users who are logged in can use trial
-    return userTier === 'free' && isLoggedIn && proTrialGamesUsed < PRO_TRIAL_GAME_LIMIT
-  },
-
-  getProTrialGamesRemaining: () => {
-    const { proTrialGamesUsed } = get()
-    return Math.max(0, PRO_TRIAL_GAME_LIMIT - proTrialGamesUsed)
-  },
+  // Pro trial — always false (feature removed)
+  hasProTrialRemaining: () => false,
+  getProTrialGamesRemaining: () => 0,
 })

@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { db } from '@/db'
-import { profiles, proTrials } from '@/db/schema'
+import { profiles } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
 export async function GET() {
@@ -27,13 +27,6 @@ export async function GET() {
 
     const profile = result[0]
 
-    // Fetch pro trial data
-    const trialResult = await db
-      .select({ gamesUsed: proTrials.gamesUsed })
-      .from(proTrials)
-      .where(eq(proTrials.userId, user.id))
-      .limit(1)
-
     return NextResponse.json({
       profile: {
         id: profile.id,
@@ -47,7 +40,6 @@ export async function GET() {
         current_streak: profile.currentStreak,
         games_played_today: profile.gamesPlayedToday,
         last_played_date: profile.lastPlayedDate,
-        pro_trial_games_used: trialResult[0]?.gamesUsed ?? 0,
         selected_theme: profile.selectedTheme,
         selected_duration: profile.selectedDuration,
         unlocked_achievements: profile.unlockedAchievements,

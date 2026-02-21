@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { capture } from '@/lib/posthog'
 
+// Persists checkout intent across the auth flow so we can auto-redirect after login
+export const PENDING_CHECKOUT_KEY = 'pendingCheckout'
+
 export function useStripeCheckout() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

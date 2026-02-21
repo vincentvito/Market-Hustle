@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { useGame } from '@/hooks/useGame'
 import { useRoom } from '@/hooks/useRoom'
+import { useStripeCheckout, PENDING_CHECKOUT_KEY } from '@/hooks/useStripeCheckout'
 import { Scanlines } from './ui/Scanlines'
 import { TitleScreen } from './screens/TitleScreen'
 import type { LeaderboardEntry } from '@/lib/game/leaderboard'
@@ -32,6 +33,17 @@ export function MarketHustle({ initialLeaderboards }: MarketHustleProps) {
   const startGame = useGame(state => state.startGame)
   const scenarioLoaded = useRef(false)
   const showRoomHub = useRoom(state => state.showRoomHub)
+  const isLoggedIn = useGame(state => state.isLoggedIn)
+  const { checkout } = useStripeCheckout()
+
+  // After login, auto-redirect to Stripe if the user had clicked "buy" while logged out
+  useEffect(() => {
+    if (!isLoggedIn) return
+    if (sessionStorage.getItem(PENDING_CHECKOUT_KEY)) {
+      sessionStorage.removeItem(PENDING_CHECKOUT_KEY)
+      checkout()
+    }
+  }, [isLoggedIn, checkout])
 
   // Detect ?scenario=<id> URL param and auto-load + start the scenario
   useEffect(() => {
