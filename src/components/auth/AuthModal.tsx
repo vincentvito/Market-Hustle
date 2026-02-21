@@ -108,9 +108,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   type="text"
                   inputMode="numeric"
                   value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
                   autoFocus
-                  placeholder="000000"
+                  placeholder="00000000"
                   className="w-full px-3 py-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded text-[var(--text-primary)] text-center text-2xl tracking-[0.4em] font-mono focus:outline-none focus:border-[var(--accent-primary)]"
                 />
 
@@ -122,7 +122,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
                 <button
                   type="submit"
-                  disabled={loading || otpCode.length < 6}
+                  disabled={loading || otpCode.length < 8}
                   className="w-full py-2 bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white font-semibold rounded transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Verifying...' : 'Verify Code'}
@@ -131,7 +131,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
               <button
                 onClick={handleSendAnother}
-                className="w-full mt-3 py-2 border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)] font-semibold rounded transition-colors"
+                className="w-full mt-3 py-1 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 Send Another Link
               </button>
@@ -160,7 +160,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </button>
               <button
                 onClick={handleSendAnother}
-                className="w-full mt-3 py-2 border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)] font-semibold rounded transition-colors"
+                className="w-full mt-3 py-1 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 Send Another Link
               </button>

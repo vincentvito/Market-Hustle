@@ -91,19 +91,19 @@ Deno.serve(async (req) => {
 </body>
 </html>`
 
-    const { error } = await resend.emails.send({
+    // Fire-and-forget: don't await so the hook responds within the 5s timeout.
+    // Deno keeps the worker alive for in-flight promises after the response is sent.
+    resend.emails.send({
       from: 'Market Hustle <noreply@auth.markethustle.game>',
       to: [user.email],
       subject,
       html,
+    }).then(({ error }) => {
+      if (error) console.error('Resend error:', JSON.stringify(error))
+      else console.log('Email sent to:', user.email)
+    }).catch((err) => {
+      console.error('Resend send failed:', err)
     })
-
-    if (error) {
-      console.error('Resend error:', JSON.stringify(error))
-      throw error
-    }
-
-    console.log('Email sent to:', user.email)
   } catch (error: unknown) {
     console.error('Hook error:', error)
     const err = error as { code?: number; message?: string }
