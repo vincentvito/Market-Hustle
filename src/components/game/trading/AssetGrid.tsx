@@ -107,7 +107,7 @@ export function AssetGrid() {
                 : isRetro2
                   ? 'gap-1.5 p-1.5 bg-mh-bg'
                   : isModern3
-                    ? 'gap-1.5 px-1.5 pb-1.5 bg-mh-bg'
+                    ? 'gap-1.5 p-1.5 bg-mh-bg'
                     : 'gap-px bg-mh-border'
             }`}>
               {ASSETS.map((asset, index) => (
@@ -130,7 +130,7 @@ export function AssetGrid() {
                     ? 'bg-mh-bg'
                     : 'bg-mh-border'
             }`}>
-              <div className={`grid lg:grid-cols-4 gap-3 p-3 auto-rows-min w-full content-center h-full`}>
+              <div className={`grid lg:grid-cols-4 grid-rows-3 gap-3 p-3 w-full h-full`}>
                 {ASSETS.map((asset, index) => (
                   <AssetCell
                     key={asset.id}

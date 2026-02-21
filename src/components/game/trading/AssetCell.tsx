@@ -115,7 +115,7 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
       className={`
         flex flex-col items-center justify-center border border-mh-border
         cursor-pointer text-center relative overflow-hidden aspect-[3/2]
-        ${isBloomberg ? 'p-2 md:p-4 md:aspect-auto md:min-h-[130px] rounded-none' : isModern3 ? 'p-2 md:p-5 md:aspect-auto md:min-h-[140px] rounded-lg' : 'p-2 md:p-5 md:aspect-auto md:min-h-[140px]'}
+        ${isBloomberg ? 'p-2 md:p-4 md:aspect-auto rounded-none' : isModern3 ? 'p-2 md:p-5 md:aspect-auto rounded-lg' : 'p-2 md:p-5 md:aspect-auto'}
         ${isRetro2 ? 'rounded' : ''}
         ${getBackgroundClass()}
       `}
