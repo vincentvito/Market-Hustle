@@ -15,7 +15,6 @@ interface MagicLinkEmailProps {
   email_action_type: string
   redirect_to: string
   token_hash: string
-  token: string
 }
 
 export const MagicLinkEmail = ({
@@ -23,7 +22,6 @@ export const MagicLinkEmail = ({
   email_action_type,
   redirect_to,
   token_hash,
-  token,
 }: MagicLinkEmailProps) => {
   const confirmUrl = `${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`
 
@@ -77,10 +75,6 @@ export const MagicLinkEmail = ({
                 {buttonText}
               </Link>
             </Section>
-
-            {/* OTP fallback */}
-            <Text style={otpLabel}>Or use this one-time code:</Text>
-            <Text style={otpCode}>{token}</Text>
 
             <Text style={footnote}>{footerNote}</Text>
           </Section>
@@ -186,24 +180,6 @@ const button = {
   textDecoration: 'none',
   letterSpacing: '1px',
   borderRadius: '2px',
-}
-
-const otpLabel = {
-  fontSize: '12px',
-  color: '#5a6a7a',
-  margin: '0 0 8px',
-  textAlign: 'center' as const,
-}
-
-const otpCode = {
-  fontSize: '28px',
-  fontWeight: 'bold' as const,
-  color: '#c8d8e8',
-  letterSpacing: '6px',
-  textAlign: 'center' as const,
-  padding: '12px 0',
-  margin: '0 0 24px',
-  fontFamily: "'Courier New', monospace",
 }
 
 const footnote = {
