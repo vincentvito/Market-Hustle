@@ -1,6 +1,7 @@
 'use client'
 
 import type { EndGameProps } from './types'
+import { GUEST_TOTAL_LIMIT } from '@/lib/game/userState'
 import { formatNetWorth } from '@/lib/utils/formatMoney'
 import { InlineUsernameInput } from './InlineUsernameInput'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -109,10 +110,14 @@ export function GuestEndView({
         </button>
       )}
 
-      {/* Games remaining */}
-      {!canPlayAgain && (
-        <div className="mt-4 text-mh-loss-red text-xs font-mono">
-          GUEST LIMIT REACHED
+      {/* Guest Games Counter */}
+      {isFinite(gamesRemaining) && (
+        <div className="flex items-center gap-2 mt-4">
+          <span className="text-mh-text-dim text-xs">FREE GAMES</span>
+          <span className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}>
+            {gamesRemaining}/{GUEST_TOTAL_LIMIT}
+          </span>
+          {gamesRemaining === 0 && <span className="text-mh-loss-red text-xs">Register to continue</span>}
         </div>
       )}
 

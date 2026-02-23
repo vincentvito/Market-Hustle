@@ -524,7 +524,8 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     saveUserState(updatedUserState)
 
     // Update remaining games count for UI
-    const remainingAfterStart = getRemainingGames(updatedUserState, storeIsLoggedIn)
+    // For guests/members with skipLimits, the server already set gamesRemaining — preserve it
+    const remainingAfterStart = skipLimits ? get().gamesRemaining : getRemainingGames(updatedUserState, storeIsLoggedIn)
     const limitType = getLimitType(updatedUserState, storeIsLoggedIn)
 
     // Check if this should be a scripted game (first 3 games ever)
