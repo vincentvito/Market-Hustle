@@ -90,14 +90,23 @@ export function MemberEndView({
       )}
 
       <button
-        onClick={onPlayAgain}
-        disabled={!canPlayAgain}
-        className={`bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
-          px-10 py-4 text-base font-mono transition-colors
-          ${canPlayAgain ? 'cursor-pointer hover:bg-mh-accent-blue/10' : 'opacity-50 cursor-not-allowed'}`}
+        onClick={onCheckout}
+        className="border-2 border-mh-accent-blue bg-mh-accent-blue text-mh-bg
+          px-8 py-3 text-sm font-bold font-mono cursor-pointer
+          hover:bg-mh-accent-blue/90 transition-colors"
       >
-        [ PLAY AGAIN ]
+        [ UPGRADE TO PRO ]
       </button>
+
+      {canPlayAgain && (
+        <button
+          onClick={onPlayAgain}
+          className="mt-3 bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue
+            px-10 py-4 text-base font-mono cursor-pointer hover:bg-mh-accent-blue/10 transition-colors"
+        >
+          [ PLAY AGAIN ]
+        </button>
+      )}
 
       <button
         onClick={async () => {
@@ -134,17 +143,6 @@ export function MemberEndView({
       >
         {shareState === 'sharing' ? '[ CAPTURING... ]' : '[ SHARE RESULTS ]'}
       </button>
-
-      {!canPlayAgain && (
-        <button
-          onClick={onCheckout}
-          className="mt-3 border-2 border-mh-accent-blue bg-mh-accent-blue text-mh-bg
-            px-8 py-3 text-sm font-bold font-mono cursor-pointer
-            hover:bg-mh-accent-blue/90 transition-colors"
-        >
-          [ UPGRADE TO PRO ]
-        </button>
-      )}
 
       <button
         onClick={onMenu}
