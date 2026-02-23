@@ -14,7 +14,6 @@ export function AssetGrid() {
   const { selectAsset, selectedTheme, pendingLifestyleAssetId, pendingLuxuryAssetId } = useGame()
   const [activeTab, setActiveTab] = useState<TabType>('stocks')
 
-  // Auto-switch to appropriate tab when there's a pending asset from portfolio
   useEffect(() => {
     if (pendingLifestyleAssetId) {
       const asset = LIFESTYLE_ASSETS.find(a => a.id === pendingLifestyleAssetId)
@@ -33,14 +32,12 @@ export function AssetGrid() {
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 
-  // Get tab wrapper classes based on theme
   const getTabWrapperClass = () => {
     if (isBloomberg) return 'flex border-b-2 border-[#ff8c00] bg-black'
     if (isModern3) return 'flex p-1 bg-[#0f1419] rounded mt-0 mb-0 mx-2'
     return 'flex border-b border-mh-border'
   }
 
-  // Get tab button classes based on theme and active state
   const getTabClass = (isActive: boolean) => {
     const base = 'flex-1 py-2 md:py-2.5 text-[13px] md:text-sm font-bold transition-colors'
 
@@ -67,13 +64,11 @@ export function AssetGrid() {
     }`
   }
 
-  // Filter lifestyle assets by category
   const propertyAssets = LIFESTYLE_ASSETS.filter(a => a.category === 'property')
   const privateEquityAssets = LIFESTYLE_ASSETS.filter(a => a.category === 'private_equity')
 
   return (
     <div id="tutorial-asset-grid" className="flex flex-col flex-1 min-h-0">
-      {/* Category Tabs */}
       <div className={getTabWrapperClass()}>
         <button
           onClick={() => setActiveTab('stocks')}
@@ -100,7 +95,6 @@ export function AssetGrid() {
           <AssetListView />
         ) : (
           <>
-            {/* Mobile/Tablet: 3 cols vertical scroll */}
             <div className={`flex-1 min-h-0 lg:hidden overflow-auto grid grid-cols-3 auto-rows-min ${
               isBloomberg
                 ? 'gap-px bg-[#333333]'
@@ -120,7 +114,6 @@ export function AssetGrid() {
                 />
               ))}
             </div>
-            {/* Desktop: 4 cols vertical scroll */}
             <div className={`hidden lg:flex flex-1 min-h-0 overflow-auto ${
               isBloomberg
                 ? 'bg-[#333333]'
@@ -130,7 +123,7 @@ export function AssetGrid() {
                     ? 'bg-mh-bg'
                     : 'bg-mh-border'
             }`}>
-              <div className={`grid lg:grid-cols-4 grid-rows-3 gap-3 p-3 w-full h-full`}>
+              <div className={`grid lg:grid-cols-4 auto-rows-min gap-3 p-3 w-full`}>
                 {ASSETS.map((asset, index) => (
                   <AssetCell
                     key={asset.id}
