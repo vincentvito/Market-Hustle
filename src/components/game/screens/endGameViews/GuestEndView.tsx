@@ -20,7 +20,10 @@ export function GuestEndView({
   daysSurvived,
   gameDuration,
   onPlayAgain,
+  onMenu,
   onOpenAuth,
+  gamesRemaining,
+  canPlayAgain,
   leaderboardRank,
   leaderboardLoading,
   roomStandings,
@@ -106,6 +109,13 @@ export function GuestEndView({
         </button>
       )}
 
+      {/* Games remaining */}
+      {!canPlayAgain && (
+        <div className="mt-4 text-mh-loss-red text-xs font-mono">
+          GUEST LIMIT REACHED
+        </div>
+      )}
+
       {/* Registration CTA - The main conversion point */}
       <div className="w-full max-w-[320px] md:max-w-[400px] mt-8 mb-6">
         <div className="border-2 border-mh-accent-blue p-5 md:p-6 bg-mh-accent-blue/5">
@@ -138,10 +148,12 @@ export function GuestEndView({
 
           <div className="flex gap-3">
             <button
-              onClick={onPlayAgain}
-              className="flex-1 py-3 bg-transparent border border-mh-border text-mh-text-dim
-                text-sm font-mono transition-colors
-                cursor-pointer hover:border-mh-text-dim hover:text-mh-text-main"
+              onClick={canPlayAgain ? onPlayAgain : undefined}
+              disabled={!canPlayAgain}
+              className={`flex-1 py-3 bg-transparent border border-mh-border text-sm font-mono transition-colors
+                ${canPlayAgain
+                  ? 'text-mh-text-dim cursor-pointer hover:border-mh-text-dim hover:text-mh-text-main'
+                  : 'text-mh-text-dim/30 cursor-not-allowed'}`}
             >
               PLAY AS GUEST
             </button>
@@ -154,6 +166,16 @@ export function GuestEndView({
           </div>
         </div>
       </div>
+
+      {/* Menu button */}
+      <button
+        onClick={onMenu}
+        className="mb-4 bg-transparent border border-mh-border text-mh-text-dim
+          px-8 py-3 text-sm font-mono cursor-pointer
+          hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
+      >
+        [ MENU ]
+      </button>
     </div>
   )
 }

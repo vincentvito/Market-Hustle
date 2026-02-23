@@ -27,6 +27,7 @@ export function ProEndView({
   daysSurvived,
   gameDuration,
   onPlayAgain,
+  onMenu,
   leaderboardRank,
   leaderboardLoading,
   roomStandings,
@@ -176,6 +177,16 @@ export function ProEndView({
           hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
       >
         {shareState === 'sharing' ? '[ CAPTURING... ]' : shareState === 'copied' ? '[ COPIED! ]' : '[ SHARE RESULTS ]'}
+      </button>
+
+      {/* Menu */}
+      <button
+        onClick={onMenu}
+        className="mt-3 bg-transparent border border-mh-border text-mh-text-dim
+          px-8 py-3 text-sm font-mono cursor-pointer
+          hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
+      >
+        [ MENU ]
       </button>
     </div>
   )

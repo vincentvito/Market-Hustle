@@ -35,6 +35,7 @@ export interface EndGameProps {
   canPlayAgain: boolean
   proTrialGamesRemaining?: number
   onPlayAgain: () => void
+  onMenu: () => void
   onCheckout: () => void
   onOpenAuth: () => void
   lossBreakdown?: LossBreakdown

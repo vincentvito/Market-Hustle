@@ -27,6 +27,7 @@ export function EndGameCoordinator() {
   const gameOverReason = useGame((state) => state.gameOverReason)
   const getNetWorth = useGame((state) => state.getNetWorth)
   const startGame = useGame((state) => state.startGame)
+  const setScreen = useGame((state) => state.setScreen)
   const gamesRemaining = useGame((state) => state.gamesRemaining)
 
   const isLoggedIn = useGame((state) => state.isLoggedIn)
@@ -202,6 +203,8 @@ export function EndGameCoordinator() {
     }
   }
 
+  const handleMenu = () => setScreen('title')
+
   const handleBackToRoom = roomId ? () => returnToHub() : undefined
 
   const handleCheckout = () => {
@@ -230,6 +233,7 @@ export function EndGameCoordinator() {
     gamesRemaining,
     canPlayAgain,
     onPlayAgain: handlePlayAgain,
+    onMenu: handleMenu,
     onCheckout: handleCheckout,
     onOpenAuth: handleOpenAuth,
     lossBreakdown,

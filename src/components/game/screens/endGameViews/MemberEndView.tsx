@@ -20,6 +20,8 @@ export function MemberEndView({
   gamesRemaining,
   canPlayAgain,
   onPlayAgain,
+  onMenu,
+  onCheckout,
   leaderboardRank,
   leaderboardLoading,
 }: EndGameProps) {
@@ -137,6 +139,28 @@ export function MemberEndView({
           hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
       >
         {shareState === 'sharing' ? '[ CAPTURING... ]' : shareState === 'copied' ? '[ COPIED! ]' : '[ SHARE RESULTS ]'}
+      </button>
+
+      {/* Upgrade CTA for free members */}
+      {!canPlayAgain && (
+        <button
+          onClick={onCheckout}
+          className="mt-3 border-2 border-mh-accent-blue bg-mh-accent-blue text-mh-bg
+            px-8 py-3 text-sm font-bold font-mono cursor-pointer
+            hover:bg-mh-accent-blue/90 transition-colors"
+        >
+          [ UPGRADE TO PRO ]
+        </button>
+      )}
+
+      {/* Menu */}
+      <button
+        onClick={onMenu}
+        className="mt-3 bg-transparent border border-mh-border text-mh-text-dim
+          px-8 py-3 text-sm font-mono cursor-pointer
+          hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
+      >
+        [ MENU ]
       </button>
     </div>
   )
