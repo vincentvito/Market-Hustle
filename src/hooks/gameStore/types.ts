@@ -87,7 +87,22 @@ export interface AuthTierSlice {
 // Handles all game state: prices, holdings, events, trading, etc.
 // ============================================================================
 
+// Pending score submission for when username is set after game ends
+export interface PendingScore {
+  finalNetWorth: number
+  gameData: {
+    gameId: string
+    duration: number
+    profitPercent: number
+    daysSurvived: number
+    outcome: string
+  }
+}
+
 export interface MechanicsSlice extends GameState {
+  // Pending score (when game ends without username)
+  pendingScore: PendingScore | null
+
   // Feedback state (not in GameState)
   activeSellToast: {
     message: string

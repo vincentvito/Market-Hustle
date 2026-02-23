@@ -4,6 +4,7 @@ let initialized = false
 
 export function getPostHogClient() {
   if (typeof window === 'undefined') return null
+  if (process.env.NODE_ENV === 'development') return null
 
   if (!initialized && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {

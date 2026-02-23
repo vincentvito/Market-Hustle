@@ -6,18 +6,50 @@ import { useGame } from '@/hooks/useGame'
 export function InlineUsernameInput() {
   const username = useGame((state) => state.username)
   const setUsername = useGame((state) => state.setUsername)
+  const pendingScore = useGame((state) => state.pendingScore)
   const [input, setInput] = useState(username || '')
   const [error, setError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(!username)
 
   const handleSubmit = () => {
     const value = input.trim().toLowerCase()
+    console.log('[Username] handleSubmit called with:', value)
     if (value.length < 3) { setError('Min 3 characters'); return }
     if (value.length > 15) { setError('Max 15 characters'); return }
     if (!/^[a-z0-9_]+$/.test(value)) { setError('Only letters, numbers, underscores'); return }
     setError(null)
-    setUsername(value)
     setIsEditing(false)
+
+    console.log('[Username] pendingScore:', pendingScore)
+
+    // Submit pending score BEFORE setting username (so the rank fetch waits for it)
+    if (pendingScore) {
+      const scoreData = pendingScore
+      useGame.setState({ pendingScore: null })
+      console.log('[Username] Submitting pending score for', value, ':', scoreData)
+      fetch('/api/profile/record-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: value,
+          finalNetWorth: scoreData.finalNetWorth,
+          gameData: scoreData.gameData,
+        }),
+      })
+        .then((res) => {
+          console.log('[Username] Score submit response:', res.status, res.ok)
+          // Set username AFTER score is saved — this triggers the rank fetch in EndGameCoordinator
+          setUsername(value)
+        })
+        .catch((err) => {
+          console.error('[Username] Error submitting pending score:', err)
+          // Still set username even if score fails
+          setUsername(value)
+        })
+    } else {
+      console.log('[Username] No pending score, just setting username')
+      setUsername(value)
+    }
   }
 
   if (!isEditing && username) {

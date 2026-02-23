@@ -17,6 +17,12 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'Market Hustle',
   description: 'Buy low. Sell high. Don\'t go broke.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Market Hustle',
+  },
+  themeColor: '#0d1117',
 }
 
 export const viewport: Viewport = {
@@ -24,6 +30,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({

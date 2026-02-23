@@ -197,7 +197,7 @@ export function NewsPanel() {
 
     return (
       <div
-        className={`border-b border-mh-border bg-[#0a0d10] p-3 min-h-[120px] overflow-hidden relative ${
+        className={`border-b border-mh-border bg-[#0a0d10] p-3 min-h-[180px] overflow-hidden relative ${
           isImpossible ? 'milestone-flash' : isMythic ? 'milestone-glitch' : ''
         }`}
       >
@@ -245,10 +245,10 @@ export function NewsPanel() {
       id="tutorial-news"
       className={`p-2.5 md:p-5 relative ${
         isBloomberg
-          ? 'bg-black h-[240px] lg:h-[320px] border-b md:border-b-0 border-[#333333] border-l-[3px] border-l-[#ff8c00]'
+          ? 'bg-black h-[180px] lg:h-[270px] border-b md:border-b-0 border-[#333333] border-l-[3px] border-l-[#ff8c00]'
           : isModern3
-            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[240px] lg:h-[320px] mx-2 md:mx-0 md:rounded-none md:border-l-0'
-            : 'border-b md:border-b-0 border-mh-border border-l-[3px] border-l-mh-accent-blue bg-[#0a0d10] h-[240px] lg:h-[320px]'
+            ? 'border-l-[3px] border-l-[#00d4aa] bg-gradient-to-r from-[rgba(0,212,170,0.08)] to-[#0a0d10] rounded-r h-[180px] lg:h-[270px] mx-2 md:mx-0 md:rounded-none md:border-l-0'
+            : 'border-b md:border-b-0 border-mh-border border-l-[3px] border-l-mh-accent-blue bg-[#0a0d10] h-[180px] lg:h-[270px]'
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
     >

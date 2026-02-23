@@ -1,5 +1,8 @@
 # Dependencies
 node_modules/
+
+# MCP config (contains API keys)
+.mcp.json
 .pnp/
 .pnp.js
 

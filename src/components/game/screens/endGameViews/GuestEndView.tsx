@@ -3,6 +3,7 @@
 import type { EndGameProps } from './types'
 import { formatNetWorth } from '@/lib/utils/formatMoney'
 import { InlineUsernameInput } from './InlineUsernameInput'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 /**
  * GuestEndView - End-game screen for anonymous/guest users.
@@ -20,6 +21,8 @@ export function GuestEndView({
   gameDuration,
   onPlayAgain,
   onOpenAuth,
+  leaderboardRank,
+  leaderboardLoading,
   roomStandings,
   onBackToRoom,
   roomCode,
@@ -60,6 +63,25 @@ export function GuestEndView({
       )}
 
       <InlineUsernameInput />
+
+      {/* Leaderboard Rank */}
+      {leaderboardLoading ? (
+        <div className="mt-4 text-sm w-full max-w-[320px]">
+          <div className="text-mh-text-dim text-xs mb-2">YOUR RANKING</div>
+          <Skeleton className="h-5 w-full" />
+        </div>
+      ) : leaderboardRank ? (
+        <div className="mt-4 text-sm">
+          <div className="text-mh-text-dim text-xs mb-1">YOUR RANKING</div>
+          <div>
+            <span className="text-mh-accent-blue font-bold">#{leaderboardRank.dailyRank.toLocaleString()}</span>
+            <span className="text-mh-text-dim"> of {leaderboardRank.dailyTotal.toLocaleString()} today</span>
+            <span className="text-mh-text-dim mx-2">|</span>
+            <span className="text-mh-accent-blue font-bold">#{leaderboardRank.allTimeRank.toLocaleString()}</span>
+            <span className="text-mh-text-dim"> of {leaderboardRank.allTimeTotal.toLocaleString()} all-time</span>
+          </div>
+        </div>
+      ) : null}
 
       {/* Room code */}
       {roomCode && (
@@ -110,7 +132,7 @@ export function GuestEndView({
             </div>
             <div className="flex items-start gap-2">
               <span className="text-mh-accent-blue">✓</span>
-              <span>View the leaderboard</span>
+              <span>Track your rank on the leaderboard</span>
             </div>
           </div>
 

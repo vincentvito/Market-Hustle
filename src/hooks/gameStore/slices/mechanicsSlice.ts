@@ -16,7 +16,7 @@ import { LIFESTYLE_ASSETS } from '@/lib/game/lifestyleAssets'
 import { checkMilestone, getAllReachedMilestones } from '@/lib/game/milestones'
 import { STORIES, getStoryById, selectRandomStory } from '@/lib/game/stories'
 import { DEFAULT_GOSSIP_STATE, shouldShowGossip, createGossipNewsItem, isMarketSideways, hasMajorEventToday } from '@/lib/game/gossip'
-import { isProd, isDev } from '@/lib/env'
+import { isDev } from '@/lib/env'
 import { selectFlavorEvent } from '@/lib/game/flavorEvents'
 import { DEFAULT_ENCOUNTER_STATE, rollForEncounter, resolveTax, shouldSkipScriptedEncounter } from '@/lib/game/encounters'
 import type { EncounterResult } from '@/lib/game/encounters'
@@ -60,13 +60,10 @@ import {
 import {
   loadUserState,
   saveUserState,
-  incrementGamesPlayed,
   incrementAnonymousGames,
 } from '@/lib/game/persistence'
-import { callIncrementGamesPlayed } from '@/lib/game/authBridge'
 import { getScriptedGame, getScriptedGameNumber } from '@/lib/game/scriptedGames'
 import {
-  canStartGame,
   getRemainingGames,
   getLimitType,
   generateGameId,
@@ -117,6 +114,12 @@ import {
 import { getEventSentiment, deriveSentiment } from '@/lib/game/sentimentHelpers'
 import { capture } from '@/lib/posthog'
 
+// Retry any failed score submissions from previous sessions on module load
+if (typeof window !== 'undefined') {
+  // Delay to avoid blocking app startup
+  setTimeout(() => retryQueuedScores(), 3000)
+}
+
 // Detect the correct labelType from a headline's embedded prefix.
 // Headlines may contain category prefixes (BREAKING:, STUDY:, etc.) that should
 // determine the label type rather than using a generic default.
@@ -147,6 +150,76 @@ function appendTradeLog(
     leverage: entry.leverage,
     profit_loss: entry.profitLoss,
   })
+}
+
+// Submit score to the server with retries
+async function submitScore(
+  username: string,
+  finalNetWorth: number,
+  gameData: { gameId: string; duration: number; profitPercent: number; daysSurvived: number; outcome: string },
+  tradeLog?: TradeLogEntry[],
+  retries = 3,
+): Promise<void> {
+  const body = JSON.stringify({
+    username,
+    finalNetWorth,
+    gameData,
+    tradeLogs: tradeLog,
+  })
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch('/api/profile/record-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      })
+      if (res.ok) return // Success
+      console.error(`Score submit attempt ${attempt}/${retries} failed: ${res.status}`)
+    } catch (err) {
+      console.error(`Score submit attempt ${attempt}/${retries} error:`, err)
+    }
+    // Wait before retrying (1s, 2s, 3s)
+    if (attempt < retries) {
+      await new Promise(r => setTimeout(r, attempt * 1000))
+    }
+  }
+  // All retries failed — queue for later
+  queueFailedScore({ username, finalNetWorth, gameData, tradeLogs: tradeLog })
+}
+
+// Queue failed scores in localStorage for retry on next session
+function queueFailedScore(payload: Record<string, unknown>): void {
+  try {
+    const queue = JSON.parse(localStorage.getItem('mh_score_queue') || '[]')
+    queue.push({ ...payload, queuedAt: Date.now() })
+    // Keep max 10 queued scores
+    localStorage.setItem('mh_score_queue', JSON.stringify(queue.slice(-10)))
+  } catch { /* localStorage full or unavailable */ }
+}
+
+// Retry any queued scores from previous sessions
+function retryQueuedScores(): void {
+  try {
+    const queue = JSON.parse(localStorage.getItem('mh_score_queue') || '[]')
+    if (queue.length === 0) return
+
+    // Clear queue immediately to prevent double-retries
+    localStorage.removeItem('mh_score_queue')
+
+    for (const item of queue) {
+      // Skip scores older than 7 days
+      if (Date.now() - item.queuedAt > 7 * 24 * 60 * 60 * 1000) continue
+      fetch('/api/profile/record-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      }).catch(() => {
+        // Re-queue on failure
+        queueFailedScore(item)
+      })
+    }
+  } catch { /* ignore */ }
 }
 
 // Helper to record game completion to localStorage and Supabase
@@ -185,28 +258,38 @@ function saveGameResult(
     total_trades: tradeLog?.length ?? 0,
   })
 
-  // Sync to Supabase with username (fire-and-forget)
+  // Sync to Supabase with username and retry logic
   // Skip in dev mode — don't pollute leaderboard with test data
   // Skip for room games — room results stay in room leaderboard only
   const { useRoom } = require('@/hooks/useRoom')
   const isRoomGame = !!useRoom.getState().roomId
-  if (username && !isRoomGame && isProd) {
-    fetch('/api/profile/record-game', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username,
-        finalNetWorth,
-        gameData: {
-          gameId: entry.gameId,
-          duration: entry.duration,
-          profitPercent: entry.profitPercent,
-          daysSurvived: entry.daysSurvived,
-          outcome: entry.outcome,
-        },
-        tradeLogs: isProd ? tradeLog : undefined,
-      }),
-    }).catch((err) => console.error('Error recording game:', err))
+
+  const scoreData = {
+    finalNetWorth,
+    gameData: {
+      gameId: entry.gameId,
+      duration: entry.duration,
+      profitPercent: entry.profitPercent,
+      daysSurvived: entry.daysSurvived,
+      outcome: entry.outcome,
+    },
+  }
+
+  console.log('[SaveGameResult] username:', username, 'isRoomGame:', isRoomGame)
+
+  if (username && !isRoomGame) {
+    console.log('[SaveGameResult] Submitting score immediately for', username)
+    submitScore(username, finalNetWorth, scoreData.gameData, tradeLog)
+    // Clear any pending score since we submitted successfully
+    const { useGame } = require('@/hooks/useGame')
+    useGame.setState({ pendingScore: null })
+  } else if (!username && !isRoomGame) {
+    // No username yet — store for later submission when username is set
+    console.log('[SaveGameResult] No username — storing pendingScore:', scoreData)
+    const { useGame } = require('@/hooks/useGame')
+    useGame.setState({ pendingScore: scoreData })
+  } else {
+    console.log('[SaveGameResult] Score not submitted — room game')
   }
 }
 
@@ -214,6 +297,9 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
   // ============================================================================
   // GAME STATE
   // ============================================================================
+
+  // Pending score submission (when game ends without username)
+  pendingScore: null,
 
   // Core game state
   screen: 'title',
@@ -395,14 +481,24 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       return
     }
 
-    // Registered free user: sync limit check
-    if (!skipLimits && !canStartGame(userState, storeIsLoggedIn)) {
-      set({
-        showDailyLimitModal: true,
-        showAnonymousLimitModal: false,
-        gamesRemaining: 0,
-        limitType: 'daily',
-      })
+    // Registered free user: async server-side limit check via /api/profile/increment-played
+    // The server checks AND increments in one call — single source of truth.
+    if (!skipLimits && storeIsLoggedIn && storeUserTier !== 'pro') {
+      fetch('/api/profile/increment-played', { method: 'POST' })
+        .then(res => {
+          if (res.status === 429) {
+            set({ showDailyLimitModal: true, showAnonymousLimitModal: false, gamesRemaining: 0, limitType: 'daily' })
+            return
+          }
+          if (res.ok) {
+            set({ gamesRemaining: 0, limitType: 'daily' })
+            get().startGame(duration, { ...options, skipLimits: true })
+          }
+        })
+        .catch(() => {
+          // Allow play on network/DB error
+          get().startGame(duration, { ...options, skipLimits: true })
+        })
       return
     }
 
@@ -414,20 +510,16 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
       gameDuration = 30
     }
 
-    // Update games played counter based on user type (skip for room games)
+    // Update games played counter in localStorage (for guest users only)
+    // Logged-in users are handled server-side by /api/profile/increment-played above
     let updatedUserState: typeof userState
-    if (skipLimits) {
+    if (!storeIsLoggedIn && !userState.isAnonymous) {
       updatedUserState = userState
     } else if (!storeIsLoggedIn || userState.isAnonymous) {
       // Guest user - increment lifetime counter (localStorage only)
       updatedUserState = incrementAnonymousGames(userState)
     } else {
-      // Registered user - increment daily counter
-      // Also sync to Supabase (fire-and-forget, doesn't block game start)
-      if (storeUserTier !== 'pro') {
-        callIncrementGamesPlayed()
-      }
-      updatedUserState = incrementGamesPlayed(userState)
+      updatedUserState = userState
     }
     saveUserState(updatedUserState)
 

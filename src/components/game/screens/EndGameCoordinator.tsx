@@ -64,11 +64,21 @@ export function EndGameCoordinator() {
     }
   }, [isLoggedIn, actualTier])
 
-  // Fetch leaderboard rank after a short delay (gives fire-and-forget save time to land)
+  // Fetch leaderboard rank after a short delay (gives score submission time to land)
   // Skip for room games — room has its own standings
+  const rankFetchCount = useRef(0)
   useEffect(() => {
-    if (!username || roomId) return
+    console.log('[Rank] useEffect triggered — username:', username, 'roomId:', roomId)
+    if (!username || roomId) {
+      console.log('[Rank] Skipping rank fetch — no username or room game')
+      return
+    }
+    rankFetchCount.current += 1
     setLeaderboardLoading(true)
+
+    // Longer delay when username changes (score was just submitted by InlineUsernameInput)
+    const delay = rankFetchCount.current > 1 ? 1500 : 600
+    console.log('[Rank] Fetching rank in', delay, 'ms (fetch #' + rankFetchCount.current + ')')
 
     const timer = setTimeout(async () => {
       try {
@@ -78,17 +88,21 @@ export function EndGameCoordinator() {
           score: String(Math.round(score)),
           duration: String(gameDuration),
         })
+        console.log('[Rank] Fetching:', `/api/leaderboard/rank?${params}`)
         const res = await fetch(`/api/leaderboard/rank?${params}`)
         if (res.ok) {
           const data = await res.json()
+          console.log('[Rank] Got rank data:', data)
           setLeaderboardRank(data)
+        } else {
+          console.error('[Rank] Rank fetch failed:', res.status)
         }
-      } catch {
-        // Silent fail — skeleton will disappear, rank won't render
+      } catch (err) {
+        console.error('[Rank] Rank fetch error:', err)
       } finally {
         setLeaderboardLoading(false)
       }
-    }, 600)
+    }, delay)
 
     return () => clearTimeout(timer)
   }, [username, gameDuration, getNetWorth, roomId])
