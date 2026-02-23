@@ -144,7 +144,7 @@ function useSlider({ maxValue, initialValue = 1, minValue = 1, step = 1 }: {
   }
 }
 
-export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps): JSX.Element | null {
+export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const {
     prices, holdings, cash, buy, sell, getPriceChange, priceHistory,
     shortPositions, leveragedPositions, shortSell, coverShort, buyWithLeverage, closeLeveragedPosition,
@@ -413,7 +413,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps): JSX.Ele
           isBloomberg ? 'border-b border-[#333333]' : isModern3 ? '' : 'border-b border-mh-border'
         } ${canBuy
           ? isBloomberg ? 'bg-[#001a00]' : isModern3 ? 'bg-[#0a1a15]' : 'bg-[#0a1510]'
-          : isBloomberg ? 'bg-black opacity-50' : isModern3 ? 'bg-[#0f1419] opacity-50' : 'bg-[#0d1117] opacity-50'
+          : isBloomberg ? 'bg-black' : isModern3 ? 'bg-[#0f1419]' : 'bg-[#0d1117]'
         }`}>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-bold text-mh-profit-green">BUY</span>
@@ -447,7 +447,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps): JSX.Ele
             )}
           </div>
 
-          {/* Padded to keep thumb reachable on edge-to-edge screens */}
           <div className="px-6">
             <div
               ref={buySlider.sliderRef}
@@ -515,7 +514,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps): JSX.Ele
                 ? isBloomberg
                   ? 'cursor-pointer hover:brightness-110 border'
                   : 'bg-mh-profit-green/20 text-mh-profit-green cursor-pointer hover:bg-mh-profit-green/30 border border-mh-profit-green/50'
-                : 'bg-[#111920] text-mh-border cursor-default border border-mh-border/30'
+                : 'bg-[#111920] text-mh-text-dim cursor-default border border-mh-border/50'
             }`}
             style={canBuy && isBloomberg ? {
               backgroundColor: '#003300',
@@ -569,7 +568,6 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps): JSX.Ele
             </span>
           </div>
 
-          {/* Padded to keep thumb reachable on edge-to-edge screens */}
           <div className="px-6">
             <div
               ref={sellSlider.sliderRef}

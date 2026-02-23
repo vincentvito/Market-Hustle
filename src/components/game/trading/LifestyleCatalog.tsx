@@ -20,7 +20,6 @@ function formatPrice(value: number): string {
 }
 
 function formatReturn(dailyReturn: number): string {
-  // Properties and teams use percentage of purchase price
   const pct = (dailyReturn * 100).toFixed(1)
   if (dailyReturn > 0) return `+${pct}%/day`
   return `${pct}%/day`
@@ -60,7 +59,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
   const isRetro2 = selectedTheme === 'retro2'
   const isModern3 = selectedTheme === 'modern3' || selectedTheme === 'modern3list'
 
-  // If filterCategory is provided, use it as the active category and hide tabs
   const [activeCategory, setActiveCategory] = useState<CategoryId>(filterCategory || 'property')
   const [selectedAsset, setSelectedAsset] = useState<LifestyleAsset | null>(null)
   const [sellConfirmAsset, setSellConfirmAsset] = useState<LifestyleAsset | null>(null)
@@ -70,7 +68,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
   const [sellConfirmPE, setSellConfirmPE] = useState<LifestyleAsset | null>(null) // PE sell confirmation
   const [backfireTooltip, setBackfireTooltip] = useState<PEAbilityId | null>(null) // Which ability's backfire explanation is shown
 
-  // Update active category when filterCategory changes
   useEffect(() => {
     if (filterCategory) {
       setActiveCategory(filterCategory)
@@ -86,7 +83,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
   const ownedIds = new Set(ownedLifestyle.map(o => o.assetId))
   const ownedMap = new Map(ownedLifestyle.map(o => [o.assetId, o]))
 
-  // Handle pending lifestyle asset (from portfolio click)
   useEffect(() => {
     if (pendingLifestyleAssetId) {
       const allAssets = [...PROPERTIES, ...PRIVATE_EQUITY]
@@ -95,35 +91,28 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         const isOwned = ownedIds.has(asset.id)
         const isPE = asset.category === 'private_equity'
 
-        // Switch to correct category
         setActiveCategory(asset.category)
 
-        // Open the appropriate sheet
         if (isPE) {
           isOwned ? setSellConfirmPE(asset) : setSelectedPEAsset(asset)
         } else {
           isOwned ? setSellConfirmAsset(asset) : setSelectedAsset(asset)
         }
       }
-      // Clear the pending state
       setPendingLifestyleAsset(null)
     }
   }, [pendingLifestyleAssetId, ownedIds, setPendingLifestyleAsset])
 
-  // Handle pending luxury asset (from portfolio click)
   useEffect(() => {
     if (pendingLuxuryAssetId) {
       const asset = LUXURY_ASSETS.find(a => a.id === pendingLuxuryAssetId)
       if (asset) {
         const isOwned = ownedLuxury.includes(asset.id)
 
-        // Switch to luxury category
         setActiveCategory('luxury')
 
-        // Open the appropriate sheet
         isOwned ? setSellConfirmLuxury(asset) : setSelectedLuxuryAsset(asset)
       }
-      // Clear the pending state
       setPendingLuxuryAsset(null)
     }
   }, [pendingLuxuryAssetId, ownedLuxury, setPendingLuxuryAsset])
@@ -155,7 +144,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      {/* Category Sub-tabs - only show if no filterCategory */}
       {!filterCategory && (
         <div className={`flex ${
           isModern3
@@ -182,7 +170,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         </div>
       )}
 
-      {/* Luxury Assets */}
       {activeCategory === 'luxury' && (
         <div className={`flex-1 overflow-auto ${isModern3 ? 'p-2 space-y-2' : ''}`}>
           {LUXURY_ASSETS.map(asset => {
@@ -248,7 +235,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         </div>
       )}
 
-      {/* Asset List - only for property and private_equity */}
       {activeCategory !== 'luxury' && (
       <div className={`flex-1 overflow-auto ${isModern3 ? 'p-2 space-y-2' : ''}`}>
         {assets.map(asset => {
@@ -264,10 +250,8 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
               key={asset.id}
               onClick={() => {
                 if (isPE) {
-                  // PE assets open bottom sheet (like Luxury)
                   isOwned ? setSellConfirmPE(asset) : setSelectedPEAsset(asset)
                 } else {
-                  // Properties use the old buy/sell flow
                   isOwned ? setSellConfirmAsset(asset) : setSelectedAsset(asset)
                 }
               }}
@@ -296,7 +280,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                     {isOwned && (
                       <span className="text-xs text-mh-accent-blue font-bold">OWNED</span>
                     )}
-                    {/* Risk tier badge for PE assets */}
                     {asset.riskTier && (
                       <span
                         className="text-[10px] px-1.5 py-0.5 rounded font-bold"
@@ -337,7 +320,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
       </div>
       )}
 
-      {/* Purchase Confirmation Sheet - rendered via Portal to escape overflow:hidden */}
       {selectedAsset && (
         <Portal>
           <div
@@ -373,7 +355,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                     }`}>
                       {formatReturn(selectedAsset.dailyReturn)}
                     </span>
-                    {/* Risk tier badge for PE */}
                     {selectedAsset.riskTier && (
                       <span
                         className="text-xs px-2 py-0.5 rounded font-bold"
@@ -404,10 +385,10 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                       ? isRetro2
                         ? 'bg-[#0a2015] text-mh-profit-green hover:bg-[#0d2a1a] border border-mh-profit-green/30 shadow-[0_0_10px_rgba(0,255,136,0.3)]'
                         : 'bg-mh-profit-green/20 text-mh-profit-green hover:bg-mh-profit-green/30 border-2 border-mh-profit-green/60'
-                      : 'bg-[#111920] text-mh-border border border-mh-border/30'
+                      : 'bg-[#111920] text-mh-text-dim border border-mh-border/50'
                   }`}
                 >
-                  BUY
+                  {cash >= (lifestylePrices[selectedAsset.id] || selectedAsset.basePrice) ? 'BUY' : 'BUY 🤣'}
                 </button>
               </div>
             </div>
@@ -415,7 +396,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         </Portal>
       )}
 
-      {/* Sell Confirmation Sheet - rendered via Portal to escape overflow:hidden */}
       {sellConfirmAsset && (() => {
         const price = lifestylePrices[sellConfirmAsset.id] || sellConfirmAsset.basePrice
         const ownedItem = ownedMap.get(sellConfirmAsset.id)
@@ -490,7 +470,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         )
       })()}
 
-      {/* Luxury Purchase Confirmation Sheet */}
       {selectedLuxuryAsset && (
         <Portal>
           <div
@@ -552,10 +531,10 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                   className={`flex-1 py-3 rounded text-base font-bold font-mono transition-colors ${
                     cash >= selectedLuxuryAsset.basePrice
                       ? 'bg-[#1a1000] text-[#ffd700] hover:bg-[#221500] border border-[#ffd700]/30'
-                      : 'bg-[#111920] text-mh-border border border-mh-border/30'
+                      : 'bg-[#111920] text-mh-text-dim border border-mh-border/50'
                   }`}
                 >
-                  BUY
+                  {cash >= selectedLuxuryAsset.basePrice ? 'BUY' : 'BUY 🤣'}
                 </button>
               </div>
             </div>
@@ -563,7 +542,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         </Portal>
       )}
 
-      {/* Luxury Sell Confirmation Sheet */}
       {sellConfirmLuxury && (() => {
         const sellPrice = Math.floor(sellConfirmLuxury.basePrice * 0.80)
         const loss = sellConfirmLuxury.basePrice - sellPrice
@@ -633,7 +611,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         )
       })()}
 
-      {/* PE Purchase Bottom Sheet */}
       {selectedPEAsset && (() => {
         const basePrice = lifestylePrices[selectedPEAsset.id] || selectedPEAsset.basePrice
         const ownsYacht = ownedLuxury.includes('mega_yacht')
@@ -657,7 +634,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                 style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))', ...(isModern3 ? { boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.4)' } : {}) }}
                 onClick={e => e.stopPropagation()}
               >
-                {/* Asset Header */}
                 <div className="flex items-start gap-3 mb-4">
                   <div className="text-3xl">{selectedPEAsset.emoji}</div>
                   <div className="flex-1">
@@ -698,7 +674,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                   </div>
                 </div>
 
-                {/* Abilities Section */}
                 {abilities.length > 0 && (
                   <div className="mb-4">
                     <div className="text-xs font-bold text-mh-text-dim mb-2 uppercase tracking-wide">
@@ -746,7 +721,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                   </div>
                 )}
 
-                {/* Action Buttons */}
                 <div className="flex gap-2">
                   <button
                     onClick={() => setSelectedPEAsset(null)}
@@ -769,10 +743,10 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                           : isModern3
                             ? 'bg-[#00d4aa] text-[#0a0e14] hover:bg-[#00b894]'
                             : 'bg-[#0a2015] text-mh-profit-green hover:bg-[#0d2a1a] border border-mh-profit-green/30'
-                        : 'bg-[#111920] text-mh-border border border-mh-border/30'
+                        : 'bg-[#111920] text-mh-text-dim border border-mh-border/50'
                     }`}
                   >
-                    BUY
+                    {cash >= price ? 'BUY' : 'BUY 🤣'}
                   </button>
                 </div>
               </div>
@@ -781,7 +755,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
         )
       })()}
 
-      {/* PE Sell Confirmation Bottom Sheet */}
       {sellConfirmPE && (() => {
         const price = lifestylePrices[sellConfirmPE.id] || sellConfirmPE.basePrice
         const ownedItem = ownedMap.get(sellConfirmPE.id)
@@ -846,7 +819,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                   </div>
                 </div>
 
-                {/* Special Operations Section */}
                 {abilities.length > 0 && (
                   <div className="mb-4">
                     <div className="text-xs font-bold text-mh-text-dim mb-2 uppercase tracking-wide">
@@ -865,7 +837,6 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                               isModern3 ? 'bg-[#1a2028]' : 'bg-[#0a1218]'
                             }`}
                           >
-                            {/* Ability header */}
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <span className="text-base">{ability.emoji}</span>
@@ -891,12 +862,10 @@ export function LifestyleCatalog({ filterCategory }: LifestyleCatalogProps = {})
                               )}
                             </div>
 
-                            {/* Flavor text */}
                             <div className="text-[10px] text-mh-text-dim mt-1">
                               {ability.flavor}
                             </div>
 
-                            {/* Cost and execute button (only if not used) */}
                             {!status.isUsed && (
                               <div className="flex items-center justify-between mt-2">
                                 <div className="flex items-center gap-2 text-[10px]">

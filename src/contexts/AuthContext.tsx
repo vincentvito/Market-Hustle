@@ -18,7 +18,6 @@ interface Profile {
   current_streak: number
   games_played_today: number
   last_played_date: string | null
-  // Synced settings
   selected_theme?: string
   selected_duration?: number
   unlocked_achievements?: string[]
@@ -29,15 +28,15 @@ interface AuthContextType {
   session: Session | null
   profile: Profile | null
   loading: boolean
-  needsOnboarding: boolean  // True if user is logged in but hasn't set username
-  signInWithMagicLink: (email: string) => Promise<{ error: Error | null }>
+  needsOnboarding: boolean
+  sendOtp: (email: string) => Promise<{ error: Error | null }>
   verifyOtp: (email: string, token: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
   updateSettings: (settings: { theme?: string; duration?: number }) => Promise<void>
-  migrateLocalStats: (userId: string) => Promise<void>  // Exposed for onboarding
-  incrementGamesPlayed: () => Promise<void>  // Increment daily counter on game START
-  recordGameEnd: (finalNetWorth: number, isWin: boolean, gameData?: GameResultData) => Promise<void>  // Sync stats on game END
+  migrateLocalStats: () => Promise<void>
+  incrementGamesPlayed: () => Promise<void>
+  recordGameEnd: (finalNetWorth: number, isWin: boolean, gameData?: GameResultData) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -50,8 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const supabase = getSupabaseClient()
 
-  // Fetch user profile from API
-  const fetchProfile = useCallback(async (_userId: string): Promise<Profile | null> => {
+  const fetchProfile = useCallback(async (): Promise<Profile | null> => {
     try {
       const res = await fetch('/api/profile')
       if (!res.ok) return null
@@ -63,11 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Migrate localStorage stats to database on first login
-  const migrateLocalStats = useCallback(async (_userId: string) => {
-    // Prevent double migration
+  const migrateLocalStats = useCallback(async () => {
     if (typeof window !== 'undefined' && localStorage.getItem('mh_migration_completed')) {
-      console.log('Migration already completed, skipping')
       return
     }
 
@@ -104,7 +99,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    // Clear local stats after successful migration (keep settings)
     saveUserState({
       ...localState,
       totalGamesPlayed: 0,
@@ -116,49 +110,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       gameHistory: [],
     })
 
-    // Mark migration as completed
     if (typeof window !== 'undefined') {
       localStorage.setItem('mh_migration_completed', 'true')
     }
   }, [])
 
-  // Refresh profile data
   const refreshProfile = useCallback(async () => {
     if (!user) return
-    const profileData = await fetchProfile(user.id)
+    const profileData = await fetchProfile()
     if (profileData) {
       setProfile(profileData)
     }
   }, [user, fetchProfile])
 
-  // Initialize auth state and listen for changes.
   useEffect(() => {
     let cancelled = false
 
-    // Helper: sync local username to DB profile if profile has none
-    const syncLocalUsername = async () => {
-      try {
-        const { useGame } = await import('@/hooks/useGame')
-        const localUsername = useGame.getState().username
-        if (localUsername && /^[a-z0-9_]{3,15}$/.test(localUsername)) {
-          await fetch('/api/username/set', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: localUsername }),
-          })
-        }
-      } catch (error) {
-        console.error('Error syncing local username:', error)
-      }
-    }
-
-    // Helper: load profile and optionally migrate stats
-    const loadProfile = async (userId: string, shouldMigrate: boolean) => {
-      const profileData = await fetchProfile(userId)
+    const loadProfile = async (shouldMigrate: boolean) => {
+      const profileData = await fetchProfile()
       if (cancelled) return
       setProfile(profileData)
 
-      // Enrich PostHog person profile with latest DB data
       if (profileData) {
         import('@/lib/posthog').then(({ getPostHogClient }) => {
           getPostHogClient()?.people.set({
@@ -169,30 +141,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
       }
 
-      // If profile has no username, sync from local game store
-      if (!profileData?.username) {
-        await syncLocalUsername()
-      }
-
       if (shouldMigrate) {
         try {
-          await migrateLocalStats(userId)
+          await migrateLocalStats()
           if (cancelled) return
-          const updated = await fetchProfile(userId)
+          const updated = await fetchProfile()
           if (!cancelled) setProfile(updated)
         } catch (error) {
           if (!cancelled) console.error('Error migrating local stats:', error)
         }
       }
-
-      // Re-fetch profile to pick up synced username
-      if (!profileData?.username) {
-        const updated = await fetchProfile(userId)
-        if (!cancelled) setProfile(updated)
-      }
     }
 
-    // Listen for future auth changes (sign-in, sign-out, token refresh).
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event: AuthChangeEvent, newSession: Session | null) => {
         if (cancelled) return
@@ -201,23 +161,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(newSession?.user ?? null)
         setLoading(false)
 
-        // Only fetch profile on actual auth changes (not INITIAL_SESSION)
         if (event === 'SIGNED_IN' && newSession?.user) {
           import('@/lib/posthog').then(({ getPostHogClient, capture }) => {
             const ph = getPostHogClient()
             ph?.identify(newSession.user.id, { email: newSession.user.email })
             capture('auth_signed_in')
           })
-          loadProfile(newSession.user.id, true)
+          loadProfile(true)
         } else if (event === 'SIGNED_OUT' || !newSession?.user) {
           setProfile(null)
         } else if (event === 'TOKEN_REFRESHED' && newSession?.user && newSession.user.id !== prevUserId) {
-          loadProfile(newSession.user.id, false)
+          loadProfile(false)
         }
       }
     )
 
-    // Load initial session and profile on mount
     supabase.auth.getSession().then(async ({ data: { session: initialSession } }: { data: { session: any } }) => {
       if (cancelled) return
       setSession(initialSession)
@@ -225,7 +183,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
 
       if (initialSession?.user) {
-        await loadProfile(initialSession.user.id, false)
+        await loadProfile(false)
       }
     })
 
@@ -236,24 +194,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase])
 
-  // Passwordless magic link authentication
-  const signInWithMagicLink = async (email: string) => {
-    // Always use the current origin for redirects (supports localhost and production)
-    const redirectTo = typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/callback`
-      : `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
-
-    console.log('[Magic Link] Redirect URL:', redirectTo)
+  const sendOtp = async (email: string) => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: redirectTo,
+        shouldCreateUser: true,
       },
     })
     return { error: error as Error | null }
   }
 
-  // Verify OTP code (for PWA users who can't use magic link)
   const verifyOtp = async (email: string, token: string) => {
     const { error } = await supabase.auth.verifyOtp({
       email,
@@ -274,7 +224,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(null)
   }
 
-  // Update user settings (syncs to DB for Pro users)
   const updateSettings = async (settings: { theme?: string; duration?: number }) => {
     if (!user) return
 
@@ -286,7 +235,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (res.ok) {
-        // Update local profile state
         const updates: Record<string, unknown> = {}
         if (settings.theme !== undefined) updates.selected_theme = settings.theme
         if (settings.duration !== undefined) updates.selected_duration = settings.duration
@@ -299,8 +247,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Increment games_played_today counter (called on game START)
-  // Server computes all values from DB — no client-trusted data sent
   const incrementGamesPlayed = useCallback(async () => {
     if (!user) return
 
@@ -323,7 +269,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, refreshProfile])
 
-  // Sync game stats to DB (called on game END)
   const recordGameEnd = useCallback(async (
     finalNetWorth: number,
     isWin: boolean,
@@ -358,7 +303,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, profile, refreshProfile])
 
-  // User needs onboarding if logged in but hasn't set username
   const needsOnboarding = !!user && !profile?.username
 
   return (
@@ -369,7 +313,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         needsOnboarding,
-        signInWithMagicLink,
+        sendOtp,
         verifyOtp,
         signOut,
         refreshProfile,

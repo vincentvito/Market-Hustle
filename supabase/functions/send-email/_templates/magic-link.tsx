@@ -10,7 +10,7 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import * as React from 'npm:react@18.3.1'
 
-interface MagicLinkEmailProps {
+interface AuthEmailProps {
   supabase_url: string
   email_action_type: string
   redirect_to: string
@@ -18,28 +18,27 @@ interface MagicLinkEmailProps {
   token: string
 }
 
-export const MagicLinkEmail = ({
+export const AuthEmail = ({
   supabase_url,
   email_action_type,
   redirect_to,
   token_hash,
   token,
-}: MagicLinkEmailProps) => {
+}: AuthEmailProps) => {
   const confirmUrl = `${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`
 
-  // Determine content based on email type
   const isInvite = email_action_type === 'invite'
-  const subject = isInvite ? 'Welcome to Pro!' : 'Sign In'
+  const subject = isInvite ? 'Welcome to Pro!' : 'Your Verification Code'
   const previewText = isInvite
     ? 'Your Pro purchase is confirmed — activate your account'
-    : 'Sign in to Market Hustle'
-  const buttonText = isInvite ? '[ ACTIVATE ACCOUNT ]' : '[ ENTER THE MARKET ]'
+    : 'Your Market Hustle sign-in code'
   const description = isInvite
     ? 'Your purchase is confirmed. Click below to activate your account and start trading with Pro features.'
-    : 'Click the button below to securely sign in to your Market Hustle account. This link expires in 24 hours.'
+    : 'Enter this code in Market Hustle to sign in. It expires in 10 minutes.'
   const footerNote = isInvite
     ? "If you didn't make this purchase, please contact support."
-    : "If you didn't request this link, you can safely ignore this email."
+    : "If you didn't request this code, you can safely ignore this email."
+  const otpLabel = isInvite ? 'Or use this one-time code:' : 'Your code:'
 
   return (
     <Html>
@@ -47,18 +46,15 @@ export const MagicLinkEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header */}
           <Section style={header}>
             <Text style={logo}>MARKET HUSTLE</Text>
             <Text style={tagline}>STOCK MARKET SIMULATOR</Text>
           </Section>
 
-          {/* Body */}
           <Section style={body}>
             <Text style={heading}>{subject}</Text>
             <Text style={paragraph}>{description}</Text>
 
-            {/* Pro features for invite emails */}
             {isInvite && (
               <Section style={proBox}>
                 <Text style={proLabel}>YOUR PRO PERKS</Text>
@@ -71,21 +67,20 @@ export const MagicLinkEmail = ({
               </Section>
             )}
 
-            {/* CTA Button */}
-            <Section style={{ textAlign: 'center' as const, padding: '8px 0 24px' }}>
-              <Link href={confirmUrl} style={button}>
-                {buttonText}
-              </Link>
-            </Section>
+            {isInvite && (
+              <Section style={{ textAlign: 'center' as const, padding: '8px 0 24px' }}>
+                <Link href={confirmUrl} style={button}>
+                  [ ACTIVATE ACCOUNT ]
+                </Link>
+              </Section>
+            )}
 
-            {/* OTP fallback */}
-            <Text style={otpLabel}>Or use this one-time code:</Text>
+            <Text style={otpLabelStyle}>{otpLabel}</Text>
             <Text style={otpCode}>{token}</Text>
 
             <Text style={footnote}>{footerNote}</Text>
           </Section>
 
-          {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>Market Hustle</Text>
           </Section>
@@ -94,8 +89,6 @@ export const MagicLinkEmail = ({
     </Html>
   )
 }
-
-// ── Styles ──────────────────────────────────────────────
 
 const main = {
   backgroundColor: '#000000',
@@ -188,7 +181,7 @@ const button = {
   borderRadius: '2px',
 }
 
-const otpLabel = {
+const otpLabelStyle = {
   fontSize: '12px',
   color: '#5a6a7a',
   margin: '0 0 8px',
@@ -226,4 +219,4 @@ const footerText = {
   margin: '0',
 }
 
-export default MagicLinkEmail
+export default AuthEmail

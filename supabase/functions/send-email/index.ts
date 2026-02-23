@@ -36,15 +36,14 @@ Deno.serve(async (req) => {
     const isInvite = email_data.email_action_type === 'invite'
     const subject = isInvite
       ? 'Market Hustle — Welcome to Pro!'
-      : 'Market Hustle — Sign In'
-    const buttonText = isInvite ? '[ ACTIVATE ACCOUNT ]' : '[ ENTER THE MARKET ]'
-    const heading = isInvite ? 'Welcome to Pro!' : 'Sign In'
+      : 'Market Hustle — Your Sign-In Code'
+    const heading = isInvite ? 'Welcome to Pro!' : 'Your Verification Code'
     const description = isInvite
       ? 'Your purchase is confirmed. Click below to activate your account and start trading with Pro features.'
-      : 'Click the button below to securely sign in to your Market Hustle account. This link expires in 24 hours.'
+      : 'Enter this code in Market Hustle to sign in. It expires in 10 minutes.'
     const footnote = isInvite
       ? "If you didn't make this purchase, please contact support."
-      : "If you didn't request this link, you can safely ignore this email."
+      : "If you didn't request this code, you can safely ignore this email."
 
     const proSection = isInvite
       ? `<div style="padding:12px 16px;border:1px solid #2a3a4a;border-radius:4px;margin-bottom:24px;background-color:rgba(0,255,136,0.05);">
@@ -57,6 +56,14 @@ Deno.serve(async (req) => {
            </div>
          </div>`
       : ''
+
+    const activateButton = isInvite
+      ? `<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px 0 24px;">
+            <a href="${confirmUrl}" style="display:inline-block;padding:14px 32px;background-color:#00ff88;color:#000000;font-size:14px;font-weight:bold;font-family:'Courier New',monospace;text-decoration:none;letter-spacing:1px;border-radius:2px;">[ ACTIVATE ACCOUNT ]</a>
+          </td></tr></table>`
+      : ''
+
+    const otpLabel = isInvite ? 'Or use this one-time code:' : 'Your code:'
 
     const html = `<!DOCTYPE html>
 <html>
@@ -73,11 +80,9 @@ Deno.serve(async (req) => {
           <div style="font-size:18px;font-weight:bold;color:${isInvite ? '#00ff88' : '#c8d8e8'};margin-bottom:8px;">${heading}</div>
           <div style="font-size:13px;color:#a0b3c6;line-height:1.6;margin-bottom:24px;">${description}</div>
           ${proSection}
-          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px 0 24px;">
-            <a href="${confirmUrl}" style="display:inline-block;padding:14px 32px;background-color:#00ff88;color:#000000;font-size:14px;font-weight:bold;font-family:'Courier New',monospace;text-decoration:none;letter-spacing:1px;border-radius:2px;">${buttonText}</a>
-          </td></tr></table>
+          ${activateButton}
           <div style="text-align:center;margin-bottom:24px;">
-            <div style="font-size:12px;color:#5a6a7a;margin-bottom:8px;">Or use this one-time code:</div>
+            <div style="font-size:12px;color:#5a6a7a;margin-bottom:8px;">${otpLabel}</div>
             <div style="font-size:28px;font-weight:bold;color:#c8d8e8;letter-spacing:6px;font-family:'Courier New',monospace;">${email_data.token}</div>
           </div>
           <div style="font-size:11px;color:#5a6a7a;line-height:1.5;">${footnote}</div>
