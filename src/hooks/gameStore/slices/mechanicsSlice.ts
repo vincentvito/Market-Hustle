@@ -451,82 +451,37 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     const userState = loadUserState()
 
     // Use store's userTier (synced from Supabase) as authoritative source
-    // This ensures Pro status from payment is respected
     const storeUserTier = get().userTier
     const storeIsLoggedIn = get().isLoggedIn
-
-    // Determine effective tier: only paid Pro users get 'pro'
     const effectiveTier = get().getEffectiveTier()
 
-    // Room games skip limit checks and duration restrictions
+    // skipLimits is used by room games to bypass all checks
     const skipLimits = options?.skipLimits === true
 
-    // Guests: async IP-based total limit check (3 games ever, can't be bypassed via localStorage)
-    // Re-invokes startGame with skipLimits=true once the check passes.
-    if (!skipLimits && !storeIsLoggedIn) {
-      fetch('/api/game/guest-start', { method: 'POST' })
-        .then(res => res.json())
-        .then((data: { allowed: boolean; remaining: number }) => {
-          if (!data.allowed) {
-            set({ showAnonymousLimitModal: true, showDailyLimitModal: false, gamesRemaining: 0, limitType: 'anonymous' })
-            return
-          }
-          set({ gamesRemaining: data.remaining })
-          get().startGame(duration, { ...options, skipLimits: true })
-        })
-        .catch(() => {
-          // Allow play on network/DB error — don't punish users for infra issues
-          get().startGame(duration, { ...options, skipLimits: true })
-        })
-      return
-    }
+    // The actual game initialization — called directly or after async limit checks
+    const beginGame = (remaining?: number) => {
+      // Pro users can play any duration; free users are restricted to 30-day
+      const storeSelectedDuration = get().selectedDuration
+      let gameDuration: GameDuration = duration ?? storeSelectedDuration ?? userState.selectedDuration ?? 30
+      if (!skipLimits && effectiveTier === 'free' && gameDuration !== 30) {
+        gameDuration = 30
+      }
 
-    // Registered free user: async server-side limit check via /api/profile/increment-played
-    // The server checks AND increments in one call — single source of truth.
-    if (!skipLimits && storeIsLoggedIn && storeUserTier !== 'pro') {
-      fetch('/api/profile/increment-played', { method: 'POST' })
-        .then(res => {
-          if (res.status === 429) {
-            set({ showDailyLimitModal: true, showAnonymousLimitModal: false, gamesRemaining: 0, limitType: 'daily' })
-            return
-          }
-          if (res.ok) {
-            set({ gamesRemaining: 0, limitType: 'daily' })
-            get().startGame(duration, { ...options, skipLimits: true })
-          }
-        })
-        .catch(() => {
-          // Allow play on network/DB error
-          get().startGame(duration, { ...options, skipLimits: true })
-        })
-      return
-    }
+      // Update games played counter in localStorage (for guest users only)
+      // Logged-in users are handled server-side by /api/profile/increment-played
+      let updatedUserState: typeof userState
+      if (!storeIsLoggedIn && !userState.isAnonymous) {
+        updatedUserState = userState
+      } else if (!storeIsLoggedIn || userState.isAnonymous) {
+        updatedUserState = incrementAnonymousGames(userState)
+      } else {
+        updatedUserState = userState
+      }
+      saveUserState(updatedUserState)
 
-    // Pro users (paid or trial) can play any duration mode
-    // Free users can only play 30-day mode (unless in a room)
-    const storeSelectedDuration = get().selectedDuration
-    let gameDuration: GameDuration = duration ?? storeSelectedDuration ?? userState.selectedDuration ?? 30
-    if (!skipLimits && effectiveTier === 'free' && gameDuration !== 30) {
-      gameDuration = 30
-    }
-
-    // Update games played counter in localStorage (for guest users only)
-    // Logged-in users are handled server-side by /api/profile/increment-played above
-    let updatedUserState: typeof userState
-    if (!storeIsLoggedIn && !userState.isAnonymous) {
-      updatedUserState = userState
-    } else if (!storeIsLoggedIn || userState.isAnonymous) {
-      // Guest user - increment lifetime counter (localStorage only)
-      updatedUserState = incrementAnonymousGames(userState)
-    } else {
-      updatedUserState = userState
-    }
-    saveUserState(updatedUserState)
-
-    // Update remaining games count for UI
-    // For guests/members with skipLimits, the server already set gamesRemaining — preserve it
-    const remainingAfterStart = skipLimits ? get().gamesRemaining : getRemainingGames(updatedUserState, storeIsLoggedIn)
-    const limitType = getLimitType(updatedUserState, storeIsLoggedIn)
+      // Use server-provided remaining count if available, otherwise compute locally
+      const remainingAfterStart = remaining ?? getRemainingGames(updatedUserState, storeIsLoggedIn)
+      const limitType = getLimitType(updatedUserState, storeIsLoggedIn)
 
     // Check if this should be a scripted game (first 3 games ever)
     const scriptedGameNumber = getScriptedGameNumber(userState.totalGamesPlayed)
@@ -757,6 +712,49 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
     if (storeIsLoggedIn) {
       fetch('/api/game-plays', { method: 'POST' }).catch(() => {})
     }
+    } // end beginGame
+
+    // --- Async limit checks (call beginGame on success) ---
+
+    // Guests: IP-based total limit check (3 games ever)
+    if (!skipLimits && !storeIsLoggedIn) {
+      fetch('/api/game/guest-start', { method: 'POST' })
+        .then(res => res.json())
+        .then((data: { allowed: boolean; remaining: number }) => {
+          if (!data.allowed) {
+            set({ showAnonymousLimitModal: true, showDailyLimitModal: false, gamesRemaining: 0, limitType: 'anonymous' })
+            return
+          }
+          beginGame(data.remaining)
+        })
+        .catch(() => {
+          // Allow play on network/DB error
+          beginGame()
+        })
+      return
+    }
+
+    // Registered free user: server-side daily limit check
+    if (!skipLimits && storeIsLoggedIn && storeUserTier !== 'pro') {
+      fetch('/api/profile/increment-played', { method: 'POST' })
+        .then(res => {
+          if (res.status === 429) {
+            set({ showDailyLimitModal: true, showAnonymousLimitModal: false, gamesRemaining: 0, limitType: 'daily' })
+            return
+          }
+          if (res.ok) {
+            beginGame(0)
+          }
+        })
+        .catch(() => {
+          // Allow play on network/DB error
+          beginGame()
+        })
+      return
+    }
+
+    // Pro users and room games: start immediately
+    beginGame()
   },
 
   nextDay: () => {
