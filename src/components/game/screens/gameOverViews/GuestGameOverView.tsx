@@ -6,7 +6,6 @@ import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { GUEST_TOTAL_LIMIT } from '@/lib/game/userState'
 
-// Game over messages based on reason
 const GAME_OVER_MESSAGES: Record<string, { title: string; emoji: string; flavor: string }> = {
   BANKRUPT: {
     title: 'BANKRUPT',
@@ -63,7 +62,6 @@ export function GuestGameOverView() {
 
   return (
     <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 text-center">
-      {/* Game Over Reason */}
       <div className="text-6xl mb-4">{message.emoji}</div>
       <div className="text-mh-loss-red text-4xl font-bold mb-2 glow-red">
         {message.title}
@@ -75,7 +73,6 @@ export function GuestGameOverView() {
         SURVIVED {day} / {gameDuration} DAYS
       </div>
 
-      {/* Final Net Worth */}
       <div className="border border-mh-border p-5 mb-4 min-w-[200px]">
         <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
         <div
@@ -85,19 +82,16 @@ export function GuestGameOverView() {
         </div>
       </div>
 
-      {/* Games Remaining Counter */}
       <div className="border border-mh-border p-3 mb-6 min-w-[200px] bg-mh-border/10">
         <div className={`text-sm font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}>
-          {gamesRemaining}/{GUEST_TOTAL_LIMIT} free games remaining
+          {GUEST_TOTAL_LIMIT - gamesRemaining}/{GUEST_TOTAL_LIMIT} free games played
         </div>
         {gamesRemaining === 0 && (
           <div className="text-mh-loss-red text-xs mt-1">Sign up to continue playing</div>
         )}
       </div>
 
-      {/* Two-Column CTA Section */}
       <div className="flex gap-3 w-full max-w-[340px] mb-6">
-        {/* Sign Up Box */}
         <div className="flex-1 border border-mh-border p-4 bg-mh-border/5">
           <div className="text-mh-accent-blue text-xs font-bold mb-3 text-center">
             SAVE YOUR PROGRESS
@@ -124,7 +118,6 @@ export function GuestGameOverView() {
           </button>
         </div>
 
-        {/* Go Pro Box */}
         <div className="flex-1 border-2 border-mh-profit-green rounded-lg p-4 bg-mh-profit-green/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]">
           <div className="text-mh-profit-green text-xs font-bold mb-3 text-center">
             GO UNLIMITED
@@ -157,7 +150,6 @@ export function GuestGameOverView() {
         </div>
       </div>
 
-      {/* Play Again Button - Secondary */}
       <button
         onClick={() => startGame()}
         disabled={!canPlayAgain}
@@ -171,7 +163,6 @@ export function GuestGameOverView() {
         Play Again
       </button>
 
-      {/* Auth Modal */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   )

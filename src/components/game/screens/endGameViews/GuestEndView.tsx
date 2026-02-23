@@ -6,13 +6,6 @@ import { formatNetWorth } from '@/lib/utils/formatMoney'
 import { InlineUsernameInput } from './InlineUsernameInput'
 import { Skeleton } from '@/components/ui/Skeleton'
 
-/**
- * GuestEndView - End-game screen for anonymous/guest users.
- *
- * Focused on converting guests to registered users.
- * Shows game results + prominent registration CTA.
- * Registration is free and unlocks more games + durations.
- */
 export function GuestEndView({
   outcome,
   message,
@@ -33,32 +26,27 @@ export function GuestEndView({
 }: EndGameProps) {
   const isWin = outcome === 'win'
 
-  // Color scheme based on outcome
   const titleColor = isWin ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
   const netWorthColor = netWorth >= 0 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
   const profitColor = netWorth >= 100000 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
     <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 md:p-10 text-center relative z-[51]">
-      {/* Outcome Header */}
       <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
       <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
       <div className="text-mh-text-dim text-sm md:text-base mb-6 max-w-[280px] md:max-w-[400px] leading-relaxed">
         {message.flavor}
       </div>
 
-      {/* Days Survived */}
       <div className="text-mh-text-main text-lg md:text-xl mb-8">
         {isWin ? 'YOU SURVIVED' : 'SURVIVED'} {daysSurvived} / {gameDuration} DAYS
       </div>
 
-      {/* Final Net Worth */}
       <div className="border border-mh-border p-5 md:p-8 mb-2 min-w-[200px] md:min-w-[320px]">
         <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
         <div className={`${formatNetWorth(netWorth).sizeClass} ${netWorthColor}`}>{formatNetWorth(netWorth).text}</div>
       </div>
 
-      {/* Profit/Loss percentage - more prominent on wins */}
       {isWin && (
         <div className={`text-lg md:text-xl mb-6 ${profitColor}`}>
           {profitPercent >= 0 ? '+' : ''}
@@ -68,7 +56,6 @@ export function GuestEndView({
 
       <InlineUsernameInput />
 
-      {/* Leaderboard Rank */}
       {leaderboardLoading ? (
         <div className="mt-4 text-sm w-full max-w-[320px]">
           <div className="text-mh-text-dim text-xs mb-2">YOUR RANKING</div>
@@ -87,7 +74,6 @@ export function GuestEndView({
         </div>
       ) : null}
 
-      {/* Room code */}
       {roomCode && (
         <div className="mt-4 mb-2">
           <span className="text-mh-text-dim text-xs font-mono">ROOM </span>
@@ -95,10 +81,8 @@ export function GuestEndView({
         </div>
       )}
 
-      {/* Room standings (live or final) */}
       {roomStandings}
 
-      {/* Back to Room button */}
       {onBackToRoom && (
         <button
           onClick={onBackToRoom}
@@ -110,18 +94,16 @@ export function GuestEndView({
         </button>
       )}
 
-      {/* Guest Games Counter */}
       {isFinite(gamesRemaining) && (
         <div className="flex items-center gap-2 mt-4">
           <span className="text-mh-text-dim text-xs">FREE GAMES</span>
           <span className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}>
-            {gamesRemaining}/{GUEST_TOTAL_LIMIT}
+            {GUEST_TOTAL_LIMIT - gamesRemaining}/{GUEST_TOTAL_LIMIT}
           </span>
           {gamesRemaining === 0 && <span className="text-mh-loss-red text-xs">Register to continue</span>}
         </div>
       )}
 
-      {/* Registration CTA - The main conversion point */}
       <div className="w-full max-w-[320px] md:max-w-[400px] mt-8 mb-6">
         <div className="border-2 border-mh-accent-blue p-5 md:p-6 bg-mh-accent-blue/5">
           <div className="text-mh-text-bright text-base md:text-lg font-bold mb-4">
@@ -172,7 +154,6 @@ export function GuestEndView({
         </div>
       </div>
 
-      {/* Menu button */}
       <button
         onClick={onMenu}
         className="mb-4 bg-transparent border border-mh-border text-mh-text-dim

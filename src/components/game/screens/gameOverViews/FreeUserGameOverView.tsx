@@ -4,7 +4,6 @@ import { useGame } from '@/hooks/useGame'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 
-// Game over messages based on reason
 const GAME_OVER_MESSAGES: Record<string, { title: string; emoji: string; flavor: string }> = {
   BANKRUPT: {
     title: 'BANKRUPT',
@@ -60,7 +59,6 @@ export function FreeUserGameOverView() {
 
   return (
     <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 text-center">
-      {/* Game Over Reason */}
       <div className="text-6xl mb-4">{message.emoji}</div>
       <div className="text-mh-loss-red text-4xl font-bold mb-2 glow-red">
         {message.title}
@@ -72,7 +70,6 @@ export function FreeUserGameOverView() {
         SURVIVED {day} / {gameDuration} DAYS
       </div>
 
-      {/* Final Net Worth */}
       <div className="border border-mh-border p-5 mb-4 min-w-[200px]">
         <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
         <div
@@ -82,12 +79,11 @@ export function FreeUserGameOverView() {
         </div>
       </div>
 
-      {/* Daily Games Remaining Counter */}
       <div className="border border-mh-border p-3 mb-6 min-w-[200px] bg-mh-border/10">
         <div className="flex justify-between items-center">
           <span className="text-mh-text-dim text-xs">DAILY GAMES</span>
           <span className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}>
-            {gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
+            {REGISTERED_FREE_DAILY_LIMIT - gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
           </span>
         </div>
         {gamesRemaining === 0 && (
@@ -95,7 +91,6 @@ export function FreeUserGameOverView() {
         )}
       </div>
 
-      {/* Go Pro Card */}
       <div className="mb-6 w-full max-w-[280px] border-2 border-mh-profit-green/40 rounded-lg p-5 bg-mh-profit-green/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]">
         <div className="text-mh-text-bright text-sm font-bold mb-3 text-center">
           That was easy mode.
@@ -115,7 +110,6 @@ export function FreeUserGameOverView() {
         </button>
       </div>
 
-      {/* Play Again Button */}
       <button
         onClick={() => startGame()}
         disabled={!canPlayAgain}

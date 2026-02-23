@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import { toPng } from 'html-to-image'
-import { useGame } from '@/hooks/useGame'
 import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 import type { EndGameProps } from './types'
 import { formatNetWorth, formatCompact } from '@/lib/utils/formatMoney'
@@ -25,9 +24,8 @@ export function MemberEndView({
   leaderboardRank,
   leaderboardLoading,
 }: EndGameProps) {
-  const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
+  const [shareState, setShareState] = useState<'idle' | 'sharing'>('idle')
   const resultsRef = useRef<HTMLDivElement>(null)
-  const username = useGame((state) => state.username)
   const isWin = outcome === 'win'
 
   const titleColor = isWin ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
@@ -36,7 +34,6 @@ export function MemberEndView({
 
   return (
     <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center px-6 pt-10 pb-6 md:p-10 text-center overflow-auto relative z-[51]">
-      {/* Shareable results card */}
       <div ref={resultsRef} className="bg-mh-bg flex flex-col items-center p-6 md:p-10 text-center">
         <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
         <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
@@ -82,18 +79,16 @@ export function MemberEndView({
         <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>
 
-      {/* Daily Games Counter */}
       {isFinite(gamesRemaining) && (
         <div className="flex items-center gap-2 mb-4">
           <span className="text-mh-text-dim text-xs">DAILY GAMES</span>
           <span className={`font-bold ${gamesRemaining === 0 ? 'text-mh-loss-red' : 'text-mh-text-bright'}`}>
-            {gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
+            {REGISTERED_FREE_DAILY_LIMIT - gamesRemaining}/{REGISTERED_FREE_DAILY_LIMIT}
           </span>
           {gamesRemaining === 0 && <span className="text-mh-loss-red text-xs">Resets at midnight</span>}
         </div>
       )}
 
-      {/* Action buttons */}
       <button
         onClick={onPlayAgain}
         disabled={!canPlayAgain}
@@ -104,7 +99,6 @@ export function MemberEndView({
         [ PLAY AGAIN ]
       </button>
 
-      {/* Share Results */}
       <button
         onClick={async () => {
           if (!resultsRef.current || shareState === 'sharing') return
@@ -138,10 +132,9 @@ export function MemberEndView({
           px-8 py-3 text-sm font-mono cursor-pointer
           hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
       >
-        {shareState === 'sharing' ? '[ CAPTURING... ]' : shareState === 'copied' ? '[ COPIED! ]' : '[ SHARE RESULTS ]'}
+        {shareState === 'sharing' ? '[ CAPTURING... ]' : '[ SHARE RESULTS ]'}
       </button>
 
-      {/* Upgrade CTA for free members */}
       {!canPlayAgain && (
         <button
           onClick={onCheckout}
@@ -153,7 +146,6 @@ export function MemberEndView({
         </button>
       )}
 
-      {/* Menu */}
       <button
         onClick={onMenu}
         className="mt-3 bg-transparent border border-mh-border text-mh-text-dim
