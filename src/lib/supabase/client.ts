@@ -7,7 +7,6 @@ export function createClient() {
   )
 }
 
-// Singleton instance for use in components
 let browserClient: ReturnType<typeof createBrowserClient> | null = null
 
 export function getSupabaseClient() {

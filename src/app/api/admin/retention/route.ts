@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 401 })
     }
 
-    // Join auth.users with profiles to check admin status by email
     const [admin] = await db
       .select({ isAdmin: profiles.isAdmin })
       .from(authUsers)

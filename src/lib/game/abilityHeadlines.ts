@@ -1,18 +1,7 @@
 import type { PEAbilityId, AbilityHeadlines } from './types'
 
-/**
- * Headlines for PE ability 3-part story arc system.
- *
- * When a player executes an ability:
- * - Day N: Part 1 headline (story begins)
- * - Day N+1: Part 2 headline (tension builds, complications arise)
- * - Day N+2: Part 3 headline (resolution - favorable or unfavorable) + effects
- */
 export const ABILITY_HEADLINES: Record<PEAbilityId, AbilityHeadlines> = {
-  // =============================================================================
-  // LOBBY/POLITICAL (Capitol Consulting Group)
-  // =============================================================================
-
+  // Lobby/Political (Capitol Consulting Group)
   defense_spending_bill: {
     part1: 'WHISPERS: K STREET LOBBYISTS SCHEDULING URGENT MEETINGS WITH SENATE ARMED SERVICES COMMITTEE',
     part2: 'DEVELOPING: PENTAGON OFFICIALS SPOTTED AT PRIVATE DINNER WITH DEFENSE CONTRACTORS',
@@ -27,10 +16,7 @@ export const ABILITY_HEADLINES: Record<PEAbilityId, AbilityHeadlines> = {
     backfirePart3: 'EXPOSED: LOBBYING SCANDAL EXPLODES - CONGRESS LAUNCHES FULL INVESTIGATION INTO PHARMA TIES',
   },
 
-  // =============================================================================
-  // GEOPOLITICAL OPERATIONS (Blackstone Services)
-  // =============================================================================
-
+  // Geopolitical Operations (Blackstone Services)
   yemen_operations: {
     part1: 'UNCONFIRMED: UNIDENTIFIED VESSELS SPOTTED NEAR BOSPHORUS STRAIT - SECURITY ANALYSTS MONITORING',
     part2: 'DEVELOPING: COMMERCIAL SHIPPING REROUTING AROUND RED SEA - INSURANCE PREMIUMS SPIKING',
@@ -45,10 +31,7 @@ export const ABILITY_HEADLINES: Record<PEAbilityId, AbilityHeadlines> = {
     backfirePart3: 'NATIONALIZED: CHILE SEIZES FOREIGN-HELD MINES IN MIDNIGHT DECREE - INVESTORS WIPED OUT',
   },
 
-  // =============================================================================
-  // BIOWEAPON (Lazarus Genomics)
-  // =============================================================================
-
+  // Bioweapon (Lazarus Genomics)
   project_chimera: {
     part1: 'ALERT: MYSTERIOUS RESPIRATORY ILLNESS CLUSTERS REPORTED IN GUANGDONG PROVINCE',
     part2: 'DEVELOPING: WHO DISPATCHES EMERGENCY TEAM - AIRPORTS IMPLEMENTING ENHANCED SCREENING',
@@ -56,10 +39,7 @@ export const ABILITY_HEADLINES: Record<PEAbilityId, AbilityHeadlines> = {
     backfirePart3: 'TRACED: BIOLAB LEAK LINKED TO US BIOTECH FIRM - FBI RAIDS HEADQUARTERS',
   },
 
-  // =============================================================================
-  // MEDIA MANIPULATION (Apex Media)
-  // =============================================================================
-
+  // Media Manipulation (Apex Media)
   operation_divide: {
     part1: 'PATTERN: UNUSUAL SPIKE IN DIVISIVE CONTENT ACROSS SOCIAL PLATFORMS - BOTS SUSPECTED',
     part2: 'DEVELOPING: VIRAL MISINFORMATION CAMPAIGN TRACED TO COORDINATED NETWORK - TENSIONS RISING',
@@ -67,10 +47,7 @@ export const ABILITY_HEADLINES: Record<PEAbilityId, AbilityHeadlines> = {
     backfirePart3: 'UNMASKED: FOREIGN DISINFO NETWORK EXPOSED - MEDIA COMPANY UNDER FEDERAL INVESTIGATION',
   },
 
-  // =============================================================================
-  // INSIDER TIP (Smokey's on K) — placeholder, headlines sourced from INSIDER_TIP_SCENARIOS at runtime
-  // =============================================================================
-
+  // Insider Tip (Smokey's on K) — placeholder, headlines sourced at runtime
   insider_tip: {
     part1: '',
     part2: '',

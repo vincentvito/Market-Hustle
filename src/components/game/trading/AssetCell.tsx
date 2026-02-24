@@ -28,20 +28,17 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 
-  // Check if user has ANY position in this asset (regular, leveraged, or short)
   const hasLeveraged = leveragedPositions.some(p => p.assetId === asset.id)
   const hasShort = shortPositions.some(p => p.assetId === asset.id)
   const hasPosition = isOwned || hasLeveraged || hasShort
 
-  // Background class based on theme
   const getBackgroundClass = () => {
-    if (isBloomberg) return 'bg-black'  // Use inline style for colored BG
+    if (isBloomberg) return 'bg-black'
     if (isModern3) return 'bg-[#0f1419]'
     if (hasPosition) return 'bg-[#0d1a24] border-mh-accent-blue/30'
     return 'bg-mh-bg'
   }
 
-  // Modern 3: Performance-based glow for positioned assets
   const getModern3OwnedGlow = (): React.CSSProperties => {
     if (!isModern3 || !hasPosition) return {}
     if (change >= 0) {
@@ -51,13 +48,11 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
     }
   }
 
-  // Modern 3: Subtle shadow for non-positioned cards (floating effect)
   const getModern3CardShadow = (): React.CSSProperties => {
     if (!isModern3 || hasPosition) return {}
     return { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)' }
   }
 
-  // Modern 3: Top accent line with gradient (opacity based on change magnitude)
   const getModern3AccentStyle = (): React.CSSProperties => {
     if (!isModern3) return {}
     const opacity = Math.min(Math.abs(change) * 0.15, 0.99)
@@ -68,37 +63,27 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
     }
   }
 
-  // Retro 2: Performance-based glow for positioned cards, subtle shadow otherwise
   const getRetro2CardStyle = (): React.CSSProperties => {
     if (!isRetro2) return {}
     if (hasPosition) {
-      // Performance-based glow (green if up, red if down)
       if (change >= 0) {
         return { boxShadow: '0 0 15px rgba(0, 255, 136, 0.35)' }
       } else {
         return { boxShadow: '0 0 15px rgba(255, 82, 82, 0.35)' }
       }
     }
-    // Subtle shadow for no position
     return { boxShadow: '0 0 8px rgba(255, 255, 255, 0.1)' }
   }
 
-  // Bloomberg: Colored cell backgrounds based on performance (key Bloomberg feature)
   const getBloombergCellStyle = (): React.CSSProperties => {
     if (!isBloomberg) return {}
-    // Strong positive (>=5%)
     if (change >= 5) return { backgroundColor: '#003300', borderColor: '#004400' }
-    // Mild positive
     if (change > 0) return { backgroundColor: '#001a00', borderColor: '#003300' }
-    // Strong negative (<=-5%)
     if (change <= -5) return { backgroundColor: '#330000', borderColor: '#440000' }
-    // Mild negative
     if (change < 0) return { backgroundColor: '#1a0000', borderColor: '#330000' }
-    // Neutral
     return { backgroundColor: '#0a0800', borderColor: '#333333' }
   }
 
-  // Combine style props
   const getCombinedStyle = (): React.CSSProperties => {
     return {
       ...getModern3OwnedGlow(),
@@ -148,7 +133,6 @@ export function AssetCell({ asset, onSelect, id, priceId }: AssetCellProps) {
           {change.toFixed(1)}%
         </div>
       </div>
-      {/* Position indicators */}
       {(hasShort || hasLeveraged) && (
         <div className="flex gap-0.5 mt-0.5">
           {hasShort && (

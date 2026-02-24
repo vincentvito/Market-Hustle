@@ -24,7 +24,6 @@ export async function POST(request: Request) {
 
     const normalizedRequestUsername = typeof requestUsername === 'string' ? requestUsername.trim().toLowerCase() : null
 
-    // Get user profile for username
     const profileResult = await db
       .select({ username: profiles.username })
       .from(profiles)
@@ -49,7 +48,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Username required' }, { status: 400 })
     }
 
-    // Find room by code
     const roomResult = await db
       .select()
       .from(rooms)
@@ -66,7 +64,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Room is closed' }, { status: 400 })
     }
 
-    // Parse settings from scenarioData
     let startingCash = 50_000
     let startingDebt = 50_000
     if (room.scenarioData) {
@@ -77,7 +74,6 @@ export async function POST(request: Request) {
       } catch { /* ignore parse errors */ }
     }
 
-    // Fetch existing results for standings
     const existingResults = await db
       .select()
       .from(roomResults)
@@ -93,7 +89,6 @@ export async function POST(request: Request) {
       rank: r.rank,
     }))
 
-    // Check if already in room
     const existingPlayer = await db
       .select({ id: roomPlayers.id, status: roomPlayers.status })
       .from(roomPlayers)
@@ -134,7 +129,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Room is full' }, { status: 400 })
     }
 
-    // Add player
     await db.insert(roomPlayers).values({
       roomId: room.id,
       userId: user.id,

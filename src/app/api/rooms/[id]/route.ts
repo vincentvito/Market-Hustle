@@ -20,7 +20,6 @@ export async function GET(
 
     const { id } = await params
 
-    // Get room
     const roomResult = await db
       .select()
       .from(rooms)
@@ -33,25 +32,21 @@ export async function GET(
 
     const room = roomResult[0]
 
-    // Get players
     const players = await db
       .select()
       .from(roomPlayers)
       .where(eq(roomPlayers.roomId, id))
 
-    // Check room membership
     const isMember = players.some(p => p.userId === user.id)
     if (!isMember) {
       return NextResponse.json({ error: 'Not a member of this room' }, { status: 403 })
     }
 
-    // Always fetch results
     const results = await db
       .select()
       .from(roomResults)
       .where(eq(roomResults.roomId, id))
 
-    // Parse settings
     let startingCash = 50_000
     let startingDebt = 50_000
     if (room.scenarioData) {

@@ -20,13 +20,11 @@ function formatPrice(value: number): string {
 function formatEffects(ability: PresidentialAbility): string {
   const parts: string[] = []
 
-  // Market effects
   Object.entries(ability.effects).forEach(([assetId, effect]) => {
     const sign = effect > 0 ? '+' : ''
     parts.push(`${assetId.toUpperCase()} ${sign}${Math.round(effect * 100)}%`)
   })
 
-  // Special effects
   if (ability.cashGain) {
     parts.push(`+${formatPrice(ability.cashGain)} CASH`)
   }
@@ -43,7 +41,6 @@ function formatEffects(ability: PresidentialAbility): string {
     parts.push(`⚠️ INFLATION IN ${ability.delayedEffect.daysDelay} DAYS`)
   }
 
-  // Show first 3-4 effects
   if (parts.length > 4) {
     return parts.slice(0, 3).join(', ') + ` +${parts.length - 3} more`
   }
@@ -65,7 +62,7 @@ export function PresidentialToolkit() {
 
   return (
     <div className={`${isModern3 ? 'bg-[#0f1419] rounded-lg p-3' : 'bg-[#0a1218] rounded-lg p-3 border border-mh-border'}`}>
-      {/* Header */}
+
       <div className="flex items-center gap-2 mb-3">
         <span className="text-2xl">🏛️</span>
         <div>
@@ -78,7 +75,6 @@ export function PresidentialToolkit() {
         </div>
       </div>
 
-      {/* Abilities */}
       <div className="space-y-2">
         {abilities.map((ability: PresidentialAbility) => {
           const isUsed = usedPresidentialAbilities.some(u => u.abilityId === ability.id)
@@ -93,7 +89,6 @@ export function PresidentialToolkit() {
                 isModern3 ? 'bg-[#1a2028]' : 'bg-[#111920]'
               } ${isUsed ? 'opacity-60' : ''}`}
             >
-              {/* Ability header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-base">{ability.emoji}</span>
@@ -112,17 +107,14 @@ export function PresidentialToolkit() {
                 )}
               </div>
 
-              {/* Flavor text */}
               <div className="text-[10px] text-mh-text-dim mt-1">
                 {ability.flavor}
               </div>
 
-              {/* Effects preview */}
               <div className="text-[9px] text-blue-400 mt-1 line-clamp-1">
                 {formatEffects(ability)}
               </div>
 
-              {/* Cost and execute button (only if not used) */}
               {!isUsed && (
                 <div className="mt-2">
                   <div className="flex items-center gap-3 text-[10px] mb-2">
@@ -153,7 +145,6 @@ export function PresidentialToolkit() {
         })}
       </div>
 
-      {/* Footer message */}
       <div className="mt-3 text-center text-[9px] text-mh-text-dim">
         Each executive order can only be signed once.
       </div>

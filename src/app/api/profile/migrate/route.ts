@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
 
     const { stats, gameHistory } = await request.json()
 
-    // Migrate game history
     if (gameHistory && Array.isArray(gameHistory) && gameHistory.length > 0) {
       const rows = gameHistory.map((entry: {
         gameId: string
@@ -43,7 +42,6 @@ export async function POST(request: NextRequest) {
         .onConflictDoNothing()
     }
 
-    // Migrate aggregate stats
     if (stats && stats.totalGamesPlayed > 0) {
       await db
         .update(profiles)

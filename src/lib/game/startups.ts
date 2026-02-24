@@ -1,7 +1,6 @@
 import type { Startup } from './types'
 
 export const ANGEL_STARTUPS: Startup[] = [
-  // 1. QUANTUM TACOS
   {
     id: 'angel_quantum_tacos',
     name: 'QUANTUM TACOS',
@@ -26,7 +25,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO & Co-founder',
     traction: '47K orders in pilot',
   },
-  // 2. VIBE CHECK
   {
     id: 'angel_vibe_check',
     name: 'VIBE CHECK',
@@ -51,7 +49,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Google Health)',
     traction: '1.2M downloads',
   },
-  // 3. FARTCOIN
   {
     id: 'angel_fartcoin',
     name: 'FARTCOIN',
@@ -76,7 +73,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'Chief Flatulence Officer',
     traction: '50K DAU, $2M volume',
   },
-  // 4. GRANNY'S GUNS
   {
     id: 'angel_grannys_guns',
     name: "GRANNY'S GUNS",
@@ -101,7 +97,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'Founder (Age 74)',
     traction: '8 locations, 40K members',
   },
-  // 5. MOON CHEESE
   {
     id: 'angel_moon_cheese',
     name: 'MOON CHEESE',
@@ -126,7 +121,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'Master Cheesemaker & CEO',
     traction: '$400/lb retail, sold out',
   },
-  // 6. CRISPR CATS
   {
     id: 'angel_crispr_cats',
     name: 'CRISPR CATS',
@@ -151,7 +145,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-CRISPR Therapeutics)',
     traction: '2,000 pre-orders at $5K each',
   },
-  // 7. HANGOVER PILL
   {
     id: 'angel_hangover_pill',
     name: 'HANGOVER PILL',
@@ -176,7 +169,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO & Chief Scientist',
     traction: 'Phase 2 trials complete',
   },
-  // 8. FOREVER YOUNG
   {
     id: 'angel_forever_young',
     name: 'FOREVER YOUNG',
@@ -201,7 +193,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (Harvard Genetics PhD)',
     traction: 'Peter Thiel invested',
   },
-  // 9. ASTEROID MINER
   {
     id: 'angel_asteroid_miner',
     name: 'ASTEROID MINER',
@@ -226,7 +217,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-JPL)',
     traction: 'NASA partnership signed',
   },
-  // 10. JETPACK JERRY
   {
     id: 'angel_jetpack_jerry',
     name: 'JETPACK JERRY',
@@ -251,7 +241,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO & Chief Test Pilot',
     traction: 'Dubai ordered 100 units',
   },
-  // 11. DEFI CASINO
   {
     id: 'angel_defi_casino',
     name: 'DEFI CASINO',
@@ -276,7 +265,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (anon)',
     traction: '$100M TVL',
   },
-  // 12. NFT CEMETERY
   {
     id: 'angel_nft_cemetery',
     name: 'NFT CEMETERY',
@@ -301,7 +289,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Ancestry)',
     traction: 'SCI partnership signed',
   },
-  // 13. DEEPFAKE DATING
   {
     id: 'angel_deepfake_dating',
     name: 'DEEPFAKE DATING',
@@ -326,7 +313,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Hinge)',
     traction: '10K matches made',
   },
-  // 14. ROBO LAWYER
   {
     id: 'angel_robo_lawyer',
     name: 'ROBO LAWYER',
@@ -351,7 +337,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (YC alum)',
     traction: '10,000 cases won',
   },
-  // 15. BRAIN UPLOAD
   {
     id: 'angel_brain_upload',
     name: 'BRAIN UPLOAD',
@@ -376,7 +361,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (MIT Neuroscience)',
     traction: 'DARPA $5M grant',
   },
-  // 16. DIVORCE AI
   {
     id: 'angel_divorce_ai',
     name: 'DIVORCE AI',
@@ -401,7 +385,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-family law)',
     traction: 'Featured on Oprah',
   },
-  // 17. INFLUENCER FUNERAL
   {
     id: 'angel_influencer_funeral',
     name: 'INFLUENCER FUNERAL',
@@ -426,7 +409,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (yes, real name)',
     traction: '100M views on one stream',
   },
-  // 18. DIGITAL TWIN CORP
   {
     id: 'angel_digital_twin',
     name: 'DIGITAL TWIN CORP',
@@ -451,7 +433,6 @@ export const ANGEL_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Zoom)',
     traction: '1,000 corporate signups',
   },
-  // 19. SHROOM BOOM
   {
     id: 'angel_shroom_boom',
     name: 'SHROOM BOOM',
@@ -479,7 +460,6 @@ export const ANGEL_STARTUPS: Startup[] = [
 ]
 
 export const VC_STARTUPS: Startup[] = [
-  // 1. SPACE Z
   {
     id: 'vc_space_z',
     name: 'SPACE Z',
@@ -506,7 +486,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-SpaceX, ex-NASA)',
     traction: '$200M NASA contract',
   },
-  // 2. NEURALINK 2.0
   {
     id: 'vc_neuralink',
     name: 'NEURALINK 2.0',
@@ -533,7 +512,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Neuralink)',
     traction: 'FDA breakthrough status',
   },
-  // 3. SOLIDSTATE AI
   {
     id: 'vc_solidstate_ai',
     name: 'SOLIDSTATE AI',
@@ -560,7 +538,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-DeepMind)',
     traction: 'Turned down $4B offer',
   },
-  // 4. AUTONOMOUS TRUCKS
   {
     id: 'vc_autonomous_trucks',
     name: 'AUTONOMOUS TRUCKS',
@@ -587,7 +564,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Waymo)',
     traction: '1M miles, 0 accidents',
   },
-  // 5. CANCER CURE INC
   {
     id: 'vc_cancer_cure',
     name: 'CANCER CURE INC',
@@ -614,7 +590,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (Nobel Prize finalist)',
     traction: 'Phase 3: 90% efficacy',
   },
-  // 6. SYNTHETIC ORGANS
   {
     id: 'vc_synthetic_organs',
     name: 'SYNTHETIC ORGANS',
@@ -641,7 +616,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Johns Hopkins)',
     traction: 'First heart transplant done',
   },
-  // 7. FUSION POWER
   {
     id: 'vc_fusion_power',
     name: 'FUSION POWER',
@@ -668,7 +642,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-MIT PSFC)',
     traction: 'Net energy gain achieved',
   },
-  // 8. SOLID STATE BATTERY
   {
     id: 'vc_solid_state_battery',
     name: 'SOLID STATE BATTERY',
@@ -695,7 +668,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-CATL)',
     traction: 'Tesla acquisition talks',
   },
-  // 9. CENTRAL BANK COIN
   {
     id: 'vc_central_bank_coin',
     name: 'CENTRAL BANK COIN',
@@ -722,7 +694,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-IMF)',
     traction: 'EU digital euro selected',
   },
-  // 10. INSTANT MORTGAGE
   {
     id: 'vc_instant_mortgage',
     name: 'INSTANT MORTGAGE',
@@ -749,7 +720,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Rocket Mortgage)',
     traction: '$10B loans processed',
   },
-  // 11. OCEAN MINING
   {
     id: 'vc_ocean_mining',
     name: 'OCEAN MINING',
@@ -776,7 +746,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Pacific Fleet)',
     traction: 'US Navy contract signed',
   },
-  // 12. SHADOW BANK AI
   {
     id: 'vc_shadow_bank_ai',
     name: 'SHADOW BANK AI',
@@ -803,7 +772,6 @@ export const VC_STARTUPS: Startup[] = [
     founderTitle: 'CEO (ex-Goldman Private)',
     traction: '50 billionaire clients',
   },
-  // 13. MARS COLONY CORP
   {
     id: 'vc_mars_colony',
     name: 'MARS COLONY CORP',

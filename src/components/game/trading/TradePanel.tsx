@@ -33,20 +33,17 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
     maxBuy > 1 ? ((buyQty - 1) / (maxBuy - 1)) * 100 : 0
   )
 
-  // Sync slider position when buyQty changes externally (e.g., clicking 1 or MAX)
   useEffect(() => {
     if (!isDragging.current) {
       setSliderPercent(maxBuy > 1 ? ((buyQty - 1) / (maxBuy - 1)) * 100 : 0)
     }
   }, [buyQty, maxBuy])
 
-  // Calculate quantity from slider percentage
   const getQtyFromPercent = useCallback((percent: number) => {
     const qty = Math.round(1 + (percent / 100) * (maxBuy - 1))
     return Math.max(1, Math.min(maxBuy, qty))
   }, [maxBuy])
 
-  // Calculate percentage from position
   const getPercentFromPosition = useCallback((clientX: number) => {
     if (!sliderRef.current) return 0
     const rect = sliderRef.current.getBoundingClientRect()
@@ -54,7 +51,6 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
     return Math.max(0, Math.min(100, (x / rect.width) * 100))
   }, [])
 
-  // Mouse/touch handlers - update visual position smoothly, snap qty on release
   const handleStart = useCallback((clientX: number) => {
     isDragging.current = true
     const percent = getPercentFromPosition(clientX)
@@ -77,13 +73,11 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
     }
   }, [buyQty, maxBuy])
 
-  // Mouse events
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
     handleStart(e.clientX)
   }
 
-  // Touch events
   const onTouchStart = (e: React.TouchEvent) => {
     e.preventDefault()
     handleStart(e.touches[0].clientX)
@@ -94,7 +88,6 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
     handleMove(e.touches[0].clientX)
   }
 
-  // Add persistent listeners for drag
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => handleMove(e.clientX)
     const onMouseUp = () => handleEnd()
@@ -115,7 +108,6 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
 
   return (
     <div className="border-b border-mh-border bg-[#111920] px-4 py-3" style={{ touchAction: 'none' }}>
-      {/* Slider */}
       <div className="mb-3 px-10">
         {/* Slider Track - padded to keep fingers away from screen edges on iOS */}
         <div
@@ -127,16 +119,13 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
           onTouchMove={onTouchMove}
           onTouchEnd={handleEnd}
         >
-          {/* Track background */}
           <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-2 bg-[#1a2a3a] rounded-full" />
 
-          {/* Track fill */}
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 h-2 bg-mh-accent-blue rounded-full transition-[width] duration-75"
             style={{ width: `${sliderPercent}%` }}
           />
 
-          {/* Snap point markers at 25%, 50%, 75% - only show when there are enough steps */}
           {maxBuy >= 5 && [25, 50, 75].map(pct => (
             <div
               key={pct}
@@ -145,14 +134,12 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
             />
           ))}
 
-          {/* Thumb - 20px (reduced from 24px) */}
           <div
             className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-mh-accent-blue rounded-full shadow-lg border-2 border-mh-bg transition-[left] duration-75"
             style={{ left: `calc(${sliderPercent}% - 10px)` }}
           />
         </div>
 
-        {/* Labels row */}
         <div className="flex justify-between items-center mt-1">
           <button
             onClick={() => setBuyQty(1)}
@@ -177,7 +164,6 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
         </div>
       </div>
 
-      {/* Buy/Sell Buttons */}
       <div className="flex gap-2">
         <button
           onClick={() => canSell && sell(assetId, sellQty)}
@@ -196,10 +182,10 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
           className={`flex-1 py-3 rounded text-base font-bold font-mono transition-colors ${
             canBuy
               ? 'bg-[#0a2015] text-mh-profit-green cursor-pointer hover:bg-[#0d2a1a] border border-mh-profit-green/30'
-              : 'bg-[#111920] text-mh-border cursor-default border border-mh-border/30'
+              : 'bg-[#1a1215] text-mh-loss-red/60 cursor-default border border-mh-loss-red/25'
           }`}
         >
-          BUY {buyQty}
+          {canBuy ? `BUY ${buyQty}` : `BUY ${buyQty} 😂`}
         </button>
       </div>
     </div>

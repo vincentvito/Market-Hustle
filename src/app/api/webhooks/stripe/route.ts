@@ -105,9 +105,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ============================================================================
-// checkout.session.completed — one-time payment completed
-// ============================================================================
 async function handleCheckoutCompleted(
   supabase: ReturnType<typeof createAdminClient>,
   session: Stripe.Checkout.Session
@@ -152,7 +149,7 @@ async function handleCheckoutCompleted(
       finalUserId = existingAccount.id
       console.log(`Found existing user for ${customerEmail}`)
     } else {
-      // Invite new user - this creates account AND sends magic link email
+      // Invite new user — creates account and sends an invite email
       isNewUser = true
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
@@ -169,41 +166,6 @@ async function handleCheckoutCompleted(
 
       finalUserId = inviteData.user.id
       console.log(`Invited new user: ${customerEmail}`)
-    }
-  }
-
-  // For existing users who checked out without being logged in, send a magic link.
-  // Skip if user was already authenticated (client_reference_id was set).
-  const wasAuthenticated = !!session.client_reference_id
-  if (!isNewUser && !wasAuthenticated) {
-    try {
-      const existingUserBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/otp`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-        },
-        body: JSON.stringify({
-          email: customerEmail,
-          create_user: false,
-          options: {
-            emailRedirectTo: `${existingUserBaseUrl}/auth/callback?next=${encodeURIComponent('/?autostart=pro')}`,
-          },
-        }),
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Failed to send magic link email:', errorText)
-        // Don't throw — magic link failure shouldn't prevent purchase recording
-      } else {
-        console.log(`Magic link email sent to existing user: ${customerEmail}`)
-      }
-    } catch (emailError) {
-      console.error('Error sending magic link:', emailError)
-      // Don't throw — continue with purchase recording
     }
   }
 
@@ -240,9 +202,6 @@ async function handleCheckoutCompleted(
   console.log(`Checkout completed for user ${finalUserId}, plan: lifetime`)
 }
 
-// ============================================================================
-// charge.refunded — full refund
-// ============================================================================
 async function handleChargeRefunded(
   charge: Stripe.Charge
 ) {
@@ -282,9 +241,6 @@ async function handleChargeRefunded(
   console.log(`Full refund processed for user ${sub[0].userId}, tier downgraded`)
 }
 
-// ============================================================================
-// charge.dispute.created — chargeback
-// ============================================================================
 async function handleDisputeCreated(
   dispute: Stripe.Dispute
 ) {

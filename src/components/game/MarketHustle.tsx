@@ -36,7 +36,6 @@ export function MarketHustle({ initialLeaderboards }: MarketHustleProps) {
   const isLoggedIn = useGame(state => state.isLoggedIn)
   const { checkout } = useStripeCheckout()
 
-  // After login, auto-redirect to Stripe if the user had clicked "buy" while logged out
   useEffect(() => {
     if (!isLoggedIn) return
     if (sessionStorage.getItem(PENDING_CHECKOUT_KEY)) {
@@ -45,7 +44,6 @@ export function MarketHustle({ initialLeaderboards }: MarketHustleProps) {
     }
   }, [isLoggedIn, checkout])
 
-  // Detect ?scenario=<id> URL param and auto-load + start the scenario
   useEffect(() => {
     if (scenarioLoaded.current) return
     const params = new URLSearchParams(window.location.search)
@@ -73,7 +71,6 @@ export function MarketHustle({ initialLeaderboards }: MarketHustleProps) {
       {!showRoomHub && screen === 'game' && <GameScreen />}
       {!showRoomHub && (screen === 'gameover' || screen === 'win') && <EndGameCoordinator />}
 
-      {/* Global overlays */}
       <SettingsPanel />
       <AchievementToast />
       <DailyLimitModal />

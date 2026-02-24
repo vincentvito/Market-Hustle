@@ -21,7 +21,6 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
 
-    // Get room and verify host
     const roomResult = await db
       .select()
       .from(rooms)
@@ -49,7 +48,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Settings are locked — a player has already started' }, { status: 400 })
     }
 
-    // Parse and validate settings
     const duration = typeof body.duration === 'number' && [30, 45, 60].includes(body.duration)
       ? body.duration : room.gameDuration
     const startingCash = typeof body.startingCash === 'number' && body.startingCash > 0
@@ -57,7 +55,6 @@ export async function PUT(
     const startingDebt = typeof body.startingDebt === 'number' && body.startingDebt >= 0
       ? body.startingDebt : 50_000
 
-    // Update room
     await db
       .update(rooms)
       .set({

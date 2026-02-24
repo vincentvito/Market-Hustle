@@ -1,16 +1,11 @@
-// Scripted game system — curated first 3 games for new players
-// After 3 plays, normal random generation kicks in
-
 import type { NewsLabelType, EncounterType } from '../types'
 
-/** A single scripted news item for one day */
 export interface ScriptedNewsItem {
   headline: string
   effects: Record<string, number>
   labelType: NewsLabelType
 }
 
-/** A single day in a scripted game */
 export interface ScriptedDay {
   day: number                                              // 1-30
   news: ScriptedNewsItem[]                                 // 1-3 headlines
@@ -20,7 +15,6 @@ export interface ScriptedDay {
   startupOffer?: { tier: 'angel' | 'vc' }                 // force a startup offer on this day
 }
 
-/** Complete definition of one scripted game */
 export interface ScriptedGameDefinition {
   id: string
   title: string

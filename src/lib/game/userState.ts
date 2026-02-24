@@ -1,7 +1,5 @@
 import { isDev } from '@/lib/env'
 
-// User tier and state management for Free/Pro features
-
 export type UserTier = 'free' | 'pro'
 
 export type GameDuration = 30 | 45 | 60
@@ -73,21 +71,17 @@ export const DEFAULT_USER_STATE: UserState = {
   selectedTheme: 'modern3',
 }
 
-// Game limits by user type
 export const GUEST_TOTAL_LIMIT = 3           // IP-based total game cap for non-logged-in users (must register after 3)
 export const REGISTERED_FREE_DAILY_LIMIT = 1 // 1 game per day for registered free users (must pay for more)
 
-// Helper to generate unique game ID
 export function generateGameId(): string {
   return `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }
 
-// Helper to get today's date as ISO string (YYYY-MM-DD)
 export function getTodayDateString(): string {
   return new Date().toISOString().split('T')[0]
 }
 
-// Check if user can start a new game based on their tier
 export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
   if (isDev) return true
   // Pro users: unlimited
@@ -98,7 +92,6 @@ export function canStartGame(state: UserState, isLoggedIn: boolean): boolean {
   return getRemainingGames(state, isLoggedIn) > 0
 }
 
-// Get remaining games based on user tier
 export function getRemainingGames(state: UserState, isLoggedIn: boolean): number {
   if (isDev) return Infinity
   // Pro users: unlimited
@@ -111,7 +104,6 @@ export function getRemainingGames(state: UserState, isLoggedIn: boolean): number
   return Math.max(0, REGISTERED_FREE_DAILY_LIMIT - state.gamesPlayedToday)
 }
 
-// Get the limit type for display purposes
 export function getLimitType(state: UserState, isLoggedIn: boolean): 'anonymous' | 'daily' | 'unlimited' {
   if (state.tier === 'pro') return 'unlimited'
   if (!isLoggedIn) return 'anonymous'

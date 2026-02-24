@@ -43,7 +43,6 @@ export function useRoomChannel({
   const track = useCallback((state: Partial<RoomPresenceState>) => {
     if (!userId || !username) return
 
-    // Always update presenceRef so subscribe callback can use latest state
     presenceRef.current = {
       userId,
       username,
@@ -54,7 +53,6 @@ export function useRoomChannel({
       ...state,
     }
 
-    // Only send to channel if subscribed
     if (channelRef.current) {
       channelRef.current.track(presenceRef.current)
     }
@@ -106,7 +104,6 @@ export function useRoomChannel({
       })
       .subscribe(async (status: string) => {
         if (status === 'SUBSCRIBED') {
-          // Use presenceRef if track() was called before subscription, otherwise use defaults
           const initialState = presenceRef.current || {
             userId,
             username,

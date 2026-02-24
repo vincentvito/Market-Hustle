@@ -1,8 +1,6 @@
 import { LifestyleAsset, LuxuryAsset, LuxuryAssetId, PEAbility, PEAbilityId, InsiderTipScenario } from './types'
 
-// =============================================================================
-// PE ABILITIES - One-time villain actions with 20% backfire risk
-// =============================================================================
+// PE Abilities
 export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
   // Capitol Consulting Group abilities
   defense_spending_bill: {
@@ -135,7 +133,6 @@ export const PE_ABILITIES: Record<PEAbilityId, PEAbility> = {
   },
 }
 
-// Helper to get abilities for a PE company
 export function getPEAbilities(peAssetId: string): PEAbility[] {
   const abilityMap: Record<string, PEAbilityId[]> = {
     pe_smokeys_on_k: ['insider_tip'],
@@ -216,10 +213,7 @@ export const INSIDER_TIP_SCENARIOS: InsiderTipScenario[] = [
   },
 ]
 
-// =============================================================================
-// PROPERTIES - Stable rental income (1.5-4% daily), NEVER negative
-// Safe investments that generate consistent returns
-// =============================================================================
+// Properties
 export const PROPERTIES: LifestyleAsset[] = [
   // === RESIDENTIAL PROPERTIES ===
   {
@@ -294,13 +288,7 @@ export const PROPERTIES: LifestyleAsset[] = [
   },
 ]
 
-// =============================================================================
-// PRIVATE EQUITY - Simplified 6-asset system
-// 3 prestige/income assets + 3 strategy unlock assets
-// BLUE CHIP: Established businesses (~5% return, ~3% monthly failure)
-// GROWTH: High risk/reward (~7-9% return, ~9-15% monthly failure)
-// Sorted by price (low to high)
-// =============================================================================
+// Private Equity
 export const PRIVATE_EQUITY: LifestyleAsset[] = [
   // === BLUE CHIP TIER - Prestige/Income Assets ===
   {
@@ -403,25 +391,20 @@ export const PRIVATE_EQUITY: LifestyleAsset[] = [
   },
 ]
 
-// All lifestyle assets combined
 export const LIFESTYLE_ASSETS: LifestyleAsset[] = [
   ...PROPERTIES,
   ...PRIVATE_EQUITY,
 ]
 
-// Helper to get asset by ID
 export function getLifestyleAsset(id: string): LifestyleAsset | undefined {
   return LIFESTYLE_ASSETS.find(a => a.id === id)
 }
 
-// Helper to get assets by category
 export function getLifestyleAssetsByCategory(category: LifestyleAsset['category']): LifestyleAsset[] {
   return LIFESTYLE_ASSETS.filter(a => a.category === category)
 }
 
-// =============================================================================
-// RISK TIER HELPERS - Simplified two-tier system
-// =============================================================================
+// Risk tier helpers
 export const RISK_TIER_COLORS: Record<string, string> = {
   blue_chip: '#3b82f6',   // Blue - stable, proven businesses
   growth: '#22c55e',      // Green - high risk, high reward
@@ -432,10 +415,7 @@ export const RISK_TIER_LABELS: Record<string, string> = {
   growth: 'GROWTH',
 }
 
-// =============================================================================
-// LUXURY ASSETS - Expensive toys with passive benefits
-// Fixed price, fixed daily cost, no price fluctuation
-// =============================================================================
+// Luxury assets
 export const LUXURY_ASSETS: LuxuryAsset[] = [
   {
     id: 'private_jet',
@@ -502,7 +482,6 @@ export const LUXURY_ASSETS: LuxuryAsset[] = [
   },
 ]
 
-// Helper to get luxury asset by ID
 export function getLuxuryAsset(id: LuxuryAssetId): LuxuryAsset | undefined {
   return LUXURY_ASSETS.find(a => a.id === id)
 }

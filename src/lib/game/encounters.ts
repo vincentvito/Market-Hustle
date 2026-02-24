@@ -1,6 +1,3 @@
-// Random Encounters - High-stakes popup events during gameplay
-// Design: Max 2 encounters per game, 8-day cooldown, first encounter no earlier than Day 3
-
 export type EncounterType = 'sec' | 'divorce' | 'shitcoin' | 'kidney' | 'roulette' | 'tax'
 
 export interface EncounterChoice {

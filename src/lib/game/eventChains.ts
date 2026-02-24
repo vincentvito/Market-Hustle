@@ -1,17 +1,7 @@
 import { EventChain } from './types'
 
-// =============================================================================
-// EVENT CHAINS
-// Each chain has a rumor phase and two possible outcomes.
-// rumorSentiment: The mood during anticipation (usually 'mixed' since outcome is uncertain)
-// sentimentAssets: Which assets are tracked for conflict prevention
-// Outcome sentiment/sentimentAssets: The mood after resolution
-// =============================================================================
-
 export const EVENT_CHAINS: EventChain[] = [
-  // ============================================
   // GEOPOLITICAL (Taiwan) - 3 chains
-  // ============================================
   {
     id: 'geo_taiwan_invasion',
     category: 'geopolitical',
@@ -135,9 +125,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // FED/MONETARY - 2 chains
-  // ============================================
   {
     id: 'fed_pivot',
     category: 'fed',
@@ -188,9 +176,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // CRYPTO - 3 chains
-  // ============================================
   {
     id: 'crypto_binance',
     category: 'crypto',
@@ -267,9 +253,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // ENERGY - 3 chains
-  // ============================================
   {
     id: 'energy_opec',
     category: 'energy',
@@ -380,9 +364,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // TECH - 3 chains
-  // ============================================
   {
     id: 'tech_spacex',
     category: 'tech',
@@ -458,9 +440,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // AGRICULTURE - 3 chains
-  // ============================================
   {
     id: 'agri_brazil',
     category: 'agriculture',
@@ -534,9 +514,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // TESLA - 3 chains
-  // ============================================
   {
     id: 'tesla_robotaxi',
     category: 'tesla',
@@ -611,9 +589,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // BIOTECH - 3 chains
-  // ============================================
   {
     id: 'biotech_moderna',
     category: 'biotech',
@@ -689,9 +665,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // ECONOMIC - 4 chains
-  // ============================================
   // Dockworkers Strike - 3 outcomes
   {
     id: 'econ_dockworkers_strike',
@@ -799,10 +773,8 @@ export const EVENT_CHAINS: EventChain[] = [
       }
     ]
   },
-  // ============================================
   // SPIKE CHAINS (converted from spike system)
   // High-impact uncertain events with ~50% spike probability
-  // ============================================
 
   // Coffee Blight - ×5 spike potential
   {
@@ -936,9 +908,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // =============================================================================
   // NEW SPIKE CHAINS WITH 3-4 OUTCOMES
-  // =============================================================================
 
   // Quantum Computing Breakthrough - x6 NASDAQ spike potential
   {
@@ -1193,10 +1163,8 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // BLACK SWAN SPIKE CHAINS - 5 chains
   // Massive price movements for exciting gameplay
-  // ============================================
 
   // World's Largest Pension Fund Collapse (×2.5 Gold, -60% NASDAQ)
   {
@@ -1360,9 +1328,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // NEW EVENT CHAINS (18 chains)
-  // ============================================
 
   // 1. US-India Trade War
   {
@@ -1927,12 +1893,10 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // NEW EVENT CHAINS — 8 additional chains
   // AI Union, Kessler Syndrome, Metaverse Office,
   // CBDC War, Ocean Mining, Carbon Fraud,
   // Synthetic Food, Sovereign Exodus
-  // ============================================
 
   // --- AI UNION (tech) ---
   {
@@ -2258,9 +2222,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ]
   },
 
-  // ============================================
   // FED - Repo Crisis
-  // ============================================
   {
     id: 'fed_repo_crisis',
     category: 'fed',
@@ -2297,9 +2259,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // BLACKSWAN - GPS Outage
-  // ============================================
   {
     id: 'blackswan_gps_outage',
     category: 'blackswan',
@@ -2334,9 +2294,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // ENERGY - LNG Explosion
-  // ============================================
   {
     id: 'energy_lng_explosion',
     category: 'energy',
@@ -2372,9 +2330,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // TESLA - Advertiser Boycott
-  // ============================================
   {
     id: 'tesla_advertiser_boycott',
     category: 'tesla',
@@ -2410,9 +2366,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // TESLA - Megapack Fire
-  // ============================================
   {
     id: 'tesla_megapack_fire',
     category: 'tesla',
@@ -2448,9 +2402,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // EV - Chinese Tariff
-  // ============================================
   {
     id: 'ev_chinese_tariff',
     category: 'ev',
@@ -2492,9 +2444,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // ECONOMIC - Gig Economy Collapse
-  // ============================================
   {
     id: 'econ_gig_collapse',
     category: 'economic',
@@ -2538,9 +2488,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // GEOPOLITICAL - Panama Canal
-  // ============================================
   {
     id: 'geo_panama_canal',
     category: 'geopolitical',
@@ -2585,9 +2533,7 @@ export const EVENT_CHAINS: EventChain[] = [
     ],
   },
 
-  // ============================================
   // GEOPOLITICAL - New chains (15)
-  // ============================================
 
   // Mass Migration Crisis in Europe
   {

@@ -12,10 +12,8 @@ export async function POST(request: NextRequest) {
     const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    // If user is logged in, check for existing subscription/pro status
     let customerId: string | undefined
     if (user) {
-      // Check if already pro
       const profileResult = await db
         .select({ tier: profiles.tier })
         .from(profiles)
@@ -60,7 +58,6 @@ export async function POST(request: NextRequest) {
     const successUrl = `${baseUrl}${safeReturnUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}`
     const cancelUrl = `${baseUrl}${safeReturnUrl}?payment=cancelled`
 
-    // Create Stripe checkout session for one-time payment
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],

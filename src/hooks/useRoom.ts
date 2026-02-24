@@ -28,25 +28,15 @@ export interface RoomSettings {
 }
 
 interface RoomState {
-  // Room identity
   roomId: string | null
   roomCode: string | null
   isHost: boolean
   roomStatus: 'idle' | 'lobby' | 'playing' | 'finished'
-
-  // UI routing
   showRoomHub: boolean
-
-  // Settings
   roomSettings: RoomSettings | null
-
-  // Players (from presence)
   players: RoomPlayer[]
-
-  // Results
   results: RoomResult[]
 
-  // Actions
   createRoom: () => Promise<{ roomId: string; roomCode: string } | null>
   joinRoom: (code: string) => Promise<{ roomId: string; roomCode: string } | null>
   leaveRoom: () => Promise<void>
@@ -62,12 +52,9 @@ interface RoomState {
   updateSettings: (settings: Partial<RoomSettings>) => Promise<void>
   returnToHub: () => void
 
-  // State setters (called from channel hook)
   setPlayers: (players: RoomPlayer[]) => void
   setRoomStatus: (status: 'idle' | 'lobby' | 'playing' | 'finished') => void
   setResults: (results: RoomResult[]) => void
-
-  // Cleanup
   cleanup: () => void
 }
 
@@ -210,14 +197,12 @@ export const useRoom = create<RoomState>()((set, get) => ({
       if (!res.ok) return false
       const data = await res.json()
 
-      // Get settings from API response (authoritative) or fall back to local
       const duration = data.settings?.game_duration ?? roomSettings?.duration ?? 30
       const startingCash = data.settings?.starting_cash ?? roomSettings?.startingCash ?? 50_000
       const startingDebt = data.settings?.starting_debt ?? roomSettings?.startingDebt ?? 50_000
 
       set({ showRoomHub: false, roomStatus: 'playing' })
 
-      // Start the game with room settings (skip limits for room games)
       const { useGame } = await import('@/hooks/useGame')
       useGame.getState().startGame(
         duration as 30 | 45 | 60,
@@ -246,7 +231,6 @@ export const useRoom = create<RoomState>()((set, get) => ({
         if (data.results?.length > 0) {
           set({ results: parseResults(data.results) })
         }
-        // Fetch full results to ensure we have latest
         get().fetchResults()
       }
     } catch (error) {
@@ -264,7 +248,6 @@ export const useRoom = create<RoomState>()((set, get) => ({
         if (data.results?.length > 0) {
           set({ results: parseResults(data.results) })
         }
-        // Update players from API (authoritative DB state)
         if (data.players?.length > 0) {
           const apiPlayers: RoomPlayer[] = data.players.map((p: Record<string, unknown>) => ({
             userId: p.user_id as string,
@@ -275,25 +258,16 @@ export const useRoom = create<RoomState>()((set, get) => ({
             currentNetWorth: (p.current_net_worth as number) ?? 50_000,
             status: p.status as RoomPlayer['status'],
           }))
-          // Merge: use presence data for live fields if available, API for everything else
           const currentPlayers = get().players
           const merged = apiPlayers.map(ap => {
             const live = currentPlayers.find(p => p.userId === ap.userId)
             if (live && (live.status === 'playing' || live.status === 'finished')) {
-              // Presence has more up-to-date live data
               return { ...ap, currentDay: live.currentDay, currentNetWorth: live.currentNetWorth, status: live.status }
             }
             return ap
           })
           set({ players: merged })
-          // Update isHost if we're in the list
-          const me = apiPlayers.find(p => p.isHost)
-          if (me) {
-            // Check if current user is host
-            // We don't have userId here, so just update from the API response
-          }
         }
-        // Update settings if returned
         if (data.room) {
           const settings: RoomSettings = {
             duration: data.room.game_duration ?? 30,

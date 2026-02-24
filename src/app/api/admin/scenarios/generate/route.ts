@@ -85,7 +85,6 @@ Return ONLY a valid JSON array of objects. No markdown, no explanation.
 Each object: { "day": number, "news": [...], "priceNudges"?: [...], "flavorHeadline"?: string, "encounter"?: string, "startupOffer"?: { "tier": string } }
 Each news item: { "headline": string, "effects": { "assetId": number, ... }, "labelType": string }`
 
-// POST /api/admin/scenarios/generate — generate content via Claude
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -100,7 +99,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 })
     }
 
-    // Build user prompt
     let userPrompt = ''
 
     if (dayRange) {
@@ -154,7 +152,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Empty response from Claude' }, { status: 502 })
     }
 
-    // Parse and validate
     let days: unknown[]
     try {
       days = parseClaudeJSON(rawText) as unknown[]

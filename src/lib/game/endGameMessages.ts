@@ -1,17 +1,9 @@
-/**
- * Centralized end-game messages for all outcomes (win and loss).
- * Used by the EndGameCoordinator to provide consistent messaging across tier views.
- */
-
 export interface EndGameMessage {
   title: string
   emoji: string
   flavor: string
 }
 
-/**
- * Position data for dynamic game over messages
- */
 export interface PositionLossInfo {
   name: string
   pl: number
@@ -75,9 +67,6 @@ export const END_GAME_MESSAGES: Record<string, EndGameMessage> = {
   },
 }
 
-/**
- * Generate dynamic flavor text for margin call game over
- */
 function generateMarginCallFlavor(context?: MarginCallContext): string {
   const worst = context?.worstLeveraged
   if (worst && worst.leverage) {
@@ -87,9 +76,6 @@ function generateMarginCallFlavor(context?: MarginCallContext): string {
   return "Your broker is on the line. They want their money back. Unfortunately, you don't have it."
 }
 
-/**
- * Generate dynamic flavor text for short squeeze game over
- */
 function generateShortSqueezeFlavor(context?: MarginCallContext): string {
   const worst = context?.worstShort
   if (worst) {
@@ -99,11 +85,6 @@ function generateShortSqueezeFlavor(context?: MarginCallContext): string {
   return 'The market moved against you. Hard. Your short positions have consumed everything you own.'
 }
 
-/**
- * Get the message for a given outcome.
- * For wins, pass 'WIN'. For losses, pass the gameOverReason.
- * Optional context provides position data for dynamic messages.
- */
 export function getEndGameMessage(
   reasonOrWin: string,
   context?: MarginCallContext

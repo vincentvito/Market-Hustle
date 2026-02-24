@@ -20,7 +20,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
   id: 'rollercoaster',
   title: 'The Rollercoaster',
   days: [
-    // ── DAY 1 ──────────────────────────────────────────────
+    // Day 1
     {
       day: 1,
       news: [
@@ -35,7 +35,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'biotech', nudge: 0.04 }],
     },
 
-    // ── DAY 2 ──────────────────────────────────────────────
+    // Day 2
     {
       day: 2,
       news: [
@@ -50,7 +50,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
         'JUST IN: PHARMA EXECS BUYING MATCHING LAMBOS BEFORE DEAL CLOSES',
     },
 
-    // ── DAY 3 ──────────────────────────────────────────────
+    // Day 3
     {
       day: 3,
       news: [
@@ -70,7 +70,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'biotech', nudge: 0.03 }],
     },
 
-    // ── DAY 4 ──────────────────────────────────────────────
+    // Day 4
     {
       day: 4,
       news: [
@@ -91,7 +91,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'biotech', nudge: -0.05 }],
     },
 
-    // ── DAY 5 ──────────────────────────────────────────────
+    // Day 5
     {
       day: 5,
       news: [
@@ -104,7 +104,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       flavorHeadline: 'ROGAN BRINGS VACCINE SKEPTIC ON — 6 HOUR EPISODE',
     },
 
-    // ── DAY 6 ──────────────────────────────────────────────
+    // Day 6
     {
       day: 6,
       news: [
@@ -128,7 +128,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       flavorHeadline: 'HEDGE FUND MANAGER SEEN CRYING IN LAMBO',
     },
 
-    // ── DAY 7 ──────────────────────────────────────────────
+    // Day 7
     {
       day: 7,
       news: [
@@ -151,7 +151,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       startupOffer: { tier: 'angel' },
     },
 
-    // ── DAY 8 ──────────────────────────────────────────────
+    // Day 8
     {
       day: 8,
       news: [
@@ -183,7 +183,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       flavorHeadline: 'JIM CRAMER SAYS TO BUY',
     },
 
-    // ── DAY 9 ──────────────────────────────────────────────
+    // Day 9
     {
       day: 9,
       news: [
@@ -205,7 +205,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'coffee', nudge: 0.04 }],
     },
 
-    // ── DAY 10 ─────────────────────────────────────────────
+    // Day 10
     {
       day: 10,
       news: [
@@ -225,7 +225,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       flavorHeadline: 'AMAZON LAUNCHES DRONE DELIVERY IN EUROPE',
     },
 
-    // ── DAY 11 ─────────────────────────────────────────────
+    // Day 11
     {
       day: 11,
       news: [
@@ -241,7 +241,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'tesla', nudge: -0.05 }],
     },
 
-    // ── DAY 12 ─────────────────────────────────────────────
+    // Day 12
     {
       day: 12,
       news: [
@@ -266,7 +266,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'tesla', nudge: -0.04 }],
     },
 
-    // ── DAY 13 ─────────────────────────────────────────────
+    // Day 13
     {
       day: 13,
       news: [
@@ -279,7 +279,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       flavorHeadline: 'MR BEAST BUYS ENTIRE GOLD MINE FOR VIDEO',
     },
 
-    // ── DAY 14 ─────────────────────────────────────────────
+    // Day 14
     {
       day: 14,
       news: [
@@ -305,7 +305,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'tesla', nudge: 0.06 }],
     },
 
-    // ── DAY 15 ─────────────────────────────────────────────
+    // Day 15
     {
       day: 15,
       news: [
@@ -321,7 +321,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'tesla', nudge: 0.03 }],
     },
 
-    // ── DAY 16 ─────────────────────────────────────────────
+    // Day 16
     {
       day: 16,
       news: [
@@ -343,7 +343,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'altcoins', nudge: 0.06 }],
     },
 
-    // ── DAY 17 ─────────────────────────────────────────────
+    // Day 17
     {
       day: 17,
       news: [
@@ -357,7 +357,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
         'MILLENNIAL HOMEBUYERS GIVE UP, BUY CRYPTO INSTEAD',
     },
 
-    // ── DAY 18 ─────────────────────────────────────────────
+    // Day 18
     {
       day: 18,
       news: [
@@ -379,7 +379,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       encounter: 'kidney',
     },
 
-    // ── DAY 19 ─────────────────────────────────────────────
+    // Day 19
     {
       day: 19,
       news: [
@@ -401,7 +401,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'gold', nudge: 0.03 }],
     },
 
-    // ── DAY 20 ─────────────────────────────────────────────
+    // Day 20
     {
       day: 20,
       news: [
@@ -415,7 +415,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       flavorHeadline: 'GENZ DISCOVERS GOLD AS "VINTAGE INVESTING"',
     },
 
-    // ── DAY 21 ─────────────────────────────────────────────
+    // Day 21
     {
       day: 21,
       news: [
@@ -434,7 +434,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       flavorHeadline: 'POLYMARKET WHALES BETTING ON ASTEROID IMPACT',
     },
 
-    // ── DAY 22 ─────────────────────────────────────────────
+    // Day 22
     {
       day: 22,
       news: [
@@ -456,7 +456,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'gold', nudge: -0.06 }],
     },
 
-    // ── DAY 23 ─────────────────────────────────────────────
+    // Day 23
     {
       day: 23,
       news: [
@@ -471,7 +471,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       encounter: 'divorce',
     },
 
-    // ── DAY 24 ─────────────────────────────────────────────
+    // Day 24
     {
       day: 24,
       news: [
@@ -491,7 +491,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'btc', nudge: 0.05 }],
     },
 
-    // ── DAY 25 ─────────────────────────────────────────────
+    // Day 25
     {
       day: 25,
       news: [
@@ -511,7 +511,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
         "POPE REVEALS VATICAN TREASURY NOW 10% BITCOIN — 'FAITH IN DECENTRALIZATION'",
     },
 
-    // ── DAY 26 ─────────────────────────────────────────────
+    // Day 26
     {
       day: 26,
       news: [
@@ -532,7 +532,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       priceNudges: [{ assetId: 'altcoins', nudge: 0.05 }],
     },
 
-    // ── DAY 27 ─────────────────────────────────────────────
+    // Day 27
     {
       day: 27,
       news: [
@@ -577,7 +577,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
       ],
     },
 
-    // ── DAY 28 ─────────────────────────────────────────────
+    // Day 28
     {
       day: 28,
       news: [
@@ -604,7 +604,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
         '@WolfOfMiami99 JUST REACHED $420M NET WORTH.',
     },
 
-    // ── DAY 29 ─────────────────────────────────────────────
+    // Day 29
     {
       day: 29,
       news: [
@@ -637,7 +637,7 @@ export const SCRIPTED_GAME_3: ScriptedGameDefinition = {
         'VIRAL VIDEO: SQUIRREL ON TRADING FLOOR OUTPERFORMS 85% OF FUND MANAGERS',
     },
 
-    // ── DAY 30 ─────────────────────────────────────────────
+    // Day 30
     {
       day: 30,
       news: [

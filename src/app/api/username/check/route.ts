@@ -3,13 +3,6 @@ import { db } from '@/db'
 import { profiles } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
-/**
- * POST /api/username/check
- * Check if a username is available and valid
- *
- * Body: { username: string }
- * Response: { available: boolean, reason?: string }
- */
 export async function POST(request: NextRequest) {
   try {
     const { username } = await request.json()
@@ -21,10 +14,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate username format
     const trimmedUsername = username.trim().toLowerCase()
 
-    // Check length (3-15 characters)
     if (trimmedUsername.length < 3) {
       return NextResponse.json({
         available: false,
@@ -39,7 +30,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check format (alphanumeric + underscores only)
     const validFormat = /^[a-z0-9_]+$/.test(trimmedUsername)
     if (!validFormat) {
       return NextResponse.json({
@@ -48,7 +38,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check for reserved words
     const reservedWords = ['admin', 'moderator', 'mod', 'system', 'support', 'help', 'official', 'staff']
     if (reservedWords.includes(trimmedUsername)) {
       return NextResponse.json({
@@ -57,7 +46,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check availability in database
     const existing = await db
       .select({ id: profiles.id })
       .from(profiles)
@@ -73,7 +61,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ available: true })
   } catch (error) {
-    console.error('Error checking username:', error)
     const message = error instanceof Error ? error.message : String(error)
     console.error('Error checking username:', message, error)
     return NextResponse.json(

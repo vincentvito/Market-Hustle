@@ -46,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileLoading, setProfileLoading] = useState(false)
 
   const supabase = getSupabaseClient()
 
@@ -127,8 +128,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false
 
     const loadProfile = async (shouldMigrate: boolean) => {
+      if (process.env.NODE_ENV === 'development') console.log('[auth] loadProfile, shouldMigrate:', shouldMigrate)
+      setProfileLoading(true)
       const profileData = await fetchProfile()
       if (cancelled) return
+      if (process.env.NODE_ENV === 'development') console.log('[auth] profile loaded:', { username: profileData?.username, tier: profileData?.tier })
       setProfile(profileData)
 
       if (profileData) {
@@ -151,6 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (!cancelled) console.error('Error migrating local stats:', error)
         }
       }
+      if (!cancelled) setProfileLoading(false)
     }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -160,6 +165,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(newSession)
         setUser(newSession?.user ?? null)
         setLoading(false)
+
+        if (process.env.NODE_ENV === 'development') console.log('[auth] event:', event, 'user:', newSession?.user?.id ?? 'none')
 
         if (event === 'SIGNED_IN' && newSession?.user) {
           import('@/lib/posthog').then(({ getPostHogClient, capture }) => {
@@ -205,11 +212,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const verifyOtp = async (email: string, token: string) => {
+    if (process.env.NODE_ENV === 'development') console.log('[auth] verifyOtp for:', email)
     const { error } = await supabase.auth.verifyOtp({
       email,
       token,
       type: 'email',
     })
+    if (process.env.NODE_ENV === 'development') console.log('[auth] verifyOtp result:', error ? error.message : 'success')
     return { error: error as Error | null }
   }
 
@@ -303,7 +312,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, profile, refreshProfile])
 
-  const needsOnboarding = !!user && !profile?.username
+  const needsOnboarding = !!user && !profileLoading && !profile?.username
+  if (process.env.NODE_ENV === 'development' && user) console.log('[auth] needsOnboarding:', needsOnboarding, 'username:', profile?.username)
 
   return (
     <AuthContext.Provider

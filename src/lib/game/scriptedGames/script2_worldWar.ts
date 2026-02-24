@@ -4,7 +4,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
   id: 'script2_worldWar',
   title: 'World War III',
   days: [
-    // ── Day 1 ──────────────────────────────────────────────
+    // Day 1
     {
       day: 1,
       news: [
@@ -29,7 +29,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       ],
     },
 
-    // ── Day 2 ──────────────────────────────────────────────
+    // Day 2
     {
       day: 2,
       news: [
@@ -42,7 +42,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       flavorHeadline: 'RIHANNA LAUNCHES COFFEE-BASED SKINCARE LINE',
     },
 
-    // ── Day 3 ──────────────────────────────────────────────
+    // Day 3
     {
       day: 3,
       news: [
@@ -62,7 +62,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         'ZUCKERBERG CHALLENGES BEZOS TO CAGE MATCH FOR CHARITY — PPV PRE-SALES HIT $1B',
     },
 
-    // ── Day 4 ──────────────────────────────────────────────
+    // Day 4
     {
       day: 4,
       news: [
@@ -76,7 +76,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       startupOffer: { tier: 'angel' },
     },
 
-    // ── Day 5 ──────────────────────────────────────────────
+    // Day 5
     {
       day: 5,
       news: [
@@ -101,7 +101,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       ],
     },
 
-    // ── Day 6 ──────────────────────────────────────────────
+    // Day 6
     {
       day: 6,
       news: [
@@ -127,7 +127,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         '@WolfOfWallSt99 JUST MADE $3.8M ON DEFENSE. SINGLE TRADE.',
     },
 
-    // ── Day 7 ──────────────────────────────────────────────
+    // Day 7
     {
       day: 7,
       news: [
@@ -152,7 +152,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       flavorHeadline: 'POLYMARKET WHALES BETTING ON ESCALATION',
     },
 
-    // ── Day 8 ──────────────────────────────────────────────
+    // Day 8
     {
       day: 8,
       news: [
@@ -179,7 +179,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       ],
     },
 
-    // ── Day 9 ──────────────────────────────────────────────
+    // Day 9
     {
       day: 9,
       news: [
@@ -207,7 +207,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         '@TechTrader_sf JUST LOST $22M IN A SINGLE TRADE.',
     },
 
-    // ── Day 10 ─────────────────────────────────────────────
+    // Day 10
     {
       day: 10,
       news: [
@@ -239,7 +239,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         'HEDGE FUND REPLACES ALL ANALYSTS WITH AI — AI SAYS "SELL EVERYTHING"',
     },
 
-    // ── Day 11 ─────────────────────────────────────────────
+    // Day 11
     {
       day: 11,
       news: [
@@ -272,7 +272,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         '@DubaiWhale42 JUST MADE $14M ON OIL. SINGLE TRADE.',
     },
 
-    // ── Day 12 ─────────────────────────────────────────────
+    // Day 12
     {
       day: 12,
       news: [
@@ -297,7 +297,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         'JUST IN: HEDGE FUND MANAGER MOVES FAMILY TO NEW ZEALAND',
     },
 
-    // ── Day 13 ─────────────────────────────────────────────
+    // Day 13
     {
       day: 13,
       news: [
@@ -324,7 +324,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       ],
     },
 
-    // ── Day 14 ─────────────────────────────────────────────
+    // Day 14
     {
       day: 14,
       news: [
@@ -350,7 +350,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         '@MoonMan_la JUST GOT LIQUIDATED. LOST $45M.',
     },
 
-    // ── Day 15 ─────────────────────────────────────────────
+    // Day 15
     {
       day: 15,
       news: [
@@ -376,7 +376,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         '@GoldKing_zurich JUST REACHED $180M NET WORTH.',
     },
 
-    // ── Day 16 ─────────────────────────────────────────────
+    // Day 16
     {
       day: 16,
       news: [
@@ -407,7 +407,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         'ROGAN BRINGS ON RETIRED GENERAL — 8 HOUR EPISODE',
     },
 
-    // ── Day 17 ─────────────────────────────────────────────
+    // Day 17
     {
       day: 17,
       news: [
@@ -440,7 +440,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       encounter: 'kidney',
     },
 
-    // ── Day 18 ─────────────────────────────────────────────
+    // Day 18
     {
       day: 18,
       news: [
@@ -466,7 +466,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         "POPE REVEALS VATICAN TREASURY NOW 10% BITCOIN — 'FAITH IN DECENTRALIZATION'",
     },
 
-    // ── Day 19 ─────────────────────────────────────────────
+    // Day 19
     {
       day: 19,
       news: [
@@ -486,7 +486,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         "BILLIONAIRE PROPOSES TAXING PEOPLE WHO DON'T INVEST — 'IDLE CASH IS THEFT'",
     },
 
-    // ── Day 20 ─────────────────────────────────────────────
+    // Day 20
     {
       day: 20,
       news: [
@@ -513,7 +513,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         'REPORT: CHAMPAGNE SALES IN FINANCIAL DISTRICT UP 800% IN ONE HOUR',
     },
 
-    // ── Day 21 ─────────────────────────────────────────────
+    // Day 21
     {
       day: 21,
       news: [
@@ -536,7 +536,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         '@DiamondHands420 JUST MADE $8.5M ON TESLA. SINGLE TRADE.',
     },
 
-    // ── Day 22 ─────────────────────────────────────────────
+    // Day 22
     {
       day: 22,
       news: [
@@ -568,7 +568,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       encounter: 'sec',
     },
 
-    // ── Day 23 ─────────────────────────────────────────────
+    // Day 23
     {
       day: 23,
       news: [
@@ -583,7 +583,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         '@SteadySteve_dc JUST MADE $5.1M ON NASDAQ. SINGLE TRADE.',
     },
 
-    // ── Day 24 ─────────────────────────────────────────────
+    // Day 24
     {
       day: 24,
       news: [
@@ -611,7 +611,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       flavorHeadline: 'WARREN BUFFETT CLAIMS ASSETS ARE OVERVALUED',
     },
 
-    // ── Day 25 ─────────────────────────────────────────────
+    // Day 25
     {
       day: 25,
       news: [
@@ -653,7 +653,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       encounter: 'roulette',
     },
 
-    // ── Day 26 ─────────────────────────────────────────────
+    // Day 26
     {
       day: 26,
       news: [
@@ -673,7 +673,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         "FLORIDA MAN ACCIDENTALLY BUYS $2M IN URANIUM FUTURES — 'I THOUGHT IT WAS CRYPTO'",
     },
 
-    // ── Day 27 ─────────────────────────────────────────────
+    // Day 27
     {
       day: 27,
       news: [
@@ -692,7 +692,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       flavorHeadline: 'JEFF BEZOS SPOTTED PARTYING IN SAINT-TROPEZ',
     },
 
-    // ── Day 28 ─────────────────────────────────────────────
+    // Day 28
     {
       day: 28,
       news: [
@@ -720,7 +720,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
       ],
     },
 
-    // ── Day 29 ─────────────────────────────────────────────
+    // Day 29
     {
       day: 29,
       news: [
@@ -751,7 +751,7 @@ export const SCRIPTED_GAME_2: ScriptedGameDefinition = {
         'JUST IN: THERAPISTS IN FINANCIAL DISTRICT BOOKED THROUGH 2027',
     },
 
-    // ── Day 30 ─────────────────────────────────────────────
+    // Day 30
     {
       day: 30,
       news: [

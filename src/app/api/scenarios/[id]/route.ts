@@ -5,7 +5,6 @@ import { scenarios } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
-// GET /api/scenarios/[id] — public: load published scenario for gameplay
 export async function GET(
   _request: NextRequest,
   { params }: { params: { id: string } }

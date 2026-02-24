@@ -14,6 +14,9 @@ dist/
 
 # Testing
 coverage/
+tests/auth/
+playwright-report/
+test-results/
 
 # Environment
 .env

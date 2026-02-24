@@ -6,7 +6,6 @@ import { ENCOUNTERS, getDivorceDescription, resolveSEC, resolveDivorce, resolveS
 import type { EncounterResult } from '@/lib/game/encounters'
 import type { RouletteColor, EncounterType } from '@/lib/game/types'
 
-// Result screen shown after player makes a choice
 function ResultScreen({
   result,
   encounterType,
@@ -20,11 +19,9 @@ function ResultScreen({
   onConfirm: () => void
   isRetro2: boolean
 }) {
-  // Determine visual style based on outcome
   const isGameOver = result.gameOver
   const isNeutral = !result.cashChange || result.cashChange === 0
 
-  // RETRO 2: Use green borders for terminal aesthetic, keep text colors for clarity
   let borderColor = isRetro2 ? 'border-mh-accent-blue' : 'border-mh-profit-green'
   let bgGradient = isRetro2 ? 'from-[#0a150d] to-[#0d1a10]' : 'from-[#0a200a] to-[#0d2a0d]'
   let titleColor = 'text-mh-profit-green'
@@ -51,7 +48,6 @@ function ResultScreen({
     title = 'LUCKY'
   }
 
-  // Roulette-specific display
   if (encounterType === 'roulette' && result.spinResult !== undefined) {
     const colorEmoji = result.spinColor === 'red' ? '🔴' : result.spinColor === 'black' ? '⚫' : '🟢'
     emoji = colorEmoji
@@ -64,7 +60,7 @@ function ResultScreen({
         className={`bg-mh-bg border-2 ${borderColor} rounded-lg w-full max-w-[340px] overflow-hidden`}
         style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
       >
-        {/* Header */}
+
         <div className={`p-4 bg-gradient-to-r ${bgGradient} border-b ${borderColor}/30`}>
           <div className="flex items-center gap-3">
             <span className="text-4xl">{emoji}</span>
@@ -76,9 +72,7 @@ function ResultScreen({
           </div>
         </div>
 
-        {/* Result Content */}
         <div className="p-6 text-center">
-          {/* Roulette spin result */}
           {encounterType === 'roulette' && result.spinResult !== undefined && (
             <div className="mb-4">
               <div className="text-mh-text-dim text-xs mb-2">THE BALL LANDED ON</div>
@@ -95,7 +89,6 @@ function ResultScreen({
             </div>
           )}
 
-          {/* Cash Change */}
           {!isGameOver && result.cashChange !== undefined && result.cashChange !== 0 && (
             <div className={`text-3xl font-bold mb-3 ${
               result.cashChange > 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
@@ -104,12 +97,10 @@ function ResultScreen({
             </div>
           )}
 
-          {/* Headline */}
           <div className="text-mh-text-main text-sm leading-relaxed">
             {result.headline}
           </div>
 
-          {/* Game Over Warning */}
           {isGameOver && (
             <div className="mt-4 text-mh-loss-red text-xs">
               Your career has ended.
@@ -117,7 +108,6 @@ function ResultScreen({
           )}
         </div>
 
-        {/* Continue Button */}
         <div className="p-4 border-t border-mh-border">
           <button
             onClick={onConfirm}
@@ -138,16 +128,13 @@ function ResultScreen({
   )
 }
 
-// Red numbers on a European roulette wheel
 const RED_NUMBERS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
 
-// Get the color for a roulette number
 function getNumberColor(n: number): 'red' | 'black' | 'green' {
   if (n === 0) return 'green'
   return RED_NUMBERS.includes(n) ? 'red' : 'black'
 }
 
-// Roulette spinning animation screen - numbers cycle rapidly then slow down
 function RouletteSpinner({
   betAmount,
   selectedColor,
@@ -234,12 +221,10 @@ function RouletteSpinner({
   return (
     <div className="fixed inset-0 bg-black/95 z-[400] flex items-center justify-center p-5 select-none">
       <div className="flex flex-col items-center">
-        {/* Bet info */}
         <div className="text-mh-text-dim text-sm mb-6">
           ${betAmount.toLocaleString('en-US')} on {selectedColor.toUpperCase()}
         </div>
 
-        {/* The spinning number display */}
         <div
           className={`
             w-32 h-32 rounded-full flex items-center justify-center
@@ -259,7 +244,6 @@ function RouletteSpinner({
           </span>
         </div>
 
-        {/* Status text */}
         <div className={`mt-6 ${isRetro2 ? 'text-mh-accent-blue' : 'text-yellow-500'} text-lg font-bold`}>
           {phase === 'done' ? 'LANDED!' : 'SPINNING...'}
         </div>
@@ -277,7 +261,6 @@ export function EncounterPopup() {
   const [encounterResult, setEncounterResult] = useState<EncounterResult | null>(null)
   const [pendingShitcoinData, setPendingShitcoinData] = useState<{ outcome: 'moon' | 'rug'; profit: number } | null>(null)
 
-  // Reset state when encounter changes
   useEffect(() => {
     if (!pendingEncounter) {
       setRouletteStep('choose')
@@ -293,12 +276,10 @@ export function EncounterPopup() {
   const encounter = ENCOUNTERS[pendingEncounter.type]
   const netWorth = getNetWorth()
 
-  // Get description - special case for divorce on second occurrence
   const description = pendingEncounter.type === 'divorce'
     ? getDivorceDescription(encounterState.divorceCount)
     : encounter.description
 
-  // Handle player choice - compute result and show result screen
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (pendingEncounter.type === 'roulette' && choiceIndex === 0) {
       // Start roulette flow
@@ -306,7 +287,6 @@ export function EncounterPopup() {
       return
     }
 
-    // Compute result based on encounter type
     let result: EncounterResult
 
     switch (pendingEncounter.type) {
@@ -319,12 +299,9 @@ export function EncounterPopup() {
       case 'shitcoin': {
         const shitcoinResult = choiceIndex === 0 ? resolveShitcoin('mint', cash) : resolveShitcoin('pass', cash)
         if (choiceIndex === 0 && shitcoinResult.pending) {
-          // MINT: Skip result screen — directly confirm and close popup
-          // Outcome appears as news headline in 2 days
           confirmEncounterResult(shitcoinResult.immediate, 'shitcoin', shitcoinResult.pending)
           return
         }
-        // PASS: Show result normally
         result = shitcoinResult.immediate
         break
       }
@@ -332,7 +309,6 @@ export function EncounterPopup() {
         result = choiceIndex === 0 ? resolveKidney('sell') : resolveKidney('keep')
         break
       case 'roulette':
-        // Decline roulette
         result = resolveRoulette('decline', null, 0)
         break
       case 'tax':
@@ -364,7 +340,6 @@ export function EncounterPopup() {
     setEncounterResult(result)
   }
 
-  // Handle confirm - commit result to game state
   const handleConfirm = () => {
     if (encounterResult) {
       confirmEncounterResult(encounterResult, pendingEncounter.type, pendingShitcoinData)
@@ -376,11 +351,8 @@ export function EncounterPopup() {
     }
   }
 
-  // Determine if result is a win (liquidationRequired means forced asset loss, so it's a loss)
-  // Note: liquidationRequired means money was lost (SEC fine, divorce settlement, etc.)
   const isWin = encounterResult ? (encounterResult.cashChange ?? 0) >= 0 && !encounterResult.gameOver && !encounterResult.liquidationRequired && !encounterResult.liquidationRequired : false
 
-  // Show result screen if we have a result
   if (encounterResult) {
     return (
       <ResultScreen
@@ -393,7 +365,6 @@ export function EncounterPopup() {
     )
   }
 
-  // Show spinning animation for roulette
   if (pendingEncounter.type === 'roulette' && rouletteStep === 'spinning' && rouletteColor) {
     return (
       <RouletteSpinner
@@ -405,7 +376,6 @@ export function EncounterPopup() {
     )
   }
 
-  // Roulette bet selection screen
   if (pendingEncounter.type === 'roulette' && rouletteStep === 'bet') {
     const betOptions = [
       { label: '$10K', value: 10000 },
@@ -420,7 +390,7 @@ export function EncounterPopup() {
           className={`bg-mh-bg border-2 ${isRetro2 ? 'border-mh-accent-blue' : 'border-yellow-500'} rounded-lg w-full max-w-[340px] overflow-hidden`}
           style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
         >
-          {/* Header */}
+  
           <div className={`p-4 ${isRetro2 ? 'bg-gradient-to-r from-[#0a150d] to-[#0d1a10] border-b border-mh-accent-blue/30' : 'bg-gradient-to-r from-[#1a1500] to-[#2a2000] border-b border-yellow-500/30'}`}>
             <div className="flex items-center gap-3">
               <span className="text-4xl">🎰</span>
@@ -431,7 +401,6 @@ export function EncounterPopup() {
             </div>
           </div>
 
-          {/* Bet Options */}
           <div className="p-4 space-y-2">
             {betOptions.map((option) => {
               const canAfford = option.value <= cash
@@ -459,14 +428,12 @@ export function EncounterPopup() {
             })}
           </div>
 
-          {/* Cash Display */}
           <div className="px-4 pb-2 text-center">
             <div className="text-mh-text-dim text-xs">
               Available: ${cash.toLocaleString('en-US')}
             </div>
           </div>
 
-          {/* Back Button */}
           <div className="p-4 border-t border-mh-border">
             <button
               onClick={handleRouletteDecline}
@@ -480,7 +447,6 @@ export function EncounterPopup() {
     )
   }
 
-  // Roulette color selection screen
   if (pendingEncounter.type === 'roulette' && rouletteStep === 'color') {
     return (
       <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5 select-none">
@@ -488,7 +454,7 @@ export function EncounterPopup() {
           className={`bg-mh-bg border-2 ${isRetro2 ? 'border-mh-accent-blue' : 'border-yellow-500'} rounded-lg w-full max-w-[340px] overflow-hidden`}
           style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
         >
-          {/* Header */}
+  
           <div className={`p-4 ${isRetro2 ? 'bg-gradient-to-r from-[#0a150d] to-[#0d1a10] border-b border-mh-accent-blue/30' : 'bg-gradient-to-r from-[#1a1500] to-[#2a2000] border-b border-yellow-500/30'}`}>
             <div className="flex items-center gap-3">
               <span className="text-4xl">🎰</span>
@@ -499,7 +465,6 @@ export function EncounterPopup() {
             </div>
           </div>
 
-          {/* Color Options */}
           <div className="p-4 space-y-3">
             <button
               onClick={() => handleRouletteColor('red')}
@@ -524,7 +489,6 @@ export function EncounterPopup() {
             </button>
           </div>
 
-          {/* Back Button */}
           <div className="p-4 border-t border-mh-border">
             <button
               onClick={() => setRouletteStep('bet')}
@@ -538,14 +502,13 @@ export function EncounterPopup() {
     )
   }
 
-  // Main encounter popup
   return (
     <div className="fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-5 select-none">
       <div
         className={`bg-mh-bg border-2 ${isRetro2 ? 'border-mh-accent-blue' : 'border-mh-loss-red'} rounded-lg w-full max-w-[340px] overflow-hidden`}
         style={isRetro2 ? { boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' } : undefined}
       >
-        {/* Header */}
+
         <div className={`p-4 ${isRetro2 ? 'bg-gradient-to-r from-[#0a150d] to-[#0d1a10] border-b border-mh-accent-blue/30' : 'bg-gradient-to-r from-[#200a0a] to-[#2a0d0d] border-b border-mh-loss-red/30'}`}>
           <div className="flex items-center gap-3">
             <span className="text-4xl">{encounter.emoji}</span>
@@ -560,7 +523,6 @@ export function EncounterPopup() {
           </div>
         </div>
 
-        {/* Description */}
         <div className="p-4 border-b border-mh-border bg-[#0a0d10]">
           <p className="text-mh-text-main text-sm leading-relaxed">
             {description}
@@ -572,7 +534,6 @@ export function EncounterPopup() {
           )}
         </div>
 
-        {/* Stakes Info */}
         {(pendingEncounter.type === 'sec' || pendingEncounter.type === 'divorce' || pendingEncounter.type === 'tax') && (
           <div className="px-4 py-2 bg-[#0d0808] border-b border-mh-border">
             <div className="text-mh-text-dim text-xs text-center">
@@ -588,7 +549,6 @@ export function EncounterPopup() {
           </div>
         )}
 
-        {/* Choices */}
         <div className="p-4 space-y-3">
           {encounter.choices.map((choice, index) => {
             // Check if this choice requires cash

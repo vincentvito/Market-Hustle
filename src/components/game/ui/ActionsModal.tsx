@@ -38,7 +38,6 @@ export function ActionsModal() {
           style={isModern3 ? { boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.4)' } : undefined}
           onClick={e => e.stopPropagation()}
         >
-          {/* Header */}
           <div className={`p-4 flex items-center justify-between ${
             isModern3 ? '' : 'border-b border-mh-border'
           }`}>
@@ -56,7 +55,6 @@ export function ActionsModal() {
             </button>
           </div>
 
-          {/* Tabs */}
           <div className={`flex ${
             isModern3
               ? 'gap-1 p-1 bg-[#0a0e14] mx-4 rounded'
@@ -82,7 +80,6 @@ export function ActionsModal() {
             ))}
           </div>
 
-          {/* Tab Content */}
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
             {activeActionsTab === 'leverage' && <ActionsTabLeverage />}
             {activeActionsTab === 'buy' && <ActionsTabBuy />}

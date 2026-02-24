@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { capture } from '@/lib/posthog'
 
-// Persists checkout intent across the auth flow so we can auto-redirect after login
 export const PENDING_CHECKOUT_KEY = 'pendingCheckout'
 
 export function useStripeCheckout() {
@@ -27,7 +26,6 @@ export function useStripeCheckout() {
         throw new Error(data.error || 'Failed to create checkout session')
       }
 
-      // Redirect to Stripe Checkout
       if (data.url) {
         capture('checkout_initiated', { plan_type: 'lifetime' })
         window.location.href = data.url

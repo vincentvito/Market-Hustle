@@ -1,9 +1,7 @@
 import type { DirectorState, DirectorConfig, RippleDefinition } from './director'
 import type { ScriptedGameDefinition } from './scriptedGames/types'
 
-// =============================================================================
-// PE ABILITY TYPES (One-time villain actions)
-// =============================================================================
+// PE Ability Types (one-time villain actions)
 
 export type PEAbilityId =
   | 'defense_spending_bill'  // Capitol Consulting Group
@@ -121,9 +119,7 @@ export interface InsiderTipScenario {
   topic: { category: string; subcategory?: string }
 }
 
-// =============================================================================
-// PRESIDENTIAL ABILITY TYPES (Endgame powers after winning election)
-// =============================================================================
+// Presidential Ability Types (endgame powers after winning election)
 
 export type PresidentialAbilityId =
   | 'declare_war_china'
@@ -162,9 +158,7 @@ export interface PendingInflationEffect {
   headline: string
 }
 
-// =============================================================================
-// OPERATION TYPES (Legacy - to be removed)
-// =============================================================================
+// Operation Types (legacy)
 
 export type OperationId =
   | 'lobby_congress'      // Capitol Consulting Group
@@ -177,9 +171,7 @@ export interface OperationState {
   timesUsed: number           // For escalating costs and once-per-game tracking
 }
 
-// =============================================================================
-// LUXURY ASSET TYPES
-// =============================================================================
+// Luxury Asset Types
 
 export type LuxuryAssetId =
   | 'private_jet'
@@ -200,9 +192,7 @@ export interface LuxuryAsset {
   passiveBenefit: string  // Human-readable description
 }
 
-// =============================================================================
-// CORE TYPES
-// =============================================================================
+// Core Types
 
 export interface Asset {
   id: string
@@ -211,10 +201,8 @@ export interface Asset {
   volatility: number
 }
 
-// =============================================================================
-// EVENT SENTIMENT & MARKET MOOD SYSTEM
+// Event Sentiment & Market Mood System
 // Prevents conflicting news (e.g., bullish BTC event right after bearish BTC event)
-// =============================================================================
 
 export type EventSentiment = 'bullish' | 'bearish' | 'neutral' | 'mixed'
 
@@ -694,10 +682,7 @@ export interface ActiveStory {
   resolvedPositive?: boolean  // Set when final stage resolves
 }
 
-// =============================================================================
-// CELEBRATION EVENT TYPES
-// Priority queue for investment results and milestone celebrations
-// =============================================================================
+// Celebration Event Types
 
 export interface InvestmentResultEvent {
   type: 'investment_result'
@@ -722,9 +707,7 @@ export interface MilestoneCelebrationEvent {
 
 export type CelebrationEvent = InvestmentResultEvent | MilestoneCelebrationEvent
 
-// =============================================================================
-// MARGIN TRADING TYPES (Pro Tier)
-// =============================================================================
+// Margin Trading Types (Pro Tier)
 
 export type LeverageLevel = 1 | 2 | 5 | 10
 

@@ -6,7 +6,6 @@ import { verifyAdmin } from '@/lib/admin/auth'
 import { desc, ne } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
-// GET /api/admin/scenarios — list all scenarios (non-archived)
 export async function GET(request: NextRequest) {
   try {
     const email = request.nextUrl.searchParams.get('email')
@@ -55,7 +54,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/scenarios — create new scenario
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

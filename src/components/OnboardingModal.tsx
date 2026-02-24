@@ -1,181 +1,159 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-
-type CheckStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'error'
+import { getSupabaseClient } from '@/lib/supabase/client'
 
 export function OnboardingModal() {
   const { needsOnboarding, loading, refreshProfile } = useAuth()
   const [input, setInput] = useState('')
-  const [status, setStatus] = useState<CheckStatus>('idle')
-  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const checkUsername = useCallback(async (username: string) => {
-    if (username.length < 3) {
-      setStatus('invalid')
-      setMessage('At least 3 characters')
-      return
-    }
-    if (username.length > 15) {
-      setStatus('invalid')
-      setMessage('Max 15 characters')
-      return
-    }
-    if (!/^[a-z0-9_]+$/.test(username)) {
-      setStatus('invalid')
-      setMessage('Only letters, numbers, underscores')
-      return
-    }
-
-    setStatus('checking')
-    setMessage('')
-
-    try {
-      const res = await fetch('/api/username/check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
-      })
-      const data = await res.json()
-
-      if (data.available) {
-        setStatus('available')
-        setMessage('Available!')
-      } else {
-        setStatus('taken')
-        setMessage(data.reason || 'Already taken')
-      }
-    } catch {
-      setStatus('error')
-      setMessage('Could not check availability')
-    }
-  }, [])
+  const [step, setStep] = useState(0)
 
   useEffect(() => {
-    if (!input) {
-      setStatus('idle')
-      setMessage('')
-      return
-    }
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => checkUsername(input), 400)
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [input, checkUsername])
+    if (!needsOnboarding || loading) return
+    const t1 = setTimeout(() => setStep(1), 200)
+    const t2 = setTimeout(() => setStep(2), 600)
+    const t3 = setTimeout(() => setStep(3), 1000)
+    const t4 = setTimeout(() => setStep(4), 1400)
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
+  }, [needsOnboarding, loading])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 15)
-    setInput(value)
+    setInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 15))
+    setError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (status !== 'available' || submitting) return
+    if (submitting) return
+
+    const username = input.trim()
+    if (username.length < 3) {
+      setError('At least 3 characters')
+      return
+    }
 
     setSubmitting(true)
+    setError('')
+
     try {
+      const supabase = getSupabaseClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      console.log('[onboarding] session:', session ? 'exists' : 'null', 'token:', session?.access_token ? 'yes' : 'no')
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      console.log('[onboarding] setting username:', username)
       const res = await fetch('/api/username/set', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: input }),
+        headers,
+        body: JSON.stringify({ username }),
       })
       const data = await res.json()
+      console.log('[onboarding] response:', data)
 
       if (data.success) {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('mh_username', input)
-        }
+        localStorage.setItem('mh_username', username)
         const { useGame } = await import('@/hooks/useGame')
-        useGame.getState().setUsername(input)
+        useGame.getState().setUsername(username)
         await refreshProfile()
       } else {
-        setStatus('taken')
-        setMessage(data.error || 'Failed to set username')
+        setError(data.error || 'Try a different username')
       }
     } catch {
-      setStatus('error')
-      setMessage('Something went wrong. Try again.')
+      setError('Something went wrong. Try again.')
     } finally {
       setSubmitting(false)
     }
   }
 
+  console.log('[onboarding] loading:', loading, 'needsOnboarding:', needsOnboarding)
   if (loading || !needsOnboarding) return null
-
-  const canSubmit = status === 'available' && !submitting
 
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/85 backdrop-blur-sm transition-opacity duration-500" />
+      <div className="relative bg-mh-bg border border-mh-border p-6 w-full max-w-sm mx-4 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
 
-      <div className="relative bg-[var(--bg-primary)] border-2 border-[var(--border-color)] rounded-lg p-6 w-full max-w-sm mx-4 shadow-2xl">
-        <div className="text-center mb-6">
-          <div className="text-3xl mb-3">&#x1F4C8;</div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-1">
-            Welcome to Market Hustle
+        <div className="text-center mb-5 overflow-hidden">
+          <div
+            className="text-4xl mb-3 transition-all duration-500 ease-out"
+            style={{
+              opacity: step >= 1 ? 1 : 0,
+              transform: step >= 1 ? 'translateY(0)' : 'translateY(20px)',
+            }}
+          >
+            &#x1F4B0;
+          </div>
+          <h2
+            className="text-mh-text-bright text-2xl font-bold font-mono mb-2 transition-all duration-500 ease-out"
+            style={{
+              opacity: step >= 2 ? 1 : 0,
+              transform: step >= 2 ? 'translateY(0)' : 'translateY(20px)',
+            }}
+          >
+            WELCOME
           </h2>
-          <p className="text-[var(--text-secondary)] text-sm">
-            Choose a username for the leaderboard
+          <p
+            className="text-mh-text-dim text-xs leading-relaxed transition-all duration-500 ease-out"
+            style={{
+              opacity: step >= 3 ? 1 : 0,
+              transform: step >= 3 ? 'translateY(0)' : 'translateY(20px)',
+            }}
+          >
+            Every Wall Street legend needs a name.<br />
+            Make it memorable — your rivals will see it<br />
+            when you crush them on the leaderboard.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs text-[var(--text-secondary)] mb-1.5 font-mono tracking-wider">
-              USERNAME
-            </label>
+        <form
+          onSubmit={handleSubmit}
+          className="transition-all duration-500 ease-out"
+          style={{
+            opacity: step >= 4 ? 1 : 0,
+            transform: step >= 4 ? 'translateY(0)' : 'translateY(20px)',
+          }}
+        >
+          <label className="block text-mh-text-dim text-[10px] font-mono tracking-widest mb-1.5">
+            TRADING ALIAS
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-mh-text-dim text-sm">@</span>
             <input
               type="text"
               value={input}
               onChange={handleInputChange}
               autoFocus
-              placeholder="your_username"
+              placeholder="wolf_of_wallst"
               maxLength={15}
-              className="w-full px-3 py-2.5 bg-[var(--bg-secondary)] border rounded text-[var(--text-primary)] font-mono focus:outline-none transition-colors"
-              style={{
-                borderColor: status === 'available'
-                  ? 'var(--accent-primary)'
-                  : status === 'taken' || status === 'invalid'
-                    ? '#ef4444'
-                    : 'var(--border-color)',
-              }}
+              className="w-full pl-8 pr-3 py-2.5 bg-transparent border border-mh-border text-mh-text-bright font-mono text-sm focus:outline-none focus:border-mh-accent-blue transition-colors"
             />
-            <div className="mt-1.5 h-5 flex items-center">
-              {status === 'checking' && (
-                <span className="text-[var(--text-secondary)] text-xs">Checking...</span>
-              )}
-              {status === 'available' && (
-                <span className="text-emerald-400 text-xs">{message}</span>
-              )}
-              {(status === 'taken' || status === 'invalid') && (
-                <span className="text-red-400 text-xs">{message}</span>
-              )}
-              {status === 'error' && (
-                <span className="text-amber-400 text-xs">{message}</span>
-              )}
-              {status === 'idle' && input.length === 0 && (
-                <span className="text-[var(--text-secondary)] text-xs opacity-60">
-                  3-15 chars: letters, numbers, underscores
-                </span>
-              )}
-            </div>
+          </div>
+          <div className="h-5 mt-1 mb-3">
+            {error && <span className="text-mh-loss-red text-xs font-mono">{error}</span>}
+            {!error && input.length > 0 && input.length < 3 && (
+              <span className="text-mh-text-dim text-xs font-mono">Keep typing...</span>
+            )}
+            {!error && input.length >= 3 && (
+              <span className="text-mh-profit-green text-xs font-mono">Looks good</span>
+            )}
           </div>
 
           <button
             type="submit"
-            disabled={!canSubmit}
-            className="w-full py-2.5 font-semibold rounded transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{
-              backgroundColor: canSubmit ? 'var(--accent-primary)' : 'var(--bg-secondary)',
-              color: canSubmit ? 'white' : 'var(--text-secondary)',
-            }}
+            disabled={submitting || input.length < 3}
+            className="w-full py-2.5 font-mono text-sm font-bold border transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-mh-profit-green/20 text-mh-profit-green border-mh-profit-green/50 hover:bg-mh-profit-green/30 hover:shadow-[0_0_12px_rgba(0,255,136,0.2)]"
           >
-            {submitting ? 'Setting up...' : 'Start Trading'}
+            {submitting ? 'OPENING YOUR ACCOUNT...' : '[ START TRADING ]'}
           </button>
+
+          <p className="text-center text-mh-text-dim text-[10px] mt-3 font-mono opacity-60">
+            3-15 chars &middot; letters, numbers, underscores
+          </p>
         </form>
       </div>
     </div>

@@ -20,7 +20,6 @@ export async function POST(
 
     const { id } = await params
 
-    // Get room
     const roomResult = await db
       .select()
       .from(rooms)
@@ -37,7 +36,6 @@ export async function POST(
       return NextResponse.json({ error: 'Room is closed' }, { status: 400 })
     }
 
-    // Verify player is in the room
     const playerResult = await db
       .select({ id: roomPlayers.id, status: roomPlayers.status })
       .from(roomPlayers)
@@ -55,7 +53,6 @@ export async function POST(
       return NextResponse.json({ error: 'Already playing' }, { status: 400 })
     }
 
-    // Update this player's status to playing
     await db
       .update(roomPlayers)
       .set({ status: 'playing', currentDay: 0, currentNetWorth: 50_000 })
@@ -69,7 +66,6 @@ export async function POST(
         .where(eq(rooms.id, id))
     }
 
-    // Parse settings
     let startingCash = 50_000
     let startingDebt = 50_000
     if (room.scenarioData) {

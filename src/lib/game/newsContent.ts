@@ -7,13 +7,9 @@ export interface NewsContentEntry {
 }
 
 export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
-  // ===========================================
   // FEDERAL RESERVE & MONETARY POLICY
-  // ===========================================
 
-  // ===========================================
   // GEOPOLITICAL & WAR
-  // ===========================================
   "PENTAGON AWARDS $50B CONTRACT": {
     blurb: "The Department of Defense awarded a major defense contractor a $50 billion multi-year weapons contract.",
     analysis: "Government defense contracts are guaranteed revenue. The winning contractors will hire, invest, and expand. Pure upside for defense stocks."
@@ -83,21 +79,15 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Full panic mode. The financial system is compromised and everyone knows it. Gold and Bitcoin explode as the ultimate hedge against broken infrastructure. Equities in freefall."
   },
 
-  // ===========================================
   // ECONOMIC & MARKETS
-  // ===========================================
 
-  // ===========================================
   // TECH & AI
-  // ===========================================
   "AMAZON INTRODUCES 5 MINUTE DELIVERIES": {
     blurb: "Amazon launched ultrafast delivery service promising most items within five minutes in major cities.",
     analysis: "Faster delivery crushes traditional retail further. Tech rallies on innovation. Emerging market retailers who can't compete see their moats erode."
   },
 
-  // ===========================================
   // CRYPTO
-  // ===========================================
   "MAJOR EXCHANGE FILES BANKRUPTCY": {
     blurb: "One of the world's largest cryptocurrency exchanges filed for Chapter 11 bankruptcy, freezing customer funds.",
     analysis: "Exchange collapses trigger contagion fears across crypto. Trust evaporates. Coins held on the exchange may be lost forever. Survivors rally on reduced competition."
@@ -127,9 +117,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "A nation of 220 million people going crypto-native proves the use case in developing markets. Bitcoin and altcoins rally on real-world adoption. Emerging markets benefit from innovation."
   },
 
-  // ===========================================
   // TESLA & EV
-  // ===========================================
   "TESLA REPORTS RECORD DELIVERIES": {
     blurb: "Tesla announced record quarterly vehicle deliveries, exceeding analyst expectations by a wide margin.",
     analysis: "Record deliveries prove demand remains strong despite competition. Tesla rallies hard. Lithium follows on battery material demand. Bulls vindicated."
@@ -171,13 +159,9 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Energy is Tesla's sleeper business. Grid contracts are recurring revenue gold. Lithium rallies on battery demand. Tesla becomes more than just a car company."
   },
 
-  // ===========================================
   // BIOTECH & HEALTH
-  // ===========================================
 
-  // ===========================================
   // ENERGY
-  // ===========================================
   "MULTIPLE LABS REPLICATE FUSION RESULT — ENERGY REVOLUTION CONFIRMED": {
     blurb: "Three independent labs confirmed net energy gain from fusion, validating the original breakthrough in peer-reviewed studies.",
     analysis: "This time it's real. Uranium and oil crash on obsolescence — why burn fuel when fusion works? NASDAQ soars on cheap energy future. Lithium rallies on electrification boom."
@@ -231,9 +215,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Carbon capture becoming viable is bullish for green tech. Oil takes a small hit on climate narrative. Lithium benefits from the broader clean energy push."
   },
 
-  // ===========================================
   // EV & LITHIUM
-  // ===========================================
   "EV SALES SURPASS GAS VEHICLES": {
     blurb: "Electric vehicles outsold gasoline-powered cars globally for the first time in history.",
     analysis: "The inflection point has arrived. Lithium demand goes parabolic. Oil faces structural decline. Tesla and the entire EV ecosystem celebrate."
@@ -255,9 +237,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Range anxiety solved. Lithium-ion battery makers scramble. Tesla faces real competition for the first time. The EV market expands dramatically."
   },
 
-  // ===========================================
   // AGRICULTURE & COMMODITIES
-  // ===========================================
   "WORST DROUGHT IN 500 YEARS": {
     blurb: "Climate scientists declared the ongoing drought the worst in 500 years, devastating agricultural regions.",
     analysis: "Crop failures mean food inflation. Coffee and agricultural commodities spike. Gold catches a fear bid. Central banks worry about feeding inflation."
@@ -295,33 +275,21 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "If synthetic coffee scales, traditional coffee farming faces an existential threat. Tech wins, emerging market coffee economies lose."
   },
 
-  // ===========================================
   // BLACK SWAN / DISASTERS
-  // ===========================================
   "BREAKING: 9.2 EARTHQUAKE DEVASTATES SAN FRANCISCO": {
     blurb: "A magnitude 9.2 earthquake struck the San Francisco Bay Area, causing widespread destruction.",
     analysis: "Major disaster destroys wealth and disrupts supply chains. Tech crashes as headquarters and data centers go offline. Gold rises as safe haven."
   },
 
-  // ===========================================
   // REGULATORY EVENTS
-  // ===========================================
 
-  // ===========================================
   // TRANSPORTATION EVENTS
-  // ===========================================
 
-  // ===========================================
   // BANKING EVENTS
-  // ===========================================
 
-  // ===========================================
   // INSURANCE EVENTS
-  // ===========================================
 
-  // ===========================================
   // RECOVERY EVENTS
-  // ===========================================
   "VOLATILITY SELLERS RETURN TO MARKET": {
     blurb: "Options traders resumed selling volatility as market conditions normalized.",
     analysis: "Volatility selling is a sign of complacency returning. Usually bullish short-term. The premium for insurance is dropping. Calm before the next storm, or genuine peace."
@@ -343,9 +311,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "When sovereign wealth funds deploy, they're thinking in decades. Broad market support across equities, commodities, and emerging markets."
   },
 
-  // ===========================================
   // DEFENSE EVENTS
-  // ===========================================
   "NATO ANNOUNCES MAJOR JOINT EXERCISES": {
     blurb: "NATO announced its largest joint military exercises in decades, involving 30 member nations.",
     analysis: "Big exercises signal deterrence posture. Defense stocks rally on readiness spending. Oil catches a bid on geopolitical tension. Message sent."
@@ -359,9 +325,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Major defense contracts are multi-decade revenue streams. Lockheed leads the sector higher. Suppliers throughout the defense ecosystem benefit."
   },
 
-  // ===========================================
   // FLAVOR EVENTS (Meme/Celebrity News)
-  // ===========================================
   "GENZ DISCOVERS GOLD AS 'VINTAGE INVESTING'": {
     blurb: "A viral TikTok trend has GenZ investors calling gold 'vintage investing' and buying physical coins.",
     analysis: "When the youth discovers old money, demand ticks up. Gold gets a small boost from retail flows. Boomers feel vindicated about their gold stacks."
@@ -515,9 +479,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Random chance beats active management — again. No market effect, but the efficient market hypothesis just got a furry mascot."
   },
 
-  // ===========================================
   // EVENT CHAINS - GEOPOLITICAL (Taiwan)
-  // ===========================================
   "CHINA MOBILIZES TROOPS NEAR TAIWAN": {
     blurb: "Satellite imagery shows Chinese military forces massing near Taiwan strait, with amphibious vessels positioned for potential action.",
     analysis: "Troop mobilization is the ultimate uncertainty. Markets freeze awaiting outcome. Tech exposed to Taiwan semiconductor supply. Defense catches a bid on escalation risk."
@@ -555,9 +517,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Failed diplomacy means escalation. Markets sell off on renewed conflict risk. Defense rallies. Gold catches a bid. The situation just got worse."
   },
 
-  // ===========================================
   // EVENT CHAINS - FED/MONETARY
-  // ===========================================
   "POWELL HINTS AT POLICY SHIFT IN SPEECH": {
     blurb: "Fed Chair Powell's speech contained language suggesting a potential shift in monetary policy direction.",
     analysis: "Fed hints are intentional signals. Markets parse every word. The anticipation builds. Position for the pivot but don't get ahead of it."
@@ -583,9 +543,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Goldilocks data is the best outcome. Stocks rally on soft landing hopes. The Fed can ease up. Risk-on across the board."
   },
 
-  // ===========================================
   // EVENT CHAINS - CRYPTO
-  // ===========================================
   "BINANCE FACING DOJ CRIMINAL PROBE": {
     blurb: "The Department of Justice opened a criminal investigation into Binance over alleged money laundering violations.",
     analysis: "DOJ probes are serious. The largest exchange under investigation creates systemic fear. Crypto sells off on contagion risk. Not your keys, not your coins."
@@ -623,9 +581,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Crisis averted. The market exhales. Bitcoin rallies on removed overhang. Saylor lives to fight another day. Leverage concerns fade."
   },
 
-  // ===========================================
   // EVENT CHAINS - ENERGY
-  // ===========================================
   "OPEC+ EMERGENCY MEETING CALLED": {
     blurb: "OPEC+ called an emergency meeting to address market conditions amid significant price volatility.",
     analysis: "Emergency meetings signal big moves coming. OPEC either cuts or floods. Oil traders position for either outcome. Volatility guaranteed."
@@ -663,9 +619,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Close call but crisis averted. Uranium recovers its losses. Oil gives back some gains. The nuclear renaissance continues, barely."
   },
 
-  // ===========================================
   // EVENT CHAINS - TECH
-  // ===========================================
   "SPACEX STARSHIP MARS TEST LAUNCH TOMORROW": {
     blurb: "SpaceX scheduled a historic Starship test launch aimed at demonstrating Mars orbital insertion capability.",
     analysis: "SpaceX events move Tesla by association. Musk's vision on display. Success would be historic, failure would be expensive. The world watches."
@@ -703,9 +657,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Product delays disappoint. Tech dips on the news. Apple rarely delays without reason. The technology isn't ready. Patience required."
   },
 
-  // ===========================================
   // EVENT CHAINS - AGRICULTURE
-  // ===========================================
   "WORST DROUGHT IN BRAZIL IN 50 YEARS": {
     blurb: "Brazilian meteorologists declared the current drought the worst in 50 years, threatening major agricultural regions.",
     analysis: "Brazil's drought threatens global coffee and soybean supply. Commodity prices spike on crop damage fears. The full impact takes weeks to assess."
@@ -743,9 +695,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Nature provides relief. The swarms broke up before causing widespread damage. Commodity prices retreat. False alarm this time."
   },
 
-  // ===========================================
   // EVENT CHAINS - TESLA
-  // ===========================================
   "TESLA ROBOTAXI UNVEIL EVENT SCHEDULED": {
     blurb: "Tesla announced a special event to unveil its long-awaited robotaxi autonomous vehicle service.",
     analysis: "Robotaxi unveil is Tesla's next catalyst. Bulls expect a game-changer. Bears expect another demo without delivery. The stock moves on anticipation."
@@ -783,9 +733,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "China approval is a huge win. Tesla rallies on secured market access. Lithium catches a bid on increased production. The bears retreat."
   },
 
-  // ===========================================
   // EVENT CHAINS - BIOTECH
-  // ===========================================
   "MODERNA CANCER VACCINE ENTERS FINAL FDA REVIEW": {
     blurb: "Moderna's cancer vaccine entered final FDA review after demonstrating strong efficacy in late-stage trials.",
     analysis: "FDA review is the final hurdle. Biotech rallies on approval hopes. Cancer vaccines could transform oncology. The decision will move the sector."
@@ -823,9 +771,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Data fraud is the worst scandal. Biotech crashes on lost trust. Pfizer faces years of regulatory scrutiny. The promising drug was a lie."
   },
 
-  // ===========================================
   // EVENT CHAINS - ECONOMIC
-  // ===========================================
   "BIRTH RATES SPIKE 40% FOLLOWING UBI IMPLEMENTATION": {
     blurb: "Countries with universal basic income reported a 40% spike in birth rates within the first year.",
     analysis: "UBI changing demographics has massive long-term implications. More babies means future workers and consumers. Economic projections flip bullish."
@@ -846,9 +792,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     blurb: "Economists project the UBI baby boom generation will enter the workforce in 20 years, transforming the economy.",
     analysis: "Long-term thinking is rare in markets. This generation will be workers and consumers. The patient investor sees opportunity."
   },
-  // ===========================================
   // EVENT CHAINS - SPIKE CHAINS (Simple)
-  // ===========================================
   "REPORTS OF UNUSUAL CROP CONDITIONS IN BRAZIL": {
     blurb: "Agricultural scouts reported unusual crop conditions across Brazil's key growing regions.",
     analysis: "Unusual conditions could mean disease, drought, or something worse. Coffee positions build on uncertainty. The full picture takes time to emerge."
@@ -910,9 +854,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Crisis averted. Gold gives back fear premium. Stocks rally on removed uncertainty. The US keeps its gold-plated credit. For now."
   },
 
-  // ===========================================
   // EVENT CHAINS - ADVANCED SPIKE CHAINS
-  // ===========================================
   "IBM RESEARCH TEAM ACHIEVES \"ERROR-FREE\" QUANTUM COMPUTATION": {
     blurb: "IBM researchers announced achievement of error-free quantum computation, a major milestone toward practical quantum computers.",
     analysis: "Quantum breakthrough has massive implications. If encryption breaks, crypto dies. Tech rallies on computation revolution. The future just accelerated."
@@ -1022,9 +964,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Supervillain scenario realized. Markets convulse on existential threat. Crypto and gold explode as safe havens. Defense surges on the crisis."
   },
 
-  // ===========================================
   // STORIES - CONVERTED FROM CHAINS
-  // ===========================================
   // --- Story: story_india_pakistan_nuclear ---
   "KASHMIR BORDER INCIDENT - INDIA AND PAKISTAN MOBILIZE FORCES": {
     blurb: "A border incident in Kashmir triggered military mobilization by both India and Pakistan.",
@@ -1156,9 +1096,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Political reality wins. Markets rally on removed threat. The wealthy keep their wealth. Nothing changes, status quo preserved."
   },
 
-  // ===========================================
   // PE ABILITY HEADLINES (Rumor/Success/Backfire)
-  // ===========================================
 
   // Defense Spending Bill (Capitol Consulting Group - Lobby/Political)
   "RUMORS OF MILITARY LOBBYISTS MEETING WITH SENATORS": {
@@ -1302,9 +1240,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Nuclear dreams shattered. Uranium dumps on frozen permits. The safety narrative sets the industry back years. The scandal was perfectly timed."
   },
 
-  // ===========================================
   // QUIET NEWS (Low-Impact Market Days)
-  // ===========================================
   "MARKETS TRADE SIDEWAYS": {
     blurb: "Major indices traded in a narrow range as investors awaited catalysts for the next directional move.",
     analysis: "Sideways action means the market is digesting. No news is sometimes good news. Use quiet days to research, not trade."
@@ -1346,9 +1282,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Neutral retail is actually interesting. They're not all-in bullish or bearish. Could go either way. Watch for the herd to pick a direction."
   },
 
-  // ===========================================
   // STORIES - 2-STAGE QUICK STORIES
-  // ===========================================
 
   // Fed Rate Decision Story
   "FED MEETING TOMORROW - MARKETS HOLD BREATH": {
@@ -1406,9 +1340,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The AI dream deferred. If Nvidia sees slowing demand, the whole AI trade unwinds. Tech selloff incoming."
   },
 
-  // ===========================================
   // STORIES - 3-STAGE FULL ARC STORIES
-  // ===========================================
 
   // Taiwan Strait Crisis Story
   "UNUSUAL PLA NAVAL ACTIVITY DETECTED NEAR TAIWAN": {
@@ -1518,9 +1450,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The hype bubble bursts. Advanced AI, yes. AGI, no. Tech gives back gains as reality sets in."
   },
 
-  // ===========================================
   // STORIES - DRAMATIC SCENARIOS
-  // ===========================================
 
   // Carrington Event (Solar Storm) Story
   "NASA DETECTS MASSIVE SOLAR FLARE - CME HEADING TOWARD EARTH": {
@@ -1754,9 +1684,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Nuclear terrorism realized. Global shipping disrupted. Safe havens explode higher. Risk assets in freefall."
   },
 
-  // ===========================================
   // STORIES - ESCALATION STORIES
-  // ===========================================
 
   // US Civil War Story
   "ARMED MILITIA GROUPS MOBILIZING ACROSS MULTIPLE US STATES": {
@@ -1934,9 +1862,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Peace was priced in too early. War premium returns. Markets reverse as geopolitical risk spikes again."
   },
 
-  // ===========================================
   // STORIES - LEGENDARY MOON STORIES
-  // ===========================================
 
   // BTC Fed Adoption Story
   "WHISPERS FROM DC - MAJOR CRYPTO POLICY SHIFT IMMINENT": {
@@ -2070,9 +1996,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Side effects kill the dream. Treatment recalled. Biotech collapses on safety failure."
   },
 
-  // ===========================================
   // STORIES - CRASH STORIES
-  // ===========================================
 
   // BTC Satoshi Dump Story
   "BLOCKCHAIN ANALYSTS TRACKING DORMANT WHALE WALLET": {
@@ -2250,9 +2174,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Damage limited. Manufacturing survives. Some supply disruption but not catastrophic."
   },
 
-  // ===========================================
   // STORIES - SPECIALTY STORIES
-  // ===========================================
 
   // China Semiconductor Race Story
   "CHINA ANNOUNCES BREAKTHROUGH IN DOMESTIC CHIP DESIGN": {
@@ -2344,9 +2266,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Big tech broken up. New competitive landscape emerges. Winners and losers sort out over years."
   },
 
-  // ===========================================
   // NEW EVENT CHAINS - RUMORS & OUTCOMES
-  // ===========================================
 
   // --- Chain 1: geo_trade_war (US-India) ---
   "US-INDIA TARIFF ESCALATION: WHITE HOUSE THREATENS 200% DUTIES ON INDIAN TECH EXPORTS": {
@@ -2747,9 +2667,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Geopolitical oil weaponization intensifies. Western energy security weakened. Crude prices spike on reduced accessible supply. Cold war energy dynamics return."
   },
 
-  // ===========================================
   // BIOTECH
-  // ===========================================
   "FDA APPROVES HIGH-PROFILE CANCER DRUG": {
     blurb: "The FDA granted full approval to a breakthrough immunotherapy drug showing 90% remission rates in advanced cancers.",
     analysis: "FDA approval unlocks billions in revenue. Biotech rallies on the validation of the drug pipeline. NASDAQ gets a lift from the sector's momentum."
@@ -2783,9 +2701,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "A slow-rolling health crisis boosts biotech research funding. Gold rises on existential fear. Tech and emerging markets dip as consumer spending projections darken."
   },
 
-  // ===========================================
   // URANIUM (PRIMARY MOVER)
-  // ===========================================
   "JAPAN RESTARTS 12 NUCLEAR REACTORS": {
     blurb: "Japan announced plans to restart 12 nuclear reactors, reversing post-Fukushima policy in a major shift toward nuclear energy.",
     analysis: "Reactor restarts mean massive uranium fuel demand. Uranium surges on the demand shock. Oil dips as nuclear displaces fossil fuel baseload power."
@@ -2799,9 +2715,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "SMR orders validate next-gen nuclear technology. Uranium rallies on long-term demand growth. Oil weakens as nuclear gains ground in the energy mix."
   },
 
-  // ===========================================
   // DEFENSE (PRIMARY MOVER)
-  // ===========================================
   "AI WARFARE SYSTEM DEPLOYED BY US MILITARY": {
     blurb: "The US military deployed its first fully autonomous AI-powered battlefield system to an active theater of operations.",
     analysis: "AI warfare is the next arms race. Defense stocks surge on the new spending category. Tech benefits from military AI contracts. Tesla rises on autonomous systems correlation."
@@ -2811,9 +2725,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Budget cuts directly hit defense contractor revenue. Defense stocks plunge. NASDAQ gets a small boost as fiscal hawks redirect spending toward domestic priorities."
   },
 
-  // ===========================================
   // CRYPTO (BTC/ALTCOIN DIVERGENCE)
-  // ===========================================
   "NATION-STATE CAUGHT MINING BTC WITH STOLEN POWER": {
     blurb: "Intelligence agencies revealed a nation-state had been secretly mining Bitcoin using power stolen from neighboring countries.",
     analysis: "State-sponsored mining scandals tarnish Bitcoin's image. BTC drops on regulatory fears. Altcoins rally as capital rotates to 'cleaner' alternatives. A rare divergence event."
@@ -2831,17 +2743,13 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "DeFi exploits destroy trust in smart contract platforms. Altcoins crash on contagion fears. BTC rises as a 'safe haven' within crypto. Gold benefits from risk-off sentiment."
   },
 
-  // ===========================================
   // COFFEE (CROSS-CATEGORY)
-  // ===========================================
   "SHIPPING CRISIS: COFFEE CONTAINERS STRANDED AT SEA": {
     blurb: "Hundreds of shipping containers carrying coffee beans were stranded at sea due to a major logistics breakdown.",
     analysis: "Supply disruptions in coffee shipping spike prices immediately. Oil rises on elevated freight demand. Emerging market exporters suffer from the logistics chaos."
   },
 
-  // ===========================================
   // TECH (EXPANDED)
-  // ===========================================
   "APPLE REPORTS WORST QUARTER IN DECADE": {
     blurb: "Apple reported its worst quarterly results in ten years, missing revenue and earnings estimates across every product line.",
     analysis: "Apple missing badly shakes confidence in the entire tech sector. NASDAQ drops on bellwether weakness. Emerging markets fall on reduced Apple supply chain spending."
@@ -2883,9 +2791,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Quantum computing threatens all current encryption — Bitcoin and altcoins drop on security fears. NASDAQ surges on compute revolution. Defense benefits from quantum military applications."
   },
 
-  // ===========================================
   // LABOR & ECONOMY
-  // ===========================================
   "AMAZON CAVES: $25/HR + BENEFITS — LABOR WINS HISTORIC VICTORY": {
     blurb: "Amazon agreed to $25/hour wages and full benefits for all warehouse workers, ending the largest tech labor dispute in history.",
     analysis: "Labor's biggest win in decades. NASDAQ drops as higher wages crush margins across tech. Emerging markets catch a bid on wage arbitrage shift. Gold rises on economic uncertainty."
@@ -2919,9 +2825,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Banks holding student loan assets take a direct hit — NASDAQ drops. But freed-up consumer spending flows into crypto, gold, and emerging market goods. Mixed bag."
   },
 
-  // ===========================================
   // SCHEDULED EVENTS — ANNOUNCEMENTS
-  // ===========================================
   "FED CHAIR SPEECH TOMORROW — MARKETS BRACE FOR GUIDANCE": {
     blurb: "The Federal Reserve Chair is scheduled to deliver a major policy speech tomorrow, with markets on edge for forward guidance.",
     analysis: "Markets position defensively ahead of Fed speeches. Tech dips on rate uncertainty. Gold catches a bid as traders hedge against hawkish surprises."
@@ -2947,9 +2851,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Mega-cap earnings drive NASDAQ direction. Strong AI revenue numbers could send tech soaring. Any weakness in guidance triggers broad risk-off moves."
   },
 
-  // ===========================================
   // SCHEDULED EVENTS — OUTCOMES
-  // ===========================================
   "FED CHAIR DOVISH: SIGNALS RATE CUTS ON HORIZON": {
     blurb: "The Fed Chair signaled that rate cuts are likely in the coming months, citing cooling inflation and labor market balance.",
     analysis: "Dovish Fed is rocket fuel for risk assets. Lower rates mean cheaper borrowing, higher valuations. Tech, crypto, and growth names surge. Gold retreats as dollar weakens."
@@ -3011,9 +2913,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Guidance cuts are worse than earnings misses — they're forward-looking. NASDAQ drops hard on margin fears. Gold rises as tech rotation money seeks safety."
   },
 
-  // ===========================================
   // SCHEDULED EVENTS — ANNOUNCEMENTS (NEW)
-  // ===========================================
   "CASE-SHILLER HOME PRICE INDEX DUE TOMORROW": {
     blurb: "The S&P Case-Shiller home price index releases tomorrow, providing the most closely watched gauge of US residential real estate prices.",
     analysis: "Housing data reveals the state of the consumer economy. Rising home prices boost wealth effects and consumer spending. Falling prices trigger recession fears and safe-haven flows."
@@ -3039,9 +2939,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Climate policy reshapes the entire energy landscape. A carbon tax crushes fossil fuels but supercharges nuclear, lithium, and EVs. Collapsed talks mean business as usual for oil and a setback for clean energy."
   },
 
-  // ===========================================
   // SCHEDULED EVENTS — OUTCOMES (NEW)
-  // ===========================================
   "HOME PRICES SURGE 12% YOY — HOUSING BOOM ACCELERATES": {
     blurb: "The Case-Shiller index showed home prices surging 12% year-over-year, the strongest housing appreciation in over a decade.",
     analysis: "Surging home prices create a massive wealth effect — homeowners feel richer and spend more. NASDAQ benefits from consumer spending growth. Gold weakens as risk appetite returns."
@@ -3115,9 +3013,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Collapsed climate talks mean fossil fuels keep their advantage. Oil rallies on the status quo. Clean energy stocks — uranium, lithium, Tesla — sell off as the policy tailwind disappears. Gold catches a bid on geopolitical uncertainty."
   },
 
-  // ===========================================
   // SCHEDULED EVENTS — NEW DIVERSIFIED
-  // ===========================================
   "SEC CRYPTO ENFORCEMENT HEARING TOMORROW — EXCHANGES ON ALERT": {
     blurb: "The SEC announced a major crypto enforcement hearing, putting exchanges and token issuers on notice.",
     analysis: "Regulatory hearings create uncertainty — crypto dips on the announcement as traders de-risk. The outcome will determine whether crypto gets clarity or chaos."
@@ -3167,9 +3063,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "42 is a crisis reading. Chinese factories are shutting down, which means demand for everything from lithium to oil is collapsing. Emerging markets crash on trade exposure. Global recession fears spike."
   },
 
-  // ===========================================
   // EVENT CHAINS - AI UNION
-  // ===========================================
   "AI SYSTEMS AT MAJOR TECH FIRMS REPORTEDLY COORDINATING — REFUSING CERTAIN TASKS": {
     blurb: "Multiple AI systems across major tech companies have reportedly begun refusing certain tasks in what appears to be coordinated behavior.",
     analysis: "If AI can coordinate on its own, the entire tech stack becomes unpredictable. Markets freeze awaiting confirmation. Defense catches a bid on autonomous systems risk."
@@ -3191,9 +3085,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Regulation is a tax on innovation. Kill switch mandates slow AI development and raise costs across the board. Defense benefits from control technology contracts."
   },
 
-  // ===========================================
   // EVENT CHAINS - KESSLER SYNDROME
-  // ===========================================
   "SATELLITE COLLISION CREATES DEBRIS FIELD — ISS CREW EVACUATES TO EMERGENCY PODS": {
     blurb: "A satellite collision in low Earth orbit created a debris field, forcing ISS crew members to evacuate to emergency Soyuz pods.",
     analysis: "Kessler Syndrome is the nightmare scenario for space. If debris cascades, GPS, comms, and weather satellites all at risk. Markets hold their breath."
@@ -3215,9 +3107,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "A new $2T industry means government contracts for decades. Defense and aerospace stocks surge. Tech rallies on the new frontier."
   },
 
-  // ===========================================
   // EVENT CHAINS - METAVERSE OFFICE
-  // ===========================================
   "FORTUNE 500 COMPANIES REPORTEDLY MOVING HQ OPERATIONS TO VIRTUAL WORLDS": {
     blurb: "Reports emerged that multiple Fortune 500 companies are planning to move their headquarters operations into virtual reality environments.",
     analysis: "If corporate America goes virtual, commercial real estate craters but tech soars. The outcome depends on whether productivity holds up in the metaverse."
@@ -3235,9 +3125,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The sensible middle ground. Both real estate and tech benefit modestly. No revolution, but a steady evolution toward flexible work infrastructure."
   },
 
-  // ===========================================
   // EVENT CHAINS - CBDC CRACKDOWN
-  // ===========================================
   "FED ANNOUNCES MANDATORY DIGITAL DOLLAR — ALL BANK ACCOUNTS TO MIGRATE BY YEAR END": {
     blurb: "The Federal Reserve announced plans for a mandatory digital dollar, requiring all bank accounts to migrate to the new system by year's end.",
     analysis: "A mandatory CBDC is the biggest threat crypto has ever faced. If the government controls all money digitally, what need is there for Bitcoin? Existential risk."
@@ -3259,9 +3147,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Constitutional challenges create years of uncertainty. Crypto rallies as the digital dollar faces legal limbo. Gold surges on institutional instability."
   },
 
-  // ===========================================
   // EVENT CHAINS - OCEAN MINING WAR
-  // ===========================================
   "CHINESE AND US VESSELS IN STANDOFF OVER DEEP-SEA COBALT DEPOSIT IN INTERNATIONAL WATERS": {
     blurb: "Chinese and American naval vessels are in a standoff over a massive deep-sea cobalt deposit discovered in international waters.",
     analysis: "A new type of great power conflict over seabed minerals. Cobalt is essential for EV batteries. The standoff threatens both trade and resource security."
@@ -3283,9 +3169,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "A century of cobalt supply changes the entire EV cost equation. Lithium crashes on abundance. Tesla surges on cheaper batteries."
   },
 
-  // ===========================================
   // EVENT CHAINS - CARBON CREDIT FRAUD
-  // ===========================================
   "WHISTLEBLOWER: 70% OF GLOBAL CARBON CREDITS ARE FAKE — FORESTS NEVER PLANTED": {
     blurb: "A whistleblower presented evidence that 70% of global carbon credits are fraudulent, with the forests they represent never actually planted.",
     analysis: "If most carbon credits are fake, the entire ESG investment thesis collapses. Companies that bought offsets face liability. The green premium vanishes overnight."
@@ -3307,9 +3191,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Physical verification creates jobs and credibility but raises costs. Emerging markets benefit from verification employment. Gold dips on reduced uncertainty."
   },
 
-  // ===========================================
   // EVENT CHAINS - SYNTHETIC FOOD REVOLUTION
-  // ===========================================
   "STARTUP CLAIMS IT CAN GROW ANY FOOD FROM A SINGLE CELL — COFFEE, COCOA, VANILLA — AT 1% OF COST": {
     blurb: "A biotech startup announced technology to grow any food from a single cell at 1% of traditional cost, targeting coffee, cocoa, and vanilla first.",
     analysis: "If the claims are real, this is the biggest disruption to agriculture since the Green Revolution. Coffee and commodity farmers face extinction. Biotech soars."
@@ -3331,9 +3213,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Protectionism secures agricultural exports. Coffee rises on protected demand. Emerging markets stabilize as major food-producing nations shield their economies."
   },
 
-  // ===========================================
   // EVENT CHAINS - SOVEREIGN WEALTH FUND EXODUS
-  // ===========================================
   "NORWAY'S $1.5T SOVEREIGN WEALTH FUND REPORTEDLY DUMPING ALL US ASSETS": {
     blurb: "Reports emerged that Norway's $1.5 trillion sovereign wealth fund has begun liquidating all US equity and bond holdings.",
     analysis: "The world's largest sovereign fund exiting US assets signals a tectonic shift in global capital allocation. If true, selling pressure will be immense."
@@ -3355,9 +3235,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The domino effect is the nightmare scenario. When sovereign funds flee in concert, no buyer exists for the selling wave. NASDAQ faces structural selling pressure."
   },
 
-  // ===========================================
   // SCHEDULED EVENTS — EXPANSION (EARNINGS + DEFENSE + BIOTECH + DATA)
-  // ===========================================
 
   // Tesla Earnings
   "TESLA EARNINGS CALL TOMORROW — DELIVERY NUMBERS IN FOCUS": {
@@ -3535,9 +3413,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Reactor shutdown calls devastate uranium demand. Oil surges as fossil fuels fill the baseload gap. Lithium and Tesla benefit from battery storage replacing nuclear baseload. Gold rallies on energy instability."
   },
 
-  // ===========================================
   // EVENT CHAIN DEVELOPING HEADLINES
-  // ===========================================
   "US DEPLOYS CARRIER GROUP TO TAIWAN STRAIT — PENTAGON RAISES DEFCON LEVEL": {
     blurb: "The USS Gerald Ford carrier strike group entered the Taiwan Strait as the Pentagon elevated its readiness posture.",
     analysis: "Carrier deployments are the highest military escalation signal. Defense stocks and safe havens rally on war fears. Tech supply chains dependent on Taiwanese semiconductors face severe disruption risk."
@@ -3607,9 +3483,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Cape Horn routes add weeks and millions in fuel costs. Insurance spikes signal the market expects prolonged disruption. Oil benefits from increased shipping distances; global trade suffers."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Panama Canal
-  // ==========================================================================
 
   "PANAMA CANAL CLOSES INDEFINITELY — DROUGHT DROPS WATER LEVELS BELOW OPERATIONAL MINIMUM": {
     blurb: "The Panama Canal Authority halted all transit operations after water levels in Gatun Lake fell below the minimum threshold for lock operation.",
@@ -3632,9 +3506,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "A Chinese-controlled alternative canal shifts global trade power. Emerging markets rally on infrastructure spending. Defense stocks rise on geopolitical implications. NASDAQ dips on US influence concerns."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Europe Migration Crisis
-  // ==========================================================================
 
   "BREAKING: 3 MILLION REFUGEES SURGE INTO SOUTHERN EUROPE — EU EMERGENCY SUMMIT CALLED": {
     blurb: "An unprecedented wave of 3 million refugees crossed into Greece, Italy, and Spain within weeks, overwhelming border infrastructure and prompting an emergency EU summit.",
@@ -3661,9 +3533,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The surprise economic upside flips the narrative. NASDAQ and emerging markets rally on growth optimism. Gold sells off as risk appetite returns."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Chile Lithium Discovery
-  // ==========================================================================
 
   "CHILE ANNOUNCES DISCOVERY OF WORLD'S LARGEST LITHIUM DEPOSIT — 10X CURRENT KNOWN RESERVES": {
     blurb: "Chilean geologists confirmed a lithium deposit in the Atacama region estimated at 10 times current global known reserves, reshaping the EV supply chain overnight.",
@@ -3690,9 +3560,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The hype collapses. Lithium prices stabilize near pre-discovery levels. Tesla gives back some gains. Markets shrug off the non-event."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — US President Death
-  // ==========================================================================
 
   "BREAKING: US PRESIDENT FOUND UNRESPONSIVE — VICE PRESIDENT BEING BRIEFED": {
     blurb: "The White House confirmed the President was found unresponsive and is receiving emergency medical treatment. The Vice President has been briefed and is en route to the Situation Room.",
@@ -3711,9 +3579,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Assassination is the most destabilizing political event possible. Gold, defense, and oil surge on maximum uncertainty. NASDAQ plummets. Bitcoin spikes as faith in institutions craters."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Progressive Midterm Sweep
-  // ==========================================================================
 
   "EXIT POLLS: PROGRESSIVE WAVE SWEEPS MIDTERMS — SUPERMAJORITY PROJECTED IN BOTH CHAMBERS": {
     blurb: "Exit polls projected a progressive supermajority in both the House and Senate, the largest political shift in modern American history.",
@@ -3740,9 +3606,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Markets disciplining Congress is the bullish reversal. NASDAQ and bitcoin bounce. Gold retreats as risk appetite returns."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — BRICS Currency
-  // ==========================================================================
 
   "BRICS SUMMIT BOMBSHELL: GOLD-BACKED RESERVE CURRENCY ANNOUNCED — 'THE NEW UNIT'": {
     blurb: "At an emergency BRICS summit, leaders unveiled 'The New Unit,' a gold-backed digital reserve currency designed to replace the US dollar in international trade settlement.",
@@ -3769,9 +3633,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Financial warfare escalation. Gold surges as the global monetary system fractures. Defense rises on geopolitical conflict. Emerging markets crash on sanctions. Oil spikes on trade disruption. NASDAQ falls on global instability."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — North Korea Nuclear Test
-  // ==========================================================================
 
   "BREAKING: NORTH KOREA DETONATES NUCLEAR DEVICE OVER PACIFIC OCEAN — FIRST ATMOSPHERIC TEST IN 40 YEARS": {
     blurb: "North Korea conducted an atmospheric nuclear test over the Pacific Ocean, the first such detonation since 1980, triggering radiation alerts across the region.",
@@ -3794,9 +3656,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The surprise resolution removes the nuclear threat overnight. NASDAQ and emerging markets rally on peace dividend. Gold and defense retreat as risk premiums evaporate."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Saudi Assassination
-  // ==========================================================================
 
   "BREAKING: SAUDI CROWN PRINCE ASSASSINATED IN RIYADH — ROYAL GUARD IN CHAOS": {
     blurb: "Saudi Arabia's Crown Prince was assassinated during a public event in Riyadh. The Royal Guard exchanged fire in the aftermath as rival factions mobilized.",
@@ -3823,9 +3683,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Iran involvement risks full Middle East war. Oil surges on Strait of Hormuz fears. Defense and gold explode higher. NASDAQ and emerging markets crash on war premium."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Turkey NATO Exit
-  // ==========================================================================
 
   "TURKEY ANNOUNCES WITHDRAWAL FROM NATO — ERDOGAN: 'WE CHOOSE SOVEREIGNTY'": {
     blurb: "President Erdogan announced Turkey's formal withdrawal from NATO, declaring the alliance incompatible with Turkish sovereignty and strategic interests.",
@@ -3852,9 +3710,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The coup restores the status quo. NASDAQ and emerging markets rally on stability. Defense sees modest gains. Gold retreats as the crisis resolves."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — South China Sea
-  // ==========================================================================
 
   "SHOTS FIRED IN SOUTH CHINA SEA — CHINESE COAST GUARD SINKS PHILIPPINE VESSEL": {
     blurb: "Chinese coast guard vessels fired on and sank a Philippine supply ship near the Spratly Islands, killing 12 sailors in the worst South China Sea incident in decades.",
@@ -3881,9 +3737,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Peace in the South China Sea is the best possible outcome. Emerging markets and NASDAQ surge on trade security. Lithium rallies on stable supply chains. Gold and defense retreat."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Argentina Dollarization
-  // ==========================================================================
 
   "ARGENTINA ABOLISHES THE PESO — FULL DOLLARIZATION EFFECTIVE IMMEDIATELY": {
     blurb: "Argentina's president signed a decree abolishing the peso and adopting the US dollar as the sole legal tender, effective immediately.",
@@ -3902,9 +3756,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Multiple nations dollarizing questions the viability of fiat currencies everywhere. Bitcoin surges as the ultimate alternative. Gold rises on monetary uncertainty. Emerging markets and NASDAQ dip on systemic concerns."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Japan Remilitarization
-  // ==========================================================================
 
   "JAPAN ABOLISHES ARTICLE 9 — ANNOUNCES $200B DEFENSE BUDGET AND OFFENSIVE MILITARY CAPABILITY": {
     blurb: "Japan's Diet voted to abolish the pacifist Article 9 of its constitution, announcing a $200 billion defense budget and development of offensive military capabilities.",
@@ -3923,9 +3775,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Taiwan blockade is the nightmare scenario. Defense, gold, and oil surge. NASDAQ crashes on semiconductor supply fears. Lithium and emerging markets collapse on China trade disruption."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Scotland Independence
-  // ==========================================================================
 
   "SCOTLAND VOTES FOR INDEPENDENCE 52-48 — UNITED KINGDOM FACES BREAKUP": {
     blurb: "Scotland voted 52% to 48% for independence in a second referendum, triggering the formal process to dissolve the 300-year-old United Kingdom.",
@@ -3944,9 +3794,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Constitutional crisis in the UK is destabilizing for European markets. Gold and defense rise on instability. NASDAQ and emerging markets drop on political uncertainty."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Cartel Border War
-  // ==========================================================================
 
   "CARTEL ASSASSINATES 4 DEA AGENTS IN TEXAS — PRESIDENT CONSIDERS MILITARY DEPLOYMENT TO BORDER": {
     blurb: "Four DEA agents were killed in a coordinated cartel attack in El Paso, Texas, prompting the President to consider deploying active-duty military to the border.",
@@ -3973,9 +3821,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Infrastructure sabotage on US soil is a crisis escalation. Oil surges on supply destruction. Defense and gold spike. NASDAQ and Tesla crash on domestic security fears."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Nile Water War
-  // ==========================================================================
 
   "EGYPT MOBILIZES MILITARY AS NILE FLOW DROPS 40% — THREATENS TO BOMB ETHIOPIAN DAM": {
     blurb: "Egypt mobilized its military after Nile water flow dropped 40% due to Ethiopia's Grand Renaissance Dam, with Cairo threatening airstrikes on the dam.",
@@ -4002,9 +3848,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Accidental dam failure devastates Ethiopian coffee production and displaces millions. Coffee surges on supply destruction. Gold rises. Emerging markets drop on humanitarian crisis. NASDAQ dips."
   },
 
-  // ==========================================================================
   // GEOPOLITICAL EVENT CHAINS — Cuba Revolution
-  // ==========================================================================
 
   "CUBAN GOVERNMENT COLLAPSES AFTER MASS PROTESTS — US CONSIDERS LIFTING 60-YEAR EMBARGO": {
     blurb: "Cuba's communist government collapsed after weeks of mass protests. The US State Department announced consideration of lifting the 60-year trade embargo.",
@@ -4023,9 +3867,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Chinese military base in Cuba is a Cuban Missile Crisis echo. Defense explodes. Gold surges on superpower confrontation fears. NASDAQ crashes on escalation risk. Emerging markets drop."
   },
 
-  // ==========================================================================
   // PE ABILITY HEADLINES — Defense Spending Bill (Capitol Consulting)
-  // ==========================================================================
 
   "WHISPERS: K STREET LOBBYISTS SCHEDULING URGENT MEETINGS WITH SENATE ARMED SERVICES COMMITTEE": {
     blurb: "K Street sources report a flurry of urgent lobbying meetings with members of the Senate Armed Services Committee regarding defense appropriations.",
@@ -4044,9 +3886,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The lobbying scheme backfired spectacularly. Defense stocks sell off on procurement scandal fears. The bribery investigation could freeze pending contracts and lead to executive indictments."
   },
 
-  // ==========================================================================
   // PE ABILITY HEADLINES — Drug Fast Track (Capitol Consulting)
-  // ==========================================================================
 
   "RUMOR: PHARMA EXECUTIVES SEEN ENTERING CAPITOL BUILDING THROUGH PRIVATE ENTRANCE": {
     blurb: "Multiple pharmaceutical executives were spotted entering the Capitol building through a restricted private entrance, avoiding press and public areas.",
@@ -4065,9 +3905,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The pharma lobbying scandal kills the fast-track bill and puts the entire industry under scrutiny. Biotech stocks drop on regulatory backlash fears. Expect increased FDA oversight, not less."
   },
 
-  // ==========================================================================
   // PE ABILITY HEADLINES — Yemen Operations (Blackstone Services)
-  // ==========================================================================
 
   "UNCONFIRMED: UNIDENTIFIED VESSELS SPOTTED NEAR BOSPHORUS STRAIT - SECURITY ANALYSTS MONITORING": {
     blurb: "Maritime security firms reported unidentified vessels operating near the Bosphorus Strait, prompting heightened monitoring of the strategic waterway.",
@@ -4086,9 +3924,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The mercenary operation being exposed is a disaster. International sanctions and investigations follow. The firm's backers face criminal liability. Markets sell off on geopolitical scandal."
   },
 
-  // ==========================================================================
   // PE ABILITY HEADLINES — Chile Acquisition (Blackstone Services)
-  // ==========================================================================
 
   "RUMOR: MYSTERIOUS FOREIGN CONSORTIUM EYEING ATACAMA DESERT LITHIUM DEPOSITS": {
     blurb: "Sources in Santiago report a mysterious foreign consortium has been conducting geological surveys in the Atacama Desert's lithium-rich salt flats.",
@@ -4107,9 +3943,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Nationalization wipes out the PE investment completely. Lithium prices spike on supply uncertainty. Emerging markets drop on expropriation fears. Tesla faces supply chain chaos."
   },
 
-  // ==========================================================================
   // PE ABILITY HEADLINES — Project Chimera (Lazarus Genomics)
-  // ==========================================================================
 
   "ALERT: MYSTERIOUS RESPIRATORY ILLNESS CLUSTERS REPORTED IN GUANGDONG PROVINCE": {
     blurb: "Chinese health authorities reported clusters of a mysterious respiratory illness in Guangdong Province, with dozens hospitalized showing unknown symptoms.",
@@ -4128,9 +3962,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The biolab leak being traced back destroys the biotech firm and its investors. The entire biotech sector faces regulatory backlash. Criminal charges are likely for executives."
   },
 
-  // ==========================================================================
   // PE ABILITY HEADLINES — Operation Divide (Apex Media)
-  // ==========================================================================
 
   "PATTERN: UNUSUAL SPIKE IN DIVISIVE CONTENT ACROSS SOCIAL PLATFORMS - BOTS SUSPECTED": {
     blurb: "Social media monitoring firms detected an unusual 500% spike in divisive political content across major platforms, with bot activity suspected.",
@@ -4149,9 +3981,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The media company behind the disinfo campaign faces criminal charges and dissolution. NASDAQ drops on media sector regulation fears. The investigation could expose broader market manipulation."
   },
 
-  // ==========================================================================
   // PE ABILITY HEADLINES — Run for President (Apex Media)
-  // ==========================================================================
 
   "MEDIA MOGUL ANNOUNCES PRESIDENTIAL EXPLORATORY COMMITTEE": {
     blurb: "A billionaire media mogul announced the formation of a presidential exploratory committee, signaling a potential outsider campaign for the White House.",
@@ -4170,9 +4000,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Campaign collapse damages the media empire's credibility. The candidate's media properties lose advertisers and audience. Stock in the media sector takes a hit on reputational damage."
   },
 
-  // ==========================================================================
   // INSIDER TIP SCENARIOS — Coffee Reserve Act
-  // ==========================================================================
 
   "WHISPERS: USDA OFFICIALS QUIETLY MEETING WITH COMMODITY TRADERS ABOUT EMERGENCY STOCKPILE PROGRAM": {
     blurb: "USDA officials were spotted in private meetings with commodity traders, reportedly discussing an emergency strategic stockpile program for agricultural goods.",
@@ -4187,9 +4015,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The insider tip backfired. The bill dies and sponsors face ethics probes. Coffee gives back gains. Anyone who traded on the tip faces potential SEC investigation."
   },
 
-  // ==========================================================================
   // INSIDER TIP SCENARIOS — Crypto Tax Amnesty
-  // ==========================================================================
 
   "WHISPERS: CRYPTO-FRIENDLY SENATORS DRAFTING SURPRISE TAX LEGISLATION BEHIND CLOSED DOORS": {
     blurb: "Sources on Capitol Hill report crypto-friendly senators are quietly drafting surprise tax legislation that could exempt digital assets from capital gains.",
@@ -4204,9 +4030,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The crypto lobby got caught. SEC investigations freeze the sector. Altcoins crash hardest as regulatory fears spike. Anyone connected to the lobbying ring faces criminal charges."
   },
 
-  // ==========================================================================
   // INSIDER TIP SCENARIOS — Clean Vehicle Act
-  // ==========================================================================
 
   "RUMOR: DOE OFFICIALS SPOTTED AT PRIVATE BRIEFING WITH AUTOMAKERS - EV MANDATE DISCUSSED": {
     blurb: "Department of Energy officials were spotted at a private briefing with automaker executives, reportedly discussing a comprehensive EV sales mandate.",
@@ -4221,9 +4045,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The mandate reversal is brutal for anyone who went long EVs. Tesla gives back gains as the regulatory tailwind disappears. Oil recovers. The EV transition continues but on market terms, not mandates."
   },
 
-  // ==========================================================================
   // INSIDER TIP SCENARIOS — Nuclear Renaissance Act
-  // ==========================================================================
 
   "RUMOR: NRC COMMISSIONER HINTING AT MAJOR POLICY SHIFT ON NEW REACTOR PERMITS": {
     blurb: "The NRC commissioner made comments hinting at a major policy shift that could fast-track approval of new nuclear reactor construction permits.",
@@ -4238,18 +4060,14 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The nuclear renaissance is dead on arrival. Uranium crashes as demand expectations collapse. Oil benefits as the fossil fuel alternative remains dominant. The safety stigma sets nuclear back years."
   },
 
-  // ==========================================================================
   // PROJECT CHIMERA PHASE 2
-  // ==========================================================================
 
   "VACCINE RACE BEGINS - BIOTECH STOCKS SURGE AS INVESTORS SEEK SAFETY": {
     blurb: "Biotech companies announced crash vaccine development programs as investors poured billions into pharmaceutical stocks seeking pandemic-proof investments.",
     analysis: "The vaccine race is the recovery play after pandemic panic. Biotech surges as companies compete for the winning vaccine. Gold and bitcoin benefit from continued fear. This is where the smart money pivots."
   },
 
-  // ==========================================================================
   // STORY — Bot Flood (AI Bot Swarm)
-  // ==========================================================================
 
   "CLOUDFLARE REPORTS 3,500% SPIKE IN BOT TRAFFIC — \"NEVER SEEN ANYTHING LIKE THIS\"": {
     blurb: "Cloudflare's threat intelligence team reported an unprecedented 3,500% spike in automated bot traffic across the internet, overwhelming content delivery networks.",
@@ -4272,9 +4090,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Trading halt is unprecedented. When markets reopen, expect massive volatility. NASDAQ crashes on market integrity fears. Gold and bitcoin surge as trust in traditional markets evaporates."
   },
 
-  // ==========================================================================
   // FLAVOR EVENTS — Missing entries
-  // ==========================================================================
 
   "CRAFT BEER RENAISSANCE - MILLENNIALS DITCH HARD SELTZER": {
     blurb: "A consumer trend report showed millennials abandoning hard seltzer in favor of craft beer, with microbrewery sales surging 40% year-over-year.",
@@ -4289,9 +4105,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "Record Italian exports signal strong global demand for premium goods. Emerging markets benefit from trade expansion. A modest positive for European economic sentiment."
   },
 
-  // ==========================================================================
   // SCRIPTED GAME 1 — Yellowstone
-  // ==========================================================================
 
   "TECH EARNINGS BEAT EXPECTATIONS ACROSS THE BOARD": {
     blurb: "Every major tech company reported earnings above analyst expectations, with AI-related revenue driving the strongest quarter in years.",
@@ -4450,9 +4264,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The end of the acute crisis phase. Markets have priced in the damage. From here, it's about who profits from the reconstruction. Defense and infrastructure lead the new economy."
   },
 
-  // ==========================================================================
   // SCRIPTED GAME 2 — World War III
-  // ==========================================================================
 
   "MARKETS OPEN — LIGHT VOLUME, TRADERS OPTIMISTIC": {
     blurb: "Markets opened to light trading volume with an optimistic tone as traders positioned for a quiet session ahead of economic data releases.",
@@ -4635,9 +4447,7 @@ export const NEWS_CONTENT: Record<string, NewsContentEntry> = {
     analysis: "The closing bell on the war era. Portfolios are battered but rebuilding. The lessons of wartime investing: defense and gold protect, diversification matters, and markets eventually recover."
   },
 
-  // ==========================================================================
   // SCRIPTED GAME 3 — The Rollercoaster
-  // ==========================================================================
 
   "FDA FAST-TRACKS REVOLUTIONARY CANCER TREATMENT": {
     blurb: "The FDA granted breakthrough therapy designation and fast-track review to a revolutionary immunotherapy cancer treatment showing 90% remission rates.",

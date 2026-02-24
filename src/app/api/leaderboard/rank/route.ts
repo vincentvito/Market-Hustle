@@ -5,12 +5,6 @@ import { db } from '@/db'
 import { gameResults } from '@/db/schema'
 import { sql, and, gte, eq } from 'drizzle-orm'
 
-/**
- * GET /api/leaderboard/rank?username=X&score=Y&duration=Z
- * Returns the player's rank among all players for the given duration.
- * Rank = count of distinct usernames whose best score > the given score, + 1.
- * Excludes billionaire placeholder entries (real DB only).
- */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl

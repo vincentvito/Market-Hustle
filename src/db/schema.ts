@@ -14,9 +14,6 @@ import {
   index,
 } from 'drizzle-orm/pg-core'
 
-// ============================================
-// auth.users (Supabase auth schema, read-only)
-// ============================================
 const authSchema = pgSchema('auth')
 
 export const authUsers = authSchema.table('users', {
@@ -24,9 +21,6 @@ export const authUsers = authSchema.table('users', {
   email: text('email'),
 })
 
-// ============================================
-// profiles
-// ============================================
 export const profiles = pgTable('profiles', {
   id: uuid('id').primaryKey(),
   username: text('username').unique(),
@@ -46,9 +40,6 @@ export const profiles = pgTable('profiles', {
   isAdmin: boolean('is_admin').notNull().default(false),
 })
 
-// ============================================
-// subscriptions
-// ============================================
 export const subscriptions = pgTable('subscriptions', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
@@ -61,9 +52,6 @@ export const subscriptions = pgTable('subscriptions', {
   index('idx_subscriptions_user_id').on(table.userId),
 ])
 
-// ============================================
-// webhook_events (Stripe webhook audit log)
-// ============================================
 export const webhookEvents = pgTable('webhook_events', {
   id: text('id').primaryKey(), // Stripe event ID (evt_xxx)
   eventType: text('event_type').notNull(),
@@ -78,9 +66,6 @@ export const webhookEvents = pgTable('webhook_events', {
   index('idx_webhook_events_created_at').on(table.createdAt),
 ])
 
-// ============================================
-// game_results
-// ============================================
 export const gameResults = pgTable('game_results', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
@@ -99,18 +84,12 @@ export const gameResults = pgTable('game_results', {
   uniqueIndex('idx_game_results_unique_game').on(table.username, table.gameId),
 ])
 
-// ============================================
-// pro_trials
-// ============================================
 export const proTrials = pgTable('pro_trials', {
   userId: uuid('user_id').primaryKey().references(() => profiles.id, { onDelete: 'cascade' }),
   gamesUsed: integer('games_used').notNull().default(0),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 })
 
-// ============================================
-// trade_logs (analytics — all in-game trades)
-// ============================================
 export const tradeLogs = pgTable('trade_logs', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   username: text('username').notNull(),
@@ -134,9 +113,6 @@ export const tradeLogs = pgTable('trade_logs', {
   index('idx_trade_logs_category').on(table.category),
 ])
 
-// ============================================
-// game_plays (NEW — retention tracking)
-// ============================================
 export const gamePlays = pgTable('game_plays', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
@@ -145,9 +121,6 @@ export const gamePlays = pgTable('game_plays', {
   index('idx_game_plays_user_id').on(table.userId),
 ])
 
-// ============================================
-// scenarios (admin-authored game scenarios)
-// ============================================
 export const scenarios = pgTable('scenarios', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: text('title').notNull(),
@@ -163,72 +136,6 @@ export const scenarios = pgTable('scenarios', {
   index('idx_scenarios_status').on(table.status),
 ])
 
-// ============================================
-// TENNIS TABLES — commented out, not in use
-// Added by Matteo Vitali in 709011b (game-updates-14-February)
-// No API routes, components, or migrations exist for these
-// ============================================
-
-// export const tennisMatches = pgTable('tennis_matches', {
-//   id: uuid('id').primaryKey().defaultRandom(),
-//   userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
-//   mode: text('mode').notNull(),
-//   difficulty: text('difficulty').notNull(),
-//   opponentName: text('opponent_name').notNull(),
-//   winner: text('winner').notNull(),
-//   loser: text('loser').notNull(),
-//   scoreline: text('scoreline').notNull(),
-//   durationSeconds: integer('duration_seconds').notNull().default(0),
-//   stats: text('stats'),
-//   tournamentId: uuid('tournament_id'),
-//   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-// }, (table) => [
-//   index('idx_tennis_matches_user_id').on(table.userId),
-//   index('idx_tennis_matches_created_at').on(table.createdAt),
-//   index('idx_tennis_matches_mode').on(table.mode),
-//   index('idx_tennis_matches_tournament_id').on(table.tournamentId),
-// ])
-
-// export const tennisTournaments = pgTable('tennis_tournaments', {
-//   id: uuid('id').primaryKey().defaultRandom(),
-//   userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
-//   status: text('status').notNull().default('in_progress'),
-//   state: text('state').notNull().default('{}'),
-//   completedAt: timestamp('completed_at', { withTimezone: true }),
-//   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-//   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
-// }, (table) => [
-//   index('idx_tennis_tournaments_user_id').on(table.userId),
-//   index('idx_tennis_tournaments_status').on(table.status),
-//   index('idx_tennis_tournaments_updated_at').on(table.updatedAt),
-// ])
-
-// export const tennisMatchEvents = pgTable('tennis_match_events', {
-//   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-//   matchId: uuid('match_id').notNull().references(() => tennisMatches.id, { onDelete: 'cascade' }),
-//   userId: uuid('user_id').references(() => profiles.id, { onDelete: 'cascade' }),
-//   eventType: text('event_type').notNull(),
-//   eventPayload: text('event_payload'),
-//   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-// }, (table) => [
-//   index('idx_tennis_match_events_match_id').on(table.matchId),
-//   index('idx_tennis_match_events_created_at').on(table.createdAt),
-// ])
-
-// export const tennisRankings = pgTable('tennis_rankings', {
-//   userId: uuid('user_id').primaryKey().references(() => profiles.id, { onDelete: 'cascade' }),
-//   rating: integer('rating').notNull().default(1200),
-//   matchesPlayed: integer('matches_played').notNull().default(0),
-//   wins: integer('wins').notNull().default(0),
-//   losses: integer('losses').notNull().default(0),
-//   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
-// }, (table) => [
-//   index('idx_tennis_rankings_rating').on(table.rating),
-// ])
-
-// ============================================
-// guest_daily_plays (IP-based rate limiting for anonymous users)
-// ============================================
 export const guestDailyPlays = pgTable('guest_daily_plays', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   ip: text('ip').notNull(),
@@ -239,9 +146,6 @@ export const guestDailyPlays = pgTable('guest_daily_plays', {
   index('idx_guest_daily_plays_date').on(table.playedDate),
 ])
 
-// ============================================
-// rooms (multiplayer room sessions)
-// ============================================
 export const rooms = pgTable('rooms', {
   id: uuid('id').primaryKey().defaultRandom(),
   code: text('code').notNull().unique(),
@@ -259,9 +163,6 @@ export const rooms = pgTable('rooms', {
   index('idx_rooms_host_id').on(table.hostId),
 ])
 
-// ============================================
-// room_players (players in a room)
-// ============================================
 export const roomPlayers = pgTable('room_players', {
   id: uuid('id').primaryKey().defaultRandom(),
   roomId: uuid('room_id').notNull().references(() => rooms.id, { onDelete: 'cascade' }),
@@ -278,9 +179,6 @@ export const roomPlayers = pgTable('room_players', {
   index('idx_room_players_room_id').on(table.roomId),
 ])
 
-// ============================================
-// room_results (final results for room games)
-// ============================================
 export const roomResults = pgTable('room_results', {
   id: uuid('id').primaryKey().defaultRandom(),
   roomId: uuid('room_id').notNull().references(() => rooms.id, { onDelete: 'cascade' }),

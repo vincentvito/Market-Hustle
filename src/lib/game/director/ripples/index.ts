@@ -1,9 +1,3 @@
-// Second-Order Effects (Ripples) - Main Exports
-// Creates narrative coherence through event clustering
-
-// =============================================================================
-// TYPES
-// =============================================================================
 export type { RippleEffect, SecondOrderState, RippleDefinition } from './types'
 
 export {
@@ -17,18 +11,12 @@ export {
   MAX_VOLATILITY_BOOST,
 } from './types'
 
-// =============================================================================
-// DEFINITIONS
-// =============================================================================
 export {
   CATEGORY_RIPPLE_DEFAULTS,
   HIGH_IMPACT_RIPPLE_OVERRIDES,
   getRippleDefinition,
 } from './definitions'
 
-// =============================================================================
-// STATE MANAGEMENT
-// =============================================================================
 export {
   isHighImpactEvent,
   createRippleFromEvent,
@@ -37,9 +25,6 @@ export {
   applyCounterRipple,
 } from './state'
 
-// =============================================================================
-// MODIFIERS
-// =============================================================================
 export {
   computeEffectiveModifiers,
   applySecondOrderModifiers,

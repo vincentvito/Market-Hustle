@@ -1,14 +1,4 @@
-// =============================================================================
-// WALL ST GOSSIP SYSTEM
-// Generates fake trader achievements to create social proof and aspiration
-// =============================================================================
-
 import type { NewsItem } from './types'
-
-// =============================================================================
-// USERNAME GENERATOR
-// Combinatorial system producing 50,000+ unique usernames
-// =============================================================================
 
 const FIRST_NAMES = [
   'mike', 'tony', 'jake', 'chad', 'kyle', 'brad', 'derek', 'tyler',
@@ -201,9 +191,7 @@ export function generateUsername(): string {
   return '@' + username
 }
 
-// =============================================================================
-// MESSAGE TEMPLATES
-// =============================================================================
+// Message templates
 
 interface GossipTemplate {
   id: string
@@ -378,9 +366,7 @@ export function generateGossipMessage(playerNetWorth: number): string {
   return message
 }
 
-// =============================================================================
-// TRIGGER LOGIC
-// =============================================================================
+// Trigger logic
 
 export interface GossipState {
   gossipCount: number
@@ -459,14 +445,8 @@ export function createGossipNewsItem(playerNetWorth: number): NewsItem {
   }
 }
 
-// =============================================================================
-// MARKET CONDITION HELPERS
-// =============================================================================
+// Market condition helpers
 
-/**
- * Determines if the market is "sideways" (low volatility)
- * Used to trigger gossip only during quiet periods
- */
 export function isMarketSideways(priceChanges: Record<string, number>): boolean {
   const changes = Object.values(priceChanges)
   if (changes.length === 0) return true
@@ -478,10 +458,6 @@ export function isMarketSideways(priceChanges: Record<string, number>): boolean 
   return avgChange < 0.05
 }
 
-/**
- * Determines if there's a major event happening today
- * Major events = spikes, breaking news, chain resolutions
- */
 export function hasMajorEventToday(todayNews: NewsItem[]): boolean {
   // Check if any news has breaking/major label or significant effects
   for (const news of todayNews) {

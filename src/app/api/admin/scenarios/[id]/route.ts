@@ -6,7 +6,6 @@ import { verifyAdmin } from '@/lib/admin/auth'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
-// GET /api/admin/scenarios/[id] — get full scenario
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -38,7 +37,6 @@ export async function GET(
   }
 }
 
-// PUT /api/admin/scenarios/[id] — update scenario (partial)
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -72,7 +70,6 @@ export async function PUT(
   }
 }
 
-// DELETE /api/admin/scenarios/[id] — archive scenario
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }

@@ -5,7 +5,6 @@ import { useGame } from '@/hooks/useGame'
 import type { NewsItem, NewsLabelType } from '@/lib/game/types'
 import { TIER_COLORS, type MilestoneTier } from '@/lib/game/milestones'
 
-// Priority order for news sorting (lower = higher priority, displayed first)
 const LABEL_PRIORITY: Record<NewsLabelType | 'undefined', number> = {
   breaking: 0,
   scheduled: 1, // Calendar events (Fed, jobs, GDP) shown prominently
@@ -25,7 +24,6 @@ function getNewsPriority(labelType?: NewsLabelType): number {
   return LABEL_PRIORITY[labelType]
 }
 
-// Helper to get label display based on labelType
 function getLabelDisplay(labelType?: NewsLabelType): { text: string; colorClass: string } | null {
   switch (labelType) {
     case 'breaking':
@@ -52,13 +50,9 @@ function getLabelDisplay(labelType?: NewsLabelType): { text: string; colorClass:
   }
 }
 
-// Strip redundant category prefixes from headline text for display only.
-// The raw headline is preserved for dictionary lookups (newsExplanations, newsContent).
 function cleanHeadline(headline: string, hasLabel: boolean): string {
   if (!hasLabel) return headline
-  // Strip emoji prefixes (🎯, ⚠️, 📰, 🕵️)
   let cleaned = headline.replace(/^(?:🎯|⚠️|📰|🕵️)\s*/, '')
-  // Strip known category prefixes that duplicate the label
   cleaned = cleaned.replace(/^(BREAKING|DEVELOPING|JUST IN|NEWS|STUDY|REPORT):\s*/, '')
   return cleaned
 }
@@ -77,7 +71,6 @@ export function NewsPanel() {
   const isRetro2 = selectedTheme === 'retro2'
   const isBloomberg = selectedTheme === 'bloomberg'
 
-  // Theme-aware glow matching --mh-news color per theme
   const newsGlowStyle: React.CSSProperties = isModern3
     ? { textShadow: '0 0 8px rgba(0,212,170,0.4)' }    // #00d4aa
     : isRetro2
@@ -87,14 +80,12 @@ export function NewsPanel() {
         : { textShadow: '0 0 8px rgba(255,170,0,0.4)' }  // #ffaa00
   const scheduledGlowStyle: React.CSSProperties = { textShadow: '0 0 8px rgba(100,180,255,0.4)' }
 
-  // Typewriter state
-  const [typewriterIndex, setTypewriterIndex] = useState(0) // Which news item is currently typing
-  const [charIndex, setCharIndex] = useState(0) // How many chars revealed in current item
-  const [isTypewriting, setIsTypewriting] = useState(false) // Animation in progress
-  const [lastDay, setLastDay] = useState(day) // Track day changes
+  const [typewriterIndex, setTypewriterIndex] = useState(0)
+  const [charIndex, setCharIndex] = useState(0)
+  const [isTypewriting, setIsTypewriting] = useState(false)
+  const [lastDay, setLastDay] = useState(day)
   const typewriterRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Auto-transition from takeover to persist after 2.5 seconds
   useEffect(() => {
     if (milestonePhase === 'takeover') {
       const timer = setTimeout(() => {
@@ -104,10 +95,8 @@ export function NewsPanel() {
     }
   }, [milestonePhase])
 
-  // Watch for day changes to trigger typewriter (all themes)
   useEffect(() => {
     if (day !== lastDay && day > 1) {
-      // Day changed, start typewriter animation
       setLastDay(day)
       setTypewriterIndex(0)
       setCharIndex(0)
@@ -115,7 +104,6 @@ export function NewsPanel() {
     }
   }, [day, lastDay])
 
-  // Build sorted news array (used for typewriter logic and rendering)
   const chainRumorItems: NewsItem[] = rumors.map(r => ({
     headline: r.rumor,
     effects: {},
@@ -125,12 +113,10 @@ export function NewsPanel() {
   const allNews = [...todayNews, ...chainRumorItems]
     .sort((a, b) => getNewsPriority(a.labelType) - getNewsPriority(b.labelType))
 
-  // Typewriter animation effect
   useEffect(() => {
     if (!isTypewriting) return
 
     if (typewriterIndex >= allNews.length) {
-      // All items revealed
       setIsTypewriting(false)
       return
     }
@@ -140,16 +126,14 @@ export function NewsPanel() {
     const currentHeadline = cleanHeadline(currentNews.headline, !!currentLabel)
 
     if (charIndex >= currentHeadline.length) {
-      // Current item complete, move to next
       setTypewriterIndex(prev => prev + 1)
       setCharIndex(0)
       return
     }
 
-    // Type next character
     typewriterRef.current = setTimeout(() => {
       setCharIndex(prev => prev + 1)
-    }, 25) // 25ms per character
+    }, 25)
 
     return () => {
       if (typewriterRef.current) {
@@ -158,7 +142,6 @@ export function NewsPanel() {
     }
   }, [isTypewriting, typewriterIndex, charIndex, allNews])
 
-  // Skip typewriter animation (click or keypress)
   const skipTypewriter = useCallback(() => {
     if (isTypewriting) {
       if (typewriterRef.current) {
@@ -168,7 +151,6 @@ export function NewsPanel() {
     }
   }, [isTypewriting])
 
-  // Add keypress listener to skip typewriter
   useEffect(() => {
     if (!isTypewriting) return
 
@@ -177,19 +159,12 @@ export function NewsPanel() {
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [isTypewriting, skipTypewriter])
 
-  const handleNewsClick = (news: NewsItem) => {
-    setSelectedNews(news)
-  }
-
-  // Check if there are any rumors to display (stories show as NEWS, not rumors)
   const hasRumors = rumors.length > 0
 
-  // Get milestone color
   const milestoneColor = activeMilestone
     ? TIER_COLORS[activeMilestone.tier as MilestoneTier]
     : '#22c55e'
 
-  // TAKEOVER PHASE: Full panel celebration
   if (milestonePhase === 'takeover' && activeMilestone) {
     const isImpossible = activeMilestone.tier === 'impossible'
     const isMythic = activeMilestone.tier === 'mythic'
@@ -201,13 +176,11 @@ export function NewsPanel() {
           isImpossible ? 'milestone-flash' : isMythic ? 'milestone-glitch' : ''
         }`}
       >
-        {/* Background flash effect */}
         <div
           className="absolute inset-0 milestone-pulse-bg"
           style={{ background: milestoneColor }}
         />
 
-        {/* Centered milestone announcement */}
         <div className="relative h-full flex flex-col items-center justify-center text-center">
           <div
             className="text-xs tracking-[0.3em] mb-1"
@@ -239,7 +212,6 @@ export function NewsPanel() {
     )
   }
 
-  // PERSIST or IDLE: Normal news with optional milestone at top
   return (
     <div
       id="tutorial-news"
@@ -253,7 +225,6 @@ export function NewsPanel() {
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
     >
       <div className="space-y-2 h-full overflow-y-auto overflow-x-hidden">
-        {/* Persisted milestone message */}
         {milestonePhase === 'persist' && activeMilestone && (
           <div
             className="text-sm leading-snug font-bold pb-1.5 mb-1.5 border-b border-mh-border"
@@ -266,28 +237,22 @@ export function NewsPanel() {
           </div>
         )}
 
-        {/* News items - sorted by priority (BREAKING > NEWS > DEVELOPING > RUMOR > none) */}
         {allNews.map((news, idx) => {
           const label = getLabelDisplay(news.labelType)
           const textColorClass = 'text-mh-news'
 
-          // Clean redundant prefixes from headline for display
           const cleanedHeadline = cleanHeadline(news.headline, !!label)
 
-          // Determine displayed text based on typewriter state
           let displayedHeadline = cleanedHeadline
           let showCursor = false
 
           if (isTypewriting) {
             if (idx < typewriterIndex) {
-              // Already fully revealed
               displayedHeadline = cleanedHeadline
             } else if (idx === typewriterIndex) {
-              // Currently typing this one
               displayedHeadline = cleanedHeadline.slice(0, charIndex)
               showCursor = true
             } else {
-              // Not yet started - don't render
               return null
             }
           }
@@ -299,7 +264,7 @@ export function NewsPanel() {
                 if (isTypewriting) {
                   skipTypewriter()
                 } else {
-                  handleNewsClick(news)
+                  setSelectedNews(news)
                 }
               }}
               className="leading-relaxed cursor-pointer hover:brightness-125 transition-all"
@@ -330,7 +295,6 @@ export function NewsPanel() {
           )
         })}
 
-        {/* Empty state only if nothing at all */}
         {todayNews.length === 0 && !hasRumors && milestonePhase === 'idle' && (
           <div className="text-base text-mh-text-dim italic">
             No news or rumors today

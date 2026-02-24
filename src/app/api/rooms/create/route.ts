@@ -9,11 +9,7 @@ import { eq, and, inArray } from 'drizzle-orm'
 const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no I, O, 0, 1
 
 function generateRoomCode(): string {
-  let code = ''
-  for (let i = 0; i < 6; i++) {
-    code += CHARS[Math.floor(Math.random() * CHARS.length)]
-  }
-  return code
+  return Array.from({ length: 6 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('')
 }
 
 export async function POST(request: Request) {
@@ -31,7 +27,6 @@ export async function POST(request: Request) {
     const startingCash = typeof body.startingCash === 'number' && body.startingCash > 0 ? body.startingCash : 50_000
     const startingDebt = typeof body.startingDebt === 'number' && body.startingDebt >= 0 ? body.startingDebt : 50_000
 
-    // Get user profile for username
     const profileResult = await db
       .select({ username: profiles.username })
       .from(profiles)
@@ -74,7 +69,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to generate unique room code' }, { status: 500 })
     }
 
-    // Create room
     const [room] = await db.insert(rooms).values({
       code,
       hostId: user.id,
@@ -84,7 +78,6 @@ export async function POST(request: Request) {
       scenarioData: JSON.stringify({ startingCash, startingDebt }),
     }).returning()
 
-    // Add host as first player
     await db.insert(roomPlayers).values({
       roomId: room.id,
       userId: user.id,

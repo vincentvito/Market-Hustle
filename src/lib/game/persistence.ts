@@ -1,5 +1,3 @@
-// localStorage persistence for user state
-
 import {
   UserState,
   DEFAULT_USER_STATE,
@@ -11,13 +9,8 @@ import {
 
 const STORAGE_KEY = 'market-hustle-user'
 
-// Maximum number of game history entries to keep
 const MAX_GAME_HISTORY = 100
 
-/**
- * Load user state from localStorage
- * Returns default state if nothing stored or parse error
- */
 export function loadUserState(): UserState {
   if (typeof window === 'undefined') {
     return { ...DEFAULT_USER_STATE }
@@ -43,9 +36,6 @@ export function loadUserState(): UserState {
   }
 }
 
-/**
- * Save user state to localStorage
- */
 export function saveUserState(state: UserState): void {
   if (typeof window === 'undefined') {
     return
@@ -64,10 +54,6 @@ export function saveUserState(state: UserState): void {
   }
 }
 
-/**
- * Reset daily games counter if it's a new day
- * Returns updated state (or same state if no change needed)
- */
 export function resetDailyGamesIfNewDay(state: UserState): UserState {
   const today = getTodayDateString()
 
@@ -82,10 +68,6 @@ export function resetDailyGamesIfNewDay(state: UserState): UserState {
   return state
 }
 
-/**
- * Increment games played for anonymous users (10 lifetime limit)
- * Call this when an anonymous user starts a game
- */
 export function incrementAnonymousGames(state: UserState): UserState {
   return {
     ...state,
@@ -94,26 +76,15 @@ export function incrementAnonymousGames(state: UserState): UserState {
   }
 }
 
-/**
- * Check if anonymous user can still play (based on localStorage counter)
- * Note: real enforcement is IP-based via /api/game/guest-start
- */
+// Note: real enforcement is IP-based via /api/game/guest-start
 export function canPlayAnonymous(state: UserState): boolean {
   return state.anonymousGamesPlayed < GUEST_TOTAL_LIMIT
 }
 
-/**
- * Get remaining anonymous games (based on localStorage counter)
- * Note: real enforcement is IP-based via /api/game/guest-start
- */
 export function getAnonymousGamesRemaining(state: UserState): number {
   return Math.max(0, GUEST_TOTAL_LIMIT - state.anonymousGamesPlayed)
 }
 
-/**
- * Mark user as registered (no longer anonymous)
- * Call this after successful signup/login
- */
 export function markAsRegistered(state: UserState): UserState {
   return {
     ...state,
@@ -121,10 +92,6 @@ export function markAsRegistered(state: UserState): UserState {
   }
 }
 
-/**
- * Increment games played today for registered users
- * Call this when a registered user starts a game
- */
 export function incrementGamesPlayed(state: UserState): UserState {
   const today = getTodayDateString()
 
@@ -145,9 +112,6 @@ export function incrementGamesPlayed(state: UserState): UserState {
   }
 }
 
-/**
- * Check if registered free user can play today
- */
 export function canPlayRegisteredFree(state: UserState): boolean {
   const today = getTodayDateString()
   if (state.lastPlayedDate !== today) {
@@ -156,9 +120,6 @@ export function canPlayRegisteredFree(state: UserState): boolean {
   return state.gamesPlayedToday < REGISTERED_FREE_DAILY_LIMIT
 }
 
-/**
- * Get remaining daily games for registered free users
- */
 export function getRegisteredFreeGamesRemaining(state: UserState): number {
   const today = getTodayDateString()
   if (state.lastPlayedDate !== today) {
@@ -167,10 +128,6 @@ export function getRegisteredFreeGamesRemaining(state: UserState): number {
   return Math.max(0, REGISTERED_FREE_DAILY_LIMIT - state.gamesPlayedToday)
 }
 
-/**
- * Record a completed game
- * Updates career stats and adds to game history
- */
 export function recordGameEnd(
   state: UserState,
   entry: GameHistoryEntry,
@@ -191,9 +148,6 @@ export function recordGameEnd(
   }
 }
 
-/**
- * Clear all user data (for reset progress feature)
- */
 export function clearUserState(): void {
   if (typeof window === 'undefined') {
     return
@@ -206,9 +160,6 @@ export function clearUserState(): void {
   }
 }
 
-/**
- * Set user to Pro tier (for testing or after purchase)
- */
 export function setProTier(state: UserState): UserState {
   return {
     ...state,
@@ -216,9 +167,6 @@ export function setProTier(state: UserState): UserState {
   }
 }
 
-/**
- * Set username for leaderboard
- */
 export function setUsername(state: UserState, username: string): UserState {
   return {
     ...state,
@@ -226,9 +174,6 @@ export function setUsername(state: UserState, username: string): UserState {
   }
 }
 
-/**
- * Set selected game duration
- */
 export function setSelectedDuration(
   state: UserState,
   duration: 30 | 45 | 60

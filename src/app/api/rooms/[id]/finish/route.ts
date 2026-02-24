@@ -26,7 +26,6 @@ export async function POST(
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Check room exists
     const roomResult = await db
       .select()
       .from(rooms)
@@ -37,7 +36,6 @@ export async function POST(
       return NextResponse.json({ error: 'Room not found' }, { status: 404 })
     }
 
-    // Upsert result (update if exists, insert if new)
     const existingResult = await db
       .select({ id: roomResults.id })
       .from(roomResults)
@@ -45,7 +43,6 @@ export async function POST(
       .limit(1)
 
     if (existingResult.length > 0) {
-      // Update existing result (replay)
       await db
         .update(roomResults)
         .set({
@@ -57,7 +54,6 @@ export async function POST(
         })
         .where(eq(roomResults.id, existingResult[0].id))
     } else {
-      // Insert new result
       await db.insert(roomResults).values({
         roomId: id,
         userId: user.id,
@@ -69,7 +65,6 @@ export async function POST(
       })
     }
 
-    // Update player status to finished
     await db
       .update(roomPlayers)
       .set({
@@ -79,7 +74,7 @@ export async function POST(
       })
       .where(and(eq(roomPlayers.roomId, id), eq(roomPlayers.userId, user.id)))
 
-    // Always recompute ranks after every submission
+    // Recompute ranks after every submission
     const allResults = await db
       .select()
       .from(roomResults)
@@ -106,7 +101,6 @@ export async function POST(
         .where(eq(roomResults.id, sorted[i].id))
     }
 
-    // Return updated results with ranks
     const updatedResults = await db
       .select()
       .from(roomResults)

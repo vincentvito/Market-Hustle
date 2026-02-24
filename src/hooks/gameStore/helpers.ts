@@ -1,8 +1,3 @@
-/**
- * Pure helper functions for the game store.
- * These functions have no Zustand dependencies and can be tested independently.
- */
-
 import { ASSETS } from '@/lib/game/assets'
 import { EVENTS, CATEGORY_WEIGHTS } from '@/lib/game/events'
 import { EVENT_CHAINS, CHAIN_CATEGORY_WEIGHTS } from '@/lib/game/eventChains'
@@ -40,10 +35,6 @@ import type {
   PendingStoryArc,
 } from '@/lib/game/types'
 
-// ============================================================================
-// PRICE INITIALIZATION
-// ============================================================================
-
 export function initPrices(): Record<string, number> {
   const p: Record<string, number> = {}
   ASSETS.forEach(a => {
@@ -61,17 +52,9 @@ export function initLifestylePrices(): Record<string, number> {
   return p
 }
 
-// ============================================================================
-// POSITION MANAGEMENT
-// ============================================================================
-
 export function generatePositionId(): string {
   return `pos_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }
-
-// ============================================================================
-// GAME OUTCOME & PERSISTENCE HELPERS
-// ============================================================================
 
 export function mapGameOverReasonToOutcome(reason: string): GameOutcome {
   switch (reason) {
@@ -145,11 +128,6 @@ export function saveGameResultSync(
   saveUserState(updatedState)
 }
 
-// ============================================================================
-// EVENT/CHAIN TOPIC BLOCKING
-// ============================================================================
-
-/** Maps PE ability IDs to their thematic category/subcategory for topic-blocking. */
 export const PE_ABILITY_TOPICS: Record<PEAbilityId, { category: string; subcategory?: string }> = {
   defense_spending_bill: { category: 'geopolitical', subcategory: 'military' },
   drug_fast_track:       { category: 'biotech' },
@@ -209,10 +187,6 @@ export function getActiveTopics(activeStories: ActiveStory[], activeChains: Acti
 
   return topics
 }
-
-// ============================================================================
-// EVENT SELECTION
-// ============================================================================
 
 export function selectRandomEvent(
   activeEscalations: ActiveEscalation[],
@@ -287,10 +261,6 @@ export function selectRandomEvent(
   // After MAX_CONFLICT_RETRIES attempts, return null (caller will use quiet news)
   return null
 }
-
-// ============================================================================
-// CHAIN SELECTION
-// ============================================================================
 
 export function selectRandomChain(
   usedChainIds: string[],
@@ -373,14 +343,6 @@ export function selectRandomChain(
   return null
 }
 
-// ============================================================================
-// DIRECTOR-AWARE EVENT SELECTION
-// ============================================================================
-
-/**
- * Select a random event with Director and Second-Order (Ripple) modifiers applied
- * This enhances the base selection with narrative pacing and event clustering
- */
 export function selectRandomEventWithDirector(
   activeEscalations: ActiveEscalation[],
   currentDay: number,
@@ -524,9 +486,6 @@ export function selectRandomEventWithDirector(
   return null
 }
 
-/**
- * Select a random chain with Director and Second-Order (Ripple) modifiers applied
- */
 export function selectRandomChainWithDirector(
   usedChainIds: string[],
   blockedCategories: Set<string>,
@@ -631,10 +590,6 @@ export function selectRandomChainWithDirector(
   return null
 }
 
-/**
- * Scale event effects by a multiplier
- * Used by Director to increase/decrease volatility
- */
 function scaleEventEffects(event: MarketEvent, multiplier: number): MarketEvent {
   const scaledEffects: Record<string, number> = {}
   for (const [asset, effect] of Object.entries(event.effects)) {
@@ -643,10 +598,6 @@ function scaleEventEffects(event: MarketEvent, multiplier: number): MarketEvent 
   }
   return { ...event, effects: scaledEffects }
 }
-
-// ============================================================================
-// STARTUP HELPERS
-// ============================================================================
 
 export function selectRandomStartup(tier: 'angel' | 'vc', usedStartupIds: string[]): Startup | null {
   const pool = tier === 'angel' ? ANGEL_STARTUPS : VC_STARTUPS
@@ -667,12 +618,6 @@ export function selectOutcome(startup: Startup): StartupOutcome {
   return startup.outcomes[startup.outcomes.length - 1]
 }
 
-/**
- * Select outcome with bonus that shifts probability toward better outcomes
- * Bonus reduces failure probability and redistributes to success tiers
- * @param startup The startup to select outcome for
- * @param bonus Probability shift (e.g., 0.05 = 5% reduction in failure rate)
- */
 export function selectOutcomeWithBonus(startup: Startup, bonus: number): StartupOutcome {
   if (bonus <= 0) {
     return selectOutcome(startup)
@@ -719,11 +664,6 @@ export function getRandomDuration(startup: Startup): number {
   return min + Math.floor(Math.random() * (max - min + 1))
 }
 
-// ============================================================================
-// SCHEDULED EVENT SELECTION
-// Calendar-driven events (Fed, jobs, GDP) with 1-day advance notice
-// ============================================================================
-
 export function selectRandomScheduledEvent(
   blockedCategories: Set<string>,
   activeScheduledEvent: ActiveScheduledEvent | null,
@@ -763,10 +703,6 @@ export function selectRandomScheduledEvent(
   }
   return weights[weights.length - 1].event
 }
-
-// =============================================================================
-// THEME <-> CATEGORY MAPPING HELPERS
-// =============================================================================
 
 const CATEGORY_TO_THEME: Record<string, NarrativeTheme> = {
   tech: 'tech_boom',

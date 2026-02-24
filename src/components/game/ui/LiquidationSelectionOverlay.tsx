@@ -62,9 +62,7 @@ export function LiquidationSelectionOverlay() {
 
   const { amountNeeded, reason } = pendingLiquidation
 
-  // Build list of all sellable assets
   const selectableAssets: SelectableAsset[] = [
-    // Luxury assets (fixed price)
     ...ownedLuxury.map(luxuryId => {
       const asset = LUXURY_ASSETS.find(a => a.id === luxuryId)
       return {
@@ -76,7 +74,6 @@ export function LiquidationSelectionOverlay() {
         quantity: 1,
       }
     }),
-    // Lifestyle assets
     ...ownedLifestyle.map(owned => {
       const asset = LIFESTYLE_ASSETS.find(a => a.id === owned.assetId)
       return {
@@ -88,7 +85,6 @@ export function LiquidationSelectionOverlay() {
         quantity: 1,
       }
     }),
-    // Leveraged positions (equity = value - debt)
     ...leveragedPositions
       .map(pos => {
         const currentPrice = prices[pos.assetId] || 0
@@ -104,7 +100,6 @@ export function LiquidationSelectionOverlay() {
         }
       })
       .filter(a => a.currentValue > 0),
-    // Short positions (profit = cashReceived - liability)
     ...shortPositions
       .map(pos => {
         const currentPrice = prices[pos.assetId] || 0
@@ -121,7 +116,6 @@ export function LiquidationSelectionOverlay() {
         }
       })
       .filter(a => a.currentValue > 0),
-    // Trading holdings
     ...Object.entries(holdings)
       .filter(([, qty]) => qty > 0)
       .map(([assetId, qty]) => {
@@ -138,7 +132,6 @@ export function LiquidationSelectionOverlay() {
       }),
   ]
 
-  // Calculate totals - cash is used first, so we need to cover the shortfall
   const shortfall = Math.max(0, amountNeeded - cash)
   const selectedValue = selectedEntries.reduce((sum, entry) => {
     if (entry.asset.type === 'trading') {
@@ -151,17 +144,14 @@ export function LiquidationSelectionOverlay() {
   const canConfirm = remaining <= 0
   const progress = shortfall > 0 ? Math.min((selectedValue / shortfall) * 100, 100) : 100
 
-  // Check if a trading asset supports partial selling
   const isPartialEligible = (asset: SelectableAsset) => {
     if (asset.type !== 'trading') return false
     const frac = FRACTIONAL_ASSETS[asset.id]
     return frac ? asset.quantity > frac.step : asset.quantity > 1
   }
 
-  // Get the step size for a trading asset
   const getStep = (assetId: string) => FRACTIONAL_ASSETS[assetId]?.step || 1
 
-  // Toggle asset selection
   const toggleAsset = (asset: SelectableAsset) => {
     setSelectedEntries(prev => {
       const exists = prev.find(e => e.asset.id === asset.id && e.asset.type === asset.type)
@@ -190,7 +180,6 @@ export function LiquidationSelectionOverlay() {
     })
   }
 
-  // Update quantity for a partial-eligible asset
   const updateQuantity = (assetId: string, assetType: string, newQty: number) => {
     const step = getStep(assetId)
     setSelectedEntries(prev =>
@@ -202,7 +191,6 @@ export function LiquidationSelectionOverlay() {
     )
   }
 
-  // Select all
   const selectAll = () => {
     setSelectedEntries(selectableAssets.map(asset => ({
       asset,
@@ -210,7 +198,6 @@ export function LiquidationSelectionOverlay() {
     })))
   }
 
-  // Handle confirm
   const handleConfirm = () => {
     if (canConfirm) {
       confirmLiquidationSelection(
@@ -227,10 +214,8 @@ export function LiquidationSelectionOverlay() {
     }
   }
 
-  // Theming: voluntary investment vs forced seizure
   const isVoluntary = reason === 'startup_investment'
   const reasonText = reason === 'sec' ? 'SEC FINE' : reason === 'divorce' ? 'DIVORCE SETTLEMENT' : reason === 'startup_investment' ? 'STARTUP INVESTMENT' : 'PENALTY'
-  // Use accent blue for voluntary, loss red for forced (retro2 always uses accent blue)
   const accentForced = isRetro2 || isVoluntary
 
   return (
@@ -241,7 +226,7 @@ export function LiquidationSelectionOverlay() {
         }`}
         style={accentForced ? { boxShadow: '0 0 20px rgba(0, 170, 255, 0.3)' } : { boxShadow: '0 0 20px rgba(255, 82, 82, 0.3)' }}
       >
-        {/* Header */}
+
         <div
           className={`p-4 border-b ${
             accentForced
@@ -266,7 +251,6 @@ export function LiquidationSelectionOverlay() {
           </div>
         </div>
 
-        {/* Progress Bar */}
         <div className="px-4 py-3 bg-[#0a0d10] border-b border-mh-border">
           <div className="flex justify-between text-xs mb-2">
             <span className="text-mh-text-dim">Selected value</span>
@@ -294,7 +278,6 @@ export function LiquidationSelectionOverlay() {
           )}
         </div>
 
-        {/* Asset List */}
         <div className="max-h-[300px] overflow-y-auto">
           {selectableAssets.length === 0 ? (
             <div className="p-6 text-center text-mh-text-dim">
@@ -314,7 +297,6 @@ export function LiquidationSelectionOverlay() {
 
               return (
                 <div key={`${asset.type}-${asset.id}`}>
-                  {/* Main asset row */}
                   <button
                     onClick={() => toggleAsset(asset)}
                     className={`w-full p-3 text-left border-b border-mh-border/50 transition-all cursor-pointer ${
@@ -326,7 +308,6 @@ export function LiquidationSelectionOverlay() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      {/* Checkbox */}
                       <div
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
                           isSelected
@@ -339,7 +320,6 @@ export function LiquidationSelectionOverlay() {
                         {isSelected && <span className="text-white text-xs">✓</span>}
                       </div>
 
-                      {/* Asset Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{asset.emoji}</span>
@@ -367,7 +347,6 @@ export function LiquidationSelectionOverlay() {
                         )}
                       </div>
 
-                      {/* Value */}
                       <div className={`text-right font-bold shrink-0 ${
                         isSelected
                           ? accentForced ? 'text-mh-accent-blue' : 'text-mh-loss-red'
@@ -383,14 +362,12 @@ export function LiquidationSelectionOverlay() {
                     </div>
                   </button>
 
-                  {/* Partial quantity selector for selected trading assets */}
                   {isSelected && canPartial && entry && (
                     <div className={`px-4 py-2.5 border-b border-mh-border/50 ${
                       accentForced ? 'bg-mh-accent-blue/5' : 'bg-mh-loss-red/5'
                     }`}>
                       <div className="flex items-center justify-between gap-2">
-                        {/* -/+ controls */}
-                        <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5">
                           <button
                             onClick={(e) => { e.stopPropagation(); updateQuantity(asset.id, asset.type, entry.sellQuantity - getStep(asset.id)) }}
                             disabled={entry.sellQuantity <= getStep(asset.id)}
@@ -410,7 +387,6 @@ export function LiquidationSelectionOverlay() {
                           </button>
                         </div>
 
-                        {/* Quick-select percentages */}
                         <div className="flex gap-1">
                           {[25, 50, 75].map(pct => {
                             const step = getStep(asset.id)
@@ -458,7 +434,6 @@ export function LiquidationSelectionOverlay() {
           )}
         </div>
 
-        {/* Actions */}
         <div className="p-4 border-t border-mh-border space-y-2">
           {selectableAssets.length > 0 && (
             <button

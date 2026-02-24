@@ -20,14 +20,12 @@ export function TradeFeedback() {
 
   const day = useGame(state => state.day)
 
-  // Clear all toasts when a new game starts (day resets to 1)
   useEffect(() => {
     if (day === 1) {
       toast.dismiss()
     }
   }, [day])
 
-  // Buy message toast (neutral blue - not profit/loss yet)
   useEffect(() => {
     if (activeBuyMessage) {
       toast(activeBuyMessage, {
@@ -42,7 +40,6 @@ export function TradeFeedback() {
     }
   }, [activeBuyMessage, clearBuyMessage])
 
-  // Sell message toast
   useEffect(() => {
     if (activeSellToast) {
       const { message, isProfit } = activeSellToast
@@ -58,7 +55,6 @@ export function TradeFeedback() {
     }
   }, [activeSellToast, clearSellToast])
 
-  // Error message toast
   useEffect(() => {
     if (activeErrorMessage) {
       toast.error(activeErrorMessage, {
@@ -73,7 +69,6 @@ export function TradeFeedback() {
     }
   }, [activeErrorMessage, clearErrorMessage])
 
-  // Investment buy message toast (neutral blue - not profit/loss yet)
   useEffect(() => {
     if (activeInvestmentBuyMessage) {
       toast(activeInvestmentBuyMessage, {
@@ -88,7 +83,6 @@ export function TradeFeedback() {
     }
   }, [activeInvestmentBuyMessage, clearInvestmentBuyMessage])
 
-  // Investment result toast
   useEffect(() => {
     if (activeInvestmentResultToast) {
       const { message, isProfit } = activeInvestmentResultToast

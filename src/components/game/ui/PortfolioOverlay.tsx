@@ -6,7 +6,6 @@ import { LIFESTYLE_ASSETS, LUXURY_ASSETS, RISK_TIER_COLORS, RISK_TIER_LABELS, ge
 import { formatPrice, formatLargePrice, formatCompact } from '@/lib/utils/formatMoney'
 import type { LuxuryAssetId } from '@/lib/game/types'
 
-// Helper to get PE ability description for portfolio display
 function getPEAbilityDescription(assetId: string, dailyReturn?: number): string | null {
   const abilityDescriptions: Record<string, string> = {
     pe_smokeys_on_k: 'Unlocks insider tips from congressional staffers',
@@ -20,7 +19,6 @@ function getPEAbilityDescription(assetId: string, dailyReturn?: number): string 
     return abilityDescriptions[assetId]
   }
 
-  // Passive PE assets show daily return
   if (dailyReturn) {
     return `+${(dailyReturn * 100).toFixed(0)}%/day income`
   }
@@ -76,7 +74,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
         onClick={e => e.stopPropagation()}
         className="bg-mh-bg border border-mh-border rounded-lg w-full max-w-[340px] max-h-[80vh] overflow-auto"
       >
-        {/* Header */}
         <div className="p-4 border-b border-mh-border flex justify-between items-center">
           <div>
             <div className="text-mh-text-dim text-[10px]">PORTFOLIO VALUE</div>
@@ -106,7 +103,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </button>
         </div>
 
-        {/* Holdings List */}
         {ASSETS.filter(a => holdings[a.id] > 0).length > 0 && (
           <div className="py-2">
             {ASSETS.filter(a => holdings[a.id] > 0).map(asset => {
@@ -134,7 +130,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
                     <div className="text-mh-text-dim text-[10px] mt-0.5">
                       Avg cost: ${formatPrice(avgCost)}
                     </div>
-                    {/* Allocation bar */}
                     <div className="mt-1.5 h-1 bg-[#1a2a3a] rounded-sm overflow-hidden">
                       <div
                         className="h-full bg-mh-accent-blue"
@@ -165,7 +160,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         )}
 
-        {/* Leveraged Positions Section - Pro tier */}
         {leveragedPositions.length > 0 && (
           <div className="border-t border-mh-border">
             <div className="px-4 py-2 bg-[#0a1520]">
@@ -233,7 +227,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         )}
 
-        {/* Short Positions Section - Pro tier */}
         {shortPositions.length > 0 && (
           <div className="border-t border-mh-border">
             <div className="px-4 py-2 bg-[#151008]">
@@ -296,7 +289,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         )}
 
-        {/* Private Investments Section */}
         {activeInvestments.length > 0 && (
           <div className="border-t border-mh-border">
             <div className="px-4 py-2 bg-[#0a0d10]">
@@ -336,7 +328,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         )}
 
-        {/* Lifestyle Assets Section */}
         {ownedLifestyle.length > 0 && (
           <div className="border-t border-mh-border">
             <div className="px-4 py-2 bg-[#0a0d10]">
@@ -366,7 +357,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
                       <span className="text-mh-text-bright font-bold text-sm">
                         {asset.name}
                       </span>
-                      {/* Risk tier badge for PE assets */}
                       {asset.riskTier && (
                         <span
                           className="text-[9px] px-1.5 py-0.5 rounded font-bold"
@@ -382,13 +372,11 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
                     <div className="text-mh-text-dim text-[11px]">
                       Bought Day {owned.purchaseDay} for {formatLargePrice(owned.purchasePrice)}
                     </div>
-                    {/* PE ability/income description */}
                     {asset.category === 'private_equity' && (
                       <div className="text-yellow-400 text-[11px] font-medium mt-0.5">
                         {getPEAbilityDescription(asset.id, asset.dailyReturn)}
                       </div>
                     )}
-                    {/* Allocation bar */}
                     <div className="mt-1.5 h-1 bg-[#1a2a3a] rounded-sm overflow-hidden">
                       <div
                         className="h-full bg-mh-accent-blue"
@@ -419,7 +407,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         )}
 
-        {/* Luxury Assets Section */}
         {ownedLuxury.length > 0 && (
           <div className="border-t border-mh-border">
             <div className="px-4 py-2 bg-[#0a0d10]">
@@ -452,7 +439,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
                     <div className="text-mh-text-dim text-[11px]">
                       {asset.dailyCost > 0 ? `${formatLargePrice(asset.dailyCost)}/day upkeep` : 'No upkeep'}
                     </div>
-                    {/* Allocation bar */}
                     <div className="mt-1.5 h-1 bg-[#1a2a3a] rounded-sm overflow-hidden">
                       <div
                         className="h-full bg-purple-500"
@@ -477,7 +463,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         )}
 
-        {/* Total row */}
         <div className="p-4 border-t border-mh-border flex justify-between items-center bg-[#0a0f14]">
           <div className="text-mh-text-dim font-bold">NET WORTH</div>
           <div className="text-right">
@@ -520,7 +505,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         </div>
 
-        {/* Advance button when reviewing before advance */}
         {portfolioAdvancePending && (
           <div className="p-3 border-t border-mh-border">
             <button
@@ -538,7 +522,6 @@ export function PortfolioOverlay({ onSelectAsset, onSelectLifestyle, onSelectLux
           </div>
         )}
 
-        {/* Toggle: show portfolio before advancing */}
         <div
           className="p-3 border-t border-mh-border flex items-center justify-between cursor-pointer"
           onClick={() => setShowPortfolioBeforeAdvance(!showPortfolioBeforeAdvance)}

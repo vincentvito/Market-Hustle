@@ -14,7 +14,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 401 })
     }
 
-    // Verify admin
     const [admin] = await db
       .select({ isAdmin: profiles.isAdmin })
       .from(authUsers)
@@ -27,7 +26,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (section === 'assets') {
-      // Most traded assets - aggregated by asset
       const rows = await db
         .select({
           assetId: tradeLogs.assetId,
@@ -48,7 +46,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (section === 'trades') {
-      // Recent trade logs with pagination
       const page = parseInt(request.nextUrl.searchParams.get('page') || '0')
       const limit = 50
 
@@ -80,7 +77,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (section === 'properties') {
-      // Property purchases aggregated
       const rows = await db
         .select({
           assetId: tradeLogs.assetId,
@@ -99,7 +95,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (section === 'pe') {
-      // Private equity purchases aggregated
       const rows = await db
         .select({
           assetId: tradeLogs.assetId,

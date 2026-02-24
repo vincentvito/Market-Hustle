@@ -3,7 +3,6 @@
 import { useGame } from '@/hooks/useGame'
 import { ASSETS } from '@/lib/game/assets'
 
-// Game over messages based on reason
 const GAME_OVER_MESSAGES: Record<string, { title: string; emoji: string; flavor: string }> = {
   BANKRUPT: {
     title: 'BANKRUPT',
@@ -51,7 +50,6 @@ export function ProUserGameOverView() {
   } = useGame()
   const netWorth = getNetWorth()
 
-  // Calculate losses for breakdown
   const leveragedLosses = leveragedPositions.map(pos => {
     const currentValue = pos.qty * (prices[pos.assetId] || pos.entryPrice)
     const equity = currentValue - pos.debtAmount
@@ -79,7 +77,6 @@ export function ProUserGameOverView() {
 
   return (
     <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center p-6 text-center">
-      {/* Game Over Reason */}
       <div className="text-6xl mb-4">{message.emoji}</div>
       <div className="text-mh-loss-red text-4xl font-bold mb-2 glow-red">
         {message.title}
@@ -91,7 +88,6 @@ export function ProUserGameOverView() {
         SURVIVED {day} / {gameDuration} DAYS
       </div>
 
-      {/* Final Net Worth */}
       <div className="border border-mh-border p-5 mb-4 min-w-[200px]">
         <div className="text-mh-text-dim text-xs mb-2">FINAL NET WORTH</div>
         <div
@@ -101,7 +97,6 @@ export function ProUserGameOverView() {
         </div>
       </div>
 
-      {/* Detailed breakdown for margin-related game overs */}
       {showBreakdown && (
         <div className="mb-8 p-4 bg-[#1a1a2e] rounded border border-mh-border text-left max-w-[300px] w-full">
           <div className="text-mh-text-dim text-xs mb-3 text-center">WHAT WENT WRONG</div>
@@ -136,7 +131,6 @@ export function ProUserGameOverView() {
         </div>
       )}
 
-      {/* Play Again Button - always enabled for Pro */}
       <button
         onClick={() => startGame()}
         className="bg-transparent border-2 border-mh-accent-blue text-mh-accent-blue

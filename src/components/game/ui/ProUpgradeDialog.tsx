@@ -13,7 +13,6 @@ interface ProUpgradeDialogProps {
 export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }: ProUpgradeDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return
     const handler = (e: KeyboardEvent) => {
@@ -27,13 +26,11 @@ export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/70 z-[200]"
         onClick={onClose}
       />
 
-      {/* Dialog — bottom sheet on mobile, centered on desktop */}
       <div
         ref={dialogRef}
         className="fixed bottom-0 left-0 right-0 z-[210] trade-sheet-animate overflow-y-auto
@@ -46,12 +43,10 @@ export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }
           boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 212, 170, 0.12)',
         }}
       >
-        {/* Pull handle on mobile */}
         <div className="flex justify-center pt-3 pb-1 md:hidden">
           <div className="w-10 h-1 rounded-full bg-mh-border/60" />
         </div>
 
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-mh-text-dim hover:text-mh-text-bright
@@ -61,7 +56,6 @@ export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }
         </button>
 
         <div className="px-6 pt-4 pb-6 md:px-8 md:pt-6 md:pb-8">
-          {/* Header */}
           <div className="text-center mb-5">
             <div className="text-mh-accent-blue text-[10px] font-mono tracking-widest mb-2 opacity-70">
               {isWin ? '> ADVANCED MODES AVAILABLE' : '> PRO TOOLS AVAILABLE'}
@@ -76,7 +70,6 @@ export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }
             </div>
           </div>
 
-          {/* Price */}
           <div className="flex items-baseline justify-center gap-2 mb-5">
             <span className="text-mh-text-bright text-4xl md:text-5xl font-bold">$17.99</span>
             <div className="text-left">
@@ -85,7 +78,6 @@ export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }
             </div>
           </div>
 
-          {/* Features list */}
           <div className="border border-mh-border/40 rounded-lg p-4 mb-5 bg-mh-bg/50">
             <div className="space-y-3">
               {[
@@ -105,7 +97,6 @@ export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }
             </div>
           </div>
 
-          {/* CTA button */}
           <button
             onClick={onCheckout}
             disabled={loading}
@@ -120,7 +111,6 @@ export function ProUpgradeDialog({ isOpen, onClose, onCheckout, isWin, loading }
             No subscription. No recurring fees. Unlimited forever.
           </div>
 
-          {/* Dismiss */}
           <button
             onClick={onClose}
             className="w-full mt-3 text-mh-text-dim text-xs hover:text-mh-text-bright

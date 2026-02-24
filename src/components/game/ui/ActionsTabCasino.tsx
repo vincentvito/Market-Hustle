@@ -16,10 +16,9 @@ export function ActionsTabCasino() {
   const ownsCasino = ownedLifestyle.some(item => item.assetId === 'pe_vegas_casino')
   const [screen, setScreen] = useState<CasinoScreen>('lobby')
 
-  // Locked state
   if (!ownsCasino) {
     return (
-      <div className={`flex-1 flex flex-col items-center justify-center p-6 text-center ${isModern3 ? '' : ''}`}>
+      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
         <span className="text-4xl mb-3 grayscale opacity-50">🎰</span>
         <div className="text-mh-text-dim text-sm font-bold mb-1">CASINO LOCKED</div>
         <div className="text-mh-text-dim text-xs opacity-60">
@@ -29,7 +28,6 @@ export function ActionsTabCasino() {
     )
   }
 
-  // Lobby
   if (screen === 'lobby') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-6 gap-4">
@@ -38,7 +36,6 @@ export function ActionsTabCasino() {
         </div>
         <div className="text-mh-text-dim text-sm mb-2">Choose your game</div>
 
-        {/* Roulette */}
         <button
           onClick={() => setScreen('roulette')}
           className={`w-full max-w-[340px] p-5 rounded-lg text-left cursor-pointer transition-all border-2 ${
@@ -62,7 +59,6 @@ export function ActionsTabCasino() {
           </div>
         </button>
 
-        {/* Blackjack */}
         <button
           onClick={() => setScreen('blackjack')}
           className={`w-full max-w-[340px] p-5 rounded-lg text-left cursor-pointer transition-all border-2 ${

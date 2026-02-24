@@ -20,7 +20,6 @@ export function AutoStartHandler() {
   const retryCount = useRef(0)
   const maxRetries = 10
 
-  // Store autostart intent in sessionStorage (survives page refresh during auth)
   useEffect(() => {
     const autostart = searchParams.get('autostart')
     if (autostart === 'pro') {
@@ -29,7 +28,6 @@ export function AutoStartHandler() {
   }, [searchParams])
 
   const attemptAutoStart = useCallback(() => {
-    // Check both URL param and sessionStorage
     const urlAutostart = searchParams.get('autostart')
     const storedAutostart = typeof window !== 'undefined'
       ? sessionStorage.getItem(AUTOSTART_STORAGE_KEY)
@@ -38,25 +36,20 @@ export function AutoStartHandler() {
 
     if (!shouldAutoStart || hasAutoStarted.current) return false
 
-    // Still loading auth - wait
     if (authLoading) return false
 
-    // No user yet - might still be initializing
     if (!user) {
       if (retryCount.current < maxRetries) {
         retryCount.current++
         return false // Will retry
       }
-      // Max retries reached, clear storage
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem(AUTOSTART_STORAGE_KEY)
       }
       return false
     }
 
-    // User exists but profile not loaded or not Pro
     if (!profile?.tier || profile.tier !== 'pro') {
-      // Try refreshing profile (webhook might have just updated it)
       if (retryCount.current < maxRetries) {
         retryCount.current++
         refreshProfile()
@@ -68,21 +61,17 @@ export function AutoStartHandler() {
       return false
     }
 
-    // Sync store tier if needed (don't wait for TierSync)
     if (userTier !== 'pro') {
       setUserTier('pro')
     }
 
-    // Must be on title screen
     if (screen !== 'title') return false
 
-    // All conditions met - start game!
     hasAutoStarted.current = true
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem(AUTOSTART_STORAGE_KEY)
     }
 
-    // Clean URL
     const url = new URL(window.location.href)
     url.searchParams.delete('autostart')
     window.history.replaceState({}, '', url.toString())
@@ -97,7 +86,6 @@ export function AutoStartHandler() {
     const started = attemptAutoStart()
 
     if (!started && !hasAutoStarted.current) {
-      // Set up retry with exponential backoff
       const urlAutostart = searchParams.get('autostart')
       const storedAutostart = typeof window !== 'undefined'
         ? sessionStorage.getItem(AUTOSTART_STORAGE_KEY)

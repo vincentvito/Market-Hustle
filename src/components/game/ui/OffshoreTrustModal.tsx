@@ -121,7 +121,7 @@ export function OffshoreTrustModal({ onClose }: OffshoreTrustModalProps) {
         className="bg-mh-bg border border-mh-border rounded-lg p-6 max-w-md w-full"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
+
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-xl font-bold text-mh-text-bright mb-1">🏦 Offshore Trust</h2>
@@ -135,7 +135,6 @@ export function OffshoreTrustModal({ onClose }: OffshoreTrustModalProps) {
           </button>
         </div>
 
-        {/* Current Balances */}
         <div className="mb-4 p-4 bg-mh-border/20 rounded">
           <div className="flex justify-between items-center mb-2">
             <div>
@@ -153,7 +152,6 @@ export function OffshoreTrustModal({ onClose }: OffshoreTrustModalProps) {
           </div>
         </div>
 
-        {/* Mode Toggle */}
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setMode('deposit')}
@@ -177,7 +175,6 @@ export function OffshoreTrustModal({ onClose }: OffshoreTrustModalProps) {
           </button>
         </div>
 
-        {/* Slider */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <label className="text-sm font-bold text-mh-text-bright">
@@ -230,7 +227,6 @@ export function OffshoreTrustModal({ onClose }: OffshoreTrustModalProps) {
           </div>
         </div>
 
-        {/* After Transfer Preview */}
         <div className="mb-6 p-4 bg-mh-accent-blue/10 rounded border border-mh-accent-blue/30">
           <div className="text-xs text-mh-text-dim mb-2">AFTER TRANSFER</div>
           <div className="flex justify-between items-center mb-1">
@@ -247,7 +243,6 @@ export function OffshoreTrustModal({ onClose }: OffshoreTrustModalProps) {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-3">
           <button
             onClick={onClose}

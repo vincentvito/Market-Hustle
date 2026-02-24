@@ -33,7 +33,7 @@ export function GiftsModal() {
         onClick={e => e.stopPropagation()}
         className="bg-mh-bg border border-mh-border rounded-lg w-full max-w-[340px] max-h-[80vh] overflow-auto"
       >
-        {/* Header */}
+
         <div className="p-4 border-b border-mh-border flex justify-between items-center">
           <div>
             <div className="text-mh-text-dim text-[10px]">WIFE SUSPICION</div>
@@ -67,7 +67,6 @@ export function GiftsModal() {
           </button>
         </div>
 
-        {/* Gifts Grid */}
         <div className="p-4 grid grid-cols-2 gap-3">
           {GIFTS.map(gift => {
             const canAfford = cash >= gift.cost
@@ -77,7 +76,6 @@ export function GiftsModal() {
                 key={gift.id}
                 className="bg-[#0a0f14] border border-mh-border rounded-lg p-3 flex flex-col"
               >
-                {/* Gift emoji and name */}
                 <div className="text-center mb-2">
                   <div className="text-3xl mb-1">{gift.emoji}</div>
                   <div className="text-mh-text-bright font-bold text-sm">
@@ -85,12 +83,10 @@ export function GiftsModal() {
                   </div>
                 </div>
 
-                {/* Cost */}
                 <div className="text-center text-mh-accent-blue font-bold text-sm mb-2">
                   {formatCompact(gift.cost)}
                 </div>
 
-                {/* Heat reduction */}
                 <div className="text-center text-mh-profit-green text-xs font-bold mb-2">
                   -{gift.heatReduction}% Heat
                   {gift.freezeDays && (
@@ -100,12 +96,10 @@ export function GiftsModal() {
                   )}
                 </div>
 
-                {/* Description */}
                 <div className="text-mh-text-dim text-[10px] text-center mb-3 flex-1">
                   {gift.description}
                 </div>
 
-                {/* Buy button */}
                 <button
                   onClick={() => {
                     if (canAfford) {
@@ -126,7 +120,6 @@ export function GiftsModal() {
           })}
         </div>
 
-        {/* Footer info */}
         <div className="p-3 border-t border-mh-border text-center">
           <div className="text-mh-text-dim text-[10px]">
             Available cash: <span className="text-mh-text-bright font-bold">{formatCompact(cash)}</span>

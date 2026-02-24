@@ -1,9 +1,3 @@
-// Game Director - Main Exports
-// Orchestrates event selection for compelling narrative arcs
-
-// =============================================================================
-// TYPES
-// =============================================================================
 export type {
   GamePhase,
   PlayerMomentum,
@@ -24,39 +18,29 @@ export {
   createInitialDirectorState,
 } from './types'
 
-// =============================================================================
-// SECOND-ORDER EFFECTS (RIPPLES)
-// =============================================================================
 export type { RippleEffect, RippleDefinition } from './ripples'
 
 export {
-  // State management
   createInitialSecondOrderState,
   isHighImpactEvent,
   createRippleFromEvent,
   updateRipples,
   addRipple,
   applyCounterRipple,
-  // Modifiers
   computeEffectiveModifiers,
   applySecondOrderModifiers,
   shouldSurpriseBypass,
   combineSentiment,
   getSecondOrderSummary,
-  // Definitions
   CATEGORY_RIPPLE_DEFAULTS,
   HIGH_IMPACT_RIPPLE_OVERRIDES,
   getRippleDefinition,
-  // Constants
   DEFAULT_TRIGGER_THRESHOLD,
   SURPRISE_BYPASS_CHANCE,
   MAX_BOOST_MODIFIER,
   MIN_SUPPRESSION_MODIFIER,
 } from './ripples'
 
-// =============================================================================
-// MOMENTUM
-// =============================================================================
 export {
   calculateMomentum,
   calculateDopamineDebt,
@@ -66,9 +50,6 @@ export {
   needsChallenge,
 } from './momentum'
 
-// =============================================================================
-// TENSION
-// =============================================================================
 export {
   TENSION_CURVES,
   getCurrentPhase,
@@ -81,18 +62,12 @@ export {
   releaseTension,
 } from './tension'
 
-// =============================================================================
-// EVENT MODIFIERS
-// =============================================================================
 export {
   getDirectorModifiers,
   getRecentCategories,
   shouldForceEvent,
 } from './eventModifiers'
 
-// =============================================================================
-// STATE MANAGEMENT
-// =============================================================================
 export {
   updateDirectorState,
   prepareDirectorForDay,
@@ -102,9 +77,6 @@ export {
 } from './state'
 export type { DayUpdateContext } from './state'
 
-// =============================================================================
-// DOPAMINE
-// =============================================================================
 export {
   classifyDopamineEvent,
   shouldScheduleBigEvent,

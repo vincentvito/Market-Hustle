@@ -1,6 +1,3 @@
-// Multi-stage Stories - Phase 1 Implementation
-// Stories run alongside existing events/chains system
-
 import type { AssetMood, EventSentiment, PendingStoryArc } from './types'
 import { deriveSentiment, MAX_CONFLICT_RETRIES } from './sentimentHelpers'
 
@@ -58,14 +55,10 @@ export const STORY_CATEGORY_WEIGHTS: Record<string, number> = {
   agriculture: 0.02,
 }
 
-// ============================================
 // STORY DEFINITIONS
-// ============================================
 
 export const STORIES: Story[] = [
-  // ============================================
   // 2-STAGE STORIES (Quick rumor → resolution)
-  // ============================================
 
   // 1. Fed Rate Decision
   {
@@ -183,9 +176,7 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // ============================================
   // 3-STAGE STORIES (Full arc: RUMOR → DEVELOPING → NEWS)
-  // ============================================
 
   // 5. Taiwan Strait Crisis
   {
@@ -390,9 +381,7 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // ============================================
   // NEW STORIES - DRAMATIC SCENARIOS
-  // ============================================
 
   // 12. Carrington Event 2.0 (3-stage, binary)
   {
@@ -869,10 +858,8 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // ============================================
   // ESCALATION STORIES (Events that need buildup)
   // Major world events that shouldn't happen "out of the blue"
-  // ============================================
 
   // US Civil War Story (converted from sudden event)
   // This is a LEGENDARY crisis - effects comparable to major spike stories
@@ -1378,9 +1365,7 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // ============================================
   // CONVERTED FROM CHAINS (Too powerful/narrative for single-day resolution)
-  // ============================================
 
   // Gold Synthesis (converted from tech_gold_synthesis chain)
   // Max effects: BTC +2.0, Nasdaq +2.0, Gold -0.80 — the largest effects in the game
@@ -1762,14 +1747,10 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // ============================================
   // SPIKE STORIES (Converted from deterministic spikes)
   // These have intermediate branching where stories can fizzle early
-  // ============================================
 
-  // ============================================
   // LEGENDARY MOON STORIES
-  // ============================================
 
   // BTC Fed Adoption (originally ×20 spike)
   {
@@ -1911,9 +1892,7 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // ============================================
   // RARE MOON STORIES
-  // ============================================
 
   // Lithium EV Mandate (originally ×10 spike)
   {
@@ -2056,9 +2035,7 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // ============================================
   // LEGENDARY/RARE CRASH STORIES
-  // ============================================
 
   // BTC Satoshi Dump (originally ×0.1 spike = -90%)
   {
@@ -2451,9 +2428,7 @@ export const STORIES: Story[] = [
     ]
   },
 
-  // =============================================================================
   // CHINA SEMICONDUCTOR RACE (3-stage, mid-story branching)
-  // =============================================================================
   {
     id: 'story_china_chips',
     category: 'tech',
@@ -2524,9 +2499,7 @@ export const STORIES: Story[] = [
     ],
   },
 
-  // =============================================================================
   // NORTH KOREA SUCCESSION CRISIS (3-stage, triggered by Kim assassination)
-  // =============================================================================
   {
     id: 'story_north_korea_succession',
     category: 'geopolitical',
@@ -2598,9 +2571,7 @@ export const STORIES: Story[] = [
     ],
   },
 
-  // =============================================================================
   // BIG TECH ANTITRUST RESOLUTION (2-stage, follows breakup order)
-  // =============================================================================
   {
     id: 'story_antitrust_resolution',
     category: 'tech',

@@ -1,7 +1,3 @@
-/**
- * Gifts for reducing wife suspicion heat
- */
-
 export interface Gift {
   id: string
   name: string

@@ -27,7 +27,6 @@ export async function createServerSupabaseClient() {
   )
 }
 
-// Admin client with service role (for webhooks and server-side operations)
 export function createAdminClient() {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

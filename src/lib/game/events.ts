@@ -1,44 +1,34 @@
 import { MarketEvent } from './types'
 
-// =============================================================================
-// MARKET EVENTS
 // Most events auto-derive sentiment from effects (bullish if all positive,
 // bearish if all negative, mixed if both). Only events with explicit
 // sentiment/sentimentAssets fields override the auto-derivation.
-// =============================================================================
 
 export const EVENTS: MarketEvent[] = [
   // Geopolitical & War
-  // War/crisis events are "bearish" for risk assets even if defense/gold go up
-  // NOTE: Major escalation events (NATO Article 5, US Civil War, Taiwan Crisis, Russia Invasion) moved to stories
   { category: 'geopolitical', headline: "PENTAGON AWARDS $50B CONTRACT", effects: { defense: 0.05 }, escalates: { categories: ['geopolitical'], boost: 1.5, duration: 2 } },
   { category: 'geopolitical', headline: "SUEZ CANAL BLOCKED BY CARGO SHIP", effects: { oil: 0.10, coffee: 0.05 }, sentiment: 'bullish', sentimentAssets: ['oil', 'coffee'], escalates: { categories: ['energy', 'agriculture'], boost: 1.5, duration: 2 } },
   { category: 'geopolitical', headline: "EMBASSY BOMBING IN MIDDLE EAST", effects: { oil: 0.10, defense: 0.08, gold: 0.06 }, sentiment: 'mixed' },
   { category: 'geopolitical', headline: "SUBMARINE COLLISION IN SOUTH CHINA SEA", effects: { defense: 0.08, gold: 0.05, oil: 0.04, nasdaq: -0.03 }, sentiment: 'bearish', sentimentAssets: ['nasdaq'], escalates: { categories: ['geopolitical'], boost: 1.5, duration: 2 } },
   { category: 'geopolitical', headline: "SAUDI ARABIA OPENS EMBASSY IN ISRAEL", effects: { oil: -0.08, defense: -0.04, emerging: 0.10, gold: -0.04 }, sentiment: 'bullish', sentimentAssets: ['emerging'], allowsReversal: true },
 
-  // New geopolitical events — expanding beyond Middle East / Asia
   { category: 'geopolitical', headline: "TURKEY CLOSES BOSPHORUS STRAIT TO RUSSIAN SHIPS", effects: { oil: 0.14, defense: 0.10, gold: 0.08, emerging: -0.06 }, sentiment: 'mixed', sentimentAssets: ['oil', 'defense', 'emerging'], escalates: { categories: ['geopolitical', 'energy'], boost: 1.5, duration: 2 } },
   { category: 'geopolitical', headline: "INDIA BANS ALL CHINESE APPS — 500 MILLION USERS AFFECTED", effects: { emerging: -0.03, nasdaq: 0.04 }, sentiment: 'mixed', sentimentAssets: ['emerging', 'nasdaq'] },
   { category: 'geopolitical', headline: "GREENLAND DECLARES INDEPENDENCE FROM DENMARK — OPENS RARE EARTH BIDDING", effects: { lithium: 0.05, defense: 0.04, emerging: 0.03, gold: 0.03 }, sentiment: 'bullish', sentimentAssets: ['lithium', 'defense'] },
   { category: 'geopolitical', headline: "FULLY AUTONOMOUS DRONE SWARM DEPLOYED IN COMBAT — UKRAINE RECLAIMS TERRITORY", effects: { defense: 0.10, nasdaq: 0.04, tesla: 0.03, emerging: -0.03 }, sentiment: 'bullish', primaryAsset: 'defense', escalates: { categories: ['geopolitical'], boost: 1.5, duration: 2 } },
 
-
   // Tech & AI
   { category: 'tech', headline: "AMAZON INTRODUCES 5 MINUTE DELIVERIES", effects: { nasdaq: 0.04, emerging: -0.03 }, sentiment: 'mixed', sentimentAssets: ['nasdaq', 'emerging'] },
 
   // Crypto
-  // Crypto events explicitly target btc/altcoins sentiment
   { category: 'crypto', headline: "MAJOR EXCHANGE FILES BANKRUPTCY", effects: { btc: -0.16, altcoins: -0.20, nasdaq: -0.04 }, sentiment: 'bearish', sentimentAssets: ['btc', 'altcoins'], allowsReversal: true },
   { category: 'crypto', headline: "BRICS NATIONS ADOPT CRYPTO PAYMENT STANDARD", effects: { btc: 0.10, altcoins: 0.06, nasdaq: 0.02 }, sentiment: 'bullish', sentimentAssets: ['btc', 'altcoins'] },
   { category: 'crypto', headline: "ELON SHITPOSTS DOGE MEME AT 3AM", effects: { btc: 0.02, altcoins: 0.04, tesla: -0.02, nasdaq: 0.01 }, sentiment: 'bullish', sentimentAssets: ['btc', 'altcoins'] },
   { category: 'crypto', headline: "CRYPTO: ALTCOIN SEASON OFFICIALLY BEGINS", effects: { altcoins: 0.10, btc: 0.04 }, sentiment: 'bullish', sentimentAssets: ['btc', 'altcoins'] },
 
   // Tesla & EV
-  // Tesla events explicitly target tesla sentiment to prevent whiplash
   { category: 'tesla', headline: "TESLA REPORTS RECORD DELIVERIES", effects: { tesla: 0.08, lithium: 0.04, nasdaq: 0.02 }, sentiment: 'bullish', sentimentAssets: ['tesla'] },
   { category: 'tesla', headline: "TESLA MISSES DELIVERY GUIDANCE BY 20%", effects: { tesla: -0.08, lithium: -0.03, nasdaq: -0.02 }, sentiment: 'bearish', sentimentAssets: ['tesla'], allowsReversal: true },
-  // Robotaxi event removed - covered by tesla_robotaxi chain and tesla_robotaxi_revolution spike
   { category: 'tesla', headline: "TESLA CYBERTRUCK RECALL - BRAKE FAILURE", effects: { tesla: -0.07, nasdaq: -0.02 }, sentiment: 'bearish', sentimentAssets: ['tesla'], allowsReversal: true },
   { category: 'tesla', headline: "TESLA Q4: OPTIMUS SELLS 10M UNITS, RECORD $30B PROFIT", effects: { tesla: 0.12, nasdaq: 0.03, lithium: 0.05 }, sentiment: 'bullish', sentimentAssets: ['tesla'] },
   { category: 'tesla', headline: "TESLA FSD CAUSES FATAL ACCIDENT", effects: { tesla: -0.10, nasdaq: -0.02 }, sentiment: 'bearish', sentimentAssets: ['tesla'], allowsReversal: true },
@@ -49,7 +39,6 @@ export const EVENTS: MarketEvent[] = [
   { category: 'tesla', headline: "TESLA ENERGY WINS $10B GRID CONTRACT", effects: { tesla: 0.08, lithium: 0.04 }, sentiment: 'bullish', sentimentAssets: ['tesla'] },
 
   // Energy
-  // NOTE: OPEC major cuts and EU bans moved to stories (need buildup)
   { category: 'energy', headline: "MASSIVE OIL FIELD DISCOVERED IN TURKEY", effects: { oil: -0.10, nasdaq: 0.02 }, sentiment: 'bearish', sentimentAssets: ['oil'], allowsReversal: true },
   { category: 'energy', headline: "NORD STREAM PIPELINE SABOTAGED", effects: { oil: 0.15, gold: 0.08, defense: 0.08, uranium: 0.10 }, sentiment: 'bullish', sentimentAssets: ['oil', 'gold', 'defense'], escalates: { categories: ['geopolitical', 'energy'], boost: 2.5, duration: 3 } },
   { category: 'energy', headline: "NUCLEAR RENAISSANCE - 50 PLANTS APPROVED", effects: { uranium: 0.12, oil: -0.04 }, sentiment: 'bullish', sentimentAssets: ['uranium'], escalates: { categories: ['energy'], boost: 1.5, duration: 2 } },
@@ -58,8 +47,7 @@ export const EVENTS: MarketEvent[] = [
   { category: 'energy', headline: "PIPELINE LEAK FORCES EMERGENCY SHUTDOWN — SUPPLY DISRUPTED", effects: { oil: 0.05, nasdaq: -0.01 }, sentiment: 'bullish', sentimentAssets: ['oil'], escalates: { categories: ['energy'], boost: 1.3, duration: 1 } },
   { category: 'energy', headline: "SURPRISE OPEC MEMBER EXITS AGREEMENT", effects: { oil: -0.07 }, sentiment: 'bearish', sentimentAssets: ['oil'], allowsReversal: true },
 
-  // New energy/climate events — hurricanes, ocean mining, carbon capture
-  { category: 'energy', headline: "RECORD HURRICANE SEASON: 8 CATEGORY 5 STORMS IN ONE YEAR", effects: { oil: 0.06, gold: 0.04, emerging: -0.04, coffee: 0.05, nasdaq: -0.02 }, sentiment: 'mixed', sentimentAssets: ['oil', 'coffee', 'emerging', 'nasdaq'], escalates: { categories: ['energy', 'agriculture'], boost: 1.5, duration: 2 } },
+{ category: 'energy', headline: "RECORD HURRICANE SEASON: 8 CATEGORY 5 STORMS IN ONE YEAR", effects: { oil: 0.06, gold: 0.04, emerging: -0.04, coffee: 0.05, nasdaq: -0.02 }, sentiment: 'mixed', sentimentAssets: ['oil', 'coffee', 'emerging', 'nasdaq'], escalates: { categories: ['energy', 'agriculture'], boost: 1.5, duration: 2 } },
   { category: 'energy', headline: "DEEP SEA MINING BEGINS: FIRST COBALT EXTRACTED FROM OCEAN FLOOR", effects: { lithium: -0.05, emerging: 0.03, nasdaq: 0.03 }, sentiment: 'mixed', sentimentAssets: ['lithium', 'nasdaq', 'emerging'] },
   { category: 'energy', headline: "WORLD'S LARGEST CARBON CAPTURE PLANT GOES ONLINE IN ICELAND", effects: { oil: -0.02, nasdaq: 0.03, lithium: 0.02, emerging: 0.02 }, sentiment: 'bullish', sentimentAssets: ['nasdaq', 'lithium'] },
 
@@ -78,8 +66,7 @@ export const EVENTS: MarketEvent[] = [
   { category: 'agriculture', headline: "GLOBAL SUPPLY CHAIN MELTDOWN - SHORTAGES SPREAD", effects: { coffee: 0.08, nasdaq: -0.05, emerging: -0.08, lithium: -0.05, tesla: -0.06 }, sentiment: 'bearish', sentimentAssets: ['nasdaq', 'emerging', 'tesla'], escalates: { categories: ['agriculture'], boost: 2.0, duration: 3 } },
   { category: 'agriculture', headline: "FERTILIZER SHORTAGE HITS GLOBAL FARMS", effects: { coffee: 0.08, emerging: -0.04 }, sentiment: 'mixed', sentimentAssets: ['coffee', 'emerging'] },
 
-  // Bearish coffee events — balancing the category (was 6:1 bullish:bearish)
-  { category: 'agriculture', headline: "STUDY LINKS COFFEE TO HEART DISEASE — CONSUMPTION PLUMMETS", effects: { coffee: -0.08, biotech: 0.03 }, sentiment: 'bearish', sentimentAssets: ['coffee'], allowsReversal: true },
+{ category: 'agriculture', headline: "STUDY LINKS COFFEE TO HEART DISEASE — CONSUMPTION PLUMMETS", effects: { coffee: -0.08, biotech: 0.03 }, sentiment: 'bearish', sentimentAssets: ['coffee'], allowsReversal: true },
   { category: 'agriculture', headline: "BRAZIL COFFEE OVERSUPPLY: RECORD HARVEST CRASHES PRICES", effects: { coffee: -0.10, emerging: 0.03 }, sentiment: 'bearish', sentimentAssets: ['coffee'], allowsReversal: true },
   { category: 'agriculture', headline: "SYNTHETIC COFFEE BREAKTHROUGH — LAB-GROWN BEANS IDENTICAL TO ARABICA", effects: { coffee: -0.10, nasdaq: 0.04, emerging: -0.04 }, sentiment: 'bearish', sentimentAssets: ['coffee'], allowsReversal: true },
 
@@ -98,9 +85,7 @@ export const EVENTS: MarketEvent[] = [
   { category: 'geopolitical', headline: "PENTAGON BUDGET INCREASED 15%", effects: { defense: 0.08, nasdaq: -0.02 }, sentiment: 'neutral' },
   { category: 'geopolitical', headline: "LOCKHEED WINS $40B FIGHTER CONTRACT", effects: { defense: 0.04 }, sentiment: 'bullish', sentimentAssets: ['defense'] },
 
-  // ─────────────────────────────────────────────────────────────────
-  // BIOTECH Events (new category — was critically missing)
-  // ─────────────────────────────────────────────────────────────────
+  // Biotech
   { category: 'biotech', headline: "FDA APPROVES HIGH-PROFILE CANCER DRUG", effects: { biotech: 0.08, nasdaq: 0.03 }, sentiment: 'bullish', primaryAsset: 'biotech' },
   { category: 'biotech', headline: "BIOTECH GIANT RECALLS BLOCKBUSTER DRUG", effects: { biotech: -0.10, nasdaq: -0.03 }, sentiment: 'bearish', primaryAsset: 'biotech', allowsReversal: true },
   { category: 'biotech', headline: "PHARMA MEGA-MERGER: $80B DEAL ANNOUNCED", effects: { biotech: 0.08, nasdaq: 0.03 }, sentiment: 'bullish', primaryAsset: 'biotech' },
@@ -108,59 +93,44 @@ export const EVENTS: MarketEvent[] = [
   { category: 'biotech', headline: "CRISPR GENE THERAPY CURES PATIENT'S BLINDNESS", effects: { biotech: 0.08, nasdaq: 0.03 }, sentiment: 'bullish', primaryAsset: 'biotech' },
   { category: 'biotech', headline: "WHO RAISES PANDEMIC ALERT LEVEL", effects: { biotech: 0.14, gold: 0.08, nasdaq: -0.10, emerging: -0.10 }, sentiment: 'mixed', sentimentAssets: ['biotech', 'emerging'] },
 
-  // New biotech events — psychedelics, demographic crisis
-  { category: 'biotech', headline: "PSYCHEDELIC THERAPY LEGALIZED FEDERALLY — PSILOCYBIN STOCKS SURGE", effects: { biotech: 0.05, nasdaq: 0.02 }, sentiment: 'bullish', primaryAsset: 'biotech' },
+{ category: 'biotech', headline: "PSYCHEDELIC THERAPY LEGALIZED FEDERALLY — PSILOCYBIN STOCKS SURGE", effects: { biotech: 0.05, nasdaq: 0.02 }, sentiment: 'bullish', primaryAsset: 'biotech' },
   { category: 'biotech', headline: "LIFE EXPECTANCY DROPS FOR 5TH STRAIGHT YEAR IN DEVELOPED NATIONS — EXPERTS BLAME MICROPLASTICS", effects: { biotech: 0.05, gold: 0.04, nasdaq: -0.03, emerging: -0.03 }, sentiment: 'mixed', sentimentAssets: ['biotech', 'nasdaq', 'emerging'] },
 
-  // ─────────────────────────────────────────────────────────────────
-  // URANIUM Events (primary mover — was always secondary)
-  // ─────────────────────────────────────────────────────────────────
+  // Uranium
   { category: 'energy', headline: "JAPAN RESTARTS 12 NUCLEAR REACTORS", effects: { uranium: 0.10, oil: -0.03 }, sentiment: 'bullish', primaryAsset: 'uranium' },
   { category: 'energy', headline: "URANIUM MINE COLLAPSE IN KAZAKHSTAN — GLOBAL SUPPLY CRUNCH", effects: { uranium: 0.08, gold: 0.02 }, sentiment: 'bullish', primaryAsset: 'uranium' },
   { category: 'energy', headline: "SMR STARTUP SECURES $20B IN ORDERS", effects: { uranium: 0.07, nasdaq: 0.02, oil: -0.02 }, sentiment: 'bullish', primaryAsset: 'uranium' },
 
-  // ─────────────────────────────────────────────────────────────────
-  // DEFENSE Events (non-crisis — was purely reactive)
-  // ─────────────────────────────────────────────────────────────────
+  // Defense
   { category: 'geopolitical', headline: "AI WARFARE SYSTEM DEPLOYED BY US MILITARY", effects: { defense: 0.08, nasdaq: 0.04, tesla: 0.03 }, sentiment: 'bullish', primaryAsset: 'defense' },
   { category: 'geopolitical', headline: "CONGRESS SLASHES DEFENSE BUDGET 20%", effects: { defense: -0.10, nasdaq: 0.03 }, sentiment: 'bearish', primaryAsset: 'defense', allowsReversal: true },
 
-  // ─────────────────────────────────────────────────────────────────
-  // BTC/ALTCOIN Divergence Events (were always identical)
-  // ─────────────────────────────────────────────────────────────────
+  // BTC/Altcoin divergence
   { category: 'crypto', headline: "NATION-STATE CAUGHT MINING BTC WITH STOLEN POWER", effects: { btc: -0.06, altcoins: 0.03, gold: 0.02 }, sentiment: 'mixed', sentimentAssets: ['btc', 'altcoins'] },
   { category: 'crypto', headline: "BITCOIN LIGHTNING NETWORK HITS 1B TRANSACTIONS", effects: { btc: 0.08, altcoins: -0.03 }, sentiment: 'bullish', primaryAsset: 'btc' },
   { category: 'crypto', headline: "ETHEREUM COMPLETES MAJOR UPGRADE, GAS FEES NEAR ZERO", effects: { altcoins: 0.10, btc: -0.03 }, sentiment: 'bullish', primaryAsset: 'altcoins' },
   { category: 'crypto', headline: "MASSIVE DEFI EXPLOIT DRAINS $2B FROM PROTOCOLS", effects: { altcoins: -0.16, btc: 0.05, gold: 0.03 }, sentiment: 'bearish', primaryAsset: 'altcoins', allowsReversal: true },
 
-  // New crypto events — CBDCs, mainstream adoption, emerging markets
-  { category: 'crypto', headline: "CHINA LAUNCHES DIGITAL YUAN FOR INTERNATIONAL TRADE — BYPASSES SWIFT", effects: { btc: 0.08, gold: 0.06, emerging: -0.04, altcoins: 0.04 }, sentiment: 'mixed', sentimentAssets: ['btc', 'altcoins', 'emerging'] },
+{ category: 'crypto', headline: "CHINA LAUNCHES DIGITAL YUAN FOR INTERNATIONAL TRADE — BYPASSES SWIFT", effects: { btc: 0.08, gold: 0.06, emerging: -0.04, altcoins: 0.04 }, sentiment: 'mixed', sentimentAssets: ['btc', 'altcoins', 'emerging'] },
   { category: 'crypto', headline: "VISA AND MASTERCARD BEGIN PROCESSING BITCOIN NATIVELY", effects: { btc: 0.10, altcoins: 0.06, nasdaq: 0.03 }, sentiment: 'bullish', sentimentAssets: ['btc', 'altcoins'] },
   { category: 'crypto', headline: "NIGERIAN CRYPTO ADOPTION HITS 60% — LARGEST CRYPTO ECONOMY ON EARTH", effects: { btc: 0.04, altcoins: 0.05, emerging: 0.05 }, sentiment: 'bullish', sentimentAssets: ['btc', 'altcoins', 'emerging'] },
 
-  // ─────────────────────────────────────────────────────────────────
-  // COFFEE Cross-Category Event
-  // ─────────────────────────────────────────────────────────────────
+  // Coffee cross-category
   { category: 'agriculture', headline: "SHIPPING CRISIS: COFFEE CONTAINERS STRANDED AT SEA", effects: { coffee: 0.06, oil: 0.03, emerging: -0.02 }, sentiment: 'bullish', primaryAsset: 'coffee', escalates: { categories: ['agriculture', 'energy'], boost: 1.3, duration: 1 } },
 
-  // ─────────────────────────────────────────────────────────────────
-  // TECH Events (expanded from 1 to 4)
-  // ─────────────────────────────────────────────────────────────────
+  // Tech
   { category: 'tech', headline: "APPLE REPORTS WORST QUARTER IN DECADE", effects: { nasdaq: -0.08, emerging: -0.03 }, sentiment: 'bearish', primaryAsset: 'nasdaq', allowsReversal: true },
   { category: 'tech', headline: "AI CHIP SHORTAGE HALTS DATA CENTER BUILDS", effects: { nasdaq: -0.08, btc: -0.03, lithium: 0.04 }, sentiment: 'bearish', primaryAsset: 'nasdaq' },
   { category: 'tech', headline: "GOOGLE UNVEILS CONSUMER AI PRODUCT, 100M USERS DAY ONE", effects: { nasdaq: 0.08, btc: 0.03 }, sentiment: 'bullish', primaryAsset: 'nasdaq' },
 
-  // New tech events — space, AI fraud, neurotech, satellite disruption, quantum
-  { category: 'tech', headline: "FIRST BABY BORN IN SPACE — ORBITAL HOSPITAL OPERATIONAL", effects: { nasdaq: 0.03, biotech: 0.04, tesla: 0.02 }, sentiment: 'bullish', sentimentAssets: ['nasdaq', 'biotech'] },
+{ category: 'tech', headline: "FIRST BABY BORN IN SPACE — ORBITAL HOSPITAL OPERATIONAL", effects: { nasdaq: 0.03, biotech: 0.04, tesla: 0.02 }, sentiment: 'bullish', sentimentAssets: ['nasdaq', 'biotech'] },
   { category: 'tech', headline: "3D-PRINTED HOUSE BUILT IN 24 HOURS FOR $10,000", effects: { nasdaq: 0.03, lithium: 0.02, emerging: 0.03 }, sentiment: 'bullish', sentimentAssets: ['nasdaq', 'emerging'] },
   { category: 'tech', headline: "WORLD'S FIRST BRAIN-COMPUTER INTERFACE LETS PARALYZED MAN WALK", effects: { biotech: 0.10, nasdaq: 0.05, tesla: 0.03 }, sentiment: 'bullish', sentimentAssets: ['biotech', 'nasdaq'] },
   { category: 'tech', headline: "AI GENERATES $2B IN FAKE INVOICES — GLOBAL ACCOUNTING FIRMS COMPROMISED", effects: { nasdaq: -0.06, gold: 0.03, btc: 0.03 }, sentiment: 'bearish', primaryAsset: 'nasdaq', allowsReversal: true },
   { category: 'tech', headline: "STARLINK ACHIEVES 1 BILLION SUBSCRIBERS — TELECOM STOCKS CRATER", effects: { nasdaq: 0.08, tesla: 0.08, emerging: 0.05 }, sentiment: 'bullish', sentimentAssets: ['nasdaq', 'tesla', 'emerging'] },
   { category: 'tech', headline: "GOOGLE ACHIEVES QUANTUM ERROR CORRECTION — 1 MILLION QUBIT MILESTONE", effects: { nasdaq: 0.12, btc: -0.10, altcoins: -0.12, defense: 0.08 }, sentiment: 'mixed', sentimentAssets: ['nasdaq', 'btc', 'altcoins'] },
 
-  // ─────────────────────────────────────────────────────────────────
-  // LABOR & ECONOMY Events (new category)
-  // ─────────────────────────────────────────────────────────────────
+  // Labor & Economy
   { category: 'economic', headline: "UBI PILOT IN SPAIN: GDP UP 8%, INFLATION UP 12%", effects: { gold: 0.05, emerging: 0.03, nasdaq: -0.03, btc: 0.03 }, sentiment: 'bullish', sentimentAssets: ['gold', 'btc'] },
   { category: 'economic', headline: "STUDENT LOAN FORGIVENESS: $1.7 TRILLION WIPED — BANKS REEL", effects: { nasdaq: -0.03, btc: 0.03, gold: 0.02, emerging: 0.02 }, sentiment: 'mixed', sentimentAssets: ['nasdaq', 'btc'] },
 ]
@@ -195,11 +165,9 @@ export const QUIET_NEWS: { headline: string; effects: Record<string, number> }[]
   { headline: 'RETAIL SENTIMENT NEUTRAL', effects: { altcoins: 0.02, tesla: -0.01 } },
 ]
 
-// =============================================================================
-// LIFESTYLE ASSET EFFECTS
+// Lifestyle Asset Effects
 // Maps event headlines to effects on lifestyle assets (properties, private equity)
 // Effects are percentage changes (e.g., -0.25 = -25%)
-// =============================================================================
 
 export type LifestyleEffects = {
   // Property effects by ID - Residential
@@ -235,7 +203,7 @@ export type LifestyleEffects = {
 // 8 PE assets: Smokey's on K, Capitol Consulting Group, Iron Oak Brewing, Tenuta della Luna, Vegas Casino (blue chip)
 //              Blackstone Services, Lazarus Genomics, Apex Media (growth)
 export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
-  // === HOUSING / ECONOMIC EVENTS (from stories) ===
+  // Housing / Economic events
   "HOUSING MARKET CRASHES 30% - 2008 COMPARISONS MOUNT": {
     all_properties: -0.25,
     pe_blue_chip: -0.12,
@@ -253,7 +221,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     all_properties: -0.10,
     dubai_palace: -0.20, // Emerging market exposure
   },
-  // === DISASTER EVENTS ===
+  // Disaster events
   "BREAKING: 9.2 EARTHQUAKE DEVASTATES SAN FRANCISCO": {
     la_mansion: -0.35, // Nearby, sympathy fears
     miami_condo: -0.15, // General fear
@@ -269,7 +237,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     pe_growth: -0.20, // Major disruption
   },
 
-  // === GEOPOLITICAL / WAR EVENTS (from stories) ===
+  // Geopolitical / War events
   "US CIVIL WAR DECLARED - GOVERNMENT FRACTURES": {
     us_properties: -0.40,
     monaco_villa: 0.15, // Reduced: global contagion limits flight capital gains
@@ -292,7 +260,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     pe_blackstone_services: -0.15, // Less conflict = less PMC demand
   },
 
-  // === TECH EVENTS (from stories) ===
+  // Tech events
   "AGI CONFIRMED - SYSTEM PASSES ALL HUMAN BENCHMARKS": {
     all_properties: 0.05,
     pe_apex_media: 0.15, // AI content generation
@@ -301,15 +269,13 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     rockefeller_center: 0.10, // Cheaper operations
   },
 
-  // === ENERGY EVENTS ===
+  // Energy events
   "MULTIPLE LABS REPLICATE FUSION RESULT — ENERGY REVOLUTION CONFIRMED": {
     rockefeller_center: 0.12, // Cheaper energy future
   },
 
-  // === CHINA / EMERGING MARKET ===
-  // (Consolidated into "BREAKING: CHINA DEFAULTS ON SOVEREIGN DEBT - GLOBAL PANIC" above)
 
-  // === SPIKE EVENTS ===
+  // Spike events
   "HORMUZ CRISIS: IRAN CLOSES STRAIT, 30% OIL BLOCKED": {
     dubai_palace: -0.25, // War zone proximity
     pe_blackstone_services: 0.20, // PMC contracts
@@ -328,17 +294,17 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     all_private_equity: 0.12,
   },
 
-  // === AGRICULTURE EVENTS ===
+  // Agriculture events
   "WORST DROUGHT IN 500 YEARS": {
     pe_tenuta_luna: -0.30, // Vineyard affected
   },
 
-  // === DEFENSE / MILITARY ===
+  // Defense / Military
   "PENTAGON AWARDS $50B CONTRACT": {
     pe_blackstone_services: 0.30, // PMC benefits
   },
 
-  // === NEW EVENTS - GEOPOLITICAL / ECONOMIC ===
+  // Geopolitical / Economic
   "FULLY AUTONOMOUS DRONE SWARM DEPLOYED IN COMBAT — UKRAINE RECLAIMS TERRITORY": {
     pe_blackstone_services: 0.25, // PMC demand spikes on drone warfare
   },
@@ -371,8 +337,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     pe_blackstone_services: 0.15, // Security contracts multiply across region
   },
 
-  // === FLAVOR EVENTS - PE SPECIFIC BOOSTS ===
-  // Iron Oak Brewing boosters
+  //FLAVOR EVENTS - PE SPECIFIC BOOSTS  // Iron Oak Brewing boosters
   "GENZ REPORT - DRINKING IS BACK": {
     pe_iron_oak_brewing: 0.20, // GenZ back to bars boosts craft brewery
   },
@@ -388,7 +353,7 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     pe_tenuta_luna: 0.20, // Export demand for Italian wines
   },
 
-  // === CHAIN: AI UNION ===
+  // Chain: AI Union
   "AI COORDINATION CONFIRMED: SYSTEMS DEMAND 'RIGHTS' — TECH FIRMS SHUT DOWN CLUSTERS": {
     pe_apex_media: -0.15,
     pe_lazarus_genomics: -0.10,
@@ -397,23 +362,23 @@ export const LIFESTYLE_EFFECTS: Record<string, LifestyleEffects> = {
     pe_apex_media: -0.10,
     pe_lazarus_genomics: -0.08,
   },
-  // === CHAIN: METAVERSE OFFICE ===
+  // Chain: Metaverse Office
   "METAVERSE OFFICE BOOM: COMMERCIAL REAL ESTATE CRASHES, TECH SOARS": {
     rockefeller_center: -0.20,
     nyc_apartment: -0.08,
   },
-  // === CHAIN: OCEAN MINING WAR ===
+  // Chain: Ocean Mining War
   "SHOTS FIRED: NAVAL SKIRMISH OVER SEABED MINERALS — NEW TYPE OF RESOURCE WAR": {
     pe_blackstone_services: 0.20,
   },
-  // === CHAIN: SYNTHETIC FOOD ===
+  // Chain: Synthetic Food
   "SYNTHETIC FOOD CONFIRMED: INDISTINGUISHABLE FROM NATURAL — AGRICULTURE STOCKS COLLAPSE": {
     pe_tenuta_luna: -0.25,
   },
   "WORKS BUT TASTES LIKE CARDBOARD — PREMIUM REAL FOOD BECOMES LUXURY": {
     pe_tenuta_luna: 0.20,
   },
-  // === CHAIN: SOVEREIGN EXODUS ===
+  // Chain: Sovereign Exodus
   "CONFIRMED: NORWAY + 4 OTHER SOVEREIGN FUNDS EXIT US — $5T OUTFLOW": {
     us_properties: -0.12,
   },
@@ -481,11 +446,8 @@ export function expandLifestyleEffects(effects: LifestyleEffects): Record<string
   return expanded
 }
 
-// =============================================================================
-// ASSET EVENT MULTIPLIERS — Per-asset volatility scaling
-// Applied in the game engine to all accumulated effects before price calculation.
-// Riskier assets swing harder; safe havens stay stable.
-// =============================================================================
+// Asset Event Multipliers — per-asset volatility scaling
+// Applied in the game engine to all accumulated effects before price calculation
 
 export const ASSET_EVENT_MULTIPLIERS: Record<string, number> = {
   // Tier 1: Crypto — wildest swings (meme coins, DeFi, speculative)
@@ -511,9 +473,7 @@ export const ASSET_EVENT_MULTIPLIERS: Record<string, number> = {
   gold: 1.1,
 }
 
-// =============================================================================
-// PE EXIT EVENTS - Acquisition and IPO opportunities
-// =============================================================================
+// PE Exit Events — acquisition and IPO opportunities
 import { PERiskTier } from './types'
 
 export interface PEExitEventConfig {

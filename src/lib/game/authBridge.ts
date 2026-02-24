@@ -28,10 +28,7 @@ type RecordGameEndFn = (
 let incrementGamesPlayedFn: IncrementGamesPlayedFn | null = null
 let recordGameEndFn: RecordGameEndFn | null = null
 
-/**
- * Register AuthContext methods with the bridge.
- * Called by TierSync when auth context is available.
- */
+// Called by TierSync when auth context is available
 export function setAuthBridge(fns: {
   incrementGamesPlayed: IncrementGamesPlayedFn
   recordGameEnd: RecordGameEndFn
@@ -40,19 +37,12 @@ export function setAuthBridge(fns: {
   recordGameEndFn = fns.recordGameEnd
 }
 
-/**
- * Clear the bridge (e.g., on logout).
- */
 export function clearAuthBridge(): void {
   incrementGamesPlayedFn = null
   recordGameEndFn = null
 }
 
-/**
- * Increment games_played_today in Supabase.
- * Called by mechanicsSlice on game START for logged-in users.
- * Fire-and-forget - does not block game start.
- */
+// Fire-and-forget — called by mechanicsSlice on game start
 export function callIncrementGamesPlayed(): void {
   if (incrementGamesPlayedFn) {
     incrementGamesPlayedFn().catch(err => {
@@ -61,11 +51,7 @@ export function callIncrementGamesPlayed(): void {
   }
 }
 
-/**
- * Sync game stats and result to Supabase.
- * Called by mechanicsSlice on game END for logged-in users.
- * Fire-and-forget - does not block game end.
- */
+// Fire-and-forget — called by mechanicsSlice on game end
 export function callRecordGameEnd(
   finalNetWorth: number,
   isWin: boolean,

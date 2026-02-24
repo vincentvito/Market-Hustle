@@ -13,6 +13,7 @@ import { AuthModal } from '@/components/auth/AuthModal'
 import { HowToPlayModal } from '../ui/HowToPlayModal'
 import { ProUpgradeDialog } from '../ui/ProUpgradeDialog'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
+import { getActiveRoom } from '@/hooks/useRoom'
 const ASCII_LOGO = `███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
 ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
 ██╔████╔██║███████║██████╔╝█████╔╝ █████╗     ██║
@@ -80,9 +81,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
   const [activeSection, setActiveSection] = useState<ActiveSection>(null)
   const [leaderboardTab, setLeaderboardTab] = useState<LeaderboardTab>('allTime')
 
-  const hasValidUsername = !!username
-
-  // Initialize store from localStorage on mount
   useEffect(() => {
     // Reset daily counter if new day
     const userState = loadUserState()
@@ -94,7 +92,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
     initializeFromStorage()
   }, [initializeFromStorage])
 
-  // Fetch leaderboards from API
   // Skip on first mount if we have SSR data (already filtered by duration=30);
   // always fetch on subsequent mounts (returning from game) or when duration changes.
   const isFirstMount = useRef(true)
@@ -140,7 +137,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
     setActiveSection(prev => prev === section ? null : section)
   }
 
-  // Active leaderboard data and color config
   const currentLeaderboard =
     leaderboardTab === 'daily' ? dailyLeaderboard
     : leaderboardTab === 'allTime' ? allTimeLeaderboard
@@ -162,16 +158,13 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
       backgroundRepeat: 'no-repeat',
       backgroundAttachment: 'fixed',
     }}>
-      {/* Dark overlay for readability */}
       <div className="fixed inset-0 z-[2] pointer-events-none" style={{
         background: 'linear-gradient(to bottom, rgba(13,17,23,0.7) 0%, rgba(13,17,23,0.4) 40%, rgba(13,17,23,0.6) 100%)',
       }} />
 
       <div className="flex flex-col items-center min-h-full px-4 relative text-center z-[5]">
-        {/* Top spacer — pushes content toward vertical center */}
         <div className="flex-1 min-h-[5vh] max-h-[12vh]" />
 
-        {/* ═══ HERO: Logo + Tagline ═══ */}
         <pre className="glow-text text-[7px] leading-tight mb-4 text-mh-text-bright whitespace-pre text-left inline-block">
           {ASCII_LOGO}
         </pre>
@@ -180,9 +173,7 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           BUY LOW. SELL HIGH.<br />DON&apos;T GO BROKE.
         </div>
 
-        {/* ═══ MAIN MENU ═══ */}
         <nav aria-label="Main menu" className="flex flex-col items-center gap-0.5 mb-6 w-full max-w-[280px]">
-          {/* PLAY — primary action, visually distinct */}
           <button
             onClick={() => {
               if (isIntroSeen()) {
@@ -198,7 +189,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{' <'}</span>
           </button>
 
-          {/* ROOMS */}
           <button
             onClick={() => toggleSection('rooms')}
             aria-expanded={activeSection === 'rooms'}
@@ -210,7 +200,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             <span className={`opacity-0 transition-opacity duration-150 ${activeSection === 'rooms' ? '!opacity-100' : 'group-hover:opacity-100 group-focus-visible:opacity-100'}`}>{' <'}</span>
           </button>
 
-          {/* LEADERBOARDS */}
           <button
             onClick={() => toggleSection('leaderboards')}
             aria-expanded={activeSection === 'leaderboards'}
@@ -222,7 +211,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             <span className={`opacity-0 transition-opacity duration-150 ${activeSection === 'leaderboards' ? '!opacity-100' : 'group-hover:opacity-100 group-focus-visible:opacity-100'}`}>{' <'}</span>
           </button>
 
-          {/* HOW TO PLAY */}
           <button
             onClick={() => setShowHowToPlay(true)}
             className="group w-full text-center py-2 font-mono text-sm tracking-[0.2em] transition-all duration-200 bg-transparent border-none cursor-pointer text-white/70 hover:text-white focus-visible:text-white focus-visible:outline-none"
@@ -232,7 +220,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             <span className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">{' <'}</span>
           </button>
 
-          {/* UPGRADE — only for non-pro users */}
           {userTier !== 'pro' && (
             <button
               onClick={() => user ? setShowUpgrade(true) : setShowAuthForRoom(true)}
@@ -244,7 +231,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
             </button>
           )}
 
-          {/* SETTINGS */}
           <button
             onClick={() => setShowSettings(true)}
             className="group w-full text-center py-2 font-mono text-sm tracking-[0.2em] transition-all duration-200 bg-transparent border-none cursor-pointer text-white/70 hover:text-white focus-visible:text-white focus-visible:outline-none"
@@ -255,11 +241,18 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           </button>
         </nav>
 
-        {/* ═══ EXPANDABLE: ROOMS ═══ */}
         {activeSection === 'rooms' && (
           <div role="region" aria-label="Rooms" className="w-full max-w-[280px] mb-6 border border-white/20 p-4 space-y-3 bg-black/40 backdrop-blur-sm">
-            {hasValidUsername ? (
+            {!!username ? (
               <>
+                {getActiveRoom() && (
+                  <button
+                    onClick={() => router.push(`/room/${getActiveRoom()!.roomId}`)}
+                    className="w-full py-2.5 font-mono text-xs tracking-wider transition-colors border cursor-pointer bg-mh-accent-blue/10 text-mh-accent-blue border-mh-accent-blue/40 hover:bg-mh-accent-blue/20 hover:border-mh-accent-blue/60"
+                  >
+                    CONTINUE ROOM
+                  </button>
+                )}
                 <button
                   onClick={user ? () => router.push('/room/create') : () => setShowAuthForRoom(true)}
                   className={`w-full py-2.5 font-mono text-xs tracking-wider transition-colors bg-transparent border cursor-pointer focus-visible:outline focus-visible:outline-1 focus-visible:outline-white
@@ -294,10 +287,8 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           </div>
         )}
 
-        {/* ═══ EXPANDABLE: LEADERBOARDS ═══ */}
         {activeSection === 'leaderboards' && (
           <div role="region" aria-label="Leaderboards" className="w-full max-w-[320px] mb-6 border border-white/20 p-4 bg-black/40 backdrop-blur-sm">
-            {/* Duration selector */}
             <div className="flex justify-center gap-2 mb-3" role="group" aria-label="Game duration">
               {([30, 45, 60] as const).map((d) => (
                 <button
@@ -319,7 +310,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
               ))}
             </div>
 
-            {/* Tab selector */}
             <div className="flex justify-center gap-1 mb-3" role="tablist" aria-label="Leaderboard type">
               {([
                 { key: 'daily' as const, label: 'TODAY' },
@@ -342,7 +332,6 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
               ))}
             </div>
 
-            {/* Leaderboard table */}
             <div className="border border-white/15 rounded-lg overflow-hidden">
               {leaderboardTab === 'allTime' && showAllTimeSkeleton ? (
                 <LeaderboardSkeleton rows={5} />
@@ -382,12 +371,10 @@ export function TitleScreen({ initialLeaderboards }: TitleScreenProps) {
           </div>
         )}
 
-        {/* Bottom spacer */}
         <div className="flex-1 min-h-[3vh]" />
 
-        {/* ═══ FOOTER ═══ */}
         <div className="pb-6 flex flex-col items-center gap-2 w-full max-w-[280px]">
-          {hasValidUsername && (
+          {!!username && (
             <div className="flex items-center justify-center gap-2">
               <span className="text-white/50 text-xs font-mono">Playing as</span>
               <span className="text-white text-xs font-bold font-mono">{username}</span>

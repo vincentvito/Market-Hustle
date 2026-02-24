@@ -53,10 +53,6 @@ export const FLAVOR_EVENTS: FlavorEvent[] = [
   { headline: "VIRAL VIDEO: SQUIRREL ON TRADING FLOOR OUTPERFORMS 85% OF FUND MANAGERS", effects: { nasdaq: -0.01 } },
 ]
 
-/**
- * Select a random flavor event that hasn't been used this game.
- * Returns null if all flavor events have been used.
- */
 export function selectFlavorEvent(usedHeadlines: string[]): FlavorEvent | null {
   const available = FLAVOR_EVENTS.filter(e => !usedHeadlines.includes(e.headline))
   if (available.length === 0) return null

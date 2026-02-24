@@ -20,7 +20,6 @@ export async function POST(
 
     const { id } = await params
 
-    // Get room
     const roomResult = await db
       .select()
       .from(rooms)
@@ -33,13 +32,11 @@ export async function POST(
 
     const room = roomResult[0]
 
-    // Mark player as left
     await db
       .update(roomPlayers)
       .set({ status: 'left' })
       .where(and(eq(roomPlayers.roomId, id), eq(roomPlayers.userId, user.id)))
 
-    // Handle host departure
     if (room.hostId === user.id) {
       const remainingPlayers = await db
         .select()

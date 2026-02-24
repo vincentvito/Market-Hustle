@@ -32,7 +32,6 @@ export function SettingsPanel() {
   const { showSettings, setShowSettings, userTier, selectedDuration, setSelectedDuration, selectedTheme, setSelectedTheme, showPortfolioBeforeAdvance, setShowPortfolioBeforeAdvance } = useGame()
   const { user, profile, signOut, loading: authLoading, updateSettings } = useAuth()
 
-  // Wrapper to sync settings to Supabase when changed
   const handleDurationChange = (duration: 30 | 45 | 60) => {
     setSelectedDuration(duration)
     if (user) {
@@ -52,14 +51,12 @@ export function SettingsPanel() {
   const [userStats, setUserStats] = useState<UserState | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
 
-  // Load user stats from localStorage on mount
   useEffect(() => {
     if (showSettings) {
       setUserStats(loadUserState())
     }
   }, [showSettings])
 
-  // Calculate derived stats from user state
   const gamesPlayed = userStats?.totalGamesPlayed ?? 0
   const bestNetWorth = userStats?.bestNetWorth ?? 0
   const totalProfit = userStats?.totalEarnings ?? 0
@@ -67,27 +64,23 @@ export function SettingsPanel() {
   const winRate = gamesPlayed > 0 ? Math.round((winCount / gamesPlayed) * 100) : 0
   const winStreak = userStats?.winStreak ?? 0
 
-  // Personal best history for "compete against yourself" leaderboard
   const gameHistory = userStats?.gameHistory ?? []
 
   if (!showSettings) return null
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={() => setShowSettings(false)}
         className="fixed inset-0 bg-black/60 z-[300]"
       />
 
-      {/* Slide-in Panel */}
       <div
         className="fixed top-0 right-0 h-full w-[320px] md:w-[380px] max-w-[85vw] bg-mh-bg border-l border-mh-border z-[301] overflow-y-auto"
         style={{
           animation: 'slideInRight 0.2s ease-out',
         }}
       >
-        {/* Header */}
         <div className="p-4 border-b border-mh-border flex justify-between items-center sticky top-0 bg-mh-bg z-10">
           <div className="text-mh-text-bright font-bold text-lg">
             📊 CAREER
@@ -100,7 +93,6 @@ export function SettingsPanel() {
           </button>
         </div>
 
-        {/* 1. HERO STAT: Total Career Earnings */}
         <div className="p-4 border-b border-mh-border bg-[#0a1015]">
           <div className="text-mh-text-dim text-xs tracking-wider mb-1">
             LIFETIME EARNINGS
@@ -113,10 +105,8 @@ export function SettingsPanel() {
           </div>
         </div>
 
-        {/* 2. STAT GRID: 2x2 Cards */}
         <div className="p-4 border-b border-mh-border">
           <div className="grid grid-cols-2 gap-3">
-            {/* Win Rate */}
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">WIN RATE</div>
               <div className={`text-xl font-bold ${winRate >= 50 ? 'text-mh-profit-green' : 'text-mh-loss-red'}`}>
@@ -124,7 +114,6 @@ export function SettingsPanel() {
               </div>
             </div>
 
-            {/* Best Run */}
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">🏆 BEST RUN</div>
               <div className="text-xl font-bold text-mh-accent-blue">
@@ -132,7 +121,6 @@ export function SettingsPanel() {
               </div>
             </div>
 
-            {/* Games Played */}
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">CAREERS</div>
               <div className="text-xl font-bold text-mh-text-bright">
@@ -140,7 +128,6 @@ export function SettingsPanel() {
               </div>
             </div>
 
-            {/* Win Streak */}
             <div className="bg-[#0a1015] border border-mh-border rounded p-3">
               <div className="text-mh-text-dim text-xs mb-1">WIN STREAK</div>
               <div className="text-xl font-bold text-mh-text-bright">
@@ -150,7 +137,6 @@ export function SettingsPanel() {
           </div>
         </div>
 
-        {/* PREFERENCES */}
         <div className="p-4 border-b border-mh-border">
           <div className="text-mh-text-dim text-xs font-bold mb-3 tracking-wider">
             PREFERENCES
@@ -177,13 +163,11 @@ export function SettingsPanel() {
           </div>
         </div>
 
-        {/* 3. CAREER MODE SELECTOR */}
         <div className="p-4 border-b border-mh-border">
           <div className="text-mh-text-dim text-xs font-bold mb-3 tracking-wider">
             📈 CAREER MODE
           </div>
           <div className="space-y-2">
-            {/* 30 Days - Free */}
             <button
               onClick={() => handleDurationChange(30)}
               className={`w-full p-3 rounded border text-left cursor-pointer ${
@@ -207,7 +191,6 @@ export function SettingsPanel() {
               </div>
             </button>
 
-            {/* 45 Days */}
             <button
               onClick={() => handleDurationChange(45)}
               className={`w-full p-3 rounded border text-left cursor-pointer ${
@@ -231,7 +214,6 @@ export function SettingsPanel() {
               </div>
             </button>
 
-            {/* 60 Days */}
             <button
               onClick={() => handleDurationChange(60)}
               className={`w-full p-3 rounded border text-left cursor-pointer ${
@@ -257,7 +239,6 @@ export function SettingsPanel() {
           </div>
         </div>
 
-        {/* 4. PERSONAL LEADERBOARD - Compete against yourself */}
         <div className="border-b border-mh-border">
           <button
             onClick={() => setPersonalBestExpanded(!personalBestExpanded)}
@@ -314,7 +295,6 @@ export function SettingsPanel() {
           )}
         </div>
 
-        {/* 5. HISTORICAL GAMES (Collapsible) */}
         <div className="border-b border-mh-border">
           <button
             onClick={() => setHistoricalExpanded(!historicalExpanded)}
@@ -339,7 +319,6 @@ export function SettingsPanel() {
           </button>
           {historicalExpanded && (
             <div className="px-4 pb-4 space-y-2">
-              {/* The Roaring 20s */}
               <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
@@ -354,7 +333,6 @@ export function SettingsPanel() {
                 </div>
               </div>
 
-              {/* WWII */}
               <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
@@ -369,7 +347,6 @@ export function SettingsPanel() {
                 </div>
               </div>
 
-              {/* 80s */}
               <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
@@ -384,7 +361,6 @@ export function SettingsPanel() {
                 </div>
               </div>
 
-              {/* Dot-Com */}
               <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
@@ -399,7 +375,6 @@ export function SettingsPanel() {
                 </div>
               </div>
 
-              {/* 2008 */}
               <div className={`w-full p-3 rounded border border-mh-border bg-[#0a1015] opacity-60`}>
                 <div className="flex items-start justify-between">
                   <div>
@@ -417,7 +392,6 @@ export function SettingsPanel() {
           )}
         </div>
 
-        {/* 6. GAME OPTIONS (Collapsible) */}
         <div className="border-b border-mh-border">
           <button
             onClick={() => setOptionsExpanded(!optionsExpanded)}
@@ -433,21 +407,6 @@ export function SettingsPanel() {
           {optionsExpanded && (
             <div className="px-4 pb-4">
               <div className="grid grid-cols-2 gap-2">
-                {/* RETRO theme hidden — kept for future reactivation
-                <button
-                  onClick={() => handleThemeChange('retro')}
-                  className={`p-2 rounded border text-center cursor-pointer ${
-                    selectedTheme === 'retro'
-                      ? 'border-mh-accent-blue bg-mh-accent-blue/10'
-                      : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
-                  }`}
-                >
-                  <div className={`font-bold text-[11px] ${selectedTheme === 'retro' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
-                    RETRO
-                  </div>
-                  <div className="text-mh-text-dim text-[9px] mt-0.5">CRT look</div>
-                </button>
-                */}
                 <button
                   onClick={() => handleThemeChange('modern3')}
                   className={`p-2 rounded border text-center cursor-pointer ${
@@ -461,21 +420,6 @@ export function SettingsPanel() {
                   </div>
                   <div className="text-mh-text-dim text-[9px] mt-0.5">Cyan glow</div>
                 </button>
-                {/* CRT theme hidden — kept for future reactivation
-                <button
-                  onClick={() => handleThemeChange('retro2')}
-                  className={`p-2 rounded border text-center cursor-pointer ${
-                    selectedTheme === 'retro2'
-                      ? 'border-mh-accent-blue bg-mh-accent-blue/10'
-                      : 'border-mh-border bg-[#0a1015] hover:border-mh-text-dim'
-                  }`}
-                >
-                  <div className={`font-bold text-[11px] ${selectedTheme === 'retro2' ? 'text-mh-accent-blue' : 'text-mh-text-bright'}`}>
-                    CRT
-                  </div>
-                  <div className="text-mh-text-dim text-[9px] mt-0.5">Green glow</div>
-                </button>
-                */}
                 <button
                   onClick={() => handleThemeChange('bloomberg')}
                   className={`p-2 rounded border text-center cursor-pointer ${
@@ -507,7 +451,6 @@ export function SettingsPanel() {
           )}
         </div>
 
-        {/* 7. ACCOUNT */}
         <div className="p-4 border-b border-mh-border">
           <div className="text-mh-text-dim text-xs font-bold mb-3 tracking-wider">
             👤 ACCOUNT
@@ -558,10 +501,8 @@ export function SettingsPanel() {
 
       </div>
 
-      {/* Auth Modal */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
-      {/* Slide-in animation */}
       <style jsx global>{`
         @keyframes slideInRight {
           from {

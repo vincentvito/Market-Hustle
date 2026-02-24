@@ -158,7 +158,6 @@ export function CasinoRoulette({ onBack }: CasinoRouletteProps) {
     { label: 'ALL IN', value: Math.floor(cash) },
   ]
 
-  // Spinning phase
   if (step === 'spinning' && color) {
     return (
       <RouletteSpinner
@@ -170,13 +169,11 @@ export function CasinoRoulette({ onBack }: CasinoRouletteProps) {
     )
   }
 
-  // Result phase
   if (step === 'result' && result) {
     const won = (result.cashChange ?? 0) >= 0
     return (
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-[340px] text-center">
-          {/* Result number */}
           {result.spinResult !== undefined && (
             <div
               className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 ${
@@ -222,7 +219,6 @@ export function CasinoRoulette({ onBack }: CasinoRouletteProps) {
     )
   }
 
-  // Color selection phase
   if (step === 'color') {
     return (
       <div className="flex-1 flex items-center justify-center p-4">
@@ -274,7 +270,6 @@ export function CasinoRoulette({ onBack }: CasinoRouletteProps) {
     )
   }
 
-  // Bet selection phase (default)
   return (
     <div className="flex-1 flex items-center justify-center p-4">
       <div className="w-full max-w-[340px]">

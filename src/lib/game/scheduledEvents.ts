@@ -1,17 +1,6 @@
 import type { ScheduledEvent } from './types'
 
-// =============================================================================
-// SCHEDULED EVENTS - Calendar-driven market events with 1-day advance notice
-// Unlike chains (unexpected rumors) or stories (multi-stage arcs), these are
-// known calendar events: Fed speeches, jobs reports, GDP data, earnings.
-// Day N: heads-up announcement (small pre-positioning effects)
-// Day N+1: resolution with probability-weighted outcomes
-// =============================================================================
-
 export const SCHEDULED_EVENTS: ScheduledEvent[] = [
-  // ─────────────────────────────────────────────────────────────────
-  // FED CHAIR SPEECH
-  // ─────────────────────────────────────────────────────────────────
   {
     id: 'sched_fed_speech',
     category: 'fed',
@@ -41,9 +30,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // FOMC RATE DECISION
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_fomc',
     category: 'fed',
@@ -81,9 +70,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // JOBS REPORT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_jobs',
     category: 'economic',
@@ -121,9 +110,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // CPI INFLATION REPORT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_cpi',
     category: 'economic',
@@ -161,9 +150,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // GDP REPORT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_gdp',
     category: 'economic',
@@ -193,9 +182,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // BIG TECH EARNINGS SEASON
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_tech_earnings',
     category: 'tech',
@@ -225,9 +214,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // HOUSING DATA (CASE-SHILLER)
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_housing',
     category: 'economic',
@@ -265,9 +254,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // CONSUMER CONFIDENCE (MICHIGAN SENTIMENT)
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_consumer_confidence',
     category: 'economic',
@@ -305,9 +294,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // 10-YEAR TREASURY AUCTION
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_treasury_auction',
     category: 'fed',
@@ -345,9 +334,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // SEMICONDUCTOR EXPORT BAN REVIEW
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_chip_export',
     category: 'tech',
@@ -385,9 +374,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // MONTHLY AUTO SALES REPORT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_auto_sales',
     category: 'economic',
@@ -425,9 +414,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // UN CLIMATE SUMMIT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_climate_summit',
     category: 'commodity',
@@ -465,9 +454,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // SEC CRYPTO REGULATORY HEARING
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_sec_crypto',
     category: 'crypto',
@@ -505,9 +494,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // USDA CROP REPORT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_usda_crop',
     category: 'commodity',
@@ -545,9 +534,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // CHINA PMI RELEASE
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_china_pmi',
     category: 'economic',
@@ -585,9 +574,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // TESLA EARNINGS CALL
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_tesla_earnings',
     category: 'tesla',
@@ -625,9 +614,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // BANK EARNINGS SEASON
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_bank_earnings',
     category: 'economic',
@@ -665,9 +654,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // OIL MAJOR EARNINGS
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_oil_earnings',
     category: 'energy',
@@ -697,9 +686,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // CONGRESSIONAL DEFENSE BUDGET HEARING
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_defense_budget',
     category: 'geopolitical',
@@ -737,9 +726,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // NATO DEFENSE MINISTERS SUMMIT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_nato_summit',
     category: 'geopolitical',
@@ -777,9 +766,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // NOVO NORDISK EARNINGS (GLP-1 / OBESITY DRUGS)
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_novo_earnings',
     category: 'biotech',
@@ -817,9 +806,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // PFIZER EARNINGS (POST-COVID PIPELINE)
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_pfizer_earnings',
     category: 'biotech',
@@ -857,9 +846,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // EIA CRUDE OIL INVENTORY REPORT
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_eia_oil',
     category: 'energy',
@@ -897,9 +886,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // US RETAIL SALES DATA
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_retail_sales',
     category: 'economic',
@@ -937,9 +926,9 @@ export const SCHEDULED_EVENTS: ScheduledEvent[] = [
     ],
   },
 
-  // ─────────────────────────────────────────────────────────────────
+
   // IAEA GLOBAL NUCLEAR ENERGY REVIEW
-  // ─────────────────────────────────────────────────────────────────
+
   {
     id: 'sched_iaea_nuclear',
     category: 'energy',

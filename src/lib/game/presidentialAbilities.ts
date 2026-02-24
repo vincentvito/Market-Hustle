@@ -1,10 +1,5 @@
 import type { PresidentialAbility, PresidentialAbilityId } from './types'
 
-// =============================================================================
-// PRESIDENTIAL ABILITIES - Endgame powers unlocked after winning the election
-// Each ability can only be used ONCE (executive orders, not repeatable actions)
-// =============================================================================
-
 export const PRESIDENTIAL_ABILITIES: Record<PresidentialAbilityId, PresidentialAbility> = {
   declare_war_china: {
     id: 'declare_war_china',
@@ -99,12 +94,10 @@ export const PRESIDENTIAL_ABILITIES: Record<PresidentialAbilityId, PresidentialA
   },
 }
 
-// Get all presidential abilities as an array
 export function getPresidentialAbilities(): PresidentialAbility[] {
   return Object.values(PRESIDENTIAL_ABILITIES)
 }
 
-// Get a specific presidential ability by ID
 export function getPresidentialAbility(id: PresidentialAbilityId): PresidentialAbility {
   return PRESIDENTIAL_ABILITIES[id]
 }

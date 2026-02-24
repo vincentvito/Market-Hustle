@@ -92,7 +92,6 @@ export function IntroScreen() {
     startGame()
   }, [startGame])
 
-  // Keyboard: any key advances, Enter on last slide starts game
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (isLastSlide) {
@@ -114,7 +113,6 @@ export function IntroScreen() {
       onClick={isLastSlide ? undefined : advanceSlide}
     >
       <div className="max-w-md w-full text-center">
-        {/* Slide content */}
         <div
           className="space-y-4 min-h-[120px] flex flex-col justify-center transition-opacity duration-300"
           style={{ opacity: fadeState === 'in' ? 1 : 0 }}
@@ -129,7 +127,6 @@ export function IntroScreen() {
           ))}
         </div>
 
-        {/* Progress dots */}
         <div className="flex justify-center gap-2 mt-10">
           {SLIDES.map((_, idx) => (
             <div
@@ -145,7 +142,6 @@ export function IntroScreen() {
           ))}
         </div>
 
-        {/* Bottom area */}
         <div className="mt-10">
           {isLastSlide ? (
             <button

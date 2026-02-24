@@ -91,7 +91,6 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
     const { drawnCards, finalHand } = dealerPlay(dHand, currentDeck)
 
     if (drawnCards.length === 0) {
-      // Dealer stands immediately
       setDealerHand(finalHand)
       setTimeout(() => {
         finishRound(pHand, finalHand, currentBet)
@@ -100,7 +99,6 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
       return
     }
 
-    // Draw cards one at a time with delays
     let currentHand = [...dHand]
     let cardIndex = 0
 
@@ -133,7 +131,6 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
     setIsDoubled(false)
     dealerTurnRef.current = false
 
-    // Check for immediate blackjack
     if (isBlackjack(pHand) || isBlackjack(dHand)) {
       setPhase('dealer_turn')
       setTimeout(() => {
@@ -150,7 +147,6 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
     setDeck(remainingDeck)
 
     if (isBust(newHand)) {
-      // Player busts — no dealer turn needed
       setTimeout(() => {
         finishRound(newHand, dealerHand, bet)
       }, 300)
@@ -166,7 +162,6 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
     setBet(doubleBet)
     setIsDoubled(true)
 
-    // Take exactly one more card, then stand
     const { newHand, remainingDeck } = hit(playerHand, deck)
     setPlayerHand(newHand)
     setDeck(remainingDeck)
@@ -207,7 +202,6 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
   const showDealerCards = phase === 'dealer_turn' || phase === 'result'
   const canDoubleDown = phase === 'playing' && playerHand.length === 2 && !isDoubled && cash >= bet * 2
 
-  // Betting phase
   if (phase === 'betting') {
     return (
       <div className="flex-1 flex items-center justify-center p-4">
@@ -266,15 +260,12 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
     )
   }
 
-  // Game in progress (playing, dealer_turn, result)
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 gap-6">
-      {/* Bet display */}
       <div className="text-mh-text-dim text-xs">
         Bet: ${bet.toLocaleString('en-US')}{isDoubled ? ' (doubled)' : ''}
       </div>
 
-      {/* Dealer hand */}
       <Hand
         cards={dealerHand}
         hideSecond={!showDealerCards}
@@ -282,17 +273,14 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
         value={showDealerCards ? dealerValue : undefined}
       />
 
-      {/* VS divider */}
       <div className={`text-xs font-bold ${isRetro2 ? 'text-mh-accent-blue' : 'text-yellow-500'}`}>VS</div>
 
-      {/* Player hand */}
       <Hand
         cards={playerHand}
         label="You"
         value={playerValue}
       />
 
-      {/* Action buttons */}
       {phase === 'playing' && (
         <div className="flex gap-2 w-full max-w-[340px]">
           <button
@@ -322,14 +310,12 @@ export function CasinoBlackjack({ onBack }: CasinoBlackjackProps) {
         </div>
       )}
 
-      {/* Dealer turn indicator */}
       {phase === 'dealer_turn' && !result && (
         <div className={`text-sm font-bold animate-pulse ${isRetro2 ? 'text-mh-accent-blue' : 'text-yellow-500'}`}>
           Dealer is drawing...
         </div>
       )}
 
-      {/* Result */}
       {phase === 'result' && result && (
         <div className="w-full max-w-[340px] text-center">
           <div className={`text-2xl font-bold mb-1 ${

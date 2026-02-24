@@ -21,7 +21,6 @@ const CATEGORY_ICONS: Record<string, string> = {
   fintech: '💳',
 }
 
-// Compute risk profile from startup outcome data
 function getRiskProfile(startup: Startup): { failRate: number; maxMultiplier: number } {
   const failOutcome = startup.outcomes.find(o => o.multiplier === 0)
   const failRate = failOutcome ? Math.round(failOutcome.probability * 100) : 0
@@ -40,7 +39,6 @@ export function StartupOfferOverlay() {
   const icon = CATEGORY_ICONS[category] || '🏢'
   const { failRate, maxMultiplier } = getRiskProfile(pendingStartupOffer)
 
-  // Investment amounts based on tier
   const amounts = tier === 'angel' ? [10000, 20000, 50000] : [100000, 200000, 500000]
   const netWorth = getNetWorth()
 
@@ -59,7 +57,6 @@ export function StartupOfferOverlay() {
     }
   }
 
-  // Color coding for fail rate
   const failRateColor = failRate > 50 ? 'text-mh-loss-red' : failRate > 30 ? 'text-mh-news' : 'text-mh-text-main'
 
   return (
@@ -140,7 +137,6 @@ export function StartupOfferOverlay() {
 
         {confirmingAmount !== null ? (
           <>
-            {/* Confirmation Summary */}
             <div className="p-4 border-b border-mh-border">
               <div className="text-mh-news text-[10px] font-bold tracking-wider mb-3 uppercase">
                 Investment Summary
@@ -164,7 +160,6 @@ export function StartupOfferOverlay() {
               </p>
             </div>
 
-            {/* Confirmation Buttons */}
             <div className="p-4 space-y-2">
               <button
                 onClick={handleConfirmLiquidate}
@@ -182,7 +177,6 @@ export function StartupOfferOverlay() {
           </>
         ) : (
           <>
-            {/* Investment Options */}
             <div className="p-4 border-b border-mh-border">
               <div className="flex gap-2">
                 {amounts.map(amount => {
@@ -200,11 +194,14 @@ export function StartupOfferOverlay() {
                           ? 'bg-mh-profit-green/20 border border-mh-profit-green text-mh-profit-green hover:bg-mh-profit-green/30 cursor-pointer'
                           : canLiquidate
                             ? 'bg-mh-news/20 border border-mh-news text-mh-news hover:bg-mh-news/30 cursor-pointer'
-                            : 'bg-mh-border/50 border border-mh-border text-mh-text-dim cursor-not-allowed opacity-50'
+                            : 'bg-[#1a1215] border border-mh-loss-red/25 text-mh-loss-red/60 cursor-not-allowed'
                         }
                       `}
                     >
-                      <div>${amount >= 1_000_000 ? `${(amount / 1_000_000).toFixed(0)}M` : `${(amount / 1000).toFixed(0)}K`}</div>
+                      <div>
+                        ${amount >= 1_000_000 ? `${(amount / 1_000_000).toFixed(0)}M` : `${(amount / 1000).toFixed(0)}K`}
+                        {isDisabled && ' 😂'}
+                      </div>
                       {canLiquidate && <div className="text-[8px] opacity-80 mt-0.5">SELL & INVEST</div>}
                     </button>
                   )
@@ -215,7 +212,6 @@ export function StartupOfferOverlay() {
               </div>
             </div>
 
-            {/* Pass Button */}
             <div className="p-4">
               <button
                 onClick={dismissStartupOffer}

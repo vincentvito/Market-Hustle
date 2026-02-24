@@ -6,10 +6,6 @@ import { useStripeCheckout, PENDING_CHECKOUT_KEY } from '@/hooks/useStripeChecko
 import { AuthModal } from '@/components/auth/AuthModal'
 import { GUEST_TOTAL_LIMIT } from '@/lib/game/userState'
 
-/**
- * Modal shown when anonymous users (not logged in) have played all 10 lifetime games.
- * Prompts them to sign up (free) to continue playing, or upgrade to Pro.
- */
 export function AnonymousLimitModal() {
   const { showAnonymousLimitModal, setShowAnonymousLimitModal } = useGame()
   const { loading: checkoutLoading } = useStripeCheckout()
@@ -21,7 +17,6 @@ export function AnonymousLimitModal() {
     setShowAuthModal(true)
   }
 
-  // Store intent so the global handler in MarketHustle auto-triggers checkout after login
   const handleGoPro = () => {
     sessionStorage.setItem(PENDING_CHECKOUT_KEY, '1')
     setShowAuthModal(true)
@@ -33,12 +28,10 @@ export function AnonymousLimitModal() {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={() => setShowAnonymousLimitModal(false)}
         className="fixed inset-0 bg-black/70 z-[400] flex items-center justify-center"
       >
-        {/* Modal */}
         <div
           onClick={(e) => e.stopPropagation()}
           className="bg-mh-bg border-2 border-mh-border p-6 mx-4 max-w-[320px] text-center"
@@ -46,15 +39,12 @@ export function AnonymousLimitModal() {
             animation: 'fadeIn 0.2s ease-out',
           }}
         >
-          {/* Icon */}
           <div className="text-5xl mb-4">🎮</div>
 
-          {/* Title */}
           <div className="text-mh-accent-blue text-xl font-bold mb-2 glow-text">
             FREE GAMES USED
           </div>
 
-          {/* Message */}
           <div className="text-mh-text-main text-sm mb-6 leading-relaxed">
             You&apos;ve used all {GUEST_TOTAL_LIMIT} free games.
             <br />
@@ -63,7 +53,6 @@ export function AnonymousLimitModal() {
             </span>
           </div>
 
-          {/* Benefits of signing up */}
           <div className="mb-6 p-3 bg-mh-border/20 rounded">
             <div className="text-mh-text-dim text-xs mb-2">SIGN UP TO GET:</div>
             <div className="text-mh-text-main text-xs space-y-1 text-left">
@@ -74,7 +63,6 @@ export function AnonymousLimitModal() {
             </div>
           </div>
 
-          {/* Buttons */}
           <div className="flex flex-col gap-3">
             <button
               onClick={handleSignUp}
@@ -97,7 +85,6 @@ export function AnonymousLimitModal() {
             </button>
           </div>
 
-          {/* Pro benefits teaser */}
           <div className="mt-4 pt-4 border-t border-mh-border">
             <div className="text-mh-text-dim text-xs mb-2">PRO INCLUDES:</div>
             <div className="text-mh-profit-green text-xs space-y-1">
@@ -110,7 +97,6 @@ export function AnonymousLimitModal() {
         </div>
       </div>
 
-      {/* Auth Modal (nested) */}
       <AuthModal isOpen={showAuthModal} onClose={handleAuthModalClose} />
     </>
   )

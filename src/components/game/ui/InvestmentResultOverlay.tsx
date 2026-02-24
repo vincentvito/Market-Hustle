@@ -33,7 +33,6 @@ export function InvestmentResultOverlay() {
   const { activeCelebration, dismissCelebration, selectedTheme } = useGame()
   const isRetro2 = selectedTheme === 'retro2'
 
-  // Only render for investment_result type
   if (!activeCelebration || activeCelebration.type !== 'investment_result') {
     return null
   }
@@ -50,7 +49,6 @@ export function InvestmentResultOverlay() {
     headline,
   } = event
 
-  // Visual styling based on outcome
   const primaryColor = isProfit ? '#00ff88' : '#ff5252'
   const bgGradient = isProfit
     ? (isRetro2 ? 'from-[#0a150d] to-[#0d1a10]' : 'from-[#0a1520] to-[#0d2820]')
@@ -68,7 +66,6 @@ export function InvestmentResultOverlay() {
           boxShadow: `0 0 30px ${primaryColor}60`,
         }}
       >
-        {/* Header */}
         <div
           className={`p-5 bg-gradient-to-r ${bgGradient} border-b text-center`}
           style={{ borderColor: `${primaryColor}40` }}
@@ -91,9 +88,7 @@ export function InvestmentResultOverlay() {
           </div>
         </div>
 
-        {/* Results */}
         <div className="p-5 bg-[#0a0d10]">
-          {/* Profit/Loss Display */}
           <div className="text-center mb-4">
             <div
               className="text-4xl font-bold mb-1"
@@ -112,7 +107,6 @@ export function InvestmentResultOverlay() {
             </div>
           </div>
 
-          {/* Details Grid */}
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="text-center py-2 px-3 rounded bg-white/5">
               <div className="text-mh-text-dim text-xs mb-1">INVESTED</div>
@@ -131,7 +125,6 @@ export function InvestmentResultOverlay() {
             </div>
           </div>
 
-          {/* Multiplier Badge */}
           <div className="text-center mt-4">
             <span
               className="inline-block px-4 py-1 rounded-full text-sm font-bold"
@@ -144,13 +137,11 @@ export function InvestmentResultOverlay() {
             </span>
           </div>
 
-          {/* Headline */}
           <div className="text-center mt-4 text-mh-text-dim text-sm italic">
             &ldquo;{headline}&rdquo;
           </div>
         </div>
 
-        {/* Continue Button */}
         <div className="p-4 border-t border-mh-border">
           <button
             onClick={dismissCelebration}

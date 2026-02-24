@@ -20,7 +20,6 @@ export async function POST(
 
     const { id } = await params
 
-    // Get current ready state
     const playerResult = await db
       .select({ isReady: roomPlayers.isReady })
       .from(roomPlayers)

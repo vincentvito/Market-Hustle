@@ -2,22 +2,11 @@
 
 import { useState, useRef } from 'react'
 import { toPng } from 'html-to-image'
-import { useGame } from '@/hooks/useGame'
 import type { EndGameProps } from './types'
 import { formatNetWorth, formatCompact } from '@/lib/utils/formatMoney'
 import { InlineUsernameInput } from './InlineUsernameInput'
 import { Skeleton } from '@/components/ui/Skeleton'
 
-/**
- * ProEndView - End-game screen for Pro-tier users.
- *
- * Features:
- * - Unified layout for both wins and losses
- * - Conditional styling (green for win, red for loss)
- * - No game limits - unlimited play
- * - Dynamic narrative messages for margin-related game overs
- * - Primary "Play Again" button (always enabled)
- */
 export function ProEndView({
   outcome,
   message,
@@ -34,33 +23,27 @@ export function ProEndView({
   onBackToRoom,
   roomCode,
 }: EndGameProps) {
-  const [shareState, setShareState] = useState<'idle' | 'copied' | 'sharing'>('idle')
+  const [shareState, setShareState] = useState<'idle' | 'sharing'>('idle')
   const resultsRef = useRef<HTMLDivElement>(null)
-  const username = useGame((state) => state.username)
   const isWin = outcome === 'win'
 
-  // Color scheme based on outcome
   const titleColor = isWin ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
   const netWorthColor = netWorth >= 0 ? 'text-mh-profit-green glow-green' : 'text-mh-loss-red glow-red'
   const profitColor = profitAmount >= 0 ? 'text-mh-profit-green' : 'text-mh-loss-red'
 
   return (
     <div className="min-h-full bg-mh-bg flex flex-col items-center justify-center px-6 pt-10 pb-6 md:p-10 text-center overflow-auto relative z-[51]">
-      {/* Shareable results card */}
       <div ref={resultsRef} className="bg-mh-bg flex flex-col items-center p-6 md:p-10 text-center">
-      {/* Outcome Header */}
       <div className="text-6xl md:text-7xl mb-4">{message.emoji}</div>
       <div className={`text-4xl md:text-5xl font-bold mb-2 ${titleColor}`}>{message.title}</div>
       <div className="text-mh-text-dim text-sm md:text-base mb-6 max-w-[280px] md:max-w-[400px] leading-relaxed">
         {message.flavor}
       </div>
 
-      {/* Days Survived */}
       <div className="text-mh-text-main text-lg md:text-xl mb-8">
         {isWin ? 'YOU SURVIVED' : 'SURVIVED'} {daysSurvived} / {gameDuration} DAYS
       </div>
 
-      {/* Final Net Worth */}
       <div className="border border-mh-border p-6 md:p-8 mb-4 min-w-[240px] md:min-w-[360px]">
         <div className="text-mh-text-dim text-xs md:text-sm mb-2">FINAL NET WORTH</div>
         <div className={`${formatNetWorth(netWorth).sizeClass} mb-4 ${netWorthColor}`}>{formatNetWorth(netWorth).text}</div>
@@ -96,7 +79,6 @@ export function ProEndView({
       <div className="text-mh-text-dim text-xs mt-2">markethustle.com</div>
       </div>
 
-      {/* Room code */}
       {roomCode && (
         <div className="mt-4 mb-2">
           <span className="text-mh-text-dim text-xs font-mono">ROOM </span>
@@ -104,10 +86,8 @@ export function ProEndView({
         </div>
       )}
 
-      {/* Room standings (live or final) */}
       {roomStandings}
 
-      {/* Back to Room / Play Again */}
       {onBackToRoom ? (
         <div className="flex flex-col items-center gap-3">
           <button
@@ -138,7 +118,6 @@ export function ProEndView({
         </button>
       )}
 
-      {/* Share Results Button */}
       <button
         onClick={async () => {
           if (!resultsRef.current || shareState === 'sharing') return
@@ -160,7 +139,6 @@ export function ProEndView({
             if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare?.({ files: [file] })) {
               await navigator.share({ files: [file], text })
             } else {
-              // Fallback: download the image
               const a = document.createElement('a')
               a.href = dataUrl
               a.download = 'market-hustle-results.png'
@@ -176,10 +154,9 @@ export function ProEndView({
           px-8 py-3 text-sm font-mono cursor-pointer
           hover:text-mh-text-bright hover:border-mh-text-dim transition-colors"
       >
-        {shareState === 'sharing' ? '[ CAPTURING... ]' : shareState === 'copied' ? '[ COPIED! ]' : '[ SHARE RESULTS ]'}
+        {shareState === 'sharing' ? '[ CAPTURING... ]' : '[ SHARE RESULTS ]'}
       </button>
 
-      {/* Menu */}
       <button
         onClick={onMenu}
         className="mt-3 bg-transparent border border-mh-border text-mh-text-dim

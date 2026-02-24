@@ -35,7 +35,6 @@ export function Header() {
       }`}
       style={isModern3 ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)' } : undefined}
     >
-      {/* Left: Day Counter */}
       <div id="tutorial-day-counter">
         <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>DAY</div>
         <div className={`text-3xl md:text-4xl lg:text-5xl font-bold ${isBloomberg ? 'text-[#ff8c00]' : 'text-mh-text-bright glow-text'}`}>
@@ -43,7 +42,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Center: Room Code (if in room) */}
       {roomCode && (
         <div className="text-center">
           <div className={`text-[10px] ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>ROOM</div>
@@ -53,7 +51,6 @@ export function Header() {
         </div>
       )}
 
-      {/* Right: Net Worth */}
       <div
         id="tutorial-net-worth"
         className="text-right cursor-pointer"

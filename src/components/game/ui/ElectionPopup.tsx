@@ -3,10 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useGame } from '@/hooks/useGame'
 
-// Swing states for the dramatic reveal
 const SWING_STATES = ['Pennsylvania', 'Michigan', 'Wisconsin', 'Georgia', 'Arizona', 'Nevada']
 
-// Vote counting animation phase
 function VoteCountingPhase({ onComplete }: { onComplete: () => void }) {
   const [demVotes, setDemVotes] = useState(0)
   const [repVotes, setRepVotes] = useState(0)
@@ -38,8 +36,7 @@ function VoteCountingPhase({ onComplete }: { onComplete: () => void }) {
       </div>
 
       <div className="space-y-4">
-        {/* Blue votes */}
-        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
           <div className="w-16 text-right text-blue-400 font-bold">BLUE</div>
           <div className="flex-1 h-8 bg-[#1a2028] rounded overflow-hidden">
             <div
@@ -52,7 +49,6 @@ function VoteCountingPhase({ onComplete }: { onComplete: () => void }) {
           </div>
         </div>
 
-        {/* Red votes */}
         <div className="flex items-center gap-4">
           <div className="w-16 text-right text-red-400 font-bold">RED</div>
           <div className="flex-1 h-8 bg-[#1a2028] rounded overflow-hidden">
@@ -76,7 +72,6 @@ function VoteCountingPhase({ onComplete }: { onComplete: () => void }) {
   )
 }
 
-// Swing states announcement phase
 function SwingStatesPhase({ isWin, onComplete }: { isWin: boolean; onComplete: () => void }) {
   const [currentState, setCurrentState] = useState(0)
   const [results, setResults] = useState<string[]>([])
@@ -130,13 +125,11 @@ function SwingStatesPhase({ isWin, onComplete }: { isWin: boolean; onComplete: (
   )
 }
 
-// Final result phase
 function ResultPhase({ isWin, onConfirm }: { isWin: boolean; onConfirm: () => void }) {
   return (
     <div className="text-center space-y-6">
       {isWin ? (
         <>
-          {/* Victory screen */}
           <div className="text-6xl">🇺🇸</div>
           <div className="text-3xl font-black text-mh-profit-green animate-pulse">
             VICTORY
@@ -154,7 +147,6 @@ function ResultPhase({ isWin, onConfirm }: { isWin: boolean; onConfirm: () => vo
         </>
       ) : (
         <>
-          {/* Defeat screen */}
           <div className="text-6xl">📉</div>
           <div className="text-3xl font-black text-mh-loss-red">
             DEFEAT
@@ -192,7 +184,6 @@ export function ElectionPopup() {
 
   const isRetro2 = selectedTheme === 'retro2'
 
-  // Reset phase when popup opens
   useEffect(() => {
     if (pendingElection) {
       setPhase('counting')
@@ -213,7 +204,7 @@ export function ElectionPopup() {
         } rounded-lg w-full max-w-[380px] overflow-hidden`}
         style={isRetro2 ? { boxShadow: '0 0 20px rgba(0, 255, 136, 0.4)' } : undefined}
       >
-        {/* Header */}
+
         <div className={`p-4 bg-gradient-to-r ${
           phase === 'result'
             ? (isWin ? 'from-[#0a200a] to-[#0d2a0d]' : 'from-[#200a0a] to-[#2a0d0d]')
@@ -232,7 +223,6 @@ export function ElectionPopup() {
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6 min-h-[280px] flex flex-col justify-center">
           {phase === 'counting' && (
             <VoteCountingPhase onComplete={() => setPhase('states')} />

@@ -6,12 +6,10 @@ export async function POST(request: NextRequest) {
   try {
     const { username, finalNetWorth, gameData, tradeLogs: tradeLogEntries } = await request.json()
 
-    // Validate username
     if (!username || typeof username !== 'string' || !/^[a-z0-9_]{3,15}$/.test(username)) {
       return NextResponse.json({ error: 'Invalid username' }, { status: 400 })
     }
 
-    // Insert game result
     if (gameData) {
       await db
         .insert(gameResults)

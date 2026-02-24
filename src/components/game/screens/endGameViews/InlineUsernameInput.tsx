@@ -13,20 +13,16 @@ export function InlineUsernameInput() {
 
   const handleSubmit = () => {
     const value = input.trim().toLowerCase()
-    console.log('[Username] handleSubmit called with:', value)
     if (value.length < 3) { setError('Min 3 characters'); return }
     if (value.length > 15) { setError('Max 15 characters'); return }
     if (!/^[a-z0-9_]+$/.test(value)) { setError('Only letters, numbers, underscores'); return }
     setError(null)
     setIsEditing(false)
 
-    console.log('[Username] pendingScore:', pendingScore)
-
     // Submit pending score BEFORE setting username (so the rank fetch waits for it)
     if (pendingScore) {
       const scoreData = pendingScore
       useGame.setState({ pendingScore: null })
-      console.log('[Username] Submitting pending score for', value, ':', scoreData)
       fetch('/api/profile/record-game', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,18 +32,15 @@ export function InlineUsernameInput() {
           gameData: scoreData.gameData,
         }),
       })
-        .then((res) => {
-          console.log('[Username] Score submit response:', res.status, res.ok)
+        .then(() => {
           // Set username AFTER score is saved — this triggers the rank fetch in EndGameCoordinator
           setUsername(value)
         })
-        .catch((err) => {
-          console.error('[Username] Error submitting pending score:', err)
+        .catch(() => {
           // Still set username even if score fails
           setUsername(value)
         })
     } else {
-      console.log('[Username] No pending score, just setting username')
       setUsername(value)
     }
   }

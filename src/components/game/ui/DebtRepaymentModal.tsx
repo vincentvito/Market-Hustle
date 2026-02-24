@@ -107,7 +107,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
     }
   }, [])
 
-  // Reset slider when mode changes
   useEffect(() => {
     currentAmount.current = 0
     updateDisplay(0)
@@ -142,7 +141,7 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
         className="bg-mh-bg border border-mh-border rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
+
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-xl font-bold text-mh-text-bright mb-1">Credit Card</h2>
@@ -156,7 +155,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
           </button>
         </div>
 
-        {/* Current Debt */}
         <div className="mb-4 p-4 bg-mh-border/20 rounded">
           <div className="text-xs text-mh-text-dim mb-1">CURRENT DEBT</div>
           <div className="text-2xl font-bold text-mh-loss-red">
@@ -167,7 +165,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
           </div>
         </div>
 
-        {/* Mode Toggle */}
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setMode('repay')}
@@ -191,7 +188,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
           </button>
         </div>
 
-        {/* Slider */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <label className="text-sm font-bold text-mh-text-bright">
@@ -202,7 +198,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
             </div>
           </div>
 
-          {/* Custom Slider */}
           <div
             ref={sliderRef}
             className="relative h-8 cursor-pointer touch-none select-none"
@@ -212,10 +207,8 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
             onTouchMove={(e) => { e.preventDefault(); handleMove(e.touches[0].clientX) }}
             onTouchEnd={handleEnd}
           >
-            {/* Background track */}
             <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-2 bg-[#1a2a3a] rounded-full" />
 
-            {/* Fill bar */}
             <div
               ref={fillRef}
               className={`absolute top-1/2 -translate-y-1/2 left-0 h-2 rounded-full ${
@@ -224,7 +217,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
               style={{ width: '0%' }}
             />
 
-            {/* Tick marks */}
             {[25, 50, 75].map(pct => (
               <div
                 key={pct}
@@ -233,7 +225,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
               />
             ))}
 
-            {/* Thumb */}
             <div
               ref={thumbRef}
               className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 border-mh-bg ${
@@ -258,7 +249,6 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
           </div>
         </div>
 
-        {/* Preview */}
         <div className={`mb-6 p-4 rounded border ${
           isRepay
             ? 'bg-mh-accent-blue/10 border-mh-accent-blue/30'
@@ -283,14 +273,12 @@ export function DebtRepaymentModal({ onClose }: DebtRepaymentModalProps) {
           </div>
         </div>
 
-        {/* Borrow warning */}
         {!isRepay && (
           <div className="text-xs text-mh-loss-red mb-4 text-center">
             Borrowed money accrues 1.75% daily compound interest
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className="flex gap-3">
           <button
             onClick={onClose}

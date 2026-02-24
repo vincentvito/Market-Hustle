@@ -29,7 +29,6 @@ export function AssetListView() {
 
   return (
     <div className="flex-1 min-h-0 overflow-auto">
-      {/* Table Header */}
       <div className="sticky top-0 z-10 bg-[#0a0e14] border-b border-[#1a2230]">
         <div className="grid grid-cols-[2fr_1fr_1fr_0.8fr_1fr] md:grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-x-2 md:gap-x-3 px-3 md:px-4 py-1.5 md:py-2 text-[11px] md:text-xs text-[#4a5568] font-bold tracking-wider">
           <span>ASSET</span>
@@ -40,7 +39,6 @@ export function AssetListView() {
         </div>
       </div>
 
-      {/* Asset Rows */}
       {ASSETS.map((asset, index) => {
         const price = prices[asset.id] || 0
         const owned = holdings[asset.id] || 0
@@ -50,7 +48,6 @@ export function AssetListView() {
         const hasShort = shortPositions.some(p => p.assetId === asset.id)
         const hasPosition = owned > 0 || hasLeveraged || hasShort
 
-        // Performance-based left accent + glow for positioned rows
         const getRowStyle = (): React.CSSProperties => {
           if (!hasPosition) return {}
           if (change >= 0) {
@@ -70,7 +67,6 @@ export function AssetListView() {
             style={getRowStyle()}
             onClick={() => selectAsset(asset.id)}
           >
-            {/* Asset Name + Position badges */}
             <div className="flex items-center gap-1 min-w-0">
               <span className="text-sm md:text-base font-bold text-white truncate">
                 {asset.name}
@@ -87,24 +83,20 @@ export function AssetListView() {
               )}
             </div>
 
-            {/* Price */}
             <span className="text-sm md:text-base font-bold text-[#8892a0] text-right tabular-nums">
               ${formatPrice(price)}
             </span>
 
-            {/* % Change */}
             <span className={`text-sm md:text-base font-bold text-right tabular-nums ${
               change > 0 ? 'text-[#00d4aa]' : change < 0 ? 'text-[#ff4757]' : 'text-[#4a5568]'
             }`}>
               {change > 0 ? '▲' : change < 0 ? '▼' : '•'}{change > 0 ? '+' : ''}{change.toFixed(1)}%
             </span>
 
-            {/* QTY */}
             <span className="text-sm md:text-base text-[#8892a0] text-right tabular-nums">
               {owned > 0 ? formatQty(owned) : '-'}
             </span>
 
-            {/* Avg Cost */}
             <span className="text-sm md:text-base text-[#8892a0] text-right tabular-nums">
               {avgCost > 0 ? `$${formatPrice(avgCost)}` : '-'}
             </span>

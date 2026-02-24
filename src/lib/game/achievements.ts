@@ -1,6 +1,3 @@
-// Achievement Definitions
-// Frontend-only for now - will be persisted to localStorage/backend later
-
 export interface Achievement {
   id: string
   name: string
@@ -173,12 +170,10 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
 ]
 
-// Get achievement by ID
 export function getAchievement(id: string): Achievement | undefined {
   return ACHIEVEMENTS.find(a => a.id === id)
 }
 
-// Placeholder profile stats (will be persisted later)
 export interface PlayerProfile {
   gamesPlayed: number
   bestNetWorth: number
@@ -201,7 +196,6 @@ export const DEFAULT_PROFILE: PlayerProfile = {
   unlockedAchievements: [],
 }
 
-// Mock profile for frontend testing
 export const MOCK_PROFILE: PlayerProfile & { winStreak: number } = {
   gamesPlayed: 12,
   bestNetWorth: 4200000,

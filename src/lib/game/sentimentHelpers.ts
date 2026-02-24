@@ -1,8 +1,3 @@
-// =============================================================================
-// SENTIMENT CONFLICT DETECTION HELPERS
-// Prevents jarring narrative contradictions in market news
-// =============================================================================
-
 import type { AssetMood, EventSentiment, MarketEvent, EventChain, EventChainOutcome } from './types'
 
 // Two-phase mood window:
@@ -14,18 +9,6 @@ const HARD_BLOCK_DAYS = 1            // Mood age <= this: no opposite events
 const REVERSAL_BONUS_MULTIPLIER = 1.3 // 30% boost to reversal event effects
 const REVERSAL_CHANCE = 0.5           // 50% chance reversal is allowed in the window
 
-// =============================================================================
-// SENTIMENT DERIVATION
-// Auto-derive sentiment from price effects when not explicitly set
-// =============================================================================
-
-/**
- * Derive sentiment from effects if not explicitly set.
- * - All positive effects → bullish
- * - All negative effects → bearish
- * - Mixed effects → mixed
- * - No/zero effects → neutral
- */
 export function deriveSentiment(effects: Record<string, number>): EventSentiment {
   const values = Object.values(effects)
   if (values.length === 0) return 'neutral'
@@ -50,17 +33,11 @@ export function deriveSentiment(effects: Record<string, number>): EventSentiment
   return 'neutral'
 }
 
-/**
- * Get sentiment for an event (use explicit or derive from effects)
- */
 export function getEventSentiment(event: MarketEvent): EventSentiment {
   return event.sentiment ?? deriveSentiment(event.effects)
 }
 
-/**
- * Get affected assets for an event (use explicit or derive from effects)
- * Priority: primaryAsset > sentimentAssets > largest effect asset
- */
+// Priority: primaryAsset > sentimentAssets > largest effect asset
 export function getEventAffectedAssets(event: MarketEvent): string[] {
   // If explicit primaryAsset, use only that (prevents cascading mood blocks)
   if (event.primaryAsset) {
@@ -78,17 +55,11 @@ export function getEventAffectedAssets(event: MarketEvent): string[] {
   return sorted.length > 0 ? [sorted[0][0]] : []
 }
 
-/**
- * Get sentiment for an event chain outcome
- */
 export function getOutcomeSentiment(outcome: EventChainOutcome): EventSentiment {
   return outcome.sentiment ?? deriveSentiment(outcome.effects)
 }
 
-/**
- * Get affected assets for an event chain (use explicit or derive from outcomes)
- * Priority: primaryAsset > sentimentAssets > largest effect asset from outcomes
- */
+// Priority: primaryAsset > sentimentAssets > largest effect asset from outcomes
 export function getChainAffectedAssets(chain: EventChain): string[] {
   // If explicit primaryAsset, use only that
   if (chain.primaryAsset) {
@@ -111,16 +82,6 @@ export function getChainAffectedAssets(chain: EventChain): string[] {
   return sorted.length > 0 ? [sorted[0][0]] : []
 }
 
-// =============================================================================
-// CONFLICT DETECTION
-// Check if an event conflicts with current market mood
-// =============================================================================
-
-/**
- * Check if two sentiments are in conflict.
- * - bullish vs bearish → conflict
- * - neutral/mixed → no conflict with anything
- */
 function sentimentsConflict(
   newSentiment: EventSentiment,
   existingMood: 'bullish' | 'bearish'
@@ -133,12 +94,6 @@ function sentimentsConflict(
   return newSentiment !== existingMood
 }
 
-/**
- * Check if an event conflicts with current asset moods.
- * Two-phase system:
- * - Hard block (mood age 0-1): opposite events blocked entirely
- * - Reversal window (mood age 2): opposite events allowed with 50% chance
- */
 export function hasEventConflict(
   event: MarketEvent,
   assetMoods: AssetMood[],
@@ -197,11 +152,6 @@ export function hasEventConflict(
   return false
 }
 
-/**
- * Check if an event chain conflicts with current asset moods.
- * Uses the rumor sentiment for initial check.
- * Same two-phase system as hasEventConflict.
- */
 export function hasChainConflict(
   chain: EventChain,
   assetMoods: AssetMood[],
@@ -260,10 +210,6 @@ export function hasChainConflict(
   return false
 }
 
-/**
- * Check if a specific outcome conflicts with current asset moods.
- * Same two-phase system as hasEventConflict.
- */
 function hasOutcomeConflict(
   outcome: EventChainOutcome,
   assetMoods: AssetMood[],
@@ -331,14 +277,8 @@ function hasOutcomeConflict(
   return false
 }
 
-/**
- * Resolve a chain outcome with mood-awareness.
- * If one outcome conflicts with current mood and the other doesn't,
- * pick the non-conflicting one. Otherwise use normal probability.
- *
- * This creates narrative momentum: bad news begets bad news,
- * good news begets good news (within the 3-day mood window).
- */
+// Resolve a chain outcome with mood-awareness: pick non-conflicting outcome
+// when possible, creating narrative momentum within the 3-day mood window.
 export function resolveChainWithMood(
   chain: EventChain,
   assetMoods: AssetMood[],
@@ -377,9 +317,6 @@ export function resolveChainWithMood(
   return pool[pool.length - 1]
 }
 
-/**
- * Derive sentiment from chain outcomes (weighted by probability)
- */
 function deriveSentimentFromChain(chain: EventChain): EventSentiment {
   let bullishWeight = 0
   let bearishWeight = 0
@@ -400,15 +337,6 @@ function deriveSentimentFromChain(chain: EventChain): EventSentiment {
   return 'neutral'
 }
 
-// =============================================================================
-// MOOD RECORDING & DECAY
-// Track market mood per asset after events fire
-// =============================================================================
-
-/**
- * Record mood for an event that just fired.
- * Only records directional moods (bullish/bearish), not neutral/mixed.
- */
 export function recordEventMood(
   event: MarketEvent,
   currentDay: number,
@@ -443,9 +371,6 @@ export function recordEventMood(
   return newMoods
 }
 
-/**
- * Record mood for a chain outcome that just resolved.
- */
 export function recordChainOutcomeMood(
   outcome: EventChainOutcome,
   currentDay: number,
@@ -485,9 +410,6 @@ export function recordChainOutcomeMood(
   return newMoods
 }
 
-/**
- * Record mood for a chain rumor that just started.
- */
 export function recordChainRumorMood(
   chain: EventChain,
   currentDay: number,
@@ -522,10 +444,6 @@ export function recordChainRumorMood(
   return newMoods
 }
 
-/**
- * Record mood for a story stage (start, intermediate, or resolution).
- * Works with any object that has headline and effects properties.
- */
 export function recordStoryMood(
   stage: { headline: string; effects: Record<string, number> },
   currentDay: number,
@@ -568,18 +486,10 @@ export function recordStoryMood(
   return newMoods
 }
 
-/**
- * Decay old moods - remove moods older than MOOD_DECAY_DAYS.
- */
 export function decayMoods(moods: AssetMood[], currentDay: number): AssetMood[] {
   return moods.filter(mood => (currentDay - mood.recordedDay) < MOOD_DECAY_DAYS)
 }
 
-/**
- * Get reversal bonus multiplier for an event.
- * Returns REVERSAL_BONUS_MULTIPLIER if the event opposes a mood in the reversal window.
- * Returns 1.0 otherwise (no bonus).
- */
 export function getReversalBonus(
   event: MarketEvent,
   assetMoods: AssetMood[],
@@ -605,12 +515,4 @@ export function getReversalBonus(
   return 1.0
 }
 
-// =============================================================================
-// SELECTION WITH CONFLICT AVOIDANCE
-// Modified selection logic with retry and fallback
-// =============================================================================
-
-/**
- * Maximum attempts to find a non-conflicting event before falling back to quiet news.
- */
 export const MAX_CONFLICT_RETRIES = 10

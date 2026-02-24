@@ -56,20 +56,17 @@ export function ActionsTabLeverage() {
 
   const [lockedClickedId, setLockedClickedId] = useState<string | null>(null)
 
-  // Get all owned PE companies
   const ownedPE = ownedLifestyle.filter(item =>
     item.assetId.startsWith('pe_')
   )
   const ownedPEIds = new Set(ownedPE.map(item => item.assetId))
 
-  // All PE companies that have abilities (excludes passive-only like Iron Oak, Tenuta, Casino)
   const peCompaniesWithAbilities = PRIVATE_EQUITY.filter(
     pe => getPEAbilities(pe.id).length > 0
   )
 
   return (
     <div className={`flex-1 overflow-auto ${isModern3 ? 'p-2 space-y-3' : 'p-3 space-y-3'}`}>
-      {/* Banner when no PE owned */}
       {ownedPE.length === 0 && (
         <div className={`text-center py-2 px-3 rounded-lg text-xs ${
           isModern3 ? 'bg-amber-500/10' : 'bg-amber-500/5 border border-amber-500/20'
@@ -78,13 +75,11 @@ export function ActionsTabLeverage() {
         </div>
       )}
 
-      {/* ===== OWNED PE companies: full interactive cards ===== */}
       {peCompaniesWithAbilities
         .filter(pe => ownedPEIds.has(pe.id))
         .map(peCompany => {
           const abilities = getPEAbilities(peCompany.id)
 
-          // Special case: If player is president and owns Apex Media, show Presidential Toolkit
           if (isPresident && peCompany.id === 'pe_apex_media') {
             return <PresidentialToolkit key={peCompany.id} />
           }
@@ -98,12 +93,10 @@ export function ActionsTabLeverage() {
                   : 'bg-[#0a1218] rounded-lg p-3 border border-mh-border'
               }
             >
-              {/* PE Company Header */}
               <div className="text-xs font-bold text-mh-text-dim uppercase tracking-wide mb-2">
                 {peCompany.emoji} {peCompany.name}
               </div>
 
-              {/* Abilities */}
               <div className="space-y-2">
                 {abilities.map((ability: PEAbility) => {
                   const status = getPEAbilityStatus(ability.id)
@@ -117,7 +110,6 @@ export function ActionsTabLeverage() {
                         isModern3 ? 'bg-[#1a2028]' : 'bg-[#111920]'
                       }`}
                     >
-                      {/* Ability header */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-base">{ability.emoji}</span>
@@ -145,12 +137,10 @@ export function ActionsTabLeverage() {
                         )}
                       </div>
 
-                      {/* Flavor text */}
                       <div className="text-[10px] text-mh-text-dim mt-1">
                         {ability.flavor}
                       </div>
 
-                      {/* Cost, risk, and execute button (only if not used) */}
                       {!status.isUsed && (
                         <div className="mt-2">
                           <div className="text-[10px] font-bold text-amber-400 mb-1">
@@ -182,7 +172,6 @@ export function ActionsTabLeverage() {
           )
         })}
 
-      {/* ===== LOCKED abilities: card-style list ===== */}
       {(() => {
         const lockedCompanies = peCompaniesWithAbilities.filter(pe => !ownedPEIds.has(pe.id))
         if (lockedCompanies.length === 0) return null

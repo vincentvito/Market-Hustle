@@ -1,8 +1,3 @@
-// =============================================================================
-// MILESTONE SYSTEM
-// Celebrates net worth achievements with news panel takeover
-// =============================================================================
-
 export type MilestoneTier = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' | 'impossible'
 
 export interface MilestoneDefinition {
@@ -42,7 +37,6 @@ export const TIER_COLORS: Record<MilestoneTier, string> = {
   impossible: '#22c55e',  // matrix green
 }
 
-// Check if a new milestone was reached
 export function checkMilestone(
   netWorth: number,
   reachedMilestones: string[]
@@ -57,8 +51,7 @@ export function checkMilestone(
   return null
 }
 
-// Get all milestones that should be marked as reached for a given net worth
-// (handles case where player jumps multiple milestones at once)
+// Handles case where player jumps multiple milestones at once
 export function getAllReachedMilestones(
   netWorth: number,
   existingReached: string[]

@@ -23,9 +23,7 @@ export function StatsBar({ onDebtClick }: StatsBarProps) {
   const hasPositions = portfolioValue > 0 || leveragedPositions.length > 0 || shortPositions.length > 0
 
   return (
-    <>
       <div className={`mx-3 md:mx-4 mt-0.5 md:mt-1 ${isModern3 ? 'mb-3' : 'mb-5'} space-y-2`}>
-        {/* Row 1: Cash, Debt, Portfolio - matching net worth font style */}
         <div className="flex items-center justify-between">
           <div id="tutorial-cash">
             <div className={`text-xs ${isBloomberg ? 'text-white font-bold' : 'text-mh-text-dim'}`}>CASH</div>
@@ -57,6 +55,5 @@ export function StatsBar({ onDebtClick }: StatsBarProps) {
         </div>
 
       </div>
-    </>
   )
 }

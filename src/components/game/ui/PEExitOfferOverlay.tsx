@@ -18,7 +18,6 @@ export function PEExitOfferOverlay() {
   const tierColor = RISK_TIER_COLORS[riskTier]
   const tierLabel = RISK_TIER_LABELS[riskTier]
 
-  // Format offer amount
   const formatMoney = (amount: number): string => {
     if (amount >= 1_000_000_000) return `$${(amount / 1_000_000_000).toFixed(2)}B`
     if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(2)}M`
@@ -26,7 +25,6 @@ export function PEExitOfferOverlay() {
     return `$${Math.round(amount).toLocaleString('en-US')}`
   }
 
-  // Theme colors - IPO: green/cyan, Acquisition: gold/orange
   const primaryColor = isIPO ? '#00ff88' : '#ffa500'
   const secondaryColor = isIPO ? '#00d4aa' : '#ff8c00'
   const bgGradient = isIPO
@@ -42,7 +40,7 @@ export function PEExitOfferOverlay() {
           boxShadow: `0 0 20px ${primaryColor}40`,
         }}
       >
-        {/* Header */}
+
         <div
           className={`p-4 bg-gradient-to-r ${bgGradient} border-b`}
           style={{ borderColor: `${primaryColor}40` }}
@@ -88,7 +86,6 @@ export function PEExitOfferOverlay() {
           </div>
         </div>
 
-        {/* Offer Details */}
         <div className="p-4 border-b border-mh-border bg-[#0a0d10]">
           <div className="text-center mb-4">
             <div className="text-mh-text-dim text-xs mb-1">OFFER AMOUNT</div>
@@ -109,7 +106,6 @@ export function PEExitOfferOverlay() {
             </div>
           </div>
 
-          {/* Countdown */}
           <div
             className="text-center py-2 px-3 rounded"
             style={{
@@ -122,7 +118,6 @@ export function PEExitOfferOverlay() {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="p-4 space-y-2">
           <button
             onClick={acceptPEExitOffer}

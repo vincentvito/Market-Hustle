@@ -58,7 +58,7 @@ export function ActionsTabBuy() {
                       ? 'bg-[#1a1500] hover:bg-[#221c00]'
                       : 'bg-mh-bg hover:bg-[#111920]'
                   }`
-            } ${!canAfford && !isOwned ? 'opacity-50 cursor-not-allowed' : ''}`}
+            } ${!canAfford && !isOwned ? 'opacity-75 cursor-not-allowed border border-mh-loss-red/20' : ''}`}
             style={isModern3 ? {
               boxShadow: isOwned
                 ? '0 2px 8px rgba(255, 215, 0, 0.15)'
@@ -104,7 +104,7 @@ export function ActionsTabBuy() {
                 </div>
                 {!canAfford && !isOwned && (
                   <div className="text-[10px] text-mh-loss-red mt-1">
-                    Need {formatPrice(asset.basePrice - cash)} more
+                    Need {formatPrice(asset.basePrice - cash)} more 😂
                   </div>
                 )}
                 {isOwned && (
@@ -118,7 +118,6 @@ export function ActionsTabBuy() {
         )
       })}
 
-      {/* Sell Confirmation Sheet */}
       {sellConfirmAsset && (() => {
         const sellPrice = Math.floor(sellConfirmAsset.basePrice * 0.80)
         const loss = sellConfirmAsset.basePrice - sellPrice

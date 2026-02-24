@@ -92,10 +92,8 @@ export function validateScriptedDays(
   return { valid: errors.length === 0, errors }
 }
 
-/** Parse Claude's response, handling markdown code blocks */
 export function parseClaudeJSON(raw: string): unknown {
   let cleaned = raw.trim()
-  // Strip markdown code blocks
   if (cleaned.startsWith('```')) {
     cleaned = cleaned.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
   }

@@ -7,8 +7,8 @@ import { useGame } from '@/hooks/useGame'
 import { useAuth } from '@/contexts/AuthContext'
 
 const DURATION_OPTIONS = [30, 45, 60] as const
-const CASH_OPTIONS = [25_000, 50_000, 1_00_000, 2_00_000] as const
-const DEBT_OPTIONS = [0, 25_000, 50_000, 1_00_000] as const
+const CASH_OPTIONS = [25_000, 50_000, 100_000, 200_000] as const
+const DEBT_OPTIONS = [0, 25_000, 50_000, 100_000] as const
 
 function formatCurrency(value: number): string {
   if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
@@ -45,7 +45,6 @@ export function RoomLobby() {
   const [copiedLink, setCopiedLink] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
 
-  // Sync local settings from store when roomSettings changes
   useEffect(() => {
     if (roomSettings) {
       setSelectedDuration(roomSettings.duration)
@@ -54,7 +53,6 @@ export function RoomLobby() {
     }
   }, [roomSettings])
 
-  // Determine if settings are locked (any player started or finished)
   const settingsLocked = players.some(p => p.status === 'playing' || p.status === 'finished')
 
   const onPresenceSyncRef = useRef<(p: Record<string, RoomPresenceState>) => void>()
@@ -95,7 +93,6 @@ export function RoomLobby() {
     onPresenceSync: handlePresenceSync,
   })
 
-  // Host settings change → save via API
   const settingsDebounceRef = useRef<ReturnType<typeof setTimeout>>()
   const handleSettingChange = useCallback((updates: { duration?: number; startingCash?: number; startingDebt?: number }) => {
     if (!isHost || settingsLocked) return
@@ -103,7 +100,6 @@ export function RoomLobby() {
     if (updates.startingCash !== undefined) setSelectedCash(updates.startingCash)
     if (updates.startingDebt !== undefined) setSelectedDebt(updates.startingDebt)
 
-    // Debounce the API call
     clearTimeout(settingsDebounceRef.current)
     settingsDebounceRef.current = setTimeout(() => {
       updateSettings(updates)
@@ -133,14 +129,12 @@ export function RoomLobby() {
     }
   }
 
-  // Track presence
   useEffect(() => {
     if (user?.id && username) {
       track({ userId: user.id, username, status: 'joined' })
     }
   }, [user?.id, username, track])
 
-  // Poll for results/players periodically when in hub
   useEffect(() => {
     if (!roomId || !showRoomHub) return
     // Fetch immediately and again after a short delay (auth may not be ready on first try)
@@ -152,11 +146,9 @@ export function RoomLobby() {
 
   if (!showRoomHub) return null
 
-  // Get player result from results array
   const getPlayerResult = (userId: string): RoomResult | undefined =>
     results.find(r => r.userId === userId)
 
-  // Render player status badge
   const renderPlayerStatus = (player: RoomPlayer) => {
     if (player.status === 'playing') {
       return (
@@ -179,7 +171,6 @@ export function RoomLobby() {
     return <span className="text-mh-text-dim text-xs font-mono">IN HUB</span>
   }
 
-  // Sort results for standings
   const sortedResults = [...results].sort((a, b) => {
     if (a.rank != null && b.rank != null) return a.rank - b.rank
     return b.finalNetWorth - a.finalNetWorth
@@ -188,7 +179,6 @@ export function RoomLobby() {
   return (
     <div className="h-full bg-mh-bg overflow-y-auto">
       <div className="flex flex-col items-center p-4 pb-8 text-center min-h-full">
-        {/* Header */}
         <div className="text-mh-text-dim text-xs font-mono tracking-widest mb-2 mt-4">ROOM CODE</div>
         <div className="text-mh-accent-blue text-4xl font-mono tracking-[0.5em] mb-3">
           {roomCode}
@@ -211,7 +201,6 @@ export function RoomLobby() {
           Share this link with friends to join
         </div>
 
-        {/* Player List */}
         <div className="w-full max-w-[360px] mb-6">
           <div className="text-mh-text-dim text-sm mb-3 font-mono">
             PLAYERS ({players.filter(p => p.status !== 'left').length}/8)
@@ -242,7 +231,6 @@ export function RoomLobby() {
           </div>
         </div>
 
-        {/* Game Settings */}
         <div className="w-full max-w-[360px] mb-6">
           <div className="flex items-center justify-center gap-2 mb-3">
             <span className="text-mh-text-dim text-sm font-mono">GAME SETTINGS</span>
@@ -251,7 +239,6 @@ export function RoomLobby() {
             )}
           </div>
           <div className="border border-mh-border rounded-lg p-4 space-y-4">
-            {/* Duration */}
             <div>
               <div className="text-mh-text-dim text-xs font-mono mb-2">DURATION</div>
               <div className="flex gap-2">
@@ -273,7 +260,6 @@ export function RoomLobby() {
               </div>
             </div>
 
-            {/* Starting Cash */}
             <div>
               <div className="text-mh-text-dim text-xs font-mono mb-2">STARTING CASH</div>
               <div className="flex gap-2">
@@ -295,7 +281,6 @@ export function RoomLobby() {
               </div>
             </div>
 
-            {/* Starting Debt */}
             <div>
               <div className="text-mh-text-dim text-xs font-mono mb-2">STARTING DEBT</div>
               <div className="flex gap-2">
@@ -319,7 +304,6 @@ export function RoomLobby() {
           </div>
         </div>
 
-        {/* Standings */}
         {sortedResults.length > 0 && (
           <div className="w-full max-w-[360px] mb-6">
             <div className="text-mh-text-dim text-sm mb-3 font-mono">STANDINGS</div>
@@ -357,7 +341,6 @@ export function RoomLobby() {
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className="w-full max-w-[360px] space-y-3">
           <button
             onClick={handleStartRun}

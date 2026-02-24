@@ -4,11 +4,6 @@ import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
-/**
- * Handles the redirect from Stripe checkout.
- * For logged-in users: polls until tier updates to 'pro'.
- * For guests: shows "check email" prompt.
- */
 export function PaymentSuccessHandler() {
   const searchParams = useSearchParams()
   const { user, profile, refreshProfile } = useAuth()
@@ -22,11 +17,9 @@ export function PaymentSuccessHandler() {
     if (paymentStatus === 'success') {
       setShowSuccess(true)
 
-      // If already logged in, poll until tier updates to 'pro'
       if (user) {
         setPolling(true)
         refreshProfile()
-        // Poll every 2s for up to 30s
         let attempts = 0
         pollRef.current = setInterval(async () => {
           attempts++
@@ -38,7 +31,6 @@ export function PaymentSuccessHandler() {
         }, 2000)
       }
 
-      // Clean up URL
       if (typeof window !== 'undefined') {
         const url = new URL(window.location.href)
         url.searchParams.delete('payment')
@@ -50,7 +42,6 @@ export function PaymentSuccessHandler() {
     return () => clearInterval(pollRef.current)
   }, [searchParams, user, refreshProfile])
 
-  // Stop polling once tier is pro
   const isPro = profile?.tier === 'pro'
   useEffect(() => {
     if (isPro && pollRef.current) {
@@ -63,17 +54,14 @@ export function PaymentSuccessHandler() {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={() => setShowSuccess(false)}
         className="fixed inset-0 bg-black/80 z-[400]"
       />
 
-      {/* Success Modal */}
       <div className="fixed inset-0 flex items-center justify-center z-[401] p-4">
         <div className="bg-mh-bg border-2 border-mh-profit-green rounded-lg p-6 max-w-md w-full text-center">
           {isPro ? (
-            // Tier updated to Pro - show welcome
             <>
               <div className="text-4xl mb-4">
                 {"🎉"}
@@ -92,7 +80,6 @@ export function PaymentSuccessHandler() {
               </div>
             </>
           ) : user && polling ? (
-            // Logged in, waiting for webhook to process
             <>
               <div className="text-4xl mb-4">
                 {"✓"}
@@ -108,7 +95,6 @@ export function PaymentSuccessHandler() {
               </div>
             </>
           ) : user ? (
-            // Logged in but polling finished without Pro - might just be slow
             <>
               <div className="text-4xl mb-4">
                 {"✓"}
@@ -121,7 +107,6 @@ export function PaymentSuccessHandler() {
               </p>
             </>
           ) : (
-            // Guest - prompt email check
             <>
               <div className="text-4xl mb-4">
                 {"✓"}

@@ -5,7 +5,6 @@ import { ASSETS } from '@/lib/game/assets'
 import { NEWS_EXPLANATIONS } from '@/lib/game/newsExplanations'
 import { NEWS_CONTENT } from '@/lib/game/newsContent'
 
-// Explanations for dynamic headlines that can't be in the static map
 const DYNAMIC_EXPLANATIONS: { prefix: string; explanation: string }[] = [
   {
     prefix: 'PE RETURNS:',
@@ -40,13 +39,10 @@ interface NewsContent {
 }
 
 function getNewsContent(headline: string, effects: Record<string, number>, baseHeadline?: string): NewsContent {
-  // Use baseHeadline for dictionary lookups when available (e.g., startup outcomes with amount suffixes)
   const lookupKey = baseHeadline || headline
 
-  // Check for structured content in NEWS_CONTENT first
   const content = NEWS_CONTENT[lookupKey]
   if (content) {
-    // If we have structured content, use it (with fallback to NEWS_EXPLANATIONS for analysis)
     const analysis = content.analysis || NEWS_EXPLANATIONS[lookupKey] || generateFallbackAnalysis(effects)
     return {
       blurb: content.blurb || null,
@@ -54,7 +50,6 @@ function getNewsContent(headline: string, effects: Record<string, number>, baseH
     }
   }
 
-  // Check for pre-written explanation in NEWS_EXPLANATIONS (legacy support)
   if (NEWS_EXPLANATIONS[lookupKey]) {
     return {
       blurb: null,
@@ -62,7 +57,6 @@ function getNewsContent(headline: string, effects: Record<string, number>, baseH
     }
   }
 
-  // Check for dynamic headline patterns (prefix matches)
   for (const { prefix, explanation } of DYNAMIC_EXPLANATIONS) {
     if (headline.startsWith(prefix)) {
       return {
@@ -72,7 +66,6 @@ function getNewsContent(headline: string, effects: Record<string, number>, baseH
     }
   }
 
-  // Fallback: generate basic analysis
   return {
     blurb: null,
     analysis: generateFallbackAnalysis(effects)
@@ -160,7 +153,6 @@ export function NewsDetailOverlay() {
         onClick={e => e.stopPropagation()}
         className="bg-mh-bg border border-mh-border rounded-lg w-full max-w-[340px] max-h-[80vh] overflow-auto"
       >
-        {/* Header */}
         <div className="p-4 border-b border-mh-border flex justify-between items-start">
           <div className="flex-1">
             <div className="text-mh-text-dim text-[10px] mb-1">📺 BREAKING NEWS</div>
@@ -176,7 +168,6 @@ export function NewsDetailOverlay() {
           </button>
         </div>
 
-        {/* News Blurb - Short article (only shown if available) */}
         {blurb && (
           <div className="p-4 border-b border-mh-border">
             <div className="text-mh-text-dim text-[10px] mb-2">📰 REPORT</div>
@@ -186,7 +177,6 @@ export function NewsDetailOverlay() {
           </div>
         )}
 
-        {/* Market Analysis */}
         <div className="p-4 border-b border-mh-border bg-[#0a1015]">
           <div className="text-mh-text-dim text-[10px] mb-2">🎙️ MARKET ANALYSIS</div>
           <div className="text-mh-text-bright text-sm leading-relaxed">
@@ -194,7 +184,6 @@ export function NewsDetailOverlay() {
           </div>
         </div>
 
-        {/* Market Impact */}
         {(gainers.length > 0 || losers.length > 0) && (
           <div className="p-4">
             <div className="text-mh-text-dim text-[10px] mb-3">📊 EXPECTED IMPACT</div>
@@ -233,7 +222,6 @@ export function NewsDetailOverlay() {
           </div>
         )}
 
-        {/* No Impact Message */}
         {gainers.length === 0 && losers.length === 0 && (
           <div className="p-4 text-center">
             <div className="text-mh-text-dim text-sm">

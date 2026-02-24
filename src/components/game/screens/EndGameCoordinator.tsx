@@ -17,7 +17,6 @@ import { RoomLiveStandings } from '../rooms/RoomLiveStandings'
 import { useRoom } from '@/hooks/useRoom'
 import type { EndGameProps, LossBreakdown, LeaderboardRank } from './endGameViews/types'
 
-const STARTING_NET_WORTH = 0
 const STARTING_CAPITAL = 50_000
 
 export function EndGameCoordinator() {
@@ -57,7 +56,6 @@ export function EndGameCoordinator() {
 
   const { checkout, loading: checkoutLoading } = useStripeCheckout()
 
-  // Auto-open Pro upgrade dialog for logged-in free users
   useEffect(() => {
     if (isLoggedIn && actualTier !== 'pro') {
       const timer = setTimeout(() => setShowProDialog(true), 800)
@@ -65,21 +63,13 @@ export function EndGameCoordinator() {
     }
   }, [isLoggedIn, actualTier])
 
-  // Fetch leaderboard rank after a short delay (gives score submission time to land)
-  // Skip for room games — room has its own standings
   const rankFetchCount = useRef(0)
   useEffect(() => {
-    console.log('[Rank] useEffect triggered — username:', username, 'roomId:', roomId)
-    if (!username || roomId) {
-      console.log('[Rank] Skipping rank fetch — no username or room game')
-      return
-    }
+    if (!username || roomId) return
     rankFetchCount.current += 1
     setLeaderboardLoading(true)
 
-    // Longer delay when username changes (score was just submitted by InlineUsernameInput)
     const delay = rankFetchCount.current > 1 ? 1500 : 600
-    console.log('[Rank] Fetching rank in', delay, 'ms (fetch #' + rankFetchCount.current + ')')
 
     const timer = setTimeout(async () => {
       try {
@@ -89,17 +79,13 @@ export function EndGameCoordinator() {
           score: String(Math.round(score)),
           duration: String(gameDuration),
         })
-        console.log('[Rank] Fetching:', `/api/leaderboard/rank?${params}`)
         const res = await fetch(`/api/leaderboard/rank?${params}`)
         if (res.ok) {
           const data = await res.json()
-          console.log('[Rank] Got rank data:', data)
           setLeaderboardRank(data)
-        } else {
-          console.error('[Rank] Rank fetch failed:', res.status)
         }
-      } catch (err) {
-        console.error('[Rank] Rank fetch error:', err)
+      } catch {
+        // Rank fetch failed
       } finally {
         setLeaderboardLoading(false)
       }
@@ -108,7 +94,6 @@ export function EndGameCoordinator() {
     return () => clearTimeout(timer)
   }, [username, gameDuration, getNetWorth, roomId])
 
-  // Submit room result if in a room game
   useEffect(() => {
     if (!roomId || roomSubmittedRef.current) return
     roomSubmittedRef.current = true
@@ -116,7 +101,7 @@ export function EndGameCoordinator() {
     const nw = getNetWorth()
     submitRoomResult({
       finalNetWorth: Math.round(nw),
-      profitPercent: ((nw - STARTING_NET_WORTH) / STARTING_CAPITAL * 100) || 0,
+      profitPercent: (nw / STARTING_CAPITAL * 100) || 0,
       daysSurvived: screen === 'win' ? gameDuration : day,
       outcome: screen === 'win' ? 'win' : gameOverReason,
       username: username || 'unknown',
@@ -125,8 +110,8 @@ export function EndGameCoordinator() {
 
   const outcome: 'win' | 'loss' = screen === 'win' ? 'win' : 'loss'
   const netWorth = getNetWorth()
-  const profitAmount = (netWorth - STARTING_NET_WORTH) || 0
-  const profitPercent = ((netWorth - STARTING_NET_WORTH) / STARTING_CAPITAL * 100) || 0
+  const profitAmount = netWorth
+  const profitPercent = (netWorth / STARTING_CAPITAL * 100) || 0
   const daysSurvived = outcome === 'win' ? gameDuration : day
   const reason = outcome === 'win' ? 'WIN' : gameOverReason
   const canPlayAgain = gamesRemaining > 0
@@ -134,7 +119,6 @@ export function EndGameCoordinator() {
   const lossBreakdown = useMemo((): LossBreakdown | undefined => {
     if (actualTier !== 'pro' || outcome !== 'loss') return undefined
 
-    // Only show breakdown for relevant game-over reasons
     const showBreakdown =
       gameOverReason === 'MARGIN_CALLED' ||
       gameOverReason === 'SHORT_SQUEEZED' ||
@@ -180,12 +164,10 @@ export function EndGameCoordinator() {
   const marginCallContext = useMemo((): MarginCallContext | undefined => {
     if (!lossBreakdown) return undefined
 
-    // Find worst leveraged position (most negative P&L)
     const worstLeveraged = lossBreakdown.leveragedLosses.length > 0
       ? [...lossBreakdown.leveragedLosses].sort((a, b) => a.pl - b.pl)[0]
       : undefined
 
-    // Find worst short position (most negative P&L)
     const worstShort = lossBreakdown.shortLosses.length > 0
       ? [...lossBreakdown.shortLosses].sort((a, b) => a.pl - b.pl)[0]
       : undefined
@@ -205,7 +187,7 @@ export function EndGameCoordinator() {
 
   const handleMenu = () => setScreen('title')
 
-  const handleBackToRoom = roomId ? () => returnToHub() : undefined
+  const handleBackToRoom = roomId ? returnToHub : undefined
 
   const handleCheckout = () => {
     if (!checkoutLoading) {
@@ -237,15 +219,12 @@ export function EndGameCoordinator() {
     onCheckout: handleCheckout,
     onOpenAuth: handleOpenAuth,
     lossBreakdown,
-    proTrialGamesRemaining: 0,
     leaderboardRank,
     leaderboardLoading,
     roomStandings,
     onBackToRoom: handleBackToRoom,
     roomCode: roomCode ?? undefined,
   }
-
-  console.log('[EndGame] isLoggedIn:', isLoggedIn, 'storePlan:', plan, 'profileTier:', actualTier, 'view:', !isLoggedIn ? 'GuestEndView' : actualTier === 'pro' ? 'ProEndView' : 'MemberEndView')
 
   return (
     <>
@@ -257,7 +236,6 @@ export function EndGameCoordinator() {
         <MemberEndView {...props} />
       )}
 
-      {/* Pro Upgrade Dialog (auto-opens for free users) */}
       <ProUpgradeDialog
         isOpen={showProDialog}
         onClose={() => setShowProDialog(false)}
@@ -266,7 +244,6 @@ export function EndGameCoordinator() {
         loading={checkoutLoading}
       />
 
-      {/* Auth Modal (shared across views) */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   )

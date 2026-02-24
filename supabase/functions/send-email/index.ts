@@ -1,8 +1,27 @@
-import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { Resend } from 'npm:resend@4.0.0'
-
-const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
+const resendApiKey = Deno.env.get('RESEND_API_KEY') as string
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
+
+async function verifyWebhook(payload: string, headers: Record<string, string>): Promise<Record<string, unknown>> {
+  const msgId = headers['webhook-id']
+  const timestamp = headers['webhook-timestamp']
+  const signature = headers['webhook-signature']
+  if (!msgId || !timestamp || !signature) throw new Error('Missing webhook headers')
+
+  const base64Secret = hookSecret.replace('v1,whsec_', '')
+  const keyBytes = Uint8Array.from(atob(base64Secret), c => c.charCodeAt(0))
+  const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const content = new TextEncoder().encode(`${msgId}.${timestamp}.${payload}`)
+  const sig = await crypto.subtle.sign('HMAC', key, content)
+  const expected = btoa(String.fromCharCode(...new Uint8Array(sig)))
+
+  const valid = signature.split(' ').some(s => {
+    const val = s.startsWith('v1,') ? s.slice(3) : s
+    return val === expected
+  })
+  if (!valid) throw new Error('Invalid signature')
+
+  return JSON.parse(payload)
+}
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
@@ -12,14 +31,11 @@ Deno.serve(async (req) => {
   const payload = await req.text()
   const headers = Object.fromEntries(req.headers)
 
-  const base64Secret = hookSecret.replace('v1,whsec_', '')
-  const wh = new Webhook(base64Secret)
-
   try {
     const {
       user,
       email_data,
-    } = wh.verify(payload, headers) as {
+    } = await verifyWebhook(payload, headers) as {
       user: { email: string }
       email_data: {
         token: string
@@ -30,7 +46,6 @@ Deno.serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-    console.log('Hook payload:', JSON.stringify({ email: user.email, email_action_type: email_data.email_action_type, redirect_to: email_data.redirect_to }))
     const confirmUrl = `${supabaseUrl}/auth/v1/verify?token=${email_data.token_hash}&type=${email_data.email_action_type}&redirect_to=${encodeURIComponent(email_data.redirect_to)}`
 
     const isInvite = email_data.email_action_type === 'invite'
@@ -96,21 +111,22 @@ Deno.serve(async (req) => {
 </body>
 </html>`
 
-    // Fire-and-forget: don't await so the hook responds within the 5s timeout.
-    // Deno keeps the worker alive for in-flight promises after the response is sent.
-    resend.emails.send({
-      from: 'Market Hustle <noreply@auth.markethustle.game>',
-      to: [user.email],
-      subject,
-      html,
-    }).then(({ error }) => {
-      if (error) console.error('Resend error:', JSON.stringify(error))
-      else console.log('Email sent to:', user.email)
+    fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Market Hustle <noreply@auth.markethustle.game>',
+        to: [user.email],
+        subject,
+        html,
+      }),
     }).catch((err) => {
       console.error('Resend send failed:', err)
     })
   } catch (error: unknown) {
-    console.error('Hook error:', error)
     const err = error as { code?: number; message?: string }
     return new Response(
       JSON.stringify({

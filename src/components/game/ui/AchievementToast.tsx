@@ -14,13 +14,12 @@ export function AchievementToast() {
       setIsVisible(true)
       setIsExiting(false)
 
-      // Auto-dismiss after 3 seconds
       const timer = setTimeout(() => {
         setIsExiting(true)
         setTimeout(() => {
           setIsVisible(false)
           clearPendingAchievement()
-        }, 300) // Wait for exit animation
+        }, 300)
       }, 3000)
 
       return () => clearTimeout(timer)

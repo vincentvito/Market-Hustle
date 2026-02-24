@@ -7,17 +7,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useStripeCheckout } from '@/hooks/useStripeCheckout'
 import { REGISTERED_FREE_DAILY_LIMIT } from '@/lib/game/userState'
 
-/**
- * User Dashboard component for logged-in users.
- * Replaces the hero section on the landing page.
- *
- * Features:
- * - Username display with edit functionality
- * - Daily games remaining counter (free tier)
- * - Upgrade to Pro CTA (free tier)
- * - Game mode selector (30 active, 45/60 locked for free)
- * - Career stats grid
- */
 export function UserDashboard() {
   const { profile, user, refreshProfile } = useAuth()
   const { isPro } = useUserDetails()
@@ -26,7 +15,6 @@ export function UserDashboard() {
   const setSelectedDuration = useGame(state => state.setSelectedDuration)
   const { checkout, loading: checkoutLoading } = useStripeCheckout()
 
-  // Username edit state
   const [isEditing, setIsEditing] = useState(false)
   const [newUsername, setNewUsername] = useState('')
   const [usernameError, setUsernameError] = useState('')
@@ -36,7 +24,6 @@ export function UserDashboard() {
   const checkTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
 
-  // Format large numbers
   const formatNumber = (num: number) => {
     if (num >= 1_000_000_000) return `$${(num / 1_000_000_000).toFixed(1)}B`
     if (num >= 1_000_000) return `$${(num / 1_000_000).toFixed(1)}M`
@@ -44,12 +31,10 @@ export function UserDashboard() {
     return `$${num.toLocaleString('en-US')}`
   }
 
-  // Calculate win rate
   const winRate = profile && profile.total_games_played > 0
     ? Math.round((profile.win_count / profile.total_games_played) * 100)
     : 0
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (checkTimeoutRef.current) {
@@ -58,9 +43,7 @@ export function UserDashboard() {
     }
   }, [])
 
-  // Check username availability (debounced)
   const checkUsername = useCallback(async (value: string) => {
-    // Skip if it's the current username
     if (value === profile?.username) {
       setUsernameAvailable(null)
       setUsernameError('')
@@ -93,19 +76,16 @@ export function UserDashboard() {
     }
   }, [profile?.username])
 
-  // Handle username input change with debounce
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')
     setNewUsername(value)
     setUsernameError('')
     setUsernameAvailable(null)
 
-    // Clear existing timeout
     if (checkTimeoutRef.current) {
       clearTimeout(checkTimeoutRef.current)
     }
 
-    // Set new timeout for debounced check
     if (value.length >= 3 && value !== profile?.username) {
       setChecking(true)
       checkTimeoutRef.current = setTimeout(() => {
@@ -114,7 +94,6 @@ export function UserDashboard() {
     }
   }
 
-  // Save username
   const saveUsername = async () => {
     if (!usernameAvailable || saving) return
     setSaving(true)
@@ -143,7 +122,6 @@ export function UserDashboard() {
     }
   }
 
-  // Cancel editing
   const cancelEdit = () => {
     setIsEditing(false)
     setNewUsername('')
@@ -154,7 +132,6 @@ export function UserDashboard() {
     }
   }
 
-  // Start editing
   const startEdit = () => {
     setIsEditing(true)
     setNewUsername(profile?.username || '')
@@ -164,7 +141,6 @@ export function UserDashboard() {
 
   return (
     <div className="w-full max-w-[320px] mb-6">
-      {/* Username Header */}
       <div className="flex items-center justify-center gap-2 mb-4">
         {isEditing ? (
           <div className="flex flex-col items-center gap-2 w-full">
@@ -226,7 +202,6 @@ export function UserDashboard() {
         )}
       </div>
 
-      {/* Free tier: Daily games remaining */}
       {!isPro && (
         <div className="mb-4 p-3 border border-mh-border rounded bg-mh-border/10">
           <div className="flex justify-between items-center">
@@ -241,7 +216,6 @@ export function UserDashboard() {
         </div>
       )}
 
-      {/* Upgrade to Pro button for free users */}
       {!isPro && (
         <button
           onClick={() => checkout()}
@@ -252,11 +226,9 @@ export function UserDashboard() {
         </button>
       )}
 
-      {/* Game Mode Selector */}
       <div className="mb-4">
         <div className="text-mh-text-dim text-xs mb-2">GAME MODE</div>
         <div className="flex gap-2">
-          {/* 30 Days - Always Active */}
           <button
             onClick={() => setSelectedDuration(30)}
             className={`flex-1 py-2 border-2 font-mono text-sm transition-colors cursor-pointer ${
@@ -268,41 +240,31 @@ export function UserDashboard() {
             30 DAYS
           </button>
 
-          {/* 45 Days - Locked for Free */}
           <button
-            onClick={() => isPro && setSelectedDuration(45)}
-            disabled={!isPro}
-            className={`flex-1 py-2 border-2 font-mono text-sm transition-colors ${
-              isPro
-                ? selectedDuration === 45
-                  ? 'border-mh-accent-blue bg-mh-accent-blue/20 text-mh-accent-blue cursor-pointer'
-                  : 'border-mh-border bg-transparent text-mh-text-dim hover:border-mh-text-dim cursor-pointer'
-                : 'border-mh-border bg-transparent text-mh-text-dim/50 cursor-not-allowed'
+            onClick={() => setSelectedDuration(45)}
+            className={`flex-1 py-2 border-2 font-mono text-sm transition-colors cursor-pointer ${
+              selectedDuration === 45
+                ? 'border-mh-accent-blue bg-mh-accent-blue/20 text-mh-accent-blue'
+                : 'border-mh-border bg-transparent text-mh-text-dim hover:border-mh-text-dim'
             }`}
           >
-            {isPro ? '45 DAYS' : '\uD83D\uDD12 45'}
+            45 DAYS
           </button>
 
-          {/* 60 Days - Locked for Free */}
           <button
-            onClick={() => isPro && setSelectedDuration(60)}
-            disabled={!isPro}
-            className={`flex-1 py-2 border-2 font-mono text-sm transition-colors ${
-              isPro
-                ? selectedDuration === 60
-                  ? 'border-mh-accent-blue bg-mh-accent-blue/20 text-mh-accent-blue cursor-pointer'
-                  : 'border-mh-border bg-transparent text-mh-text-dim hover:border-mh-text-dim cursor-pointer'
-                : 'border-mh-border bg-transparent text-mh-text-dim/50 cursor-not-allowed'
+            onClick={() => setSelectedDuration(60)}
+            className={`flex-1 py-2 border-2 font-mono text-sm transition-colors cursor-pointer ${
+              selectedDuration === 60
+                ? 'border-mh-accent-blue bg-mh-accent-blue/20 text-mh-accent-blue'
+                : 'border-mh-border bg-transparent text-mh-text-dim hover:border-mh-text-dim'
             }`}
           >
-            {isPro ? '60 DAYS' : '\uD83D\uDD12 60'}
+            60 DAYS
           </button>
         </div>
       </div>
 
-      {/* Stats grid */}
       <div className="grid grid-cols-2 gap-2">
-        {/* Games Played */}
         <div className="p-3 border border-mh-border rounded bg-mh-border/10">
           <div className="text-mh-text-dim text-xs mb-1">GAMES</div>
           <div className="text-mh-text-bright text-lg font-bold">
@@ -310,7 +272,6 @@ export function UserDashboard() {
           </div>
         </div>
 
-        {/* Win Rate */}
         <div className="p-3 border border-mh-border rounded bg-mh-border/10">
           <div className="text-mh-text-dim text-xs mb-1">WIN RATE</div>
           <div className={`text-lg font-bold ${winRate >= 50 ? 'text-mh-profit-green' : 'text-mh-text-bright'}`}>
@@ -318,7 +279,6 @@ export function UserDashboard() {
           </div>
         </div>
 
-        {/* Best Net Worth */}
         <div className="p-3 border border-mh-border rounded bg-mh-border/10">
           <div className="text-mh-text-dim text-xs mb-1">BEST RUN</div>
           <div className="text-mh-profit-green text-lg font-bold">
@@ -326,7 +286,6 @@ export function UserDashboard() {
           </div>
         </div>
 
-        {/* Current Streak */}
         <div className="p-3 border border-mh-border rounded bg-mh-border/10">
           <div className="text-mh-text-dim text-xs mb-1">WIN STREAK</div>
           <div className="text-mh-accent-blue text-lg font-bold">
@@ -340,7 +299,6 @@ export function UserDashboard() {
         </div>
       </div>
 
-      {/* Total Earnings */}
       <div className="mt-2 p-3 border border-mh-border rounded bg-mh-border/10">
         <div className="flex justify-between items-center">
           <span className="text-mh-text-dim text-xs">CAREER EARNINGS</span>

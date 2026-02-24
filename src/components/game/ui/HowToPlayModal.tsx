@@ -14,10 +14,6 @@ export function isTutorialSeen(): boolean {
   try { return localStorage.getItem(TUTORIAL_KEY) === '1' } catch { return true }
 }
 
-// =============================================================================
-// TEXT-BASED HOW TO PLAY MODAL (for ? button)
-// =============================================================================
-
 export function HowToPlayModal({ onClose }: { onClose: () => void }) {
   return (
     <div
@@ -54,10 +50,6 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
     </div>
   )
 }
-
-// =============================================================================
-// INTERACTIVE TUTORIAL (for first game only)
-// =============================================================================
 
 interface TutorialStep {
   targetId: string
@@ -162,7 +154,6 @@ function calculateTooltipPosition(
 
 export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
   const [currentStep, setCurrentStep] = useState(0)
-  // Track tutorial_started once on mount
   useEffect(() => { capture('tutorial_started') }, [])
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null)
   const [tooltipPos, setTooltipPos] = useState<TooltipPosition | null>(null)
@@ -295,24 +286,21 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
     return null
   }
 
-  // Get finger pointer emoji based on tooltip position relative to element
   const getFingerEmoji = () => {
     if (isInteractiveStep) {
-      return '👆' // Tapping finger for interactive step
+      return '👆'
     }
-    // Point finger towards the highlighted element based on tooltip position
     switch (step.position) {
-      case 'bottom': return '👆' // Tooltip below element, point up
-      case 'top': return '👇'    // Tooltip above element, point down
-      case 'right': return '👈'  // Tooltip right of element, point left
-      case 'left': return '👉'   // Tooltip left of element, point right
+      case 'bottom': return '👆'
+      case 'top': return '👇'
+      case 'right': return '👈'
+      case 'left': return '👉'
       default: return '👆'
     }
   }
 
   const fingerEmoji = getFingerEmoji()
 
-  // Calculate clamped highlight bounds to stay within viewport
   const highlightPadding = 4
   const highlightLeft = Math.max(0, targetRect.left - highlightPadding)
   const highlightTop = Math.max(0, targetRect.top - highlightPadding)
@@ -321,7 +309,6 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: isInteractiveStep ? 'none' : 'auto' }}>
-      {/* Dark overlay with cutout for target element */}
       <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
         <defs>
           <mask id="tutorial-mask">
@@ -346,7 +333,6 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
         />
       </svg>
 
-      {/* Highlight border around target */}
       <div
         className="absolute rounded"
         style={{
@@ -360,7 +346,6 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
         }}
       />
 
-      {/* Tooltip */}
       <div
         className="absolute bg-[#1a2634] border border-mh-border p-4 rounded-lg max-w-[280px] font-mono"
         style={{
@@ -370,14 +355,11 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
           pointerEvents: 'auto',
         }}
       >
-        {/* Last step: special layout with description first, then emoji + title + button */}
         {isLastStep ? (
           <>
-            {/* Description first */}
             <div className="text-mh-text-main text-sm leading-relaxed mb-4">
               {step.description}
             </div>
-            {/* Emoji + Title + Start Trading button on same line */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-xl">
@@ -397,7 +379,6 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
           </>
         ) : (
           <>
-            {/* Finger + Title + Step indicator on same line */}
             {step.title === 'Net Worth' ? (
               <div className="flex items-center justify-between mb-2">
                 <span className="text-mh-text-dim text-xs">
@@ -428,19 +409,16 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
               </div>
             )}
 
-            {/* Description */}
             <div className="text-mh-text-main text-sm leading-relaxed mb-4">
               {step.description}
             </div>
 
-            {/* Interactive step hint */}
             {isInteractiveStep && (
               <div className="text-mh-profit-green text-xs mb-3">
                 Click on an asset and buy some shares
               </div>
             )}
 
-            {/* Buttons */}
             <div className="flex gap-2">
               <button
                 onClick={handleSkip}
@@ -461,7 +439,6 @@ export function InteractiveTutorial({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
-      {/* Click anywhere to advance (except on tooltip) - only for non-interactive steps */}
       {!isInteractiveStep && (
         <div
           className="absolute inset-0"

@@ -7,7 +7,6 @@ import { validateScriptedDays } from '@/lib/admin/validateScenario'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
-// POST /api/admin/scenarios/[id]/publish — validate + publish
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
