@@ -12,9 +12,5 @@ export function useUserDetails() {
     isPro,
     plan: userTier,
     isLoggedIn,
-    proTrialGamesUsed: 0,
-    proTrialGamesRemaining: 0,
-    hasProTrialRemaining: false,
-    isOnProTrial: false,
   }
 }

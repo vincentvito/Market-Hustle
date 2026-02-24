@@ -33,7 +33,7 @@ export const profiles = pgTable('profiles', {
   currentStreak: integer('current_streak').notNull().default(0),
   gamesPlayedToday: integer('games_played_today').notNull().default(0),
   lastPlayedDate: text('last_played_date'),
-  proTrialGamesUsed: integer('pro_trial_games_used').notNull().default(0),
+
   selectedTheme: text('selected_theme'),
   selectedDuration: integer('selected_duration'),
   unlockedAchievements: text('unlocked_achievements'),
@@ -84,11 +84,6 @@ export const gameResults = pgTable('game_results', {
   uniqueIndex('idx_game_results_unique_game').on(table.username, table.gameId),
 ])
 
-export const proTrials = pgTable('pro_trials', {
-  userId: uuid('user_id').primaryKey().references(() => profiles.id, { onDelete: 'cascade' }),
-  gamesUsed: integer('games_used').notNull().default(0),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
-})
 
 export const tradeLogs = pgTable('trade_logs', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),

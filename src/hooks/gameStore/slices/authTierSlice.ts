@@ -23,8 +23,7 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
   gamesRemaining: Infinity,
   limitType: 'anonymous' as const,
   supabaseProfile: null,
-  proTrialGamesUsed: 0,
-  isUsingProTrial: false,
+
 
   setShowDailyLimitModal: (show: boolean) => set({ showDailyLimitModal: show }),
   setShowAnonymousLimitModal: (show: boolean) => set({ showAnonymousLimitModal: show }),
@@ -167,17 +166,9 @@ export const createAuthTierSlice: AuthTierSliceCreator = (set, get) => ({
     })
   },
 
-  // Pro trial actions (no-ops, kept for interface compatibility)
-  setProTrialGamesUsed: (_count: number) => {},
-  setIsUsingProTrial: (_isUsing: boolean) => {},
-
   getEffectiveTier: () => {
     const { userTier } = get()
     if (userTier === 'pro') return 'pro'
     return 'free'
   },
-
-  // Pro trial — always false (feature removed)
-  hasProTrialRemaining: () => false,
-  getProTrialGamesRemaining: () => 0,
 })

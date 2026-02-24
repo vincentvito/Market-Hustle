@@ -33,7 +33,6 @@ export interface EndGameProps {
   gameDuration: GameDuration
   gamesRemaining: number
   canPlayAgain: boolean
-  proTrialGamesRemaining?: number
   onPlayAgain: () => void
   onMenu: () => void
   onCheckout: () => void

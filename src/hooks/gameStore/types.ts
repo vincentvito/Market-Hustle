@@ -51,8 +51,6 @@ export interface AuthTierSlice {
   gamesRemaining: number
   limitType: 'anonymous' | 'daily' | 'unlimited'
   supabaseProfile: SupabaseProfileData | null
-  proTrialGamesUsed: number
-  isUsingProTrial: boolean
 
   setIsLoggedIn: (isLoggedIn: boolean) => void
   setUserTier: (tier: 'free' | 'pro') => void
@@ -63,12 +61,7 @@ export interface AuthTierSlice {
   setShowAnonymousLimitModal: (show: boolean) => void
   initializeFromStorage: () => void
   syncFromSupabase: (profile: SupabaseProfileData | null) => void
-  setProTrialGamesUsed: (count: number) => void
-  setIsUsingProTrial: (isUsing: boolean) => void
-
   getEffectiveTier: () => UserTier
-  hasProTrialRemaining: () => boolean
-  getProTrialGamesRemaining: () => number
 }
 
 export interface PendingScore {

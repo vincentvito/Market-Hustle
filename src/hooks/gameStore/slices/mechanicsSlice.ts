@@ -247,7 +247,6 @@ function saveGameResult(
   gameDuration: GameDuration,
   gameOverReason?: string,
   _isLoggedIn?: boolean,
-  _isUsingProTrial?: boolean,
   username?: string | null,
   tradeLog?: TradeLogEntry[],
 ): void {
@@ -683,7 +682,7 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         limitType,
         showDailyLimitModal: false,
         showAnonymousLimitModal: false,
-        isUsingProTrial: false,
+
         directorState: createInitialDirectorState(100000),
         directorConfig: DEFAULT_DIRECTOR_CONFIG,
         activeScript,
@@ -2672,11 +2671,10 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         gameDuration,
         undefined,
         get().isLoggedIn,
-        get().isUsingProTrial,
         get().username,
         get().tradeLog,
       );
-      set({ screen: "win", isUsingProTrial: false });
+      set({ screen: "win" });
     }
 
     // 8.5. Trigger SEC encounter from story arc backfire (if applicable)
@@ -2717,7 +2715,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         gameDuration,
         pendingGameOver.reason,
         get().isLoggedIn,
-        get().isUsingProTrial,
         get().username,
         get().tradeLog,
       );
@@ -2725,7 +2722,6 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         screen: "gameover",
         gameOverReason: pendingGameOver.reason,
         pendingGameOver: null,
-        isUsingProTrial: false,
       });
       return;
     }
@@ -3405,14 +3401,12 @@ export const createMechanicsSlice: MechanicsSliceCreator = (set, get) => ({
         gameDuration,
         pendingGameOver.reason,
         get().isLoggedIn,
-        get().isUsingProTrial,
         get().username,
       );
       set({
         screen: "gameover",
         gameOverReason: pendingGameOver.reason,
         pendingGameOver: null,
-        isUsingProTrial: false,
       });
       return;
     }
