@@ -29,6 +29,13 @@
       "when": 1771924183499,
       "tag": "0003_alter_quantity_to_numeric",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771934578625,
+      "tag": "0004_open_zuras",
+      "breakpoints": true
     }
   ]
 }
