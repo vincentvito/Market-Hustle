@@ -22,7 +22,7 @@ function formatCost(value: number): string {
 }
 
 export function TradePanel({ assetId, price }: TradePanelProps) {
-  const { buyQty, setBuyQty, holdings, cash, buy, sell } = useGame()
+  const { buyQty, setBuyQty, holdings, cash, buy, sell, costBasis, prices } = useGame()
   const owned = holdings[assetId] || 0
   const maxBuy = Math.max(1, Math.floor(cash / price))
   const sliderRef = useRef<HTMLDivElement>(null)
@@ -170,11 +170,21 @@ export function TradePanel({ assetId, price }: TradePanelProps) {
           disabled={!canSell}
           className={`flex-1 py-3 rounded text-base font-bold font-mono transition-colors ${
             canSell
-              ? 'bg-[#200a0a] text-mh-loss-red cursor-pointer hover:bg-[#2a0d0d] border border-mh-loss-red/30'
+              ? 'bg-amber-500/10 text-amber-300 cursor-pointer hover:bg-amber-500/20 border border-amber-500/30'
               : 'bg-[#111920] text-mh-border cursor-default border border-mh-border/30'
           }`}
         >
-          SELL {canSell ? sellQty : 0}
+          {(() => {
+            if (!canSell) return `SELL 0`
+            const basis = costBasis[assetId]
+            if (basis && basis.totalQty > 0 && sellQty > 0) {
+              const avgCost = basis.totalCost / basis.totalQty
+              const profitLoss = (price - avgCost) * sellQty
+              const sign = profitLoss >= 0 ? '+' : ''
+              return <>SELL {sellQty} · <span style={{ color: profitLoss >= 0 ? '#00d4aa' : '#ff4757' }}>{sign}{formatCost(Math.abs(profitLoss))} {profitLoss >= 0 ? 'profit' : 'loss'}</span></>
+            }
+            return `SELL ${sellQty}`
+          })()}
         </button>
         <button
           onClick={() => canBuy && buy(assetId, buyQty)}

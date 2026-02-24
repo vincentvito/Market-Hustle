@@ -13,10 +13,6 @@ function getClientIp(request: NextRequest): string {
   return request.headers.get('x-real-ip') ?? 'unknown'
 }
 
-function getTodayDateString(): string {
-  return new Date().toISOString().split('T')[0]
-}
-
 export async function POST(request: NextRequest) {
   // Never block in dev so we can test freely
   if (isDev) {
@@ -25,9 +21,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const ip = getClientIp(request)
-    const today = getTodayDateString()
 
-    // Sum ALL games played by this IP across all dates (total limit, not daily)
+    // Sum ALL games played by this IP (total lifetime limit)
     const [result] = await db
       .select({ total: sql<number>`coalesce(sum(${guestDailyPlays.gamesPlayed}), 0)` })
       .from(guestDailyPlays)
@@ -39,11 +34,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ allowed: false, remaining: 0 })
     }
 
-    // Upsert — insert on first play of the day, increment on subsequent plays
+    // Upsert — single row per IP, increment on each play
+    const today = new Date().toISOString().split('T')[0]
     const [existing] = await db
       .select({ gamesPlayed: guestDailyPlays.gamesPlayed })
       .from(guestDailyPlays)
-      .where(sql`${guestDailyPlays.ip} = ${ip} AND ${guestDailyPlays.playedDate} = ${today}`)
+      .where(eq(guestDailyPlays.ip, ip))
       .limit(1)
 
     if (!existing) {
@@ -52,7 +48,7 @@ export async function POST(request: NextRequest) {
       await db
         .update(guestDailyPlays)
         .set({ gamesPlayed: existing.gamesPlayed + 1 })
-        .where(sql`${guestDailyPlays.ip} = ${ip} AND ${guestDailyPlays.playedDate} = ${today}`)
+        .where(eq(guestDailyPlays.ip, ip))
     }
 
     return NextResponse.json({ allowed: true, remaining: GUEST_TOTAL_LIMIT - totalPlayed - 1 })

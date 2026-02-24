@@ -148,7 +148,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
   const {
     prices, holdings, cash, buy, sell, getPriceChange, priceHistory,
     shortPositions, leveragedPositions, shortSell, coverShort, buyWithLeverage, closeLeveragedPosition,
-    selectedTheme, gameDuration,
+    selectedTheme, gameDuration, costBasis,
   } = useGame()
   const { isPro } = useUserDetails()
   const isLoggedIn = useGame(state => state.isLoggedIn)
@@ -202,6 +202,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
 
   const buyCostRef = useRef<HTMLSpanElement>(null)
   const buyDownPaymentRef = useRef<HTMLSpanElement>(null)
+  const sellBtnRef = useRef<HTMLSpanElement>(null)
   const sellCostRef = useRef<HTMLSpanElement>(null)
 
   const updateBuyCost = useCallback((qty: number) => {
@@ -219,7 +220,22 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
     if (sellCostRef.current) {
       sellCostRef.current.textContent = formatCost(qty * price)
     }
-  }, [price])
+    // Update sell button with profit/loss preview
+    if (sellBtnRef.current && !isShortMode) {
+      const basis = costBasis[asset?.id ?? '']
+      if (basis && basis.totalQty > 0 && qty > 0) {
+        const avgCost = basis.totalCost / basis.totalQty
+        const profitLoss = (price - avgCost) * qty
+        const sign = profitLoss >= 0 ? '+' : ''
+        const color = profitLoss >= 0 ? '#00d4aa' : '#ff4757'
+        sellBtnRef.current.innerHTML = `SELL &middot; <span style="color:${color}">${sign}${formatCost(Math.abs(profitLoss))} ${profitLoss >= 0 ? 'profit' : 'loss'}</span>`
+      } else {
+        sellBtnRef.current.textContent = 'SELL'
+      }
+    } else if (sellBtnRef.current && isShortMode) {
+      sellBtnRef.current.textContent = 'SHORT'
+    }
+  }, [price, isShortMode, costBasis, asset?.id])
 
   // Stable refs so event listeners don't need to re-register on every render
   const buySliderRef = useRef(buySlider)
@@ -531,18 +547,18 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
         </div>
 
         <div className={`px-4 py-3 ${canSell
-          ? isBloomberg ? 'bg-[#1a0000]' : isModern3 ? 'bg-[#1a0a12]' : 'bg-[#150a0a]'
+          ? isBloomberg ? 'bg-[#1a1400]' : isModern3 ? 'bg-[#17140a]' : 'bg-[#151208]'
           : isBloomberg ? 'bg-black opacity-50' : isModern3 ? 'bg-[#0f1419] opacity-50' : 'bg-[#0d1117] opacity-50'
         }`}>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-mh-loss-red">SELL</span>
+            <span className="text-sm font-bold text-amber-400">SELL</span>
 
             <div className="flex items-center gap-1 text-xs">
               <button
                 onClick={() => setIsShortMode(false)}
                 className={`px-2 py-1 rounded transition-colors ${
                   !isShortMode
-                    ? 'bg-mh-loss-red/30 text-mh-loss-red'
+                    ? 'bg-amber-500/30 text-amber-400'
                     : 'text-mh-text-dim hover:text-mh-text-bright'
                 }`}
               >
@@ -581,7 +597,7 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
               <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-2 bg-[#1a2a3a] rounded-full" />
               <div
                 ref={sellSlider.fillRef}
-                className="absolute top-1/2 -translate-y-1/2 left-0 h-2 bg-mh-loss-red rounded-full"
+                className="absolute top-1/2 -translate-y-1/2 left-0 h-2 bg-amber-500 rounded-full"
                 style={{ width: '0%' }}
               />
               {[25, 50, 75].map(pct => (
@@ -589,11 +605,11 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
               ))}
               <div
                 ref={sellSlider.thumbRef}
-                className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-mh-loss-red rounded-full border-2 border-mh-bg"
+                className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-amber-500 rounded-full border-2 border-mh-bg"
                 style={{
                   left: '-10px',
                   boxShadow: isModern3
-                    ? '0 0 10px rgba(255, 71, 87, 0.6), 0 2px 4px rgba(0,0,0,0.3)'
+                    ? '0 0 10px rgba(245, 158, 11, 0.6), 0 2px 4px rgba(0,0,0,0.3)'
                     : '0 2px 4px rgba(0,0,0,0.3)'
                 }}
               />
@@ -604,19 +620,19 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
             <button
               onClick={() => { sellSlider.setQty(sliderMin); updateSellCost(sliderMin) }}
               disabled={!canSell}
-              className="text-xs text-mh-text-dim hover:text-mh-loss-red cursor-pointer bg-transparent border-none p-1"
+              className="text-xs text-mh-text-dim hover:text-amber-400 cursor-pointer bg-transparent border-none p-1"
             >
               {sliderMin}
             </button>
             <div className="flex items-center gap-3">
               <span className="text-mh-text-bright font-bold">
-                <span ref={sellSlider.qtyRef}>{sliderMin}</span> × ${formatPrice(price)} = <span ref={sellCostRef} className="text-mh-loss-red">{formatCost(sliderMin * price)}</span>
+                <span ref={sellSlider.qtyRef}>{sliderMin}</span> × ${formatPrice(price)} = <span ref={sellCostRef} className="text-amber-400">{formatCost(sliderMin * price)}</span>
               </span>
             </div>
             <button
               onClick={() => { sellSlider.setQty(maxSell); updateSellCost(maxSell) }}
               disabled={!canSell}
-              className="text-xs text-mh-loss-red hover:text-mh-loss-red/80 cursor-pointer bg-transparent border-none p-1 font-bold"
+              className="text-xs text-amber-400 hover:text-amber-300 cursor-pointer bg-transparent border-none p-1 font-bold"
             >
               ALL
             </button>
@@ -629,18 +645,18 @@ export function TradeSheet({ asset, isOpen, onClose }: TradeSheetProps) {
               canSell
                 ? isBloomberg
                   ? 'cursor-pointer hover:brightness-110 border'
-                  : 'bg-mh-loss-red/20 text-mh-loss-red cursor-pointer hover:bg-mh-loss-red/30 border border-mh-loss-red/50'
+                  : 'bg-amber-500/15 text-amber-300 cursor-pointer hover:bg-amber-500/25 border border-amber-500/40'
                 : 'bg-[#111920] text-mh-border cursor-default border border-mh-border/30'
             }`}
             style={canSell && isBloomberg ? {
-              backgroundColor: '#330000',
-              borderColor: '#ff3333',
-              color: '#ff3333'
+              backgroundColor: '#1a1400',
+              borderColor: '#f59e0b',
+              color: '#f59e0b'
             } : canSell && isModern3 ? {
-              boxShadow: '0 0 15px rgba(255, 71, 87, 0.3)'
+              boxShadow: '0 0 15px rgba(245, 158, 11, 0.2)'
             } : undefined}
           >
-            {isShortMode ? 'SHORT' : 'SELL'}
+            <span ref={sellBtnRef}>{isShortMode ? 'SHORT' : 'SELL'}</span>
           </button>
         </div>
 

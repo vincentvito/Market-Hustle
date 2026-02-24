@@ -98,7 +98,7 @@ export const tradeLogs = pgTable('trade_logs', {
   assetName: text('asset_name').notNull(),
   action: text('action').notNull(), // buy, sell, short_sell, cover_short, leverage_buy, leverage_close, buy_property, sell_property, buy_pe, sell_pe, pe_exit
   category: text('category').notNull(), // stock, property, private_equity
-  quantity: integer('quantity'),
+  quantity: numeric('quantity', { precision: 20, scale: 6 }),
   price: numeric('price', { precision: 20, scale: 2 }),
   totalValue: numeric('total_value', { precision: 20, scale: 2 }),
   leverage: smallint('leverage'),

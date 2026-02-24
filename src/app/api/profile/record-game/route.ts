@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
             assetName: t.assetName,
             action: t.action,
             category: t.category,
-            quantity: t.quantity ?? null,
+            quantity: t.quantity != null ? String(t.quantity) : null,
             price: t.price != null ? String(t.price) : null,
             totalValue: t.totalValue != null ? String(t.totalValue) : null,
             leverage: t.leverage ?? null,
